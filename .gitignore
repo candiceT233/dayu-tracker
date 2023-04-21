@@ -1,0 +1,12 @@
+# env
+venv_ddmd/
+
+
+
+# logs
+*.err
+*.log
+*.out
+
+# others
+*.so
