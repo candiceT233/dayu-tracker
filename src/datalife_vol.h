@@ -25,7 +25,7 @@
 
 /* Characteristics of the pass-through VOL connector */
 #define H5VL_DATALIFE_NAME        "datalife"
-#define H5VL_DATALIFE_VALUE       609           /* VOL connector ID */
+#define H5VL_DATALIFE_VALUE       909           /* VOL connector ID */
 #define H5VL_DATALIFE_VERSION     0
 
 typedef enum ProvLevel {

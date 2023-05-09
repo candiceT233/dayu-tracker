@@ -1,14 +1,16 @@
 #Your HDF5 install path
 # HDF5_DIR=/home/mtang11/install/hdf5-1_13_1
-HDF5_DIR=/qfs/people/tang584/.conda/pkgs/hdf5-1.14.0-nompi_h5231ba7_103
-#HDF5_DIR=$(HOME)/install/hdf5
+# HDF5_DIR=/qfs/people/tang584/.conda/pkgs/hdf5-1.14.0-nompi_h5231ba7_103
+# HDF5_DIR=/qfs/people/tang584/.conda/pkgs/hdf5-1.14.0-nompi_hb72d44e_103
+HDF5_DIR=$(HOME)/install/hdf5
 # HDF5_DIR=/Users/koziol/HDF5/github/hpc-io/async_vol_register_optional/build_parallel_debug/hdf5
 
 CC=mpicc
 # CC=gcc
+# CC=h5cc
 AR=ar
-# -DDATALIFE_LOGGING -DENABLE_PROVNC_LOGGING -DDATALIFE_LOGGING_MORE
-DEBUG= -g -O0 -DDATALIFE_LOGGING
+# -DDATALIFE_LOGGING -DDATALIFE_PROV_LOGGING -DDATALIFE_MORE_LOGGING -DDATALIFE_PT_LOGGING
+DEBUG= -g -O0 -DDATALIFE_LOGGING #-DDATALIFE_PROV_LOGGIN
 INCLUDES=-I$(HDF5_DIR)/include 
 
 CFLAGS = $(DEBUG) -fPIC $(INCLUDES) -w #-Wall
@@ -23,7 +25,7 @@ LDFLAGS = $(DEBUG) $(LIBS)
 ARFLAGS = rs
 
 # Shared library VOL connector
-DYNSRC = datalife_vol_new.c #datalife_vol.c
+DYNSRC = datalife_vol_new.c # datalife_vol datalife_vol_new
 DYNOBJ = $(DYNSRC:.c=.o)
 # Uncomment this line Linux builds:
 DYNLIB = libh5datalife.so #libh5datalife.so

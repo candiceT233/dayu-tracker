@@ -2,6 +2,9 @@
 // #include <bsd/md5.h>
 
 // #include "/home/mtang11/spack/opt/spack/linux-centos7-skylake_avx512/gcc-7.3.0/openssl-1.1.1q-kqr6gf43vvc4kxk3m5d3ozopr7fq5c4s/include/openssl/md5.h"
+#include <stdlib.h>
+#include <string.h>
+
 #include "hdf5.h"
 #include "datalife_vol.h"
 // #include <bsd/md5.h>
@@ -53,7 +56,6 @@ MD5_CTX context;
 
 /* candice added for tracking object access start */
 typedef struct FileTracker file_list_t;
-typedef struct DsetTracker dset_list_t;
 
 typedef struct FileTracker {
     char * name;
@@ -63,24 +65,14 @@ typedef struct FileTracker {
     // size_t size;
     // char op_type[10]; // create/open/close
     // int access_cnt;
-    dset_list_t *dset;
+    // dset_list_t *dset;
     file_list_t *next;
 } file_list_t;
 
 
-typedef struct DsetTracker {
-    char * name;
-    char * pfile_name;
-    unsigned long sorder_id;
-    unsigned long porder_id;
-    unsigned long pfile_sorder_id;
-    unsigned long pfile_porder_id;
-    unsigned long time; // at self create time
-    // size_t size;
-    char obj_type[10]; // read/write/blob_put/blob_get
-    // int access_cnt;
-    dset_list_t *next;
-} dset_list_t;
+
+
+
 
 /* candice added for tracking object access end */
 
@@ -216,10 +208,12 @@ struct H5VL_dlife_dataset_info_t {
     unsigned long pfile_porder_id;
     /* candice added for more dset stats end */
 
-    hsize_t total_bytes_read;
+    
     hsize_t total_bytes_written;
-    hsize_t total_read_time;
     hsize_t total_write_time;
+    hsize_t total_bytes_read;
+    hsize_t total_read_time;
+    
     int dataset_read_cnt;
     int dataset_write_cnt;
     /* candice added for recording blob start */
@@ -372,3 +366,135 @@ char * MD5Hash(MD5_CTX context, char* buf, size_t size) {
 
 //     return 0;
 // }
+
+
+/* DsetTracker Related Code Start */
+// typedef struct DsetTracker dset_list_t;
+
+typedef struct DsetTracker_t {
+    char *pfile_name;
+    char *name;
+    unsigned long total_bytes_written;
+    unsigned long total_write_time;
+
+    unsigned long total_bytes_read;
+    unsigned long total_read_time;
+
+} DsetTracker;
+
+typedef struct DsetTrackList_t {
+    DsetTracker **trackers;
+    size_t size;
+} DsetTrackList;
+
+
+
+
+
+// Add a tracker to the list
+void DsetTrackList_add(DsetTrackList *list, char *pfile_name, char *name) {
+    DsetTracker *tracker = malloc(sizeof(DsetTracker));
+    tracker->pfile_name = strdup(pfile_name);
+    tracker->name = strdup(name);
+    tracker->total_bytes_written = 0;
+    tracker->total_write_time = 0;
+    tracker->total_bytes_read = 0;
+    tracker->total_read_time = 0;
+
+    if (list->trackers == NULL) {
+        list->trackers = malloc(sizeof(DsetTracker *));
+        list->size = 0;
+    } else {
+        list->trackers = realloc(list->trackers, sizeof(DsetTracker *) * (list->size + 1));
+    }
+
+    list->trackers[list->size] = tracker;
+    list->size++;
+}
+
+// Set write values of DsetTracker
+void DsetTracker_set_write(DsetTracker *tracker, unsigned long total_bytes_written, unsigned long total_write_time) {
+    tracker->total_bytes_written = total_bytes_written;
+    tracker->total_write_time = total_write_time;
+}
+
+// Set read values of DsetTracker
+void DsetTracker_set_read(DsetTracker *tracker, unsigned long total_bytes_read, unsigned long total_read_time) {
+    tracker->total_bytes_read = total_bytes_read;
+    tracker->total_read_time = total_read_time;
+}
+
+// Get DsetTrackList object by name
+DsetTracker *DsetTrackList_get(DsetTrackList *list, char *pfile_name, char *name) {
+    for (size_t i = 0; i < list->size; i++) {
+        if (strcmp(list->trackers[i]->pfile_name, pfile_name) == 0 &&
+            strcmp(list->trackers[i]->name, name) == 0) {
+            return list->trackers[i];
+        }
+    }
+    return NULL;
+}
+
+void DsetTrackList_Test(dataset_dlife_info_t *dset_info, DsetTrackList dsetTList){
+    // Retrieve the dataset from the tracking list using the token
+    DsetTracker *result1 = DsetTrackList_get(&dsetTList, dset_info->pfile_name, dset_info->obj_info.name);
+
+    if (result1 != NULL) {
+        printf("Found tracker with name '%s' in file '%s'", result1->name, result1->pfile_name);
+        printf(" write sie '%ld' write imte '%ld' \n", result1->total_bytes_written, result1->total_write_time);
+    } else {
+        printf("Could not find tracker with name '%s'\n", result1->name);
+    }
+    
+}
+
+// Remove DsetTrackList object by name and pfile_name
+void DsetTrackList_remove_tracker(DsetTrackList *list, char *pfile_name, char *name) {
+    for (size_t i = 0; i < list->size; i++) {
+        if (strcmp(list->trackers[i]->pfile_name, pfile_name) == 0 &&
+            strcmp(list->trackers[i]->name, name) == 0) {
+            DsetTracker *tracker = list->trackers[i];
+            list->size--;
+
+            for (size_t j = i; j < list->size; j++) {
+                list->trackers[j] = list->trackers[j + 1];
+            }
+
+            free(tracker->pfile_name);
+            free(tracker->name);
+            free(tracker);
+            list->trackers = realloc(list->trackers, sizeof(DsetTracker *) * list->size);
+
+            return;
+        }
+    }
+}
+
+// Free DsetTrackList
+void DsetTrackList_free_list(DsetTrackList *list) {
+    for (size_t i = 0; i < list->size; i++) {
+        free(list->trackers[i]->pfile_name);
+        free(list->trackers[i]->name);
+        free(list->trackers[i]);
+    }
+
+    free(list->trackers);
+    list->size = 0;
+    list->trackers = NULL;
+}
+
+
+// typedef struct DsetTracker {
+//     char * name;
+//     char * pfile_name;
+//     unsigned long sorder_id;
+//     unsigned long porder_id;
+//     unsigned long pfile_sorder_id;
+//     unsigned long pfile_porder_id;
+//     unsigned long time; // at self create time
+//     // size_t size;
+//     char obj_type[10]; // read/write/blob_put/blob_get
+//     // int access_cnt;
+//     dset_list_t *next;
+// } dset_list_t;
+/* DsetTracker Related Code End */
