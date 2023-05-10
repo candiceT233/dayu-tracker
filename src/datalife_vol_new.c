@@ -40,11 +40,18 @@
 #include <unistd.h>
 #include <ctype.h> // check readable str
 
-#include "hdf5.h"
+/* HDF5 headers */
+#include "hdf5.h"      /* HDF5 public header */
+#include "H5VLnative.h" /* Native VOL connector header */
+
+/* HDF5 header for dynamic plugin loading */
+#include "H5PLextern.h"
+
 // #include "hdf5dev.h"
 #include "datalife_vol.h"
 #include "datalife_vol_types.h"
-#include "md5.h"
+
+// #include "md5.h"
 
 #ifdef DATALIFE_LOGGING
 
@@ -1697,6 +1704,8 @@ void file_info_print(char * func_name, void * obj, hid_t dxpl_id)
     // printf("\"dtypes_accessed\": %d, ", file_info->dtypes_accessed); 
 
     // printf("}");
+
+    printf("\"file_addr\": %p, ", obj);
     printf("}\n");
 
 }
@@ -1742,7 +1751,16 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
         // printf("\"type_size\": %ld, ", type_size);
         printf("\"logical_addr\": %d, ", -1);
         printf("\"blob_idx\": %d, ", -1);
-        printf("\"space_id\": \"incorrect_type\", ");
+        printf("\"H5Iget_type\": \"H5Iget_type(space_id)\", ");
+
+        
+
+        if(!dxpl_id)
+            printf("\"dxpl_id_vol\": %d, ", -1);
+        else
+            printf("\"dxpl_id_vol\": %ld, ", dxpl_id);
+        
+        printf("\"dset_addr\": %p, ", obj);
         printf("}\n");
 
     } else {
@@ -1772,10 +1790,10 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
 
         // printf("\"obj\": %p, ", obj);
 
-        // if(!dxpl_id)
-        //     printf("\"dxpl_id\": %d, ", -1);
-        // else
-        //     printf("\"dxpl_id\": %p, ", dxpl_id);
+        if(!dxpl_id)
+            printf("\"dxpl_id_vol\": %d, ", -1);
+        else
+            printf("\"dxpl_id_vol\": %ld, ", dxpl_id);
         
         printf("\"time(us)\": %ld, ", get_time_usec());
 
@@ -1838,8 +1856,11 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
 
         printf("], ");
 
-        printf("\"logical_addr\": %d, ", -1);
+        // printf("\"logical_addr\": %d, ", -1);
         printf("\"blob_idx\": %d, ", -1);
+
+        printf("\"dxpl_id\": %d, ", dxpl_id);
+        printf("\"dset_addr\": %p, ", obj);
 
         printf("}\n");
 
@@ -1970,11 +1991,16 @@ void blob_info_print(char * func_name, void * obj, hid_t dxpl_id,
         //     printf("\"logical_addr\": %ld, ", dummy0);
         // }
 
-        printf("\"logical_addr\": %ld, ", dummy0);
+        // printf("\"logical_addr\": %ld, ", dummy0);
+        if(!dxpl_id)
+            printf("\"dxpl_id_vol\": %d, ", -1);
+        else
+            printf("\"dxpl_id_vol\": %ld, ", dxpl_id);
         printf("\"blob_idx\": %ld, ", * (&dummy0-14)); // either -13/-14
         // printf("\"blob_sorder\": %ld, ", BLOB_SORDER);
 
-        
+        printf("\"dset_addr\": %p, ", obj);
+
     }
     printf("}\n");
     // BLOB_SORDER+=1; // increment blob order
@@ -3735,8 +3761,9 @@ static herr_t H5VL_datalife_dataset_read(size_t count, void *dset[],
 {
     unsigned long start = get_time_usec();
     unsigned long m1, m2;
-    H5VL_datalife_t *o = (H5VL_datalife_t *)dset;
     void *o_arr[count];   /* Array of under objects */
+    H5VL_datalife_t *o = (H5VL_datalife_t *)dset[0]; // only get the first dataset
+
     hid_t under_vol_id;                     /* VOL ID for all objects */
 
 #ifdef H5_HAVE_PARALLEL
@@ -3765,6 +3792,8 @@ static herr_t H5VL_datalife_dataset_read(size_t count, void *dset[],
     ret_value = H5VLdataset_read(count, o_arr, under_vol_id, mem_type_id, mem_space_id, file_space_id, plist_id, buf, req);
 
     m2 = get_time_usec();
+
+
 
     /* Check for async request */
     if(req && *req)
@@ -3799,6 +3828,8 @@ static herr_t H5VL_datalife_dataset_read(size_t count, void *dset[],
         //     // ID is a VOL connector ID
         //     dataset_info_print("H5VLdataset_read", mem_type_id, mem_space_id, file_space_id, dset, NULL, buf);
         // }
+        H5VL_native_dataset_chunk_read_t dset_cread;
+
         dataset_info_print("H5VLdataset_read", mem_type_id, mem_space_id, file_space_id, dset, NULL, buf);
         
 #endif
@@ -3829,7 +3860,7 @@ static herr_t H5VL_datalife_dataset_write(size_t count, void *dset[],
     unsigned long start = get_time_usec();
     unsigned long m1, m2;
 //H5VL_datalife_t: A envelop
-    H5VL_datalife_t *o = (H5VL_datalife_t *)dset;
+    H5VL_datalife_t *o = (H5VL_datalife_t *)dset[0];
     void *o_arr[count];   /* Array of under objects */
     hid_t under_vol_id;                     /* VOL ID for all objects */
 
