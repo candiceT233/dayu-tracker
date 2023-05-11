@@ -7,8 +7,7 @@
 
 #include "hdf5.h"
 #include "datalife_vol.h"
-// #include <bsd/md5.h>
-#include "md5.h"
+// #include "md5.h"
 
 
 /************/
@@ -47,8 +46,6 @@ static const char * write_func = "H5FD__hermes_write";
 // unsigned long VFD_ADDR ;
 // extern haddr_t vfd_start_addr;
 
-/* The hash function environment */
-MD5_CTX context;
 
 /* candice added local prototypes */
 // static int get_native_info(void *obj, H5I_type_t target_obj_type, hid_t connector_id,
@@ -320,32 +317,7 @@ struct H5VL_dlife_blob_info_t {
     blob_dlife_info_t *next;
 };
 
-static unsigned long KernighanHash(const char * buf) {
-    unsigned long h = 0;
 
-    while (*buf) {
-        h = 31*h + (*buf++);
-    }
-    // The loop either run 1 time or 0 time
-    return h;
-}
-
-
-
-char * MD5Hash(MD5_CTX context, char* buf, size_t size) {
-    //concat both words
-    unsigned char digest[16];
-
-    MD5_Init(&context); // candidce added initialize md5 context
-    MD5Update(&context, buf, size);
-    D5Final(digest, &context);
-
-    char md5string[33];
-    for(int i = 0; i < 16; ++i)
-        sprintf(&md5string[i*2], "%02x", (unsigned int)digest[i]);
-
-    return md5string;
-}
 
 // static int get_native_info(void *obj, H5I_type_t target_obj_type, hid_t connector_id,
 //                        hid_t dxpl_id, H5O_info2_t *oinfo)

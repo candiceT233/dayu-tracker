@@ -92,7 +92,12 @@
 #define GET(n) \
 	(ctx->block[(n)])
 #endif
- 
+
+
+/* The hash function environment */
+MD5_CTX context;
+
+
 /*
  * This processes one or more 64-byte data blocks, but does NOT update the bit
  * counters.  There are no alignment requirements.
@@ -287,4 +292,31 @@ void MD5_Final(unsigned char *result, MD5_CTX *ctx)
  
 	memset(ctx, 0, sizeof(*ctx));
 }
- 
+
+
+static unsigned long KernighanHash(const char * buf) {
+    unsigned long h = 0;
+
+    while (*buf) {
+        h = 31*h + (*buf++);
+    }
+    // The loop either run 1 time or 0 time
+    return h;
+}
+
+
+
+char * MD5Hash(MD5_CTX context, char* buf, size_t size) {
+    //concat both words
+    unsigned char digest[16];
+
+    MD5_Init(&context); // candidce added initialize md5 context
+    MD5Update(&context, buf, size);
+    D5Final(digest, &context);
+
+    char md5string[33];
+    for(int i = 0; i < 16; ++i)
+        sprintf(&md5string[i*2], "%02x", (unsigned int)digest[i]);
+
+    return md5string;
+}
