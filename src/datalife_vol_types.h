@@ -10,6 +10,7 @@
 // #include "md5.h"
 
 
+
 /************/
 /* Typedefs */
 /************/
@@ -21,6 +22,7 @@ typedef struct H5VL_dlife_attribute_info_t attribute_dlife_info_t;
 typedef struct H5VL_dlife_file_info_t file_dlife_info_t;
 
 typedef struct H5VL_dlife_blob_info_t blob_dlife_info_t;
+
 unsigned long FILE_SORDER;
 unsigned long FILE_PORDER;
 
@@ -40,8 +42,12 @@ unsigned long VFD_ACCESS_IDX;
 unsigned long TOTAL_VFD_READ ;
 unsigned long TOTAL_VFD_WRITE ;
 
-static const char * read_func = "H5FD__hermes_read";
-static const char * write_func = "H5FD__hermes_write";
+
+
+
+
+// static const char * read_func = "H5FD__hermes_read";
+// static const char * write_func = "H5FD__hermes_write";
 
 // unsigned long VFD_ADDR ;
 // extern haddr_t vfd_start_addr;
@@ -65,9 +71,6 @@ typedef struct FileTracker {
     // dset_list_t *dset;
     file_list_t *next;
 } file_list_t;
-
-
-
 
 
 
@@ -363,99 +366,6 @@ typedef struct DsetTrackList_t {
 
 
 
-// Add a tracker to the list
-void DsetTrackList_add(DsetTrackList *list, char *pfile_name, char *name) {
-    DsetTracker *tracker = malloc(sizeof(DsetTracker));
-    tracker->pfile_name = strdup(pfile_name);
-    tracker->name = strdup(name);
-    tracker->total_bytes_written = 0;
-    tracker->total_write_time = 0;
-    tracker->total_bytes_read = 0;
-    tracker->total_read_time = 0;
-
-    if (list->trackers == NULL) {
-        list->trackers = malloc(sizeof(DsetTracker *));
-        list->size = 0;
-    } else {
-        list->trackers = realloc(list->trackers, sizeof(DsetTracker *) * (list->size + 1));
-    }
-
-    list->trackers[list->size] = tracker;
-    list->size++;
-}
-
-// Set write values of DsetTracker
-void DsetTracker_set_write(DsetTracker *tracker, unsigned long total_bytes_written, unsigned long total_write_time) {
-    tracker->total_bytes_written = total_bytes_written;
-    tracker->total_write_time = total_write_time;
-}
-
-// Set read values of DsetTracker
-void DsetTracker_set_read(DsetTracker *tracker, unsigned long total_bytes_read, unsigned long total_read_time) {
-    tracker->total_bytes_read = total_bytes_read;
-    tracker->total_read_time = total_read_time;
-}
-
-// Get DsetTrackList object by name
-DsetTracker *DsetTrackList_get(DsetTrackList *list, char *pfile_name, char *name) {
-    for (size_t i = 0; i < list->size; i++) {
-        if (strcmp(list->trackers[i]->pfile_name, pfile_name) == 0 &&
-            strcmp(list->trackers[i]->name, name) == 0) {
-            return list->trackers[i];
-        }
-    }
-    return NULL;
-}
-
-void DsetTrackList_Test(dataset_dlife_info_t *dset_info, DsetTrackList dsetTList){
-    // Retrieve the dataset from the tracking list using the token
-    DsetTracker *result1 = DsetTrackList_get(&dsetTList, dset_info->pfile_name, dset_info->obj_info.name);
-
-    if (result1 != NULL) {
-        printf("Found tracker with name '%s' in file '%s'", result1->name, result1->pfile_name);
-        printf(" write sie '%ld' write imte '%ld' \n", result1->total_bytes_written, result1->total_write_time);
-    } else {
-        printf("Could not find tracker with name '%s'\n", result1->name);
-    }
-    
-}
-
-// Remove DsetTrackList object by name and pfile_name
-void DsetTrackList_remove_tracker(DsetTrackList *list, char *pfile_name, char *name) {
-    for (size_t i = 0; i < list->size; i++) {
-        if (strcmp(list->trackers[i]->pfile_name, pfile_name) == 0 &&
-            strcmp(list->trackers[i]->name, name) == 0) {
-            DsetTracker *tracker = list->trackers[i];
-            list->size--;
-
-            for (size_t j = i; j < list->size; j++) {
-                list->trackers[j] = list->trackers[j + 1];
-            }
-
-            free(tracker->pfile_name);
-            free(tracker->name);
-            free(tracker);
-            list->trackers = realloc(list->trackers, sizeof(DsetTracker *) * list->size);
-
-            return;
-        }
-    }
-}
-
-// Free DsetTrackList
-void DsetTrackList_free_list(DsetTrackList *list) {
-    for (size_t i = 0; i < list->size; i++) {
-        free(list->trackers[i]->pfile_name);
-        free(list->trackers[i]->name);
-        free(list->trackers[i]);
-    }
-
-    free(list->trackers);
-    list->size = 0;
-    list->trackers = NULL;
-}
-
-
 // typedef struct DsetTracker {
 //     char * name;
 //     char * pfile_name;
@@ -470,3 +380,5 @@ void DsetTrackList_free_list(DsetTrackList *list) {
 //     dset_list_t *next;
 // } dset_list_t;
 /* DsetTracker Related Code End */
+
+

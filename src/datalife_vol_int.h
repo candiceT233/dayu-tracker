@@ -1,11 +1,10 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 #include "hdf5.h"
 #include "datalife_vol.h"
-
-
-
+#include "datalife_vol_types.h"
 
 /**********/
 /* Macros */
@@ -14,7 +13,6 @@
 /* Whether to display log messge when callback is invoked */
 /* (Uncomment to enable) */
 /* #define DATALIFE_PT_LOGGING */
-
 /* Hack for missing va_copy() in old Visual Studio editions
  * (from H5win2_defs.h - used on VS2012 and earlier)
  */
@@ -23,6 +21,14 @@
 #endif
 
 #define STAT_FUNC_MOD 733//a reasonably big size to avoid expensive collision handling, make sure it works with 62 function names.
+
+// #define UINT32DECODE(p, val) {                      \
+//     (val)  = (uint32_t)(*p++) << 24;                \
+//     (val) |= (uint32_t)(*p++) << 16;                \
+//     (val) |= (uint32_t)(*p++) <<  8;                \
+//     (val) |= (uint32_t)(*p++);                      \
+// }
+
 
 
 /************/
@@ -48,6 +54,7 @@ unsigned long get_time_usec(void) {
     gettimeofday(&tp, NULL);
     return (unsigned long)((1000000 * tp.tv_sec) + tp.tv_usec);
 }
+
 
 //======================================= statistics =======================================
 
@@ -131,9 +138,6 @@ void _dic_init(void);
 void _dic_free(void);
 
 
-
-
-
 /* DataLife internal print and logs prototypes */
 void _dic_print(void);
 void _preset_dic_print(void);
@@ -155,7 +159,7 @@ void dump_dset_stat_yaml(FILE *f, const dataset_dlife_info_t* dset_info);
 // void tracker_file_dump(file_list_t * file_ndoe);
 // void tracker_dset_dump(dset_list_t * dset_node);
 // file_list_t * tracker_newfile(file_dlife_info_t * file_info);
-
+void H5VL_arrow_get_selected_sub_region(hid_t space_id, size_t org_type_size);
 void file_info_print(char * func_name, void * obj, hid_t dxpl_id);
 void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t space_id,
     hid_t file_space_id, void * obj, hid_t dxpl_id, const void *buf);
@@ -513,7 +517,8 @@ datatype_dlife_info_t *new_dtype_info(file_dlife_info_t* root_file,
     info = (datatype_dlife_info_t *)calloc(1, sizeof(datatype_dlife_info_t));
     info->obj_info.dlife_helper = DLIFE_HELPER;
     info->obj_info.file_info = root_file;
-    info->obj_info.name = name ? strdup(name) : NULL;
+    // info->obj_info.name = name ? strdup(name) : NULL;
+    info->obj_info.name = name;
     info->obj_info.token = token;
 
     return info;
@@ -1953,7 +1958,98 @@ void dump_dset_stat_yaml(FILE *f, const dataset_dlife_info_t* dset_info)
 //         DSET_SORDER, DSET_PORDER);
 // }
 
+void H5VL_arrow_get_selected_sub_region(hid_t space_id, size_t org_type_size) {
 
+    size_t type_size = org_type_size;
+    int32_t s_row_idx;
+    int32_t s_col_idx;
+    int32_t sub_cols;
+
+    // 1. get the memspace dimensional information
+    // subRegionInfo->type_size = type_size;
+    hsize_t g_sdim[H5S_MAX_RANK];
+    int sranks = H5Sget_simple_extent_dims(space_id, g_sdim, NULL);
+    int32_t g_rows = 1;
+    for (int i = 0; i < sranks - 1; ++i) {
+        g_rows *= g_sdim[i];
+    }
+    int32_t g_cols = g_sdim[sranks - 1];
+
+    // 2. get the start coordinate of the selected region. Here we only consider a single contiguous region
+    H5S_sel_type stype = H5Sget_select_type(space_id);
+    s_row_idx = 0;
+    s_col_idx = 0;
+
+    // if (stype == H5S_SEL_ALL) {
+    //     // subRegionInfo->s_row_idx = 0;
+    //     // subRegionInfo->s_col_idx = 0;
+    //     s_row_idx = 0;
+    //     s_col_idx = 0;
+    // }
+    // else if (stype == H5S_SEL_HYPERSLABS) {
+    //     hid_t sel_iter_id = H5Ssel_iter_create(space_id, (size_t)type_size, 0);
+    //     size_t nseq;
+    //     size_t nelem;
+    //     hsize_t seq_start_off;
+    //     size_t seq_len;
+    //     H5Ssel_iter_get_seq_list(sel_iter_id, 1, (size_t)type_size, &nseq, &nelem, &seq_start_off, &seq_len);
+    //     H5Ssel_iter_close(sel_iter_id);
+
+    //     // 3. get the start coordinate according to the start_offset
+    //     // subRegionInfo->s_row_idx = (seq_start_off / type_size) / g_cols;
+    //     // subRegionInfo->s_col_idx = (seq_start_off / type_size) % g_cols;
+    //     s_row_idx = (seq_start_off / type_size) / g_cols;
+    //     s_col_idx = (seq_start_off / type_size) % g_cols;
+    // }
+
+    // 4. get the selected rows and cols;
+    hsize_t start[sranks];
+    hsize_t end[sranks];
+    herr_t status = H5Sget_select_bounds(space_id, start, end);
+    int32_t sub_rows = 1;
+    for (int i = 0; i < sranks - 1; ++i) {
+        sub_rows *= (end[i] - start[i] + 1);
+    }
+    // subRegionInfo->sub_rows = sub_rows;
+    // subRegionInfo->sub_cols = end[sranks - 1] - start[sranks - 1] + 1;
+    // subRegionInfo->g_rows = g_rows;
+    // subRegionInfo->g_cols = g_cols;
+    sub_cols = end[sranks - 1] - start[sranks - 1] + 1;
+
+    printf("H5VL_arrow_get_selected_sub_region ----  type_size: %zu, ", type_size);
+    // printf("s_row_idx: %d, ", s_row_idx);
+    // printf("s_col_idx: %d, ", s_col_idx);
+    printf("sub_rows: %d, ", sub_rows);
+    printf("sub_cols: %d, ", sub_cols);
+    printf("g_rows: %d, ", g_rows);
+    printf("g_cols: %d, ", g_cols);
+    printf("H5Sget_select_bounds : (%ld,%ld) ", start[sranks - 1], end[sranks - 1]);
+    printf("\n");
+
+    
+
+    // check file_space selection and mem_space selection
+    if(stype == H5S_SEL_NONE){
+        printf("H5S_SEL_NONE");
+    } else if (stype == H5S_SEL_POINTS){
+        printf("H5Sget_select_npoints : %ld ", H5Sget_select_npoints(space_id));
+        printf("H5Sget_select_elem_npoints : %ld ", H5Sget_select_elem_npoints(space_id));
+
+    } else if (stype == H5S_SEL_HYPERSLABS){
+        printf("H5Sget_select_hyper_nblocks : %ld ", H5Sget_select_hyper_nblocks(space_id));
+    } else if (stype == H5S_SEL_ALL){
+        printf("H5S_SEL_ALL ");
+    } else if (stype == H5S_SEL_N){
+        printf("H5S_SEL_N ");
+    } else {
+        printf("H5S_SEL_ERROR ");
+    }
+    
+
+    printf("\n");
+
+    // return 0;
+}
 
 void file_info_print(char * func_name, void * obj, hid_t dxpl_id)
 {
@@ -1976,6 +2072,7 @@ void file_info_print(char * func_name, void * obj, hid_t dxpl_id)
 
     printf("\"logical_addr\": %d, ", -1);
     printf("\"blob_idx\": %d, ", -1);
+
 
     hsize_t file_size = file_get_size(file->under_object, file->under_vol_id, dxpl_id);
     // printf("\"file_size\": %ld, ", file_size);
@@ -2047,16 +2144,26 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
         printf("\"time(us)\": %ld, ", get_time_usec());
 
         printf("\"file_name_addr\": \"%p\", ", dset_info->pfile_name);
-        printf("\"dset_name\": \"%s\", ", dset_info->obj_info.name); 
+
+        if (!dset_info->obj_info.name)
+            printf("\"dset_name\": \"(null)\", ");
+        else
+            printf("\"dset_name\": \"%p\", ", dset_info->obj_info.name);
+
+        // char *token_str = NULL;
+        // printf("\"dset_token_str\": \"%s\", ", H5Otoken_to_str(space_id, &dset_info->obj_info.token, &token_str));
+        // printf("\"dset_space_size\": \"%ld\", ", dset_info->dset_space_size);
+
+        // printf("\"file_no\": %d, ", dset_info->file_no); // matches dset_name
 
         // printf("\"offset\": %ld, ", dataset_get_offset(dset->under_object, dset->under_vol_id, dxpl_id));
         printf("\"offset\": %ld, ", dset_info->dset_offset);
         // printf("\"type_size\": %ld, ", type_size);
+        printf("\"type_size\": %ld, ", dset_info->dset_type_size);
         printf("\"logical_addr\": %d, ", -1);
         printf("\"blob_idx\": %d, ", -1);
-        printf("\"H5Iget_type\": \"H5Iget_type(space_id)\", ");
+        printf("\"H5Iget_type\": %d ", H5Iget_type(space_id));
 
-        
 
         if(!dxpl_id)
             printf("\"dxpl_id_vol\": %d, ", -1);
@@ -2069,7 +2176,7 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
     } else {
 
 
-        // if(!dset_info->dspace_id)
+// if(!dset_info->dspace_id)
         //     dset_info->dspace_id = space_id;
         unsigned int ndim = (unsigned)H5Sget_simple_extent_ndims(space_id);
 
@@ -2111,8 +2218,15 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
         //     printf("\"file_name_addr\": \"%p\", ", dset_info->pfile_name); 
         // }
         
-        //TODO: check earlier place to assign name
-        printf("\"dset_name\": \"%s\", ", dset_info->obj_info.name); 
+        if (!dset_info->obj_info.name)
+            printf("\"dset_name\": \"(null)\", ");
+        else
+            printf("\"dset_name\": \"%s\", ", dset_info->obj_info.name);
+        // printf("\"dset_space_size\": \"%ld\", ", dset_info->dset_space_size);
+    
+        // char *token_str = NULL;
+        printf("\"dset_token\": %ld, ", dset_info->obj_info.token);
+
         // printf("\"dset_name_addr\": \"%p\", ", dset_info->obj_info.name);
         // if (strcmp(func_name, "H5VLdataset_read") == 0 || strcmp(func_name, "H5VLdataset_create") == 0){
         //     printf("\"dset_name_addr\": \"%p\", ", dset_info->obj_info.name); 
@@ -2122,14 +2236,15 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
         //     printf("\"dset_name_addr\": \"%p\", ", dset_info->obj_info.name); 
         // }
         
-        // file_dlife_info_t * file_info = (file_dlife_info_t*)dset_info->obj_info.file_info;
-        // printf("\"file_no\": %ld, ", file_info->file_no); // matches dset_name
+        // printf("\"file_no\": %d, ", dset_info->file_no); // matches dset_name
 
         // // dataset access size equals to type_size * n_elements
         // if (strcmp(func_name, "H5VLdataset_write") == 0)
         //     printf("\"access_size\": %ld, ", access_size);
         // else
         //     printf("\"access_size\": %ld, ", access_size);
+
+        // printf("\"access_size\": %ld, ", sizeof(buf));
 
         // printf("\"layout\": \"%s\", ", dset_info->layout); //TODO
         
@@ -2166,12 +2281,74 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
         printf("\"dset_addr\": %p, ", obj);
 
         printf("}\n");
+    }
 
+    if (mem_space_id != NULL && mem_type_id != NULL){
+        H5VL_arrow_get_selected_sub_region(mem_space_id, H5Tget_size(mem_type_id)); //dset_info->dset_type_size
     }
 
 
+}
 
+uint32_t decode_uint32(uint32_t value, const uint8_t *p) {
+    // uint32_t value = 0;
+    
+    value |= (uint32_t)(*p++) << 24;
+    value |= (uint32_t)(*p++) << 16;
+    value |= (uint32_t)(*p++) << 8;
+    value |= (uint32_t)(*p++);
+    
+    return value;
+}
 
+haddr_t blob_id_to_addr(void ** p){
+
+/* Reset value in destination */
+    hbool_t  all_zero = true; /* True if address was all zeroes */
+    unsigned u;               /* Local index variable */
+    haddr_t *addr_p = malloc(sizeof(haddr_t));
+    uint8_t **pp = p;
+    size_t addr_len = 4;
+
+    
+
+    /* Decode bytes from address */
+    for (u = 0; u < addr_len; u++) {
+        uint8_t c; /* Local decoded byte */
+
+        /* Get decoded byte (and advance pointer) */
+        c = *(*pp)++;
+
+        /* Check for non-undefined address byte value */
+        if (c != 0xff)
+            all_zero = false;
+        
+        // printf("blob_id_debug_to_addr %d \n", u);
+
+        if (u < sizeof(*addr_p)) {
+            haddr_t tmp = c; /* Local copy of address, for casting */
+
+            /* Shift decoded byte to correct position */
+            tmp <<= (u * 8); /*use tmp to get casting right */
+
+            // printf("blob_id_debug_to_addr %d %d \n",u,u);
+
+            /* Merge into already decoded bytes */
+            *addr_p |= tmp;
+
+            // printf("blob_id_debug_to_addr %d %d %d\n",u,u,u);
+        } /* end if */
+        else if (!all_zero)
+            HDassert(0 == **pp); /*overflow */
+    }                            /* end for */
+
+    /* If 'all_zero' is still TRUE, the address was entirely composed of '0xff'
+     *  bytes, which is the encoded form of 'HADDR_UNDEF', so set the destination
+     *  to that value */
+    if (all_zero)
+        *addr_p = HADDR_UNDEF;
+
+    return addr_p;
 }
 
 
@@ -2202,110 +2379,169 @@ void blob_info_print(char * func_name, void * obj, hid_t dxpl_id,
     //     printf("\"hash_id\": %d, ", -1);
     // }
 
-    // printf("\"blob_id\": %ld, ", blob_id);
+    printf("\"blob_id\": %zu, ", blob_id);
+    printf("\"blob_id_hex\": %p, ", blob_id);
+    // printf("\"H5F_SIZEOF_ADDR\": %zu, ", H5F_SIZEOF_ADDR(file));
+
+
+    haddr_t * addr_p = blob_id_to_addr(&blob_id);
+    if (addr_p != HADDR_UNDEF)
+        printf("\"addr_p\": %ld, ", addr_p);
+    else
+        printf("\"addr_p\": HADDR_UNDEF, ");
+    
+    size_t  bl_idx = malloc(sizeof(size_t));
+
+    // uint8_t *p;       // Pointer to the byte stream
+    // uint32_t value;   // Variable to store the decoded value
+
+    decode_uint32(blob_id, bl_idx);
+    printf("\"bl_idx\": %zu, ", bl_idx);
+    
+    long long address = (long long) bl_idx;
+    unsigned char* ptr = (unsigned char*)address;
+    printf("Content at bl_idx : %u, ", *ptr);
+
+    printf("\"file_name_addr\": \"%zu\", ", file_info->file_name); //TODO
+    printf("\"file_name_hex\": \"%p\", ", file_info->file_name); //TODO
+
+
+
     // printf("\"buf\": %ld, ", buf);
 
     // int ndset = file_info->opened_datasets_cnt;
+    printf("\"opened_datasets_cnt\": %d, ", file_info->opened_datasets_cnt);
+    size_t num_datasets = sizeof(&file_info->opened_datasets) / sizeof(&file_info->opened_datasets[0]);
+    printf("\"num_datasets\": %d, ", num_datasets);
+    printf("\"opened_datasets\": \n\t");
+
+    dataset_dlife_info_t* dset_info = file_info->opened_datasets;
 
     if(file_info->opened_datasets_cnt > 0){
         // only 1 dset opened at a time
-        dataset_dlife_info_t * dset_info = (dataset_dlife_info_t*) &file_info->opened_datasets[0];
-        assert(dset_info);
-        hid_t space_id = dset_info->dspace_id;
-        hid_t type_id = dset_info->dtype_id;
-        // printf("\"space_id_addr\": %p, ", space_id);
-        
-        // hsize_t * dimensions = dset_info->dimensions;
-        size_t io_access_idx = dset_info->blob_put_cnt + dset_info->blob_get_cnt 
-        + dset_info->dataset_read_cnt + dset_info->dataset_write_cnt -1;
-
-        printf("\"io_access_idx\": %ld, ", io_access_idx );
-
-        printf("\"time(us)\": %ld, ", get_time_usec());
-
-        // if(!obj)
-        //     printf("\"obj\": %d, ", -1);
-        // else
-        //     printf("\"obj\": %p, ", obj);
-        
-        // if(!dxpl_id)
-        //     printf("\"dxpl_id\": %d, ", -1);
-        // else
-        //     printf("\"dxpl_id\": %p, ", dxpl_id);
-
-        // printf("\"ctx\": %ld, ", ctx);
-        // printf("\"&ctx\": %p, ", &ctx);
-        printf("\"file_name\": \"%p\", ", file_info->file_name); //TODO
-
-        printf("\"dset_name\": \"%s\", ", dset_info->obj_info.name); //TODO
-        // printf("\"obj_token\": %ld, ", dset_info->obj_info.token); // a fixed number 800
-        printf("\"file_no\": %ld, ", file_info->file_no); // matches dset_name
-
-        if(!size)
-            printf("\"access_size\": %d, ", 0);
-        else
-            printf("\"access_size\": %ld, ", size);
-        
-        printf("\"offset\": %d, ", -1);
-
-        printf("\"layout\": \"%s\", ", dset_info->layout); //TODO
-        // printf("\"offset\": %ld, ", dset_info->dset_offset );
-
-        // printf("\"type_size\": %ld, ", H5Tget_size(type_id));
-        // printf("\"storage_size\": %ld, ", dset_info->storage_size);
-        // printf("\"n_elements\": %ld, ", dset_info->dset_n_elements);
-        // printf("\"dimension_cnt\": %d, ", dset_info->dimension_cnt); //H5Sget_simple_extent_ndims gets negative
-
-        // printf("\"dimensions\": [");
-        // if(dset_info->dimensions){
-        //     for(int i=0; i<dset_info->dimension_cnt; i++)
-        //         printf("%ld,", dset_info->dimensions[i]);
-        // }
-        // printf("], ");
-
-        // printf("\"space_id\": %d, ", space_id);
-        // printf("\"mem_type_id\": %d, ", -1);
-        // printf("\"file_space_id\": %d, ", -1);
-
-        // size_t total_read_bytes = dset_info->total_bytes_read + dset_info->total_bytes_blob_get;
-        // size_t total_write_bytes = dset_info->total_bytes_written + dset_info->total_bytes_blob_put;
-        // printf("\"total_read_bytes\": %ld, ", total_read_bytes );
-        // printf("\"total_write_bytes\": %ld, ", total_write_bytes );
-        
-
-        int *dm1, *dm2, *dm3, *dm4, *dm5, *dm6, *dm7, *dm8, *dm9, *dm10, *dm11, *dm12;
-        dm1 = dm2 = dm3 = dm4 = dm5 = dm6 = dm7 = dm8 = dm9 = dm10 = dm11 = dm12 = 0;
-        
-        int * dummy0;
-        // if (dummy0 == 0)
-        // {
-        //     size_t first_put_addr = dset_info->total_bytes_written + dset_info->dset_offset;
-        //     // printf("\"logical_addr\": %ld, ", dm9);
-        //     // printf("\"dset_info->storage_size\": %ld, ", dset_info->storage_size);
-
+        // dataset_dlife_info_t * dset_info = malloc(sizeof(dataset_dlife_info_t));
+        while (dset_info) {
+            // dset_info = (dataset_dlife_info_t*) &file_info->opened_datasets[ndset];
+            assert(dset_info);
+            hid_t space_id = dset_info->dspace_id;
+            // hid_t type_id = dset_info->dtype_id;
+            // printf("\"space_id_addr\": %p, ", space_id);
             
-        //     if(first_put_addr < (dset_info->dset_type_size * dset_info->dset_n_elements))
-        //         printf("\"logical_addr\": %ld, ", (&dummy0-1));
-        //     else
-        //         printf("\"logical_addr\": %ld, ", 0); // first_put_addr incorrect
+            // hsize_t * dimensions = dset_info->dimensions;
+            size_t io_access_idx = dset_info->blob_put_cnt + dset_info->blob_get_cnt 
+            + dset_info->dataset_read_cnt + dset_info->dataset_write_cnt -1;
+
+            printf("\"{io_access_idx\": %ld, ", io_access_idx );
+
+            printf("\"time(us)\": %ld, ", get_time_usec());
+
+            // if(!obj)
+            //     printf("\"obj\": %d, ", -1);
+            // else
+            //     printf("\"obj\": %p, ", obj);
             
-        // }
-        // else {
-        //     printf("\"logical_addr\": %ld, ", dummy0);
-        // }
+            // if(!dxpl_id)
+            //     printf("\"dxpl_id\": %d, ", -1);
+            // else
+            //     printf("\"dxpl_id\": %p, ", dxpl_id);
 
-        // printf("\"logical_addr\": %ld, ", dummy0);
-        if(!dxpl_id)
-            printf("\"dxpl_id_vol\": %d, ", -1);
-        else
-            printf("\"dxpl_id_vol\": %ld, ", dxpl_id);
-        printf("\"blob_idx\": %ld, ", * (&dummy0-14)); // either -13/-14
-        // printf("\"blob_sorder\": %ld, ", BLOB_SORDER);
+            // printf("\"ctx\": %ld, ", ctx);
+            // printf("\"&ctx\": %p, ", &ctx);
 
-        printf("\"dset_addr\": %p, ", obj);
+            printf("\"dset_name\": \"%s\", ", dset_info->obj_info.name); //TODO
+        
+            // char *token_str = NULL;
+            // printf("\"dset_token_str\": \"%s\", ", H5Otoken_to_str(space_id, &dset_info->obj_info.token, &token_str));
+            printf("\"dset_token\": %ld, ", dset_info->obj_info.token);
+
+            size_t  token_idx = malloc(sizeof(size_t));
+            decode_uint32((void *) &dset_info->obj_info.token, token_idx);
+            printf("\"token_idx\": %zu, ", token_idx);
+            long long token_idx_addr = (long long) token_idx;
+            unsigned char* tptr = (unsigned char*)token_idx_addr;
+            printf("Content at token_idx : %u, ", *tptr);
+
+            // printf("\"obj_token\": %ld, ", dset_info->obj_info.token); // a fixed number 800
+            printf("\"file_no\": %ld, ", file_info->file_no); // matches dset_name
+
+            if(!size)
+                printf("\"access_size\": %d, ", 0);
+            else
+                printf("\"access_size\": %ld, ", size);
+            
+
+            printf("\"offset\": %ld, ", dset_info->dset_offset); //TODO: get blob offset
+
+            printf("\"layout\": \"%s\", ", dset_info->layout); //TODO: blob layout?
+            
+            // printf("\"offset\": %ld, ", dset_info->dset_offset );
+
+            // printf("\"type_size\": %ld, ", H5Tget_size(type_id));
+            // printf("\"storage_size\": %ld, ", dset_info->storage_size);
+            // printf("\"n_elements\": %ld, ", dset_info->dset_n_elements);
+            // printf("\"dimension_cnt\": %d, ", dset_info->dimension_cnt); //H5Sget_simple_extent_ndims gets negative
+
+            // printf("\"dimensions\": [");
+            // if(dset_info->dimensions){
+            //     for(int i=0; i<dset_info->dimension_cnt; i++)
+            //         printf("%ld,", dset_info->dimensions[i]);
+            // }
+            // printf("], ");
+
+            // printf("\"space_id\": %d, ", space_id);
+            // printf("\"mem_type_id\": %d, ", -1);
+            // printf("\"file_space_id\": %d, ", -1);
+
+            // size_t total_read_bytes = dset_info->total_bytes_read + dset_info->total_bytes_blob_get;
+            // size_t total_write_bytes = dset_info->total_bytes_written + dset_info->total_bytes_blob_put;
+            // printf("\"total_read_bytes\": %ld, ", total_read_bytes );
+            // printf("\"total_write_bytes\": %ld, ", total_write_bytes );
+            
+
+            int *dm1, *dm2, *dm3, *dm4, *dm5, *dm6, *dm7, *dm8, *dm9, *dm10, *dm11, *dm12; //, *dm13, *dm14;
+            dm1 = dm2 = dm3 = dm4 = dm5 = dm6 = dm7 = dm8 =0; // dm9 = dm10 = dm11 = dm12 = dm13 = dm14 = 0;
+            // dm8=0
+            
+            
+            int * dummy0;
+            // if (dummy0 == 0)
+            // {
+            //     size_t first_put_addr = dset_info->total_bytes_written + dset_info->dset_offset;
+            //     // printf("\"logical_addr\": %ld, ", dm9);
+            //     // printf("\"dset_info->storage_size\": %ld, ", dset_info->storage_size);
+
+                
+            //     if(first_put_addr < (dset_info->dset_type_size * dset_info->dset_n_elements))
+            //         printf("\"logical_addr\": %ld, ", (&dummy0-1));
+            //     else
+            //         printf("\"logical_addr\": %ld, ", 0); // first_put_addr incorrect
+                
+            // }
+            // else {
+            //     printf("\"logical_addr\": %ld, ", dummy0);
+            // }
+
+
+
+            printf("\"logical_addr\": %ld, ", dummy0);
+            if(!dxpl_id)
+                printf("\"dxpl_id_vol\": %d, ", -1);
+            else
+                printf("\"dxpl_id_vol\": %ld, ", dxpl_id);
+
+            printf("\"blob_idx\": %ld, ", * (&dummy0-14)); // either -13/-14
+            // printf("\"blob_sorder\": %ld, ", BLOB_SORDER);
+
+            printf("\"dset_addr\": %p, ", obj);
+            printf("}\n");
+            dset_info = dset_info->next; // Move to the next node
+        }
+        
+        
 
     }
     printf("}\n");
+    
     // BLOB_SORDER+=1; // increment blob order
 }
 

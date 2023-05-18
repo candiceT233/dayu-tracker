@@ -25,7 +25,7 @@ LDFLAGS = $(DEBUG) $(LIBS)
 ARFLAGS = rs
 
 # Shared library VOL connector
-DYNSRC = datalife_vol_new.c # datalife_vol datalife_vol_new
+DYNSRC = datalife_vol_new.c # datalife_vol datalife_vol_new datalife_vol_int
 DYNOBJ = $(DYNSRC:.c=.o)
 # Uncomment this line Linux builds:
 DYNLIB = libh5datalife.so #libh5datalife.so
