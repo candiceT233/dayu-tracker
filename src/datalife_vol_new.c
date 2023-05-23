@@ -1391,7 +1391,8 @@ H5VL_datalife_dataset_create(void *obj, const H5VL_loc_params_t *loc_params,
     //     // No delimiter found, copy the whole string
     //     dset_info->pfile_name = strdup(file_info->file_name);
     // }
-    dset_info->pfile_name = file_info->file_name;
+    if(!dset_info->pfile_name)
+        dset_info->pfile_name = file_info->file_name;
 
     dset_info->pfile_sorder_id = file_info->sorder_id;
     dset_info->pfile_porder_id = file_info->porder_id;

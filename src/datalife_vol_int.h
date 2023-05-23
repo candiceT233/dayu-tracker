@@ -2069,16 +2069,32 @@ void H5VL_arrow_get_selected_sub_region(hid_t space_id, size_t org_type_size) {
     if(stype == H5S_SEL_NONE){
         printf("H5S_SEL_NONE");
     } else if (stype == H5S_SEL_POINTS){
+        printf("H5VL_arrow_get_selected_sub_region ----  type_size: %zu, ", type_size);
+        printf("s_row_idx: %d, ", s_row_idx);
+        printf("s_col_idx: %d, ", s_col_idx);
+        printf("sub_rows: %d, ", sub_rows);
+        printf("sub_cols: %d, ", sub_cols);
+        printf("g_rows: %ld, ", g_rows);
+        printf("g_cols: %ld, ", g_cols);
+        printf("H5Sget_select_bounds : (%ld,%ld) ", start[sranks - 1], end[sranks - 1]);
         printf("H5Sget_select_npoints : %ld ", H5Sget_select_npoints(space_id));
         printf("H5Sget_select_elem_npoints : %ld ", H5Sget_select_elem_npoints(space_id));
 
     } else if (stype == H5S_SEL_HYPERSLABS){
+        printf("H5VL_arrow_get_selected_sub_region ----  type_size: %zu, ", type_size);
+        printf("s_row_idx: %d, ", s_row_idx);
+        printf("s_col_idx: %d, ", s_col_idx);
+        printf("sub_rows: %d, ", sub_rows);
+        printf("sub_cols: %d, ", sub_cols);
+        printf("g_rows: %ld, ", g_rows);
+        printf("g_cols: %ld, ", g_cols);
+        printf("H5Sget_select_bounds : (%ld,%ld) ", start[sranks - 1], end[sranks - 1]);
         printf("H5Sget_select_hyper_nblocks : %ld ", H5Sget_select_hyper_nblocks(space_id));
     } else if (stype == H5S_SEL_ALL){
         // printf("H5S_SEL_ALL ");
         printf("H5VL_arrow_get_selected_sub_region ----  type_size: %zu, ", type_size);
-        // printf("s_row_idx: %d, ", s_row_idx);
-        // printf("s_col_idx: %d, ", s_col_idx);
+        printf("s_row_idx: %d, ", s_row_idx);
+        printf("s_col_idx: %d, ", s_col_idx);
         printf("sub_rows: %d, ", sub_rows);
         printf("sub_cols: %d, ", sub_cols);
         printf("g_rows: %ld, ", g_rows);
@@ -2163,6 +2179,36 @@ void file_info_print(char * func_name, void * obj, hid_t fapl_id, hid_t dxpl_id)
 
 }
 
+char * get_datatype_class_str(hid_t type_id){
+
+    if (type_id == H5T_NO_CLASS)
+        return "H5T_NO_CLASS";
+    else if (type_id == H5T_INTEGER)
+        return "H5T_INTEGER";
+    else if (type_id == H5T_FLOAT)
+        return "H5T_FLOAT";
+    else if (type_id == H5T_TIME)
+        return "H5T_TIME";
+    else if (type_id == H5T_STRING)
+        return "H5T_STRING";
+    else if (type_id == H5T_BITFIELD)
+        return "H5T_BITFIELD";
+    else if (type_id == H5T_OPAQUE)
+        return "H5T_OPAQUE";
+    else if (type_id == H5T_COMPOUND)
+        return "H5T_COMPOUND";
+    else if (type_id == H5T_REFERENCE)
+        return "H5T_REFERENCE";
+    else if (type_id == H5T_ENUM)
+        return "H5T_ENUM";
+    else if (type_id == H5T_VLEN)
+        return "H5T_VLEN";
+    else if (type_id == H5T_ARRAY)
+        return "H5T_ARRAY";
+    else
+        return "H5T_NCLASSES";
+}
+
 void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
     hid_t file_space_id, void * obj, hid_t dxpl_id, const void *buf, size_t obj_idx)
 {
@@ -2187,156 +2233,139 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
     // dset_info->total_write_time += (m2 - m1);
 
     hid_t space_id = dset_info->dspace_id;
-    
-    // if (H5Iget_type(dset->under_vol_id) == H5I_VOL) {
-    //     space_id = dataset_get_space(dset->under_object, dset->under_vol_id, dxpl_id);
+
+
+    unsigned int ndim = (unsigned)H5Sget_simple_extent_ndims(space_id);
+
+    hsize_t dimensions[ndim];
+    H5Sget_simple_extent_dims(space_id, dimensions, NULL);
+
+    // assert(dset_info);
+
+    // printf("{\"dataset\": ");
+    printf("{\"func_name\": \"%s\", ", func_name);
+
+    // if (buf){
+    //     printf("\"hash_id\": %ld, ", KernighanHash(buf));
+    // } else {
+    //     printf("\"hash_id\": %d, ", -1);
     // }
 
-    if (H5Iget_type(space_id) != H5I_DATASPACE) {
-        printf("{\"func_name\": \"%s\", ", func_name);
-        printf("\"time(us)\": %ld, ", get_time_usec());
+    // size_t io_access_idx = dset_info->blob_put_cnt + dset_info->blob_get_cnt 
+    //     + dset_info->dataset_read_cnt + dset_info->dataset_write_cnt -1;
+    // printf("\"io_access_idx\": %ld, ", io_access_idx );
 
-        printf("\"file_name\": \"%s\", ", dset_info->pfile_name);
+    // printf("\"obj\": %p, ", obj);
 
-        // if (!dset_info->dset_name)
-        //     printf("\"dset_name\": \"%p\", ", dset_info->dset_name);
-        // else
-        //     printf("\"dset_name\": \"%s\", ", dset_info->dset_name);
-
-        printf("\"dset_name\": \"%s\", ", dset_info->obj_info.name);
-        printf("\"dset_obj_idx\": \"%s\", ", obj_idx);
-
-        // char *token_str = NULL;
-        // printf("\"dset_token_str\": \"%s\", ", H5Otoken_to_str(space_id, &dset_info->obj_info.token, &token_str));
-        // printf("\"dset_space_size\": \"%ld\", ", dset_info->dset_space_size);
-
-        // printf("\"file_no\": %d, ", dset_info->file_no); // matches dset_name
-
-        // printf("\"offset\": %ld, ", dataset_get_offset(dset->under_object, dset->under_vol_id, dxpl_id));
-        printf("\"offset\": %ld, ", dset_info->dset_offset);
-        // printf("\"type_size\": %ld, ", type_size);
-        printf("\"type_size\": %ld, ", dset_info->dset_type_size);
-        printf("\"logical_addr\": %d, ", -1);
-        printf("\"blob_idx\": %d, ", -1);
-        printf("\"H5Iget_type\": %d ", H5Iget_type(space_id));
-
-
-        if(!dxpl_id)
-            printf("\"dxpl_id_vol\": %d, ", -1);
-        else
-            printf("\"dxpl_id_vol\": %ld, ", dxpl_id);
-        
-        printf("\"dset_addr\": %p, ", obj);
-        printf("}\n");
-
-    } else {
-
-
-// if(!dset_info->dspace_id)
-        //     dset_info->dspace_id = space_id;
-        unsigned int ndim = (unsigned)H5Sget_simple_extent_ndims(space_id);
-
-        hsize_t dimensions[ndim];
-        H5Sget_simple_extent_dims(space_id, dimensions, NULL);
-
-        // assert(dset_info);
-
-        // printf("{\"dataset\": ");
-        printf("{\"func_name\": \"%s\", ", func_name);
-
-        // if (buf){
-        //     printf("\"hash_id\": %ld, ", KernighanHash(buf));
-        // } else {
-        //     printf("\"hash_id\": %d, ", -1);
-        // }
-
-        // size_t io_access_idx = dset_info->blob_put_cnt + dset_info->blob_get_cnt 
-        //     + dset_info->dataset_read_cnt + dset_info->dataset_write_cnt -1;
-        // printf("\"io_access_idx\": %ld, ", io_access_idx );
-
-        // printf("\"obj\": %p, ", obj);
-
-        if(!dxpl_id)
-            printf("\"dxpl_id_vol\": %d, ", -1);
-        else
-            printf("\"dxpl_id_vol\": %ld, ", dxpl_id);
-        
-        printf("\"time(us)\": %ld, ", get_time_usec());
-
-        //TODO : printing filename in string causes core-dump
-        printf("\"file_name\": \"%s\", ", dset_info->pfile_name);
-        // printf("\"file_name_addr\": \"%p\", ", dset_info->pfile_name);
-        // if (strcmp(func_name, "H5VLdataset_read") == 0 || strcmp(func_name, "H5VLdataset_create") == 0){
-        //     printf("\"file_name_addr\": \"%p\", ", dset_info->pfile_name); 
-        // }
-        // else{
-        //     printf("\"file_name\": \"%s\", ", dset_info->pfile_name); 
-        //     printf("\"file_name_addr\": \"%p\", ", dset_info->pfile_name); 
-        // }
-
-        // printf("\"dset_name\": \"%s\", ", dset_info->dset_name);
-        printf("\"dset_name\": \"%s\", ", dset_info->obj_info.name);
-
-        // printf("\"dset_space_size\": \"%ld\", ", dset_info->dset_space_size);
+    if(!dxpl_id)
+        printf("\"dxpl_id_vol\": %d, ", -1);
+    else
+        printf("\"dxpl_id_vol\": %ld, ", dxpl_id);
     
-        // char *token_str = NULL;
-        printf("\"dset_token\": %ld, ", dset_info->obj_info.token);
+    printf("\"time(us)\": %ld, ", get_time_usec());
 
-        // printf("\"dset_name_addr\": \"%p\", ", dset_info->obj_info.name);
-        // if (strcmp(func_name, "H5VLdataset_read") == 0 || strcmp(func_name, "H5VLdataset_create") == 0){
-        //     printf("\"dset_name_addr\": \"%p\", ", dset_info->obj_info.name); 
-        // }
-        // else{
-        //     printf("\"dset_name\": \"%s\", ", dset_info->obj_info.name); 
-        //     printf("\"dset_name_addr\": \"%p\", ", dset_info->obj_info.name); 
-        // }
-        
-        // printf("\"file_no\": %d, ", dset_info->file_no); // matches dset_name
+    //TODO : printing filename in string causes core-dump
+    printf("\"file_name\": \"%s\", ", dset_info->pfile_name);
+    // printf("\"file_name_addr\": \"%p\", ", dset_info->pfile_name);
+    // if (strcmp(func_name, "H5VLdataset_read") == 0 || strcmp(func_name, "H5VLdataset_create") == 0){
+    //     printf("\"file_name_addr\": \"%p\", ", dset_info->pfile_name); 
+    // }
+    // else{
+    //     printf("\"file_name\": \"%s\", ", dset_info->pfile_name); 
+    //     printf("\"file_name_addr\": \"%p\", ", dset_info->pfile_name); 
+    // }
 
-        // // dataset access size equals to type_size * n_elements
-        // if (strcmp(func_name, "H5VLdataset_write") == 0)
-        //     printf("\"access_size\": %ld, ", access_size);
-        // else
-        //     printf("\"access_size\": %ld, ", access_size);
+    // printf("\"dset_name\": \"%s\", ", dset_info->dset_name);
+    printf("\"dset_name\": \"%s\", ", dset_info->obj_info.name);
 
-        // printf("\"access_size\": %ld, ", sizeof(buf));
+    // printf("\"dset_space_size\": \"%ld\", ", dset_info->dset_space_size);
 
-        // printf("\"layout\": \"%s\", ", dset_info->layout); //TODO
-        
-        // printf("\"offset\": %ld, ", dataset_get_offset(dset->under_object, dset->under_vol_id, dxpl_id));
-        printf("\"offset\": %ld, ", dset_info->dset_offset);
+    // char *token_str = NULL;
+    printf("\"dset_token\": %ld, ", dset_info->obj_info.token);
 
-        // if (H5Iget_type(dset->under_vol_id) == H5I_VOL) {
-        //     // ID is a VOL connector ID
-        //     hid_t type_id = dataset_get_type(dset->under_object, dset->under_vol_id, dxpl_id);
-        //     hsize_t type_size = H5Tget_size(type_id);
+    // printf("\"dset_name_addr\": \"%p\", ", dset_info->obj_info.name);
+    // if (strcmp(func_name, "H5VLdataset_read") == 0 || strcmp(func_name, "H5VLdataset_create") == 0){
+    //     printf("\"dset_name_addr\": \"%p\", ", dset_info->obj_info.name); 
+    // }
+    // else{
+    //     printf("\"dset_name\": \"%s\", ", dset_info->obj_info.name); 
+    //     printf("\"dset_name_addr\": \"%p\", ", dset_info->obj_info.name); 
+    // }
+    
+    // printf("\"file_no\": %d, ", dset_info->file_no); // matches dset_name
 
-        //     hsize_t n_elem = (hsize_t)H5Sget_simple_extent_npoints(space_id);
-        //     size_t access_size = type_size * n_elem;
-        // }
-        
-        
-        printf("\"type_size\": %ld, ", dset_info->dset_type_size);
-        // printf("\"storage_size\": %ld, ", dataset_get_storage_size(dset->under_object, dset->under_vol_id, dxpl_id));
-        printf("\"n_elements\": %ld, ", dset_info->dset_n_elements);
-        printf("\"dimension_cnt\": %d, ", ndim);
-        // print dimensions
-        printf("\"dimensions\": [");
-        if(ndim > 0 && ndim != -1){
-            for(int i=0; i<ndim; i++)
-                printf("%ld,",dimensions[i]);
-        }
+    // // dataset access size equals to type_size * n_elements
+    // if (strcmp(func_name, "H5VLdataset_write") == 0)
+    //     printf("\"access_size\": %ld, ", access_size);
+    // else
+    //     printf("\"access_size\": %ld, ", access_size);
 
-        printf("], ");
+    // printf("\"access_size\": %ld, ", sizeof(buf));
 
-        // printf("\"logical_addr\": %d, ", -1);
-        printf("\"blob_idx\": %d, ", -1);
+    printf("\"layout\": \"%s\", ", dset_info->layout); //TODO
+    printf("\"dt_class\": \"%s\", ", get_datatype_class_str(dset_info->dt_class));
 
-        printf("\"dxpl_id\": %d, ", dxpl_id);
-        printf("\"dset_addr\": %p, ", obj);
+    // printf("\"offset\": %ld, ", dataset_get_offset(dset->under_object, dset->under_vol_id, dxpl_id));
+    printf("\"offset\": %ld, ", dset_info->dset_offset);
 
-        printf("}\n");
+    // if (H5Iget_type(dset->under_vol_id) == H5I_VOL) {
+    //     // ID is a VOL connector ID
+    //     hid_t type_id = dataset_get_type(dset->under_object, dset->under_vol_id, dxpl_id);
+    //     hsize_t type_size = H5Tget_size(type_id);
+
+    //     hsize_t n_elem = (hsize_t)H5Sget_simple_extent_npoints(space_id);
+    //     size_t access_size = type_size * n_elem;
+    // }
+    
+    
+    printf("\"type_size\": %ld, ", dset_info->dset_type_size);
+    // printf("\"storage_size\": %ld, ", dataset_get_storage_size(dset->under_object, dset->under_vol_id, dxpl_id));
+    printf("\"n_elements\": %ld, ", dset_info->dset_n_elements);
+    printf("\"dimension_cnt\": %d, ", ndim);
+    // print dimensions
+    printf("\"dimensions\": [");
+    if(ndim > 0 && ndim != -1){
+        for(int i=0; i<ndim; i++)
+            printf("%ld,",dimensions[i]);
     }
+
+    printf("], ");
+
+    file_dlife_info_t * file_info = dset_info->obj_info.file_info;
+
+	int mdc_nelmts;
+    size_t rdcc_nslots;
+    size_t rdcc_nbytes;
+    double rdcc_w0;
+    H5Pget_cache(file_info->fapl_id, &mdc_nelmts, &rdcc_nslots, &rdcc_nbytes, &rdcc_w0);
+    // printf("\"H5Pget_cache-mdc_nelmts\": %d, ", mdc_nelmts); // TODO: ?
+    printf("\"H5Pget_cache-rdcc_nslots\": %ld, ", rdcc_nslots);
+    printf("\"H5Pget_cache-rdcc_nbytes\": %ld, ", rdcc_nbytes);
+    // printf("\"H5Pget_cache-rdcc_w0\": %f, ", rdcc_w0); // TODO: ?
+
+    hsize_t threshold;
+    hsize_t alignment;
+    H5Pget_alignment(file_info->fapl_id, &threshold, &alignment);
+    void * buf_ptr_ptr;
+    size_t buf_len_ptr;
+    H5Pget_file_image(file_info->fapl_id, &buf_ptr_ptr, &buf_len_ptr);
+
+    size_t buf_size;
+    unsigned min_meta_perc;
+    unsigned min_raw_perc;
+    H5Pget_page_buffer_size(file_info->fapl_id, &buf_size, &min_meta_perc, &min_raw_perc);
+    printf("\"H5Pget_page_buffer_size-buf_size\": %ld, ", buf_size);
+    // printf("\"H5Pget_page_buffer_size-min_meta_perc\": %d, ", min_meta_perc); // TODO: ?
+    printf("\"H5Pget_page_buffer_size-min_raw_perc\": %ld, ", min_raw_perc);
+
+    // printf("\"logical_addr\": %d, ", -1);
+    printf("\"blob_idx\": %d, ", -1);
+
+    printf("\"dxpl_id\": %d, ", dxpl_id);
+    printf("\"dset_addr\": %p, ", obj);
+
+    printf("}\n");
+
 
     if (mem_space_id != NULL && mem_type_id != NULL){
         H5VL_arrow_get_selected_sub_region(mem_space_id, H5Tget_size(mem_type_id)); //dset_info->dset_type_size
@@ -2473,12 +2502,7 @@ void blob_info_print(char * func_name, void * obj, hid_t dxpl_id,
     // unsigned char* ptr = (unsigned char*)address;
     // printf("Content at addr_p : %zu, ", *ptr);
 
-    // printf("\"file_name\": \"%s\", ", file_info->file_name); 
-
-    // printf("\"file_name_addr\": \"%zu\", ", file_info->file_name); //TODO
-    // printf("\"file_name_hex\": \"%p\", ", file_info->file_name); //TODO
-
-    // printf("\"buf\": %ld, ", buf);
+    printf("\"file_name\": \"%s\", ", file_info->file_name);
 
     // int ndset = file_info->opened_datasets_cnt;
     printf("\"opened_datasets_cnt\": %d, ", file_info->opened_datasets_cnt);
@@ -2544,20 +2568,20 @@ void blob_info_print(char * func_name, void * obj, hid_t dxpl_id,
             printf("\"offset\": %ld, ", dset_info->dset_offset); //TODO: get blob offset
 
             printf("\"layout\": \"%s\", ", dset_info->layout); //TODO: blob layout?
-            
-            // printf("\"offset\": %ld, ", dset_info->dset_offset );
+            printf("\"dt_class\": \"%s\", ", get_datatype_class_str(dset_info->dt_class));
+
 
             // printf("\"type_size\": %ld, ", H5Tget_size(type_id));
-            // printf("\"storage_size\": %ld, ", dset_info->storage_size);
-            // printf("\"n_elements\": %ld, ", dset_info->dset_n_elements);
-            // printf("\"dimension_cnt\": %d, ", dset_info->dimension_cnt); //H5Sget_simple_extent_ndims gets negative
+            printf("\"storage_size\": %ld, ", dset_info->storage_size);
+            printf("\"n_elements\": %ld, ", dset_info->dset_n_elements);
+            printf("\"dimension_cnt\": %d, ", dset_info->dimension_cnt); //H5Sget_simple_extent_ndims gets negative
 
-            // printf("\"dimensions\": [");
-            // if(dset_info->dimensions){
-            //     for(int i=0; i<dset_info->dimension_cnt; i++)
-            //         printf("%ld,", dset_info->dimensions[i]);
-            // }
-            // printf("], ");
+            printf("\"dimensions\": [");
+            if(dset_info->dimensions){
+                for(int i=0; i<dset_info->dimension_cnt; i++)
+                    printf("%ld,", dset_info->dimensions[i]);
+            }
+            printf("], ");
 
             // printf("\"space_id\": %d, ", space_id);
             // printf("\"mem_type_id\": %d, ", -1);
@@ -2574,15 +2598,12 @@ void blob_info_print(char * func_name, void * obj, hid_t dxpl_id,
             printf("}\n");
             dset_info = dset_info->next; // Move to the next node
         }
-        
-        
 
     }
 
-    int *dm1, *dm2, *dm3, *dm4, *dm5, *dm6, *dm7, *dm8, *dm9, *dm10, *dm11, *dm12, *dm13, *dm14, *dm15, *dm16, *dm17, *dm18;
+
+    int *dm1, *dm2, *dm3, *dm4, *dm5, *dm6, *dm7, *dm8, *dm9, *dm10, *dm11, *dm12, *dm13, *dm14, *dm15;// *dm16;// *dm17, *dm18;// *dm19;
     dm1 = dm2 = dm3 = dm4 = dm5 = dm6 = dm7 = dm8 = dm9 = dm10 = dm11 = dm12 = dm13 = dm14 = dm15 =0;// dm16 =0;// dm17 =0;// dm18 = 0;
-    
-    int * dummy0;
 
     // if (dummy0 == 0)
     // {
