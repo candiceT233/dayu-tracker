@@ -404,7 +404,9 @@ H5VL_datalife_term(void)
     printf("DATALIFE VOL TERM\n");
 #endif
     // Release resources, etc.
+#ifdef DATALIFE_PROV_LOGGING
     dlife_helper_teardown(DLIFE_HELPER);
+#endif
     DLIFE_HELPER = NULL;
 
     /* Reset VOL ID */
@@ -721,11 +723,11 @@ H5VL_datalife_get_object(const void *obj)
 #endif
 #ifdef DATALIFE_MORE_LOGGING
     if (o->my_type == H5I_FILE){
-        file_info_print("H5VLget_object", obj, NULL);
+        file_info_print("H5VLget_object", obj, NULL, NULL);
     }
     if(o->my_type == H5I_DATASET){
 
-        dataset_info_print("H5VLget_object", NULL, NULL, NULL, obj, NULL, NULL);
+        dataset_info_print("H5VLget_object", NULL, NULL, NULL, obj, NULL, NULL, NULL);
     }
 
 #endif
@@ -1409,12 +1411,16 @@ H5VL_datalife_dataset_create(void *obj, const H5VL_loc_params_t *loc_params,
         char * layout = dataset_get_layout(dcpl_id);
         dset_info->layout = layout ? strdup(layout) : NULL;
 
-        if(!dset_info->dset_offset && H5Pget_layout(dcpl_id) == H5D_CONTIGUOUS) {
-            if(HEADER_SIZE != file_info->file_size)
-                dset_info->dset_offset = HEADER_SIZE + file_info->file_size;
-            else
-                dset_info->dset_offset = HEADER_SIZE;
-        }
+        hsize_t header_size = 2048; //file_info->header_size;
+
+
+        // // TODO: need modify for correctness
+        // if(!dset_info->dset_offset && H5Pget_layout(dcpl_id) == H5D_CONTIGUOUS) {
+        //     if(header_size != file_info->file_size)
+        //         dset_info->dset_offset = header_size + file_info->file_size;
+        //     else
+        //         dset_info->dset_offset = header_size;
+        // }
     }
     if(!dset_info->dspace_id)
         dset_info->dspace_id = space_id;
@@ -1422,7 +1428,10 @@ H5VL_datalife_dataset_create(void *obj, const H5VL_loc_params_t *loc_params,
     // cannot be accessed in creation time: dset_info->dspace_id dset_info->dtype_id
     // if(!dset_info->dtype_id)
     //     dset_info->dtype_id = dataset_get_type(o->under_object, o->under_vol_id, dxpl_id);
-    dataset_info_print("H5VLdataset_create", NULL, NULL, NULL, dset, dxpl_id, NULL);
+
+    if(!dset_info->dset_name)
+        dset_info->dset_name = strdup(dset_info->obj_info.name);
+    dataset_info_print("H5VLdataset_create", NULL, NULL, NULL, dset, dxpl_id, NULL, NULL);
 
     // get dataset offset and storage size not available yet
 
@@ -1512,11 +1521,10 @@ H5VL_datalife_dataset_open(void *obj, const H5VL_loc_params_t *loc_params,
     if ((dset_info->dset_offset == NULL) || (dset_info->dset_offset == -1))
         dset_info->dset_offset = dataset_get_offset(o->under_object, o->under_vol_id, dxpl_id);
 
-    // get storage size
-    if ((dset_info->storage_size == NULL) || (dset_info->storage_size == -1))
-        dset_info->storage_size = dataset_get_storage_size(o->under_object, o->under_vol_id, dxpl_id);
-    
-    dataset_info_print("H5VLdataset_open", NULL, NULL, NULL, dset, dxpl_id, NULL);
+    if(!dset_info->dset_name)
+        dset_info->dset_name = dset_info->obj_info.name;
+
+    dataset_info_print("H5VLdataset_open", NULL, NULL, NULL, dset, dxpl_id, NULL, NULL);
 
 
     
@@ -1547,7 +1555,7 @@ static herr_t H5VL_datalife_dataset_read(size_t count, void *dset[],
     unsigned long start = get_time_usec();
     unsigned long m1, m2;
     void *o_arr[count];   /* Array of under objects */
-    H5VL_datalife_t *o = (H5VL_datalife_t *)dset[0]; // only get the first dataset
+    // H5VL_datalife_t *o = (H5VL_datalife_t *)dset[0]; // only get the first dataset
 
     hid_t under_vol_id;                     /* VOL ID for all objects */
 
@@ -1580,54 +1588,55 @@ static herr_t H5VL_datalife_dataset_read(size_t count, void *dset[],
 
 
 
-    /* Check for async request */
-    if(req && *req)
-        *req = H5VL_datalife_new_obj(*req, under_vol_id, o->dlife_helper);
-        // *req = H5VL_datalife_new_obj(*req, under_vol_id);
+#ifdef DATALIFE_LOGGING
+    if(ret_value >= 0){
+        for (int obj_idx=0; obj_idx<count; obj_idx++){
+            H5VL_datalife_t *o = (H5VL_datalife_t *)dset[obj_idx];
 
-    if(ret_value >= 0) {
-        dataset_dlife_info_t * dset_info = (dataset_dlife_info_t*)o->generic_dlife_info;
-
+            /* Check for async request */
+            if(req && *req)
+                *req = H5VL_datalife_new_obj(*req, under_vol_id, o->dlife_helper);
+                // *req = H5VL_datalife_new_obj(*req, under_vol_id);
 #ifdef H5_HAVE_PARALLEL
         // Increment appropriate parallel I/O counters
         if(xfer_mode == H5FD_MPIO_INDEPENDENT)
-            // Increment counter for independent reads
-            dset_info->ind_dataset_read_cnt++;
+            // Increment counter for independent writes
+            dset_info->ind_dataset_write_cnt++;
         else {
             H5D_mpio_actual_io_mode_t actual_io_mode;
 
-            // Increment counter for collective reads
-            dset_info->coll_dataset_read_cnt++;
+            // Increment counter for collective writes
+            dset_info->coll_dataset_write_cnt++;
 
             // Check for actually completing a collective I/O
             H5Pget_mpio_actual_io_mode(plist_id, &actual_io_mode);
             if(!actual_io_mode)
-                dset_info->broken_coll_dataset_read_cnt++;
+                dset_info->broken_coll_dataset_write_cnt++;
         } /* end else */
+
+
 #endif /* H5_HAVE_PARALLEL */
 
-#ifdef DATALIFE_LOGGING
-        // dataset_dlife_info_t * dset_info = (dataset_dlife_info_t*)o->generic_dlife_info;
+            if (file_space_id[obj_idx] != NULL ){
+                // printf("file_space_id[%d] != NULL\n", obj_idx);
+                H5VL_arrow_get_selected_sub_region(file_space_id[obj_idx], H5Tget_size(mem_type_id[obj_idx])); //dset_info->dset_type_size
+            }
 
-        // if (H5Iget_type(under_vol_id) == H5I_VOL) {
-        //     // ID is a VOL connector ID
-        //     dataset_info_print("H5VLdataset_read", mem_type_id, mem_space_id, file_space_id, dset, NULL, buf);
-        // }
-        H5VL_native_dataset_chunk_read_t dset_cread;
+            dataset_dlife_info_t * dset_info = (dataset_dlife_info_t*)o->generic_dlife_info;
 
-        if(!dset_info->dspace_id)
-            dset_info->dspace_id = mem_space_id[0];
-        if(!dset_info->dtype_id)
-            dset_info->dtype_id = mem_type_id[0];
+            if(!dset_info->dspace_id)
+                dset_info->dspace_id = mem_space_id[obj_idx];
+            if(!dset_info->dtype_id)
+                dset_info->dtype_id = mem_type_id[obj_idx];
+            
+            dataset_info_print("H5VLdataset_write", mem_type_id[obj_idx], mem_space_id[obj_idx], file_space_id[obj_idx], dset[obj_idx], NULL, buf[obj_idx], obj_idx); //H5P_DATASET_XFER
 
-        dataset_info_print("H5VLdataset_read", mem_type_id[0], mem_space_id[0], file_space_id[0], dset, NULL, buf[0]); //H5P_DATASET_XFER
+            dlife_write(o->dlife_helper, __func__, get_time_usec() - start);
 
-        
-#endif
-
+        }
     }
 
-    dlife_write(o->dlife_helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_DLIFE_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -1648,10 +1657,11 @@ static herr_t H5VL_datalife_dataset_write(size_t count, void *dset[],
     hid_t mem_type_id[], hid_t mem_space_id[],
     hid_t file_space_id[], hid_t plist_id, const void *buf[], void **req)
 {
+
     unsigned long start = get_time_usec();
     unsigned long m1, m2;
 //H5VL_datalife_t: A envelop
-    H5VL_datalife_t *o = (H5VL_datalife_t *)dset[0];
+    // H5VL_datalife_t *o = (H5VL_datalife_t *)dset[0];
     void *o_arr[count];   /* Array of under objects */
     hid_t under_vol_id;                     /* VOL ID for all objects */
 
@@ -1670,45 +1680,7 @@ static herr_t H5VL_datalife_dataset_write(size_t count, void *dset[],
     // Retrieve MPI-IO transfer option
     H5Pget_dxpl_mpio(plist_id, &xfer_mode);
 #endif /* H5_HAVE_PARALLEL */
-#ifdef DATALIFE_LOGGING
-    
-    dataset_dlife_info_t * dset_info = (dataset_dlife_info_t*)o->generic_dlife_info;
-    // hsize_t w_size;
 
-    // if(H5S_ALL == mem_space_id) w_size = dset_info->dset_type_size * dset_info->dset_n_elements;
-    // else w_size = dset_info->dset_type_size * (hsize_t)H5Sget_select_npoints(mem_space_id);
-
-    // // Add the dataset to the tracking list
-    // DsetTrackList_add(&dsetTList, dset_info->pfile_name, dset_info->obj_info.name);
-   
-    // // Retrieve the dataset from the tracking list using the token
-    // DsetTracker *result1 = DsetTrackList_get(&dsetTList, dset_info->pfile_name, dset_info->obj_info.name);
-    // if (result1 != NULL) { DsetTracker_set_write(result1, w_size, (m2 - m1));}
-
-    // if (result1 != NULL) {
-    //     printf("Found tracker with name '%s' in file '%s'", result1->name, result1->pfile_name);
-    //     printf(" write sie '%ld' write imte '%ld' \n", result1->total_bytes_written, result1->total_write_time);
-    // } else {
-    //     printf("Could not find tracker with name '%s'\n", result1->name);
-    // }
-
-    // printf("H5VL_datalife_dataset_write obj [%p]\n",dset);
-    // printf("H5VLdataset_write_count[%d]\n", count);
-
-    // printf("H5VL_datalife_dataset_write dset_info [%p]\n",dset_info);
-
-    // assert(dset_info);
-    // printf("H5VLdataset_write_count[%d]\n", count);
-
-    if(!dset_info->dspace_id)
-        dset_info->dspace_id = mem_space_id[0];
-    if(!dset_info->dtype_id)
-        dset_info->dtype_id = mem_type_id[0];
-    dataset_info_print("H5VLdataset_write", mem_type_id[0], mem_space_id[0], file_space_id[0], dset, NULL, buf[0]); //H5P_DATASET_XFER
-
-
-
-#endif
 //H5VLdataset_write: framework
 // VOL B do IO, so A ask B to write.    o->under_object is a B envelop.
 
@@ -1726,13 +1698,30 @@ static herr_t H5VL_datalife_dataset_write(size_t count, void *dset[],
 
     m2 = get_time_usec();
 
-    /* Check for async request */
-    if(req && *req)
-        *req = H5VL_datalife_new_obj(*req, under_vol_id, o->dlife_helper);
 
-    if(ret_value >= 0) {
-        dataset_dlife_info_t * dset_info = (dataset_dlife_info_t*)o->generic_dlife_info;
+
+    // if(ret_value >= 0) {
+    //     dataset_dlife_info_t * dset_info = (dataset_dlife_info_t*)o->generic_dlife_info;
         
+
+        // if(H5S_ALL == mem_space_id)
+        //     w_size = dset_info->dset_type_size * dset_info->dset_n_elements;
+        // else
+        //     w_size = dset_info->dset_type_size * (hsize_t)H5Sget_select_npoints(mem_space_id);
+
+        // dset_info->total_bytes_written += w_size;
+        // dset_info->dataset_write_cnt++;
+        // dset_info->total_write_time += (m2 - m1);
+    
+#ifdef DATALIFE_LOGGING
+    if(ret_value >= 0){
+        H5VL_datalife_t *o;
+        for (int obj_idx=0; obj_idx<count; obj_idx++){
+            H5VL_datalife_t *o = (H5VL_datalife_t *)dset[obj_idx];
+
+            /* Check for async request */
+            if(req && *req)
+                *req = H5VL_datalife_new_obj(*req, under_vol_id, o->dlife_helper);
 
 #ifdef H5_HAVE_PARALLEL
         // Increment appropriate parallel I/O counters
@@ -1754,21 +1743,26 @@ static herr_t H5VL_datalife_dataset_write(size_t count, void *dset[],
 
 #endif /* H5_HAVE_PARALLEL */
 
-        // if(H5S_ALL == mem_space_id)
-        //     w_size = dset_info->dset_type_size * dset_info->dset_n_elements;
-        // else
-        //     w_size = dset_info->dset_type_size * (hsize_t)H5Sget_select_npoints(mem_space_id);
+            if (file_space_id[obj_idx] != NULL ){
+                // printf("file_space_id[%d] != NULL\n", obj_idx);
+                H5VL_arrow_get_selected_sub_region(file_space_id[obj_idx], H5Tget_size(mem_type_id[obj_idx])); //dset_info->dset_type_size
+            }
 
-        // dset_info->total_bytes_written += w_size;
-        // dset_info->dataset_write_cnt++;
-        // dset_info->total_write_time += (m2 - m1);
+            dataset_dlife_info_t * dset_info = (dataset_dlife_info_t*)o->generic_dlife_info;
+
+            if(!dset_info->dspace_id)
+                dset_info->dspace_id = mem_space_id[obj_idx];
+            if(!dset_info->dtype_id)
+                dset_info->dtype_id = mem_type_id[obj_idx];
+            
+            dataset_info_print("H5VLdataset_write", mem_type_id[obj_idx], mem_space_id[obj_idx], file_space_id[obj_idx], dset[obj_idx], NULL, buf[obj_idx], obj_idx); //H5P_DATASET_XFER
+
+            dlife_write(o->dlife_helper, __func__, get_time_usec() - start);
+
+        }
     }
-#ifdef DATALIFE_LOGGING
-    // dataset_info_print("H5VLdataset_write", mem_type_id, mem_space_id, file_space_id, dset, NULL, buf); //H5P_DATASET_XFER
 
 #endif
-
-    dlife_write(o->dlife_helper, __func__, get_time_usec() - start);
 
     TOTAL_DLIFE_OVERHEAD += (get_time_usec() - start - (m2 - m1));
 
@@ -1852,9 +1846,9 @@ H5VL_datalife_dataset_get(void *dset, H5VL_dataset_get_args_t *args,
         hsize_t maxdims[dimension_cnt];
         H5Sget_simple_extent_dims(dspace_id, dset_info->dimensions, maxdims);
 
-        dset_info->dset_n_elements = H5Sget_select_npoints(dspace_id);
+        
         // dset_info->hyper_nblocks = (size_t) H5Sget_select_hyper_nblocks(dspace_id);
-        H5Sclose(dspace_id);
+        // H5Sclose(dspace_id);
 
     }
     
@@ -1862,7 +1856,10 @@ H5VL_datalife_dataset_get(void *dset, H5VL_dataset_get_args_t *args,
     //     dset_info->dtype_id = dataset_get_type(o->under_object, o->under_vol_id, dxpl_id);
     //dset->shared->layout.storage.u.contig.addr
 
-    dataset_info_print("H5VLdataset_get", NULL, dspace_id, NULL, dset, dxpl_id, NULL);
+    if(!dset_info->dset_name)
+        dset_info->dset_name = dset_info->obj_info.name;
+
+    dataset_info_print("H5VLdataset_get", NULL, dspace_id, NULL, dset, dxpl_id, NULL, NULL);
 
 #endif
 
@@ -2061,11 +2058,23 @@ H5VL_datalife_dataset_close(void *dset, hid_t dxpl_id, void **req)
     dataset_dlife_info_t* dset_info = (dataset_dlife_info_t*)o->generic_dlife_info;
     assert(dset_info);
 
-    // printf("H5VLdataset_close Time[%ld]", get_time_usec());
-    // printf(" DatasetName[%s] FileName[%s]\n", dset_info->obj_info.name, dset_info->pfile_name);
+    
 
+    // dset_info->dset_space_size = ?;
 
-    dataset_info_print("H5VLdataset_close", NULL, NULL, NULL, dset, dxpl_id, NULL);
+    hid_t dspace_id = dataset_get_space(o->under_object, o->under_vol_id, dxpl_id);
+    // Add the rest of dataset stats before closing
+    dset_info->dset_n_elements = H5Sget_select_npoints(dspace_id);
+    dset_info->storage_size = dataset_get_storage_size(o->under_object, o->under_vol_id, dxpl_id);
+        
+    unsigned int dimension_cnt = H5Sget_simple_extent_ndims(dspace_id);
+    dset_info->dimension_cnt = dimension_cnt;
+    if(dimension_cnt > 0)
+        dset_info->dimensions = malloc( dimension_cnt * sizeof(hsize_t *));
+    hsize_t maxdims[dimension_cnt];
+    H5Sget_simple_extent_dims(dspace_id, dset_info->dimensions, maxdims);
+
+    dataset_info_print("H5VLdataset_close", NULL, NULL, NULL, dset, dxpl_id, NULL, NULL);
     BLOB_SORDER=0;
     // printf("\n\n");
     
@@ -2086,7 +2095,7 @@ H5VL_datalife_dataset_close(void *dset, hid_t dxpl_id, void **req)
 
         dlife_write(o->dlife_helper, __func__, get_time_usec() - start);
         // dataset_stats_dlife_write(dset_info);//output stats
-        // dump_dset_stat_yaml(DLIFE_HELPER->dlife_file_handle,dset_info);
+        dump_dset_stat_yaml(DLIFE_HELPER->dlife_file_handle,dset_info);
         
         rm_dataset_node(o->dlife_helper, o->under_object, o->under_vol_id, dset_info);
 
@@ -2483,11 +2492,19 @@ H5VL_datalife_file_create(const char *name, unsigned flags, hid_t fcpl_id,
     
     file_info->file_size = file_get_size(file->under_object, file->under_vol_id, dxpl_id);
 
-    if(!HEADER_SIZE)
-        HEADER_SIZE = file_info->file_size;
-    
+    if(!file_info->header_size){
+        H5Pget_meta_block_size(fapl_id, &file_info->header_size);
+    }
 
-    file_info_print("H5VLfile_create", file, dxpl_id);
+    if(!file_info->sieve_buf_size){
+        H5Pget_sieve_buf_size(fapl_id, &file_info->sieve_buf_size);
+    }
+
+    // H5Pget_meta_block_size(fapl_id, &file_info->header_size);
+    // H5Pget_sieve_buf_size(fapl_id, &file_info->sieve_buf_size);
+    if(!file_info->fapl_id)
+        file_info->fapl_id = fapl_id;
+    file_info_print("H5VLfile_create", file, fapl_id, dxpl_id);
 
 #endif
 
@@ -2626,10 +2643,19 @@ H5VL_datalife_file_open(const char *name, unsigned flags, hid_t fapl_id,
 
     file_info->file_size = file_get_size(file->under_object, file->under_vol_id, dxpl_id);
 
-    if(!HEADER_SIZE)
-        HEADER_SIZE = file_info->file_size;
+    if(!file_info->header_size){
+        H5Pget_meta_block_size(fapl_id, &file_info->header_size);
+    }
 
-    file_info_print("H5VLfile_open", file, dxpl_id);
+    if(!file_info->sieve_buf_size){
+        H5Pget_sieve_buf_size(fapl_id, &file_info->sieve_buf_size);
+    }
+
+    // H5Pget_meta_block_size(fapl_id, &file_info->header_size);
+    // H5Pget_sieve_buf_size(fapl_id, &file_info->sieve_buf_size);
+    if(!file_info->fapl_id)
+        file_info->fapl_id = fapl_id;
+    file_info_print("H5VLfile_open", file, fapl_id, dxpl_id);
     // Add File node to Tracker
 
 #endif
@@ -2709,7 +2735,7 @@ H5VL_datalife_file_get(void *file, H5VL_file_get_args_t *args, hid_t dxpl_id,
     assert(file_info);
     // printf("H5VLfile_get Time[%ld] Filename[%s]\n", get_time_usec(), file_info->file_name);
     // printf("H5VLfile_get \n");
-    file_info_print("H5VLfile_get", file, dxpl_id);
+    file_info_print("H5VLfile_get", file, NULL, dxpl_id);
 #endif
     m1 = get_time_usec();
     ret_value = H5VLfile_get(o->under_object, o->under_vol_id, args, dxpl_id, req);
@@ -2901,7 +2927,7 @@ H5VL_datalife_file_optional(void *file, H5VL_optional_args_t *args,
     // assert(file_info);
     // printf("H5VLfile_optional Time[%ld] FileName[%s]\n", get_time_usec(), file_info->file_name);
 
-    file_info_print("H5VLfile_optional", file, dxpl_id);
+    file_info_print("H5VLfile_optional", file, NULL, dxpl_id);
 #endif
     m1 = get_time_usec();
     ret_value = H5VLfile_optional(o->under_object, o->under_vol_id, args, dxpl_id, req);
@@ -2948,8 +2974,8 @@ H5VL_datalife_file_close(void *file, hid_t dxpl_id, void **req)
     // print("H5VLfile_close file_size %ld\n", file_info->file_size);
     // printf("H5VLfile_close Time[%ld]", get_time_usec());
     // printf(" FileName[%s]\n", file_info->file_name);
-    file_info_print("H5VLfile_close", file, dxpl_id);
-    // dump_file_stat_yaml(DLIFE_HELPER->dlife_file_handle,file_info);
+    file_info_print("H5VLfile_close", file, NULL, dxpl_id);
+    dump_file_stat_yaml(DLIFE_HELPER->dlife_file_handle,file_info);
 #endif
 
 #ifdef DATALIFE_PROV_LOGGING
@@ -3636,15 +3662,14 @@ H5VL_datalife_object_open(void *obj, const H5VL_loc_params_t *loc_params,
 
     if(new_obj->my_type == H5I_FILE){
 
-        file_info_print("H5VLobject_open", new_obj, dxpl_id);
+        file_info_print("H5VLobject_open", NULL, new_obj, dxpl_id);
     }
     if(new_obj->my_type == H5I_DATASET){
 
         dataset_dlife_info_t * dset_info = (dataset_dlife_info_t*)new_obj->generic_dlife_info;
         file_dlife_info_t * file_info = dset_info->obj_info.file_info;
         
-        /* Copy name to file_name */
-        // dset_info->pfile_name = file_info->file_name ? strdup(file_info->file_name) : NULL;
+
         // char *last_delim = strrchr(file_info->file_name, '/');
         // if (last_delim != NULL) {
         //     dset_info->pfile_name = strdup(last_delim + 1);
@@ -3653,8 +3678,10 @@ H5VL_datalife_object_open(void *obj, const H5VL_loc_params_t *loc_params,
         //     dset_info->pfile_name = strdup(file_info->file_name);
         // }
 
-        dset_info->pfile_name = file_info->file_name;
-
+        // dset_info->pfile_name = file_info->file_name;
+        
+        /* Copy name to file_name */
+        dset_info->pfile_name = file_info->file_name ? strdup(file_info->file_name) : NULL;
         dset_info->pfile_sorder_id = file_info->sorder_id;
         dset_info->pfile_porder_id = file_info->porder_id;
         
@@ -3677,8 +3704,11 @@ H5VL_datalife_object_open(void *obj, const H5VL_loc_params_t *loc_params,
             dset_info->layout = layout ? strdup(layout) : NULL;
         }
 
+        if(!dset_info->dset_name)
+            dset_info->dset_name = dset_info->obj_info.name;
+
         // dtype_id and dset_id cannot be accessed here
-        dataset_info_print("H5VLobject_open", NULL, NULL, NULL, new_obj, dxpl_id, NULL);
+        dataset_info_print("H5VLobject_open", NULL, NULL, NULL, new_obj, dxpl_id, NULL, NULL);
     }
 #endif
 
@@ -3755,17 +3785,7 @@ H5VL_datalife_object_get(void *obj, const H5VL_loc_params_t *loc_params, H5VL_ob
 #ifdef DATALIFE_PT_LOGGING
     printf("DATALIFE VOL OBJECT Get\n");
 #endif
-#ifdef DATALIFE_MORE_LOGGING
-    if (o->my_type == H5I_FILE){
-        // file must already opened before calling object_get, no increment in order
-        file_info_print("H5VLobject_get", o, dxpl_id);
-    }
-    if(o->my_type == H5I_DATASET){
-        // dataset_dlife_info_t * dset_info = (dataset_dlife_info_t*)o->generic_dlife_info;
-        // dataset must already opened before calling object_get, no increment in order
-        dataset_info_print("H5VLobject_get", NULL, NULL, NULL, o, dxpl_id, NULL);
-    }
-#endif
+
     m1 = get_time_usec();
     ret_value = H5VLobject_get(o->under_object, loc_params, o->under_vol_id, args, dxpl_id, req);
     m2 = get_time_usec();
@@ -3774,6 +3794,64 @@ H5VL_datalife_object_get(void *obj, const H5VL_loc_params_t *loc_params, H5VL_ob
     /* Check for async request */
     if(req && *req)
         *req = H5VL_datalife_new_obj(*req, o->under_vol_id, o->dlife_helper);
+
+#ifdef DATALIFE_MORE_LOGGING
+    if (o->my_type == H5I_FILE){
+        // file must already opened before calling object_get, no increment in order
+        file_info_print("H5VLobject_get", o, NULL, dxpl_id);
+    }
+    if(o->my_type == H5I_DATASET){
+        // dataset_dlife_info_t * dset_info = (dataset_dlife_info_t*)o->generic_dlife_info;
+        // dataset must already opened before calling object_get, no increment in order
+
+        dataset_dlife_info_t * dset_info = (dataset_dlife_info_t*)new_obj->generic_dlife_info;
+        file_dlife_info_t * file_info = dset_info->obj_info.file_info;
+        
+        /* Copy name to file_name */
+        // dset_info->pfile_name = file_info->file_name ? strdup(file_info->file_name) : NULL;
+        // char *last_delim = strrchr(file_info->file_name, '/');
+        // if (last_delim != NULL) {
+        //     dset_info->pfile_name = strdup(last_delim + 1);
+        // } else {
+        //     // No delimiter found, copy the whole string
+        //     dset_info->pfile_name = strdup(file_info->file_name);
+        // }
+
+        dset_info->pfile_name = file_info->file_name;
+
+        dset_info->pfile_sorder_id = file_info->sorder_id;
+        dset_info->pfile_porder_id = file_info->porder_id;
+        
+        if(file_info->opened_datasets_cnt > 2){
+            DSET_PORDER+=1;
+            dset_info->porder_id =DSET_PORDER;
+        } else {
+            DSET_SORDER+=1;
+            dset_info->sorder_id =DSET_SORDER;
+        }
+
+        if ((dset_info->dset_offset == NULL) || (dset_info->dset_offset == -1))
+            dset_info->dset_offset = dataset_get_offset(new_obj->under_object, new_obj->under_vol_id, dxpl_id);
+
+        if(!dset_info->layout)
+        {
+            hid_t dcpl_id = dataset_get_dcpl(new_obj->under_object, new_obj->under_vol_id,dxpl_id);
+            // only valid with creation property list
+            char * layout = dataset_get_layout(dcpl_id); 
+            dset_info->layout = layout ? strdup(layout) : NULL;
+        }
+
+
+        // object_get_name(new_obj->under_object, loc_params, new_obj->under_vol_id, dxpl_id, req);
+        // printf("H5VLobject_open: obj_name %s\n", dset_info->obj_info.name);
+        // dtype_id and dset_id cannot be accessed here
+
+        if(!dset_info->dset_name)
+            dset_info->dset_name = dset_info->obj_info.name;
+
+        dataset_info_print("H5VLobject_get", NULL, NULL, NULL, o, dxpl_id, NULL, NULL);
+    }
+#endif
 
     if(o)
         dlife_write(o->dlife_helper, __func__, get_time_usec() - start);
@@ -4280,7 +4358,7 @@ H5VL_datalife_blob_put(void *obj, const void *buf, size_t size,
 #endif
 #ifdef DATALIFE_LOGGING
     file_dlife_info_t* file_info = (file_dlife_info_t*)o->generic_dlife_info;
-    dataset_dlife_info_t * dset_info = (dataset_dlife_info_t*)file_info->opened_datasets;
+    // dataset_dlife_info_t * dset_info = (dataset_dlife_info_t*)file_info->opened_datasets;
     
 #endif
     m1 = get_time_usec();
@@ -4290,12 +4368,14 @@ H5VL_datalife_blob_put(void *obj, const void *buf, size_t size,
 
 #ifdef DATALIFE_LOGGING
 
-    if(ret_value >= 0) {
-        dset_info->total_bytes_blob_put += size;
-        dset_info->blob_put_cnt++;
-        dset_info->total_blob_put_time += (m2 - m1);
-    }
+    // if(ret_value >= 0) {
+    //     dset_info->total_bytes_blob_put += size;
+    //     dset_info->blob_put_cnt++;
+    //     dset_info->total_blob_put_time += (m2 - m1);
+    // }
     blob_info_print("H5VLblob_put", obj, NULL, size, blob_id, buf, ctx);
+    // H5VL_arrow_get_selected_sub_region(blob_id, H5Tget_size(blob_id));
+    // H5VL_arrow_get_selected_sub_region(blob_id, H5Tget_size(blob_id));
 
     // assert(file_info);
     
@@ -4351,7 +4431,7 @@ H5VL_datalife_blob_get(void *obj, const void *blob_id, void *buf,
 
         /* candice added blob obj and info */
         blob_info_print("H5VLblob_get", obj, NULL, size, blob_id, buf, ctx);
-
+        H5VL_arrow_get_selected_sub_region(blob_id, H5Tget_size(blob_id));
     }
     
 #endif

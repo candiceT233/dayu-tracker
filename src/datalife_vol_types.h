@@ -35,7 +35,7 @@ unsigned long BLOB_PORDER;
 // this HEADER_SIZE assumes all dataset 
 // header size are the same at all time (no update)
 // Only recorded at H5VLfile_create time
-hsize_t HEADER_SIZE; // candice added
+// hsize_t HEADER_SIZE; // candice added
 
 /* VFD uses vars*/
 unsigned long VFD_ACCESS_IDX;
@@ -136,7 +136,10 @@ struct H5VL_dlife_file_info_t {//assigned when a file is closed, serves to store
     char* intent; // TODO: convert to unsigned int type for less conversion
     unsigned long sorder_id;
     unsigned long porder_id;
+    hid_t fapl_id;
     hsize_t file_size;
+    hsize_t header_size;
+    size_t  sieve_buf_size;
     /* candice added for more stats end */
 
 #ifdef H5_HAVE_PARALLEL
@@ -195,6 +198,7 @@ struct H5VL_dlife_dataset_info_t {
 
     /* candice added for more dset stats start */
     char * pfile_name;                  // parent file name
+    char *dset_name;
     haddr_t dset_offset;
     hsize_t storage_size;
     size_t dset_n_elements;
@@ -209,10 +213,10 @@ struct H5VL_dlife_dataset_info_t {
     /* candice added for more dset stats end */
 
     
-    hsize_t total_bytes_written;
-    hsize_t total_write_time;
-    hsize_t total_bytes_read;
-    hsize_t total_read_time;
+    // hsize_t total_bytes_written =0;
+    // hsize_t total_write_time =0;
+    // hsize_t total_bytes_read =0;
+    // hsize_t total_read_time =0
     
     int dataset_read_cnt;
     int dataset_write_cnt;
