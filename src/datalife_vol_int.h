@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <pthread.h>
 
 #include "hdf5.h"
 #include "datalife_vol.h"
@@ -45,6 +46,26 @@ unsigned long DT_LL_TOTAL_TIME;         //datatype
 unsigned long ATTR_LL_TOTAL_TIME;       //attribute
 //shorten function id: use hash value
 static char* FUNC_DIC[STAT_FUNC_MOD];
+
+/* locks */
+void dlLockInit(DLLock* lock) {
+    pthread_mutex_init(&lock->mutex, NULL);
+}
+
+void dlLockAcquire(DLLock* lock) {
+    pthread_mutex_lock(&lock->mutex);
+}
+
+void dlLockRelease(DLLock* lock) {
+    pthread_mutex_unlock(&lock->mutex);
+}
+
+void dlLockDestroy(DLLock* lock) {
+    pthread_mutex_destroy(&lock->mutex);
+}
+
+DLLock myLock;
+
 
 /* Common Routines */
 static
@@ -421,6 +442,12 @@ static hsize_t dataset_get_storage_size(void *under_dset, hid_t under_vol_id, hi
 
     if(H5VLdataset_get(under_dset, under_vol_id, &vol_cb_args, dxpl_id, NULL) < 0)
         return H5I_INVALID_HID;
+    
+    dlLockAcquire(&myLock);
+    printf("Critical section storage_size: %ld addr[%ld, %ld] size[%ld], hermes_blobs[%ld, %ld]\n", 
+        storage_size, START_ADDR, END_ADDR, ACC_SIZE, START_BLOB, END_BLOB);
+    // Add addresses to hashtable if storage size is not zero (filename + dset_token)
+    dlLockRelease(&myLock);
 
     return storage_size;
 }
@@ -2120,6 +2147,22 @@ void file_info_print(char * func_name, void * obj, hid_t fapl_id, hid_t dxpl_id)
     if(!dxpl_id)
         dxpl_id = -1;
 
+    // get file intent
+    if(!file_info->intent){
+        char * intent = file_get_intent(file->under_object, file->under_vol_id, dxpl_id);
+        file_info->intent = intent ? strdup(intent) : NULL;
+    }
+    
+    file_info->file_size = file_get_size(file->under_object, file->under_vol_id, dxpl_id);
+
+    if(!file_info->header_size){
+        H5Pget_meta_block_size(fapl_id, &file_info->header_size);
+    }
+
+    if(!file_info->sieve_buf_size){
+        H5Pget_sieve_buf_size(fapl_id, &file_info->sieve_buf_size);
+    }
+
     // printf("{\"file\": ");
     printf("{\"func_name\": \"%s\", ", func_name);
     printf("\"io_access_idx\": %d, ", -1 );
@@ -2231,14 +2274,44 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
 
     // dset_info->dataset_write_cnt++;
     // dset_info->total_write_time += (m2 - m1);
-
+    
+    if(!dset_info->dspace_id)
+        dset_info->dspace_id = dataset_get_space(dset->under_object, dset->under_vol_id, dxpl_id);
+    
     hid_t space_id = dset_info->dspace_id;
+    
+    if (!dset_info->dimension_cnt){
+        unsigned int dimension_cnt = H5Sget_simple_extent_ndims(space_id);
+        dset_info->dimension_cnt = dimension_cnt;
+        if(dimension_cnt > 0)
+            dset_info->dimensions = malloc( dimension_cnt * sizeof(hsize_t *));
+        hsize_t maxdims[dimension_cnt];
+        H5Sget_simple_extent_dims(space_id, dset_info->dimensions, maxdims);
+    }
+    // unsigned int ndim = (unsigned)H5Sget_simple_extent_ndims(space_id);
+    // hsize_t dimensions[ndim];
+    // H5Sget_simple_extent_dims(space_id, dimensions, NULL);
+    if(!dset_info->layout)
+    {
+        // get layout type (only available at creation time?)
+        hid_t dcpl_id = dataset_get_dcpl(dset->under_object, dset->under_vol_id,dxpl_id);
+        // only valid with creation property list
+        char * layout = dataset_get_layout(dcpl_id); 
+        dset_info->layout = layout ? strdup(layout) : NULL;
+    }
+
+    if(strcmp(dset_info->layout,"H5D_CONTIGUOUS") == 0)
+        dset_info->storage_size = H5Sget_simple_extent_npoints(space_id) * dset_info->dset_type_size ;
 
 
-    unsigned int ndim = (unsigned)H5Sget_simple_extent_ndims(space_id);
+    if(strcmp(func_name,"H5VLdataset_create") != 0)
+        if((dset_info->storage_size == NULL) || (dset_info->storage_size < 1))
+            dset_info->storage_size = dataset_get_storage_size(dset->under_object, dset->under_vol_id, dxpl_id);
 
-    hsize_t dimensions[ndim];
-    H5Sget_simple_extent_dims(space_id, dimensions, NULL);
+    if ((dset_info->dset_offset == NULL) || (dset_info->dset_offset == -1))
+        dset_info->dset_offset = dataset_get_offset(dset->under_object, dset->under_vol_id, dxpl_id);
+
+
 
     // assert(dset_info);
 
@@ -2255,7 +2328,8 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
     //     + dset_info->dataset_read_cnt + dset_info->dataset_write_cnt -1;
     // printf("\"io_access_idx\": %ld, ", io_access_idx );
 
-    // printf("\"obj\": %p, ", obj);
+    printf("\"vol_obj\": %ld, ", obj);
+    printf("\"vol_under_obj\": %ld, ", dset->under_object);
 
     if(!dxpl_id)
         printf("\"dxpl_id_vol\": %d, ", -1);
@@ -2316,17 +2390,20 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
     //     hsize_t n_elem = (hsize_t)H5Sget_simple_extent_npoints(space_id);
     //     size_t access_size = type_size * n_elem;
     // }
-    
-    
+
+    // // get storage size
+    // if ((!dset_info->storage_size) || (dset_info->storage_size == -1))
+
+
     printf("\"type_size\": %ld, ", dset_info->dset_type_size);
-    // printf("\"storage_size\": %ld, ", dataset_get_storage_size(dset->under_object, dset->under_vol_id, dxpl_id));
+    printf("\"storage_size\": %ld, ", dset_info->storage_size);
     printf("\"n_elements\": %ld, ", dset_info->dset_n_elements);
-    printf("\"dimension_cnt\": %d, ", ndim);
+    printf("\"dimension_cnt\": %d, ", dset_info->dimension_cnt);
     // print dimensions
     printf("\"dimensions\": [");
-    if(ndim > 0 && ndim != -1){
-        for(int i=0; i<ndim; i++)
-            printf("%ld,",dimensions[i]);
+    if(dset_info->dimension_cnt > 0 && dset_info->dimension_cnt != -1){
+        for(int i=0; i<dset_info->dimension_cnt; i++)
+            printf("%ld,",dset_info->dimensions[i]);
     }
 
     printf("], ");
@@ -2362,14 +2439,13 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
     printf("\"blob_idx\": %d, ", -1);
 
     printf("\"dxpl_id\": %d, ", dxpl_id);
-    printf("\"dset_addr\": %p, ", obj);
 
     printf("}\n");
 
 
-    if (mem_space_id != NULL && mem_type_id != NULL){
-        H5VL_arrow_get_selected_sub_region(mem_space_id, H5Tget_size(mem_type_id)); //dset_info->dset_type_size
-    }
+    // if (mem_space_id != NULL && mem_type_id != NULL){
+    //     H5VL_arrow_get_selected_sub_region(mem_space_id, H5Tget_size(mem_type_id)); //dset_info->dset_type_size
+    // }
 
 
 }
@@ -2435,6 +2511,19 @@ haddr_t blob_id_to_addr(void ** p){
     return addr_p;
 }
 
+// void blob_info_print(char * func_name, void * obj, hid_t dxpl_id, 
+//     size_t size, void * blob_id, const void * buf,void *ctx)
+// {
+//     H5VL_datalife_t *dset = (H5VL_datalife_t *)obj;
+//     dataset_dlife_info_t * dset_info = (dataset_dlife_info_t*)dset->generic_dlife_info;
+//     assert(dset_info);
+//     // printf("\"dset_name\": \"%s\", ", dset_info->obj_info.name); //TODO
+//     // char *token_str = NULL;
+//     // printf("\"dset_token_str\": \"%s\", ", H5Otoken_to_str(space_id, &dset_info->obj_info.token, &token_str));
+//     printf("\"dset_token\": %ld, ", dset_info->obj_info.token);
+//     printf("\"storage_size\": %ld, ", dset_info->storage_size);
+//     printf("\n");
+// }
 
 void blob_info_print(char * func_name, void * obj, hid_t dxpl_id, 
     size_t size, void * blob_id, const void * buf,void *ctx)
@@ -2468,11 +2557,16 @@ void blob_info_print(char * func_name, void * obj, hid_t dxpl_id,
     size_t rdcc_nslots;
     size_t rdcc_nbytes;
     double rdcc_w0;
+    // if(H5Pget_cache(file_info->fapl_id, &mdc_nelmts, &rdcc_nslots, &rdcc_nbytes, &rdcc_w0) > 0){
+    //     printf("\"H5Pget_cache-mdc_nelmts\": %d, ", mdc_nelmts); // TODO: ? 0
+    //     printf("\"H5Pget_cache-rdcc_nslots\": %ld, ", rdcc_nslots);
+    //     printf("\"H5Pget_cache-rdcc_nbytes\": %ld, ", rdcc_nbytes);
+    //     printf("\"H5Pget_cache-rdcc_w0\": %f, ", rdcc_w0); // TODO: ? 0.000000
+    // }
     H5Pget_cache(file_info->fapl_id, &mdc_nelmts, &rdcc_nslots, &rdcc_nbytes, &rdcc_w0);
-    // printf("\"H5Pget_cache-mdc_nelmts\": %d, ", mdc_nelmts); // TODO: ?
     printf("\"H5Pget_cache-rdcc_nslots\": %ld, ", rdcc_nslots);
     printf("\"H5Pget_cache-rdcc_nbytes\": %ld, ", rdcc_nbytes);
-    // printf("\"H5Pget_cache-rdcc_w0\": %f, ", rdcc_w0); // TODO: ?
+
 
     hsize_t threshold;
     hsize_t alignment;
@@ -2484,23 +2578,21 @@ void blob_info_print(char * func_name, void * obj, hid_t dxpl_id,
     size_t buf_size;
     unsigned min_meta_perc;
     unsigned min_raw_perc;
+    // if(H5Pget_page_buffer_size(file_info->fapl_id, &buf_size, &min_meta_perc, &min_raw_perc) > 0){
+    //     printf("\"H5Pget_page_buffer_size-buf_size\": %ld, ", buf_size);
+    //     printf("\"H5Pget_page_buffer_size-min_meta_perc\": %d, ", min_meta_perc); // TODO: ?
+    //     printf("\"H5Pget_page_buffer_size-min_raw_perc\": %ld, ", min_raw_perc);
+    // }
     H5Pget_page_buffer_size(file_info->fapl_id, &buf_size, &min_meta_perc, &min_raw_perc);
     printf("\"H5Pget_page_buffer_size-buf_size\": %ld, ", buf_size);
-    // printf("\"H5Pget_page_buffer_size-min_meta_perc\": %d, ", min_meta_perc); // TODO: ?
-    printf("\"H5Pget_page_buffer_size-min_raw_perc\": %ld, ", min_raw_perc);
+    
 
     printf("\"blob_id\": %ld, ", blob_id);
 
     haddr_t * addr_p = blob_id_to_addr(&blob_id);
-
-    // //TODO
-    // size_t bl_idx = malloc(sizeof(size_t));
-    // decode_uint32(blob_id, bl_idx);
-    // printf("\"bl_idx\": %zu, ", bl_idx);
+    // printf("\"addr_p\": %ld, ", addr_p);
+    // printf("Content at addr_p : %zu, ", *(unsigned char*) (long long) addr_p);
     
-    // long long address = (long long) addr_p;
-    // unsigned char* ptr = (unsigned char*)address;
-    // printf("Content at addr_p : %zu, ", *ptr);
 
     printf("\"file_name\": \"%s\", ", file_info->file_name);
 
@@ -2573,6 +2665,7 @@ void blob_info_print(char * func_name, void * obj, hid_t dxpl_id,
 
             // printf("\"type_size\": %ld, ", H5Tget_size(type_id));
             printf("\"storage_size\": %ld, ", dset_info->storage_size);
+
             printf("\"n_elements\": %ld, ", dset_info->dset_n_elements);
             printf("\"dimension_cnt\": %d, ", dset_info->dimension_cnt); //H5Sget_simple_extent_ndims gets negative
 
