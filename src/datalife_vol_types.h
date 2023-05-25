@@ -39,15 +39,19 @@ unsigned long BLOB_PORDER;
 
 /* VFD uses vars*/
 unsigned long VFD_ACCESS_IDX;
-unsigned long TOTAL_VFD_READ ;
-unsigned long TOTAL_VFD_WRITE ;
+unsigned long TOTAL_VFD_READ;
+unsigned long TOTAL_VFD_WRITE;
 
+unsigned long START_ADDR;
+unsigned long END_ADDR;
+unsigned long ACC_SIZE;
+unsigned long START_BLOB;
+unsigned long END_BLOB;
 
+int TASK_ID = 0;
 
-
-
-// static const char * read_func = "H5FD__hermes_read";
-// static const char * write_func = "H5FD__hermes_write";
+static const char * read_func = "H5FD__hermes_read";
+static const char * write_func = "H5FD__hermes_write";
 
 // unsigned long VFD_ADDR ;
 // extern haddr_t vfd_start_addr;
@@ -57,6 +61,7 @@ unsigned long TOTAL_VFD_WRITE ;
 // static int get_native_info(void *obj, H5I_type_t target_obj_type, hid_t connector_id,
 //                        hid_t dxpl_id, H5O_info2_t *oinfo);
 
+/* DsetTracker Related Code Start */
 /* candice added for tracking object access start */
 typedef struct FileTracker file_list_t;
 
@@ -71,9 +76,6 @@ typedef struct FileTracker {
     // dset_list_t *dset;
     file_list_t *next;
 } file_list_t;
-
-
-
 /* candice added for tracking object access end */
 
 typedef struct ProvenanceHelper {
@@ -210,6 +212,8 @@ struct H5VL_dlife_dataset_info_t {
     unsigned long porder_id;
     unsigned long pfile_sorder_id;
     unsigned long pfile_porder_id;
+    unsigned long start_time;
+    unsigned long end_time;
     /* candice added for more dset stats end */
 
     
@@ -347,42 +351,11 @@ struct H5VL_dlife_blob_info_t {
 // }
 
 
-/* DsetTracker Related Code Start */
-// typedef struct DsetTracker dset_list_t;
-
-typedef struct DsetTracker_t {
-    char *pfile_name;
-    char *name;
-    unsigned long total_bytes_written;
-    unsigned long total_write_time;
-
-    unsigned long total_bytes_read;
-    unsigned long total_read_time;
-
-} DsetTracker;
-
-typedef struct DsetTrackList_t {
-    DsetTracker **trackers;
-    size_t size;
-} DsetTrackList;
 
 
 
 
-
-// typedef struct DsetTracker {
-//     char * name;
-//     char * pfile_name;
-//     unsigned long sorder_id;
-//     unsigned long porder_id;
-//     unsigned long pfile_sorder_id;
-//     unsigned long pfile_porder_id;
-//     unsigned long time; // at self create time
-//     // size_t size;
-//     char obj_type[10]; // read/write/blob_put/blob_get
-//     // int access_cnt;
-//     dset_list_t *next;
-// } dset_list_t;
-/* DsetTracker Related Code End */
-
-
+/* lock */
+typedef struct {
+    pthread_mutex_t mutex;
+} DLLock;
