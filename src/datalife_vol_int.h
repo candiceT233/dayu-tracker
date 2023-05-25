@@ -3,6 +3,9 @@
 #include <stdint.h>
 #include <pthread.h>
 
+#include <iostream>
+#include <fstream>
+
 #include "hdf5.h"
 #include "datalife_vol.h"
 #include "datalife_vol_types.h"
@@ -172,8 +175,8 @@ int dlife_write(dlife_helper_t* helper_in, const char* msg, unsigned long durati
 
     
     /* candice added routine prototypes start */
-void dump_file_stat_yaml(FILE *f, const file_dlife_info_t* file_info);
-void dump_dset_stat_yaml(FILE *f, const dataset_dlife_info_t* dset_info);
+// void dump_file_stat_yaml(FILE *f, const file_dlife_info_t* file_info);
+// void dump_dset_stat_yaml(FILE *f, const dataset_dlife_info_t* dset_info);
 // void print_order_id();
 // void tracker_insert_file(file_list_t** head_ref, file_dlife_info_t * file_info);
 // void print_all_tracker(file_list_t * head);
@@ -185,7 +188,7 @@ void file_info_print(char * func_name, void * obj, hid_t fapl_id, hid_t dxpl_id)
 void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
     hid_t file_space_id, void * obj, hid_t dxpl_id, const void *buf, size_t obj_idx);
 void blob_info_print(char * func_name, void * obj, hid_t dxpl_id, 
-    size_t size, void * blob_id, const void * buf, void *ctx);
+    size_t size, const void * blob_id, const void * buf, void *ctx);
 
     /* candice added routine prototypes end */
 
@@ -360,13 +363,14 @@ static ssize_t attr_get_name(void *under_obj, hid_t under_vol_id, hid_t dxpl_id,
     vol_cb_args.args.get_name.loc_params.type     = H5VL_OBJECT_BY_SELF;
     vol_cb_args.args.get_name.loc_params.obj_type = H5I_ATTR;
     vol_cb_args.args.get_name.buf_size            = buf_size;
-    vol_cb_args.args.get_name.buf                 = buf;
+    vol_cb_args.args.get_name.buf                 = static_cast<char*>(buf);
     vol_cb_args.args.get_name.attr_name_len       = &attr_name_len;
 
     if (H5VLattr_get(under_obj, under_vol_id, &vol_cb_args, dxpl_id, NULL) < 0)
         return -1;
 
-    return (ssize_t)attr_name_len;
+    return static_cast<ssize_t>(attr_name_len);
+
 }
 
 char * file_get_intent(void *under_file, hid_t under_vol_id, hid_t dxpl_id)
@@ -536,17 +540,42 @@ dlife_helper_t * dlife_helper_init( char* file_path, Prov_level dlife_level, cha
 
     new_helper->dlife_file_path = strdup(file_path);
     new_helper->dlife_line_format = strdup(dlife_line_format);
+
+    std::cout<< "dlife_helper_init() called, file_path: " << new_helper->dlife_file_path << std::endl;
+    std::cout<< "dlife_helper_init() called, dlife_line_format: " << new_helper->dlife_line_format << std::endl;
+
     new_helper->dlife_level = dlife_level;
     new_helper->pid = getpid();
     new_helper->tid = pthread_self();
+
+    std::cout<< "dlife_helper_init() called, pid: " << new_helper->pid << std::endl;
+    std::cout<< "dlife_helper_init() called, tid: " << new_helper->tid << std::endl;
 
     new_helper->opened_files = NULL;
     new_helper->opened_files_cnt = 0;
 
     getlogin_r(new_helper->user_name, 32);
 
+    std::cout<< "dlife_helper_init() called, user_name: " << new_helper->user_name << std::endl;
+
     if(new_helper->dlife_level == File_only || new_helper->dlife_level == File_and_print)
         new_helper->dlife_file_handle = fopen(new_helper->dlife_file_path, "a");
+
+        // new_helper->dlife_file_handle.open(new_helper->dlife_file_path, std::ios_base::app);
+        // new_helper->dlife_file_handle = fopen(new_helper->dlife_file_path, "a");
+
+    // if (new_helper->dlife_file_handle.is_open()) {
+    //     // File opened successfully
+    //     // Perform necessary operations with the file
+    //     new_helper->dlife_file_handle << "Hello, world!";
+    //     std::cout << "File is opened: " << new_helper->dlife_file_path << std::endl;
+    // } else {
+    //     // File failed to open
+    //     // Handle the error or display an error message
+    //     std::cout << "Failed to open file: " << new_helper->dlife_file_path << std::endl;
+    // }
+
+        
 
     _dic_init();
     return new_helper;
@@ -562,7 +591,7 @@ datatype_dlife_info_t *new_dtype_info(file_dlife_info_t* root_file,
     info->obj_info.dlife_helper = DLIFE_HELPER;
     info->obj_info.file_info = root_file;
     // info->obj_info.name = name ? strdup(name) : NULL;
-    info->obj_info.name = name;
+    info->obj_info.name = name ? strdup(name) : nullptr;
     info->obj_info.token = token;
 
     return info;
@@ -1854,8 +1883,9 @@ void dlife_helper_teardown(dlife_helper_t* helper){
                 break;
         }
 #endif
-        if(helper->dlife_level == File_only 
-            || helper->dlife_level ==File_and_print){//no file
+        if (helper->dlife_level == File_only || helper->dlife_level == File_and_print) {
+            // helper->dlife_file_handle.flush();
+            // helper->dlife_file_handle.close();
             fflush(helper->dlife_file_handle);
             fclose(helper->dlife_file_handle);
         }
@@ -1930,80 +1960,183 @@ int dlife_write(dlife_helper_t* helper_in, const char* msg, unsigned long durati
 
 
 
-    /* candice added routine implementation start*/
-void dump_file_stat_yaml(FILE *f, const file_dlife_info_t* file_info)
-{
-    if(!file_info){
-       fprintf(f,"dump_file_stat_yaml(): ds_info is NULL.\n");
-        return;
-    }
-    
-    fprintf(f,"- file-%ld_%ld:\n",file_info->sorder_id, file_info->porder_id);
-    fprintf(f,"\tname: %s\n", file_info->file_name);
-    fprintf(f,"\tsize: %ld\n", file_info->file_size);
-    fprintf(f,"\tintent: %s\n", file_info->intent);
+//     /* candice added routine implementation start*/
+// void dump_file_stat_yaml(FILE *f, const file_dlife_info_t* file_info)
+// {
+//     if (!file_info) {
+//         fprintf(f, "dump_file_stat_yaml(): ds_info is NULL.\n");
+//         return;
+//     }
 
-    fprintf(f,"\theader_size: %ld\n", file_info->header_size);
-    fprintf(f,"\tsieve_buf_size: %ld\n", file_info->sieve_buf_size);
+//     fprintf(f, "- file-%ld_%ld:\n", file_info->sorder_id, file_info->porder_id);
+//     fprintf(f, "\tname: %s\n", file_info->file_name);
+//     fprintf(f, "\tsize: %ld\n", file_info->file_size);
+//     fprintf(f, "\tintent: %s\n", file_info->intent);
+
+//     fprintf(f, "\theader_size: %ld\n", file_info->header_size);
+//     fprintf(f, "\tsieve_buf_size: %ld\n", file_info->sieve_buf_size);
+
+//     // // TODO: add stats in VOL
+//     // fprintf(f, "\tds_created: %d\n", file_info->ds_created);
+//     // fprintf(f, "\tds_accessed: %d\n", file_info->ds_accessed);
+//     // fprintf(f, "\tgrp_created: %d\n", file_info->grp_created);
+//     // fprintf(f, "\tgrp_accessed: %d\n", file_info->grp_accessed);
+//     // fprintf(f, "\tdtypes_created: %d\n", file_info->dtypes_created);
+//     // fprintf(f, "\tdtypes_accessed: %d\n", file_info->dtypes_accessed);
+// }
+
+// void dump_dset_stat_yaml(FILE *f, const dataset_dlife_info_t* dset_info)
+// {
+
+//     if(!dset_info){
+//         fprintf(f,"dump_dset_stat_yaml(): dset_info is NULL.\n");
+//         return;
+//     }
+
+//     fprintf(f,"- file-%ld_%ld:\n",dset_info->pfile_sorder_id, dset_info->pfile_porder_id);
+//     fprintf(f,"\tname: %s\n", dset_info->pfile_name);
+
+//     fprintf(f,"\tdset-%ld_%ld-%ld_%ld:\n",
+//         dset_info->pfile_sorder_id, dset_info->pfile_porder_id,
+//         dset_info->sorder_id, dset_info->porder_id);
+//     fprintf(f,"\t\tname: %s\n", dset_info->obj_info.name);
+//     fprintf(f,"\t\tlayout: %s\n", dset_info->layout);
+//     fprintf(f,"\t\toffset: %ld\n", dset_info->dset_offset);
+//     fprintf(f,"\t\tdata_type_class: %d\n", dset_info->dt_class);
+//     fprintf(f,"\t\ttype_size: %ld\n", dset_info->dset_type_size);
+//     fprintf(f,"\t\tn_elements: %d\n", dset_info->dset_n_elements);
+//     fprintf(f,"\t\tstorage_size: %ld\n", dset_info->storage_size);
+//     fprintf(f,"\t\tn_dimension: %ld\n", dset_info->dimension_cnt);
+//     fprintf(f,"\t\tdimensions: [");
+//     for (int i=0; i < dset_info->dimension_cnt; i++){
+//     fprintf(f,"%ld,",dset_info->dimensions[i]);
+//     }
+//     fprintf(f,"]\n");
+
+//     // unsigned long total_io_size;
+//     // if(dset_info->dataset_read_cnt > 0){
+//     //     fprintf(f,"\t\tread_cnt: %ld\n", dset_info->dataset_read_cnt);
+//     //     total_io_size = dset_info->total_bytes_read;
+//     //     if(dset_info->blob_get_cnt > 0){
+//     //         fprintf(f,"\t\tblob_get_cnt: %ld\n", dset_info->blob_get_cnt);
+//     //         total_io_size+=dset_info->total_bytes_blob_get;
+//     //     }
+//     //     fprintf(f,"\t\tread_io_size: %ld\n", total_io_size);
+//     // }
+
+//     // if(dset_info->dataset_write_cnt > 0){
+//     //     fprintf(f,"\t\twrite_cnt: %ld\n", dset_info->dataset_write_cnt);
+//     //     total_io_size = dset_info->total_bytes_written;
+//     //     if(dset_info->blob_put_cnt > 0){
+//     //         fprintf(f,"\t\tblob_put_cnt: %ld\n", dset_info->blob_put_cnt);
+//     //         total_io_size+=dset_info->total_bytes_blob_put;
+//     //     }
+//     //     fprintf(f,"\t\twrite_io_size: %ld\n", total_io_size);
+//     // }
+
+// }
+
+
+
+void dump_file_stat_yaml(file_dlife_info_t* file_info)
+{
+    std::string file_path = "/qfs/people/tang584/scripts/PyFLEXTRKR/hm_wrf_tbradar_demo/dl-data-stat.yaml";
+    std::ofstream out;
+    out.open(file_path, std::ios_base::app);
+
+    if(out.is_open())
+    {
+        if (!file_info) {
+            out << "dump_file_stat_yaml(): ds_info is NULL." << std::endl;
+            return;
+        }
+
+        out << "- file-" << file_info->sorder_id << "_" << file_info->porder_id << ":" << std::endl;
+        out << "\tname: " << file_info->file_name << std::endl;
+        out << "\tsize: " << file_info->file_size << std::endl;
+        out << "\tintent: " << file_info->intent << std::endl;
+
+        out << "\theader_size: " << file_info->header_size << std::endl;
+        out << "\tsieve_buf_size: " << file_info->sieve_buf_size << std::endl;
+    }
+    else{
+        std::cout << "dump_file_stat_yaml(): failed to open file." << std::endl;
+    }
+
+    out.close();
 
     // // TODO: add stats in VOL
-    // fprintf(f,"\tds_created: %d\n", file_info->ds_created);
-    // fprintf(f,"\tds_accessed: %d\n", file_info->ds_accessed);
-    // fprintf(f,"\tgrp_created: %d\n", file_info->grp_created);
-    // fprintf(f,"\tgrp_accessed: %d\n", file_info->grp_accessed);
-    // fprintf(f,"\tdtypes_created: %d\n", file_info->dtypes_created);
-    // fprintf(f,"\tdtypes_accessed: %d\n", file_info->dtypes_accessed);
+    // out << "\tds_created: " << file_info->ds_created << std::endl;
+    // out << "\tds_accessed: " << file_info->ds_accessed << std::endl;
+    // out << "\tgrp_created: " << file_info->grp_created << std::endl;
+    // out << "\tgrp_accessed: " << file_info->grp_accessed << std::endl;
+    // out << "\tdtypes_created: " << file_info->dtypes_created << std::endl;
+    // out << "\tdtypes_accessed: " << file_info->dtypes_accessed << std::endl;
 }
 
-void dump_dset_stat_yaml(FILE *f, const dataset_dlife_info_t* dset_info)
-{
+void dump_dset_stat_yaml(dataset_dlife_info_t* dset_info)
+{   
+    std::string file_path = "/qfs/people/tang584/scripts/PyFLEXTRKR/hm_wrf_tbradar_demo/dl-data-stat.yaml";
+    std::ofstream out;
+    out.open(file_path, std::ios_base::app);
 
-    if(!dset_info){
-        fprintf(f,"dump_dset_stat_yaml(): dset_info is NULL.\n");
-        return;
+    if (out.is_open())
+    {
+        if (!dset_info) {
+            out << "dump_dset_stat_yaml(): dset_info is NULL." << std::endl;
+            return;
+        }
+
+        out << "- file-" << dset_info->pfile_sorder_id << "_" << dset_info->pfile_porder_id << ":" << std::endl;
+        out << "\tname: " << dset_info->pfile_name << std::endl;
+
+        out << "\tdset-" << dset_info->pfile_sorder_id << "_" << dset_info->pfile_porder_id << "-"
+            << dset_info->sorder_id << "_" << dset_info->porder_id << ":" << std::endl;
+        out << "\t\tname: " << dset_info->obj_info.name << std::endl;
+        // out << "\t\tlayout: " << dset_info->layout << std::endl;
+        // out << "\t\toffset: " << dset_info->dset_offset << std::endl;
+        // out << "\t\tdata_type_class: " << dset_info->dt_class << std::endl;
+        // out << "\t\ttype_size: " << dset_info->dset_type_size << std::endl;
+        // out << "\t\tn_elements: " << dset_info->dset_n_elements << std::endl;
+        // out << "\t\tstorage_size: " << dset_info->storage_size << std::endl;
+        out << "\t\tn_dimension: " << dset_info->dimension_cnt << std::endl;
+        out << "\t\tdimensions: [";
+        for (size_t i = 0; i < dset_info->dimension_cnt; i++) {
+            out << dset_info->dimensions[i];
+            if (i < dset_info->dimension_cnt - 1)
+                out << ",";
+        }
+        out << "]" << std::endl;
+
+        
+
+    }
+    else{
+        std::cout << "Unable to open file";
     }
 
-    fprintf(f,"- file-%ld_%ld:\n",dset_info->pfile_sorder_id, dset_info->pfile_porder_id);
-    fprintf(f,"\tname: %s\n", dset_info->pfile_name);
-
-    fprintf(f,"\tdset-%ld_%ld-%ld_%ld:\n",
-        dset_info->pfile_sorder_id, dset_info->pfile_porder_id,
-        dset_info->sorder_id, dset_info->porder_id);
-    fprintf(f,"\t\tname: %s\n", dset_info->obj_info.name);
-    fprintf(f,"\t\tlayout: %s\n", dset_info->layout);
-    fprintf(f,"\t\toffset: %ld\n", dset_info->dset_offset);
-    fprintf(f,"\t\tdata_type_class: %d\n", dset_info->dt_class);
-    fprintf(f,"\t\ttype_size: %ld\n", dset_info->dset_type_size);
-    fprintf(f,"\t\tn_elements: %d\n", dset_info->dset_n_elements);
-    fprintf(f,"\t\tstorage_size: %ld\n", dset_info->storage_size);
-    fprintf(f,"\t\tn_dimension: %ld\n", dset_info->dimension_cnt);
-    fprintf(f,"\t\tdimensions: [");
-    for (int i=0; i < dset_info->dimension_cnt; i++){
-    fprintf(f,"%ld,",dset_info->dimensions[i]);
-    }
-    fprintf(f,"]\n");
+    out.close();
 
     // unsigned long total_io_size;
-    // if(dset_info->dataset_read_cnt > 0){
-    //     fprintf(f,"\t\tread_cnt: %ld\n", dset_info->dataset_read_cnt);
+    // if (dset_info->dataset_read_cnt > 0) {
+    //     out << "\t\tread_cnt: " << dset_info->dataset_read_cnt << std::endl;
     //     total_io_size = dset_info->total_bytes_read;
-    //     if(dset_info->blob_get_cnt > 0){
-    //         fprintf(f,"\t\tblob_get_cnt: %ld\n", dset_info->blob_get_cnt);
-    //         total_io_size+=dset_info->total_bytes_blob_get;
+    //     if (dset_info->blob_get_cnt > 0) {
+    //         out << "\t\tblob_get_cnt: " << dset_info->blob_get_cnt << std::endl;
+    //         total_io_size += dset_info->total_bytes_blob_get;
     //     }
-    //     fprintf(f,"\t\tread_io_size: %ld\n", total_io_size);
+    //     out << "\t\tread_io_size: " << total_io_size << std::endl;
     // }
 
-    // if(dset_info->dataset_write_cnt > 0){
-    //     fprintf(f,"\t\twrite_cnt: %ld\n", dset_info->dataset_write_cnt);
+    // if (dset_info->dataset_write_cnt > 0) {
+    //     out << "\t\twrite_cnt: " << dset_info->dataset_write_cnt << std::endl;
     //     total_io_size = dset_info->total_bytes_written;
-    //     if(dset_info->blob_put_cnt > 0){
-    //         fprintf(f,"\t\tblob_put_cnt: %ld\n", dset_info->blob_put_cnt);
-    //         total_io_size+=dset_info->total_bytes_blob_put;
+    //     if (dset_info->blob_put_cnt > 0) {
+    //         out << "\t\tblob_put_cnt: " << dset_info->blob_put_cnt << std::endl;
+    //         total_io_size += dset_info->total_bytes_blob_put;
     //     }
-    //     fprintf(f,"\t\twrite_io_size: %ld\n", total_io_size);
+    //     out << "\t\twrite_io_size: " << total_io_size << std::endl;
     // }
-
 }
 
 // void print_order_id()
@@ -2284,7 +2417,7 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
         unsigned int dimension_cnt = H5Sget_simple_extent_ndims(space_id);
         dset_info->dimension_cnt = dimension_cnt;
         if(dimension_cnt > 0)
-            dset_info->dimensions = malloc( dimension_cnt * sizeof(hsize_t *));
+            dset_info->dimensions = static_cast<hsize_t*>(malloc(dimension_cnt * sizeof(hsize_t*)));
         hsize_t maxdims[dimension_cnt];
         H5Sget_simple_extent_dims(space_id, dset_info->dimensions, maxdims);
     }
@@ -2450,27 +2583,24 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
 
 }
 
-uint32_t decode_uint32(uint32_t value, const uint8_t *p) {
-    // uint32_t value = 0;
+void decode_uint32(uint32_t* value, const uint8_t* p) {
+    *value = 0;
     
-    value |= (uint32_t)(*p++) << 24;
-    value |= (uint32_t)(*p++) << 16;
-    value |= (uint32_t)(*p++) << 8;
-    value |= (uint32_t)(*p++);
-    
-    return value;
+    *value |= (uint32_t)(*p++) << 24;
+    *value |= (uint32_t)(*p++) << 16;
+    *value |= (uint32_t)(*p++) << 8;
+    *value |= (uint32_t)(*p++);
 }
 
-haddr_t blob_id_to_addr(void ** p){
+
+haddr_t * blob_id_to_addr(void ** p){
 
 /* Reset value in destination */
     hbool_t  all_zero = true; /* True if address was all zeroes */
     unsigned u;               /* Local index variable */
-    haddr_t *addr_p = malloc(sizeof(haddr_t));
-    uint8_t **pp = p;
+    haddr_t *addr_p =static_cast<haddr_t*>(malloc(sizeof(haddr_t)));
+    uint8_t **pp = reinterpret_cast<uint8_t**>(p);
     size_t addr_len = 4;
-
-    
 
     /* Decode bytes from address */
     for (u = 0; u < addr_len; u++) {
@@ -2499,7 +2629,7 @@ haddr_t blob_id_to_addr(void ** p){
             // printf("blob_id_debug_to_addr %d %d %d\n",u,u,u);
         } /* end if */
         else if (!all_zero)
-            HDassert(0 == **pp); /*overflow */
+            assert(0 == **pp); /*overflow */
     }                            /* end for */
 
     /* If 'all_zero' is still TRUE, the address was entirely composed of '0xff'
@@ -2512,7 +2642,7 @@ haddr_t blob_id_to_addr(void ** p){
 }
 
 // void blob_info_print(char * func_name, void * obj, hid_t dxpl_id, 
-//     size_t size, void * blob_id, const void * buf,void *ctx)
+//     size_t size, const void * blob_id, const void * buf,void *ctx)
 // {
 //     H5VL_datalife_t *dset = (H5VL_datalife_t *)obj;
 //     dataset_dlife_info_t * dset_info = (dataset_dlife_info_t*)dset->generic_dlife_info;
@@ -2526,19 +2656,19 @@ haddr_t blob_id_to_addr(void ** p){
 // }
 
 void blob_info_print(char * func_name, void * obj, hid_t dxpl_id, 
-    size_t size, void * blob_id, const void * buf,void *ctx)
+    size_t size, const void * blob_id, const void * buf,void *ctx)
 {
     H5VL_datalife_t *file = (H5VL_datalife_t *)obj;
     file_dlife_info_t * file_info = (file_dlife_info_t*)file->generic_dlife_info;
 
     if(!obj)
-        obj = -1;
+        obj = nullptr;
     if(!size)
         size = -1;
     if(!blob_id)
-        blob_id = -1;
+        blob_id = nullptr;
     if(!ctx)
-        ctx = -1;
+        ctx = nullptr;
 
     assert(file_info);
 
@@ -2589,7 +2719,7 @@ void blob_info_print(char * func_name, void * obj, hid_t dxpl_id,
 
     printf("\"blob_id\": %ld, ", blob_id);
 
-    haddr_t * addr_p = blob_id_to_addr(&blob_id);
+    haddr_t *addr_p = blob_id_to_addr(const_cast<void**>(&blob_id));
     // printf("\"addr_p\": %ld, ", addr_p);
     // printf("Content at addr_p : %zu, ", *(unsigned char*) (long long) addr_p);
     
@@ -2641,8 +2771,12 @@ void blob_info_print(char * func_name, void * obj, hid_t dxpl_id,
             // printf("\"dset_token_str\": \"%s\", ", H5Otoken_to_str(space_id, &dset_info->obj_info.token, &token_str));
             printf("\"dset_token\": %ld, ", dset_info->obj_info.token);
 
-            size_t  token_idx = malloc(sizeof(size_t));
-            decode_uint32((void *) &dset_info->obj_info.token, token_idx);
+            // size_t token_idx = malloc(sizeof(size_t));
+            // decode_uint32((void *) &dset_info->obj_info.token, token_idx);
+
+            size_t* token_idx = static_cast<size_t*>(malloc(sizeof(size_t)));
+            decode_uint32(reinterpret_cast<uint32_t*>(&dset_info->obj_info.token), reinterpret_cast<const uint8_t*>(token_idx));
+
             // printf("\"token_idx\": %zu, ", token_idx);
             long long token_idx_addr = (long long) token_idx;
             unsigned char* tptr = (unsigned char*)token_idx_addr;
