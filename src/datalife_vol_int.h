@@ -562,6 +562,8 @@ datatype_dlife_info_t *new_dtype_info(file_dlife_info_t* root_file,
     info->obj_info.dlife_helper = DLIFE_HELPER;
     info->obj_info.file_info = root_file;
     // info->obj_info.name = name ? strdup(name) : NULL;
+    info->obj_info.name = malloc(sizeof(char) * (strlen(name) + 1));
+    strcpy(info->obj_info.name, name);
     info->obj_info.name = name;
     info->obj_info.token = token;
 
@@ -576,7 +578,11 @@ dataset_dlife_info_t *new_dataset_info(file_dlife_info_t *root_file,
     info = (dataset_dlife_info_t *)calloc(1, sizeof(dataset_dlife_info_t));
     info->obj_info.dlife_helper = DLIFE_HELPER;
     info->obj_info.file_info = root_file;
-    info->obj_info.name = name ? strdup(name) : NULL;
+    // info->obj_info.name = name ? strdup(name) : NULL;
+    info->obj_info.name = malloc(sizeof(char) * (strlen(name) + 1));
+    strcpy(info->obj_info.name, name);
+    // printf("new_dataset_info() name: %s\n", name);
+    // printf("new_dataset_info() info->obj_info.name: %s\n", info->obj_info.name);
     info->obj_info.token = token;
 
     // initialize dset_info values
@@ -603,7 +609,9 @@ group_dlife_info_t *new_group_info(file_dlife_info_t *root_file,
     info = (group_dlife_info_t *)calloc(1, sizeof(group_dlife_info_t));
     info->obj_info.dlife_helper = DLIFE_HELPER;
     info->obj_info.file_info = root_file;
-    info->obj_info.name = name ? strdup(name) : NULL;
+    // info->obj_info.name = name ? strdup(name) : NULL;
+    info->obj_info.name = malloc(sizeof(char) * (strlen(name) + 1));
+    strcpy(info->obj_info.name, name);
     info->obj_info.token = token;
 
     return info;
@@ -617,7 +625,9 @@ attribute_dlife_info_t *new_attribute_info(file_dlife_info_t *root_file,
     info = (attribute_dlife_info_t *)calloc(1, sizeof(attribute_dlife_info_t));
     info->obj_info.dlife_helper = DLIFE_HELPER;
     info->obj_info.file_info = root_file;
-    info->obj_info.name = name ? strdup(name) : NULL;
+    // info->obj_info.name = name ? strdup(name) : NULL;
+    info->obj_info.name = malloc(sizeof(char) * (strlen(name) + 1));
+    strcpy(info->obj_info.name, name);
     info->obj_info.token = token;
 
     return info;
@@ -629,11 +639,9 @@ file_dlife_info_t* new_file_info(const char* fname, unsigned long file_no)
 
     info = (file_dlife_info_t *)calloc(1, sizeof(file_dlife_info_t));
 
-    info->file_name = fname ? strdup(fname) : NULL;
-
-    // info->file_name = (char *) malloc(strlen(fname)*sizeof(fname));
-    // strcpy(info->file_name,fname);
-
+    // info->file_name = fname ? strdup(fname) : NULL;
+    info->file_name = malloc(sizeof(char) * (strlen(fname) + 1));
+    strcpy(info->file_name, fname);
     info->dlife_helper = DLIFE_HELPER;
     info->file_no = file_no;
     info->sorder_id=0;
@@ -1135,6 +1143,28 @@ dataset_dlife_info_t * add_dataset_node(unsigned long obj_file_no,
         file_info->opened_datasets = cur;
         file_info->opened_datasets_cnt++;
     }
+
+    /* Add dset info that requires parent file info */
+    // cur->pfile_name = malloc(sizeof(char) * (strlen(file_info->file_name) + 1));
+    // strcpy(cur->pfile_name, file_info->file_name);
+
+    dlLockAcquire(&myLock);
+    cur->sorder_id = ++DSET_SORDER;
+    dlLockRelease(&myLock);
+
+    cur->porder_id = 0;
+    printf("add_dataset_node: sorder_id %d\n", cur->sorder_id);
+
+    // Add useful info when dataset node is added
+    // cur->obj_info.name = strdup(ds_name);
+
+    // TODO: do parallel order?
+    // if(file_info->opened_datasets_cnt > 1){
+    //     cur->porder_id = ++DSET_PORDER;
+    // } else {
+    //     cur->sorder_id = ++DSET_SORDER;
+    // }
+    // printf("add_dataset_node: sorder_id %d, porder_id %d\n", cur->sorder_id, cur->porder_id);
 
     // Increment refcount on dataset
     cur->obj_info.ref_cnt++;
@@ -1966,9 +1996,10 @@ void dump_dset_stat_yaml(FILE *f, const dataset_dlife_info_t* dset_info)
     fprintf(f,"- file-%ld_%ld:\n",dset_info->pfile_sorder_id, dset_info->pfile_porder_id);
     fprintf(f,"\tname: %s\n", dset_info->pfile_name);
 
-    fprintf(f,"\tdset-%ld_%ld-%ld_%ld:\n",
+    fprintf(f,"\tdset-%ld_%ld-%ld:\n",
         dset_info->pfile_sorder_id, dset_info->pfile_porder_id,
-        dset_info->sorder_id, dset_info->porder_id);
+        dset_info->sorder_id);
+
     fprintf(f,"\t\tname: %s\n", dset_info->obj_info.name);
     fprintf(f,"\t\tlayout: %s\n", dset_info->layout);
     fprintf(f,"\t\toffset: %ld\n", dset_info->dset_offset);
