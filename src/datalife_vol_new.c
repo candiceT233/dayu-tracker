@@ -721,7 +721,7 @@ H5VL_datalife_get_object(const void *obj)
 #ifdef DATALIFE_PT_LOGGING
     printf("DATALIFE VOL Get Object\n");
 #endif
-#ifdef DATALIFE_TEST_LOGGING
+#ifdef DATALIFE_MORE_LOGGING
     if (o->my_type == H5I_FILE){
         file_info_print("H5VLget_object", obj, NULL, NULL);
     }
@@ -738,8 +738,6 @@ H5VL_datalife_get_object(const void *obj)
     dlife_write(o->dlife_helper, __func__, get_time_usec() - start);
 
     TOTAL_DLIFE_OVERHEAD += (get_time_usec() - start - (m2 - m1));
-
-
 
     return ret;
 
@@ -1024,10 +1022,6 @@ H5VL_datalife_attr_create(void *obj, const H5VL_loc_params_t *loc_params,
     if(o)
         dlife_write(o->dlife_helper, __func__, get_time_usec() - start);
 
-#ifdef DATALIFE_TEST_LOGGING
-    attribute_info_print("H5VLattr_create", obj, loc_params, NULL, dxpl_id, req);
-#endif
-
     TOTAL_DLIFE_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return (void*)attr;
 } /* end H5VL_datalife_attr_create() */
@@ -1089,10 +1083,6 @@ H5VL_datalife_attr_open(void *obj, const H5VL_loc_params_t *loc_params,
 
     if(o)
         dlife_write(o->dlife_helper, __func__, get_time_usec() - start);
-
-#ifdef DATALIFE_TEST_LOGGING
-    attribute_info_print("H5VLattr_open", obj, loc_params, NULL, dxpl_id, req);
-#endif
 
     TOTAL_DLIFE_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return (void *)attr;
@@ -1174,11 +1164,6 @@ H5VL_datalife_attr_write(void *attr, hid_t mem_type_id, const void *buf,
     if(o)
         dlife_write(o->dlife_helper, __func__, get_time_usec() - start);
 
-#ifdef DATALIFE_TEST_LOGGING
-    // printf("H5VL_datalife_attr_write-buf \"%s\"\n", (char *)buf);
-    attribute_info_print("H5VLattr_write", attr, NULL, NULL, dxpl_id, req);
-#endif
-
     TOTAL_DLIFE_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
 } /* end H5VL_datalife_attr_write() */
@@ -1258,10 +1243,6 @@ H5VL_datalife_attr_specific(void *obj, const H5VL_loc_params_t *loc_params,
 
     if(o)
         dlife_write(o->dlife_helper, __func__, get_time_usec() - start);
-
-#ifdef DATALIFE_TEST_LOGGING
-    attribute_info_print("H5VLattr_specific", obj, loc_params, args, dxpl_id, req);
-#endif
 
     TOTAL_DLIFE_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -2783,7 +2764,7 @@ H5VL_datalife_file_specific(void *file, H5VL_file_specific_args_t *args,
         new_args = args;
 
         /* Set object pointer for operation */
-        new_o = (H5VL_datalife_t *)(o->under_object);
+        new_o = o->under_object;
     } /* end else */
 
     m1 = get_time_usec();
@@ -2982,10 +2963,6 @@ H5VL_datalife_group_create(void *obj, const H5VL_loc_params_t *loc_params,
     if(o)
         dlife_write(o->dlife_helper, __func__, get_time_usec() - start);
 
-#ifdef DATALIFE_TEST_LOGGING
-    group_info_print("H5VLgroup_create", obj, loc_params, name, gapl_id, dxpl_id, req);
-#endif
-
     TOTAL_DLIFE_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return (void *)group;
 } /* end H5VL_datalife_group_create() */
@@ -3028,10 +3005,6 @@ H5VL_datalife_group_open(void *obj, const H5VL_loc_params_t *loc_params,
     if(o)
         dlife_write(o->dlife_helper, __func__, get_time_usec() - start);
 
-#ifdef DATALIFE_TEST_LOGGING
-    group_info_print("H5VLgroup_open", obj, loc_params, name, gapl_id, dxpl_id, req);
-#endif
-
     TOTAL_DLIFE_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return (void *)group;
 } /* end H5VL_datalife_group_open() */
@@ -3071,7 +3044,6 @@ H5VL_datalife_group_get(void *obj, H5VL_group_get_args_t *args, hid_t dxpl_id,
 
     if(o)
         dlife_write(o->dlife_helper, __func__, get_time_usec() - start);
-
 
     TOTAL_DLIFE_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -3600,7 +3572,7 @@ H5VL_datalife_object_open(void *obj, const H5VL_loc_params_t *loc_params,
 
         if(loc_params->type == H5VL_OBJECT_BY_NAME)
             obj_name = loc_params->loc_data.loc_by_name.name;
-        
+
         new_obj = _obj_wrap_under(under, o, obj_name, *obj_to_open_type, dxpl_id, req);
     } /* end if */
     else
@@ -3610,7 +3582,7 @@ H5VL_datalife_object_open(void *obj, const H5VL_loc_params_t *loc_params,
 
     if(new_obj->my_type == H5I_FILE){
 
-        file_info_print("H5VLobject_open", new_obj, NULL, dxpl_id);
+        file_info_print("H5VLobject_open", NULL, new_obj, dxpl_id);
     }
     if(new_obj->my_type == H5I_DATASET){
 
@@ -4306,6 +4278,7 @@ H5VL_datalife_blob_put(void *obj, const void *buf, size_t size,
     // // printf("\"H5Pget_page_buffer_size-min_meta_perc\": %d, ", min_meta_perc); // TODO: ?
     // printf("\"H5Pget_page_buffer_size-min_raw_perc\": %ld, ", min_raw_perc);
     // printf("\n");
+
     
     blob_info_print("H5VLblob_put", obj, NULL, size, blob_id, buf, ctx);
 
