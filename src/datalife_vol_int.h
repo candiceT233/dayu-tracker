@@ -572,7 +572,6 @@ datatype_dlife_info_t *new_dtype_info(file_dlife_info_t* root_file,
     info = (datatype_dlife_info_t *)calloc(1, sizeof(datatype_dlife_info_t));
     info->obj_info.dlife_helper = DLIFE_HELPER;
     info->obj_info.file_info = root_file;
-    // info->obj_info.name = name ? strdup(name) : NULL;
     info->obj_info.name = name ? strdup(name) : NULL;
     info->obj_info.token = token;
 
@@ -1414,7 +1413,11 @@ H5VL_datalife_t * _obj_wrap_under(void *under, H5VL_datalife_t *upper_o,
         //open from types
         switch(upper_o->my_type) {
             case H5I_DATASET:
+                file_info = ((object_dlife_info_t *)(upper_o->generic_dlife_info))->file_info;
+                break;
             case H5I_GROUP:
+                file_info = ((object_dlife_info_t *)(upper_o->generic_dlife_info))->file_info;
+                break;
             case H5I_DATATYPE:
             case H5I_ATTR:
                 file_info = ((object_dlife_info_t *)(upper_o->generic_dlife_info))->file_info;
@@ -2184,7 +2187,7 @@ void file_info_print(char * func_name, void * obj, hid_t fapl_id, hid_t dxpl_id)
     printf("{\"func_name\": \"%s\", ", func_name);
     printf("\"io_access_idx\": %d, ", -1 );
     printf("\"time(us)\": %ld, ", get_time_usec());
-    printf("\"file_name\": \"%s\", ", file_info->file_name);
+    
     // printf("\"file_name_addr\": \"%p\", ", file_info->file_name);
     printf("\"fapl_id\": %p, ", fapl_id);
     hsize_t curr_offset;
@@ -2205,12 +2208,16 @@ void file_info_print(char * func_name, void * obj, hid_t fapl_id, hid_t dxpl_id)
 
     hsize_t file_size = file_get_size(file->under_object, file->under_vol_id, dxpl_id);
     file_info->file_size = file_size;
+
     printf("\"file_size\": %ld, ", file_size);
 
     printf("\"file_intent\": [");
     printf("\"%s\",", file_get_intent(file->under_object, file->under_vol_id, dxpl_id));
+    
     printf("]");
 
+    printf("\"file_name\": \"%s\", ", file_info->file_name);
+    printf("}\n");
 
     // unsigned int intent;
     // H5Fget_intent();
@@ -2233,9 +2240,8 @@ void file_info_print(char * func_name, void * obj, hid_t fapl_id, hid_t dxpl_id)
     // printf("\"dtypes_accessed\": %d, ", file_info->dtypes_accessed); 
 
     // printf("}");
-
-    printf("\"file_addr\": %p, ", obj);
-    printf("}\n");
+    
+    // printf("\"file_addr\": %p, ", obj);
 
 }
 
@@ -2345,18 +2351,18 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
     //     + dset_info->dataset_read_cnt + dset_info->dataset_write_cnt -1;
     // printf("\"io_access_idx\": %ld, ", io_access_idx );
 
-    printf("\"vol_obj\": %ld, ", obj);
-    printf("\"vol_under_obj\": %ld, ", dset->under_object);
+    // printf("\"vol_obj\": %ld, ", obj);
+    // printf("\"vol_under_obj\": %ld, ", dset->under_object);
 
-    if(!dxpl_id)
-        printf("\"dxpl_id_vol\": %d, ", -1);
-    else
-        printf("\"dxpl_id_vol\": %ld, ", dxpl_id);
+    // if(!dxpl_id)
+    //     printf("\"dxpl_id_vol\": %d, ", -1);
+    // else
+    //     printf("\"dxpl_id_vol\": %ld, ", dxpl_id);
     
     printf("\"time(us)\": %ld, ", get_time_usec());
 
     //TODO : printing filename in string causes core-dump
-    printf("\"file_name\": \"%s\", ", dset_info->pfile_name);
+    
     // printf("\"file_name_addr\": \"%p\", ", dset_info->pfile_name);
     // if (strcmp(func_name, "H5VLdataset_read") == 0 || strcmp(func_name, "H5VLdataset_create") == 0){
     //     printf("\"file_name_addr\": \"%p\", ", dset_info->pfile_name); 
@@ -2455,7 +2461,10 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
     // printf("\"logical_addr\": %d, ", -1);
     printf("\"blob_idx\": %d, ", -1);
 
-    printf("\"dxpl_id\": %d, ", dxpl_id);
+    // printf("\"dxpl_id\": %d, ", dxpl_id);
+
+
+    printf("\"file_name\": \"%s\", ", dset_info->pfile_name);
 
     printf("}\n");
 
@@ -2467,8 +2476,82 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
 
 }
 
-void decode_uint32(uint32_t* value, const uint8_t* p) {
-    *value = 0;
+
+void attribute_info_print(char * func_name, void *obj,  const H5VL_loc_params_t *loc_params,
+    H5VL_attr_specific_args_t *args, hid_t dxpl_id, void **req)
+{
+    printf("\"func_name\": \"%s\", ", func_name);
+
+
+    H5VL_datalife_t *file = (H5VL_datalife_t *)obj;
+    // file_dlife_info_t * file_info = (file_dlife_info_t*)file->generic_dlife_info;
+    // printf("\"file_name\": \"%s\", ", file_info->file_name);
+
+    attribute_dlife_info_t * attr_info = (attribute_dlife_info_t*)file->generic_dlife_info;
+    file_dlife_info_t * file_info = attr_info->obj_info.file_info;
+
+    printf("\"file_name\": \"%s\", ", file_info->file_name);
+    printf("\"attr_token\": %ld, ", attr_info->obj_info.token);
+    printf("\"attr_name\": \"%s\", ", attr_info->obj_info.name);
+
+    printf("}\n");
+}
+
+void group_info_print(char * func_name, void *obj, void *args,
+    const char *name, hid_t gapl_id, hid_t dxpl_id, void **req)
+{
+    // TODO: use if else to get different args
+    // if(strcmp(func_name, "H5VLgroup_get") == 0)
+    //     H5VL_group_get_args_t * extra_args = (H5VL_group_get_args_t*)args;
+    // else 
+    //     H5VL_loc_params_t * extra_args = (H5VL_loc_params_t*)args;
+    //     // "H5VLgroup_open" "H5VLgroup_create"
+
+    printf("\"func_name\": \"%s\", ", func_name);
+
+    if(strcmp(func_name,"H5VLgroup_get") == 0){
+        // H5VL_group_get_args_t * group_args = (H5VL_group_get_args_t*)args;
+
+        H5VL_datalife_t *group = (H5VL_datalife_t *)obj;
+        group_dlife_info_t* group_info = (group_dlife_info_t*)group->generic_dlife_info;
+
+        printf("\"group_token\": %ld, ", group_info->obj_info.token);
+        printf("\"group_name\": \"%s\", ", group_info->obj_info.name);
+
+        file_dlife_info_t * file_info = group_info->obj_info.file_info;
+        printf("\"file_name\": \"%s\", ", file_info->file_name);
+
+    } else {
+        // H5VL_loc_params_t * loc_params = (H5VL_loc_params_t*)args;
+
+        printf("\"group_name\": \"%s\", ", name);
+
+        H5VL_datalife_t *file = (H5VL_datalife_t *)obj;
+        file_dlife_info_t * file_info = (file_dlife_info_t*)file->generic_dlife_info;
+
+        group_dlife_info_t* group_info = file_info->opened_grps;
+        printf("\"opened_grps_cnt\": %d, ", file_info->opened_grps_cnt);
+        if(file_info->opened_grps_cnt > 0){
+            // only 1 dset opened at a time
+            // dataset_dlife_info_t * dset_info = malloc(sizeof(dataset_dlife_info_t));
+            while (group_info) {
+                
+                printf("\"group_info->obj_info.token\": %ld, ", group_info->obj_info.token);
+                printf("\"group_info->obj_info.name\": \"%s\", ", group_info->obj_info.name);
+
+                group_info = group_info->next; // Move to the next node
+            }
+        }
+
+        printf("\"file_name\": \"%s\", ", file_info->file_name);
+
+    }
+
+    printf("\n");
+}
+
+uint32_t decode_uint32(uint32_t value, const uint8_t *p) {
+    // uint32_t value = 0;
     
     *value |= (uint32_t)(*p++) << 24;
     *value |= (uint32_t)(*p++) << 16;
@@ -2607,7 +2690,7 @@ void blob_info_print(char * func_name, void * obj, hid_t dxpl_id,
     // printf("Content at addr_p : %zu, ", *(unsigned char*) (long long) addr_p);
     
 
-    printf("\"file_name\": \"%s\", ", file_info->file_name);
+    
 
     // int ndset = file_info->opened_datasets_cnt;
     printf("\"opened_datasets_cnt\": %d, ", file_info->opened_datasets_cnt);
@@ -2701,7 +2784,9 @@ void blob_info_print(char * func_name, void * obj, hid_t dxpl_id,
 
             // printf("\"blob_sorder\": %ld, ", BLOB_SORDER);
 
-            printf("\"dset_addr\": %p, ", obj);
+            // printf("\"dset_addr\": %p, ", obj);
+
+            printf("\"file_name\": \"%s\", ", file_info->file_name);
             printf("}\n");
             dset_info = dset_info->next; // Move to the next node
         }
@@ -2736,6 +2821,44 @@ void blob_info_print(char * func_name, void * obj, hid_t dxpl_id,
     // BLOB_SORDER+=1; // increment blob order
 }
 
+char * print_my_type(char * func_name, hid_t type_id){
+    switch(type_id){
+        case H5I_DATASET:
+            return "H5I_DATASET";
+        case H5I_GROUP:
+            return "H5I_GROUP";
+        case H5I_DATATYPE:
+            return "H5I_DATATYPE";
+        case H5I_ATTR:
+            return "H5I_ATTR";
+        case H5I_FILE:
+            return "H5I_FILE";
+        case H5I_UNINIT:
+            return "H5I_UNINIT";
+        case H5I_BADID:
+            return "H5I_BADID";
+        case H5I_DATASPACE:
+            return "H5I_DATASPACE";
+        case H5I_VFL:
+            return "H5I_VFL";
+        case H5I_VOL:
+            return "H5I_VOL";
+        case H5I_GENPROP_CLS:
+            return "H5I_GENPROP_CLS";
+        case H5I_GENPROP_LST:
+            return "H5I_GENPROP_LST";
+        case H5I_ERROR_CLASS:
+            return "H5I_ERROR_CLASS";
+        case H5I_ERROR_MSG:
+            return "H5I_ERROR_MSG";
+        case H5I_ERROR_STACK:
+            return "H5I_ERROR_STACK";
+        case H5I_NTYPES:
+            return "H5I_NTYPES";
+        default:
+            return "UNKNOWN";
+    }
+}
 
     /* candice added routine implementation end*/
 
