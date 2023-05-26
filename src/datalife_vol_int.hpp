@@ -5,10 +5,15 @@
 
 #include <iostream>
 #include <fstream>
+#include <fcntl.h>
+#include <unistd.h>
+#include <mutex>
+#include <cassert>
 
 #include "hdf5.h"
 #include "datalife_vol.h"
-#include "datalife_vol_types.h"
+#include "datalife_vol_types.hpp"
+
 
 /**********/
 /* Macros */
@@ -38,7 +43,7 @@
 /************/
 /* Typedefs */
 /************/
-static dlife_helper_t* DLIFE_HELPER = NULL;
+static dlife_helper_t* DLIFE_HELPER = nullptr;
 unsigned long TOTAL_DLIFE_OVERHEAD;
 unsigned long TOTAL_NATIVE_H5_TIME;
 unsigned long DLIFE_WRITE_TOTAL_TIME;
@@ -51,23 +56,7 @@ unsigned long ATTR_LL_TOTAL_TIME;       //attribute
 static char* FUNC_DIC[STAT_FUNC_MOD];
 
 /* locks */
-void dlLockInit(DLLock* lock) {
-    pthread_mutex_init(&lock->mutex, NULL);
-}
-
-void dlLockAcquire(DLLock* lock) {
-    pthread_mutex_lock(&lock->mutex);
-}
-
-void dlLockRelease(DLLock* lock) {
-    pthread_mutex_unlock(&lock->mutex);
-}
-
-void dlLockDestroy(DLLock* lock) {
-    pthread_mutex_destroy(&lock->mutex);
-}
-
-DLLock myLock;
+std::mutex myLock;
 
 
 /* Common Routines */
@@ -75,7 +64,7 @@ static
 unsigned long get_time_usec(void) {
     struct timeval tp;
 
-    gettimeofday(&tp, NULL);
+    gettimeofday(&tp, nullptr);
     return (unsigned long)((1000000 * tp.tv_sec) + tp.tv_usec);
 }
 
@@ -221,7 +210,7 @@ void file_ds_accessed(file_dlife_info_t* info);
  * Purpose:     Create a new DATALIFE object for an underlying object
  *
  * Return:      Success:    Pointer to the new DATALIFE object
- *              Failure:    NULL
+ *              Failure:    nullptr
  *
  * Programmer:  Quincey Koziol
  *              Monday, December 3, 2018
@@ -237,7 +226,7 @@ H5VL_datalife_new_obj(void *under_obj, hid_t under_vol_id, dlife_helper_t* helpe
     assert(under_vol_id);
     assert(helper);
 
-    new_obj = (H5VL_datalife_t *)calloc(1, sizeof(H5VL_datalife_t));
+    new_obj = new H5VL_datalife_t(); //(H5VL_datalife_t *)calloc(1, sizeof(H5VL_datalife_t));
     new_obj->under_object = under_obj;
     new_obj->under_vol_id = under_vol_id;
     new_obj->dlife_helper = helper;
@@ -318,7 +307,7 @@ static hid_t dataset_get_type(void *under_dset, hid_t under_vol_id, hid_t dxpl_i
     vol_cb_args.op_type              = H5VL_DATASET_GET_TYPE;
     vol_cb_args.args.get_type.type_id = H5I_INVALID_HID;
 
-    if(H5VLdataset_get(under_dset, under_vol_id, &vol_cb_args, dxpl_id, NULL) < 0)
+    if(H5VLdataset_get(under_dset, under_vol_id, &vol_cb_args, dxpl_id, nullptr) < 0)
         return H5I_INVALID_HID;
 
     return vol_cb_args.args.get_type.type_id;
@@ -332,7 +321,7 @@ static hid_t dataset_get_space(void *under_dset, hid_t under_vol_id, hid_t dxpl_
     vol_cb_args.op_type              = H5VL_DATASET_GET_SPACE;
     vol_cb_args.args.get_space.space_id = H5I_INVALID_HID;
 
-    if(H5VLdataset_get(under_dset, under_vol_id, &vol_cb_args, dxpl_id, NULL) < 0)
+    if(H5VLdataset_get(under_dset, under_vol_id, &vol_cb_args, dxpl_id, nullptr) < 0)
         return H5I_INVALID_HID;
 
     return vol_cb_args.args.get_space.space_id;
@@ -346,7 +335,7 @@ static hid_t dataset_get_dcpl(void *under_dset, hid_t under_vol_id, hid_t dxpl_i
     vol_cb_args.op_type              = H5VL_DATASET_GET_DCPL;
     vol_cb_args.args.get_dcpl.dcpl_id = H5I_INVALID_HID;
 
-    if(H5VLdataset_get(under_dset, under_vol_id, &vol_cb_args, dxpl_id, NULL) < 0)
+    if(H5VLdataset_get(under_dset, under_vol_id, &vol_cb_args, dxpl_id, nullptr) < 0)
         return H5I_INVALID_HID;
 
     return vol_cb_args.args.get_dcpl.dcpl_id;
@@ -366,7 +355,7 @@ static ssize_t attr_get_name(void *under_obj, hid_t under_vol_id, hid_t dxpl_id,
     vol_cb_args.args.get_name.buf                 = static_cast<char*>(buf);
     vol_cb_args.args.get_name.attr_name_len       = &attr_name_len;
 
-    if (H5VLattr_get(under_obj, under_vol_id, &vol_cb_args, dxpl_id, NULL) < 0)
+    if (H5VLattr_get(under_obj, under_vol_id, &vol_cb_args, dxpl_id, nullptr) < 0)
         return -1;
 
     return static_cast<ssize_t>(attr_name_len);
@@ -383,7 +372,7 @@ char * file_get_intent(void *under_file, hid_t under_vol_id, hid_t dxpl_id)
     vol_cb_args.args.get_intent.flags = &intent_flags;
 
     /* Get the size */
-    H5VLfile_get(under_file, under_vol_id, &vol_cb_args, dxpl_id, NULL);
+    H5VLfile_get(under_file, under_vol_id, &vol_cb_args, dxpl_id, nullptr);
 
     if(intent_flags == H5F_ACC_RDWR)
         return "H5F_ACC_RDWR";
@@ -396,7 +385,7 @@ char * file_get_intent(void *under_file, hid_t under_vol_id, hid_t dxpl_id)
     else if(intent_flags == H5F_ACC_SWMR_READ)
         return "H5F_ACC_SWMR_READ";
     else
-        return NULL;
+        return nullptr;
 }
 
 static hsize_t file_get_size(void *under_file, hid_t under_vol_id, hid_t dxpl_id)
@@ -411,7 +400,7 @@ static hsize_t file_get_size(void *under_file, hid_t under_vol_id, hid_t dxpl_id
     vol_cb_args.args            = &file_opt_args;
 
     /* Get the size */
-    if (H5VLfile_optional(under_file, under_vol_id, &vol_cb_args, dxpl_id, NULL) < 0)
+    if (H5VLfile_optional(under_file, under_vol_id, &vol_cb_args, dxpl_id, nullptr) < 0)
         return -1;
     
     return size;
@@ -444,14 +433,14 @@ static hsize_t dataset_get_storage_size(void *under_dset, hid_t under_vol_id, hi
     vol_cb_args.op_type                            = H5VL_DATASET_GET_STORAGE_SIZE;
     vol_cb_args.args.get_storage_size.storage_size = &storage_size;
 
-    if(H5VLdataset_get(under_dset, under_vol_id, &vol_cb_args, dxpl_id, NULL) < 0)
+    if(H5VLdataset_get(under_dset, under_vol_id, &vol_cb_args, dxpl_id, nullptr) < 0)
         return H5I_INVALID_HID;
     
-    dlLockAcquire(&myLock);
-    printf("Critical section storage_size: %ld addr[%ld, %ld] size[%ld], hermes_blobs[%ld, %ld]\n", 
-        storage_size, START_ADDR, END_ADDR, ACC_SIZE, START_BLOB, END_BLOB);
-    // Add addresses to hashtable if storage size is not zero (filename + dset_token)
-    dlLockRelease(&myLock);
+    // myLock.lock();
+    // printf("Critical section storage_size: %ld addr[%ld, %ld] size[%ld], hermes_blobs[%ld, %ld]\n", 
+    //     storage_size, START_ADDR, END_ADDR, ACC_SIZE, START_BLOB, END_BLOB);
+    // // Add addresses to hashtable if storage size is not zero (filename + dset_token)
+    // myLock.unlock();
 
     return storage_size;
 }
@@ -468,7 +457,7 @@ static haddr_t dataset_get_offset(void *under_dset, hid_t under_vol_id, hid_t dx
     vol_cb_args.args                = &dset_opt_args;
 
     /* Get the offset */
-    if (H5VLdataset_optional(under_dset, under_vol_id, &vol_cb_args, dxpl_id, NULL) < 0)
+    if (H5VLdataset_optional(under_dset, under_vol_id, &vol_cb_args, dxpl_id, nullptr) < 0)
         return HADDR_UNDEF;
     
     return dset_offset;
@@ -486,7 +475,7 @@ static hsize_t dataset_get_num_chunks(void *under_dset, hid_t under_vol_id, hid_
     vol_cb_args.args                = &dset_opt_args;
 
     /* Get the num chunks */
-    if (H5VLdataset_optional(under_dset, under_vol_id, &vol_cb_args, dxpl_id, NULL) < 0)
+    if (H5VLdataset_optional(under_dset, under_vol_id, &vol_cb_args, dxpl_id, nullptr) < 0)
         return -1;
     
     return dset_num_chunks;
@@ -504,7 +493,7 @@ static hsize_t dataset_get_vlen_buf_size(void *under_dset, hid_t under_vol_id, h
     vol_cb_args.args                = &dset_opt_args;
 
     /* Get the vlen buf size */
-    if (H5VLdataset_optional(under_dset, under_vol_id, &vol_cb_args, dxpl_id, NULL) < 0)
+    if (H5VLdataset_optional(under_dset, under_vol_id, &vol_cb_args, dxpl_id, nullptr) < 0)
         return -1;
     
     return size;
@@ -529,53 +518,42 @@ dlife_helper_t * dlife_helper_init( char* file_path, Prov_level dlife_level, cha
 {
    
     
-    dlife_helper_t* new_helper = (dlife_helper_t *)calloc(1, sizeof(dlife_helper_t));
+    dlife_helper_t* new_helper = new dlife_helper_t(); //(dlife_helper_t *)calloc(1, sizeof(dlife_helper_t));
 
     if(dlife_level >= 2) {//write to file
         if(!file_path){
             printf("dlife_helper_init() failed, datalife file path is not set.\n");
-            return NULL;
+            return nullptr;
         }
     }
 
-    new_helper->dlife_file_path = strdup(file_path);
+    
     new_helper->dlife_line_format = strdup(dlife_line_format);
-
-    std::cout<< "dlife_helper_init() called, file_path: " << new_helper->dlife_file_path << std::endl;
-    std::cout<< "dlife_helper_init() called, dlife_line_format: " << new_helper->dlife_line_format << std::endl;
 
     new_helper->dlife_level = dlife_level;
     new_helper->pid = getpid();
     new_helper->tid = pthread_self();
 
-    std::cout<< "dlife_helper_init() called, pid: " << new_helper->pid << std::endl;
-    std::cout<< "dlife_helper_init() called, tid: " << new_helper->tid << std::endl;
+    std::cout << "pid: " << new_helper->pid << " tid: " << new_helper->tid << std::endl;
 
-    new_helper->opened_files = NULL;
+    new_helper->opened_files = nullptr;
     new_helper->opened_files_cnt = 0;
 
     getlogin_r(new_helper->user_name, 32);
 
-    std::cout<< "dlife_helper_init() called, user_name: " << new_helper->user_name << std::endl;
+    std::string filePathWithPid = std::to_string(getpid()) + "_" + std::string(file_path);
 
+    std::cout << "filePathWithPid: " << filePathWithPid << std::endl;
+
+    new_helper->dlife_file_path = strdup(filePathWithPid.c_str());
+
+#ifdef DATALIFE_SCHEMA
     if(new_helper->dlife_level == File_only || new_helper->dlife_level == File_and_print)
-        new_helper->dlife_file_handle = fopen(new_helper->dlife_file_path, "a");
-
-        // new_helper->dlife_file_handle.open(new_helper->dlife_file_path, std::ios_base::app);
+        new_helper->dlife_file_handle.open(new_helper->dlife_file_path, std::ios_base::app);
         // new_helper->dlife_file_handle = fopen(new_helper->dlife_file_path, "a");
-
-    // if (new_helper->dlife_file_handle.is_open()) {
-    //     // File opened successfully
-    //     // Perform necessary operations with the file
-    //     new_helper->dlife_file_handle << "Hello, world!";
-    //     std::cout << "File is opened: " << new_helper->dlife_file_path << std::endl;
-    // } else {
-    //     // File failed to open
-    //     // Handle the error or display an error message
-    //     std::cout << "Failed to open file: " << new_helper->dlife_file_path << std::endl;
-    // }
-
-        
+    if (!new_helper->dlife_file_handle.is_open())
+        std::cout << "Failed to open file: " << new_helper->dlife_file_path << std::endl;
+#endif
 
     _dic_init();
     return new_helper;
@@ -587,10 +565,10 @@ datatype_dlife_info_t *new_dtype_info(file_dlife_info_t* root_file,
 {
     datatype_dlife_info_t *info;
 
-    info = (datatype_dlife_info_t *)calloc(1, sizeof(datatype_dlife_info_t));
+    info = new datatype_dlife_info_t(); //(datatype_dlife_info_t *)calloc(1, sizeof(datatype_dlife_info_t));
     info->obj_info.dlife_helper = DLIFE_HELPER;
     info->obj_info.file_info = root_file;
-    // info->obj_info.name = name ? strdup(name) : NULL;
+    // info->obj_info.name = name ? strdup(name) : nullptr;
     info->obj_info.name = name ? strdup(name) : nullptr;
     info->obj_info.token = token;
 
@@ -602,10 +580,10 @@ dataset_dlife_info_t *new_dataset_info(file_dlife_info_t *root_file,
 {
     dataset_dlife_info_t *info;
 
-    info = (dataset_dlife_info_t *)calloc(1, sizeof(dataset_dlife_info_t));
+    info =  new dataset_dlife_info_t(); //(dataset_dlife_info_t *)calloc(1, sizeof(dataset_dlife_info_t));
     info->obj_info.dlife_helper = DLIFE_HELPER;
     info->obj_info.file_info = root_file;
-    info->obj_info.name = name ? strdup(name) : NULL;
+    info->obj_info.name = name ? strdup(name) : nullptr;
     info->obj_info.token = token;
 
     // initialize dset_info values
@@ -629,10 +607,10 @@ group_dlife_info_t *new_group_info(file_dlife_info_t *root_file,
 {
     group_dlife_info_t *info;
 
-    info = (group_dlife_info_t *)calloc(1, sizeof(group_dlife_info_t));
+    info = new group_dlife_info_t(); //(group_dlife_info_t *)calloc(1, sizeof(group_dlife_info_t));
     info->obj_info.dlife_helper = DLIFE_HELPER;
     info->obj_info.file_info = root_file;
-    info->obj_info.name = name ? strdup(name) : NULL;
+    info->obj_info.name = name ? strdup(name) : nullptr;
     info->obj_info.token = token;
 
     return info;
@@ -643,10 +621,10 @@ attribute_dlife_info_t *new_attribute_info(file_dlife_info_t *root_file,
 {
     attribute_dlife_info_t *info;
 
-    info = (attribute_dlife_info_t *)calloc(1, sizeof(attribute_dlife_info_t));
+    info = new attribute_dlife_info_t(); //(attribute_dlife_info_t *)calloc(1, sizeof(attribute_dlife_info_t));
     info->obj_info.dlife_helper = DLIFE_HELPER;
     info->obj_info.file_info = root_file;
-    info->obj_info.name = name ? strdup(name) : NULL;
+    info->obj_info.name = name ? strdup(name) : nullptr;
     info->obj_info.token = token;
 
     return info;
@@ -656,9 +634,9 @@ file_dlife_info_t* new_file_info(const char* fname, unsigned long file_no)
 {
     file_dlife_info_t *info;
 
-    info = (file_dlife_info_t *)calloc(1, sizeof(file_dlife_info_t));
+    info = new file_dlife_info_t(); //(file_dlife_info_t *)calloc(1, sizeof(file_dlife_info_t));
 
-    info->file_name = fname ? strdup(fname) : NULL;
+    info->file_name = fname ? strdup(fname) : nullptr;
 
     // info->file_name = (char *) malloc(strlen(fname)*sizeof(fname));
     // strcpy(info->file_name,fname);
@@ -682,9 +660,9 @@ void file_info_free(file_dlife_info_t* info)
 #ifdef H5_HAVE_PARALLEL
     // Release MPI Comm & Info, if they are valid
     if(info->mpi_comm_info_valid) {
-	if(MPI_COMM_NULL != info->mpi_comm)
+	if(MPI_COMM_nullptr != info->mpi_comm)
 	    MPI_Comm_free(&info->mpi_comm);
-	if(MPI_INFO_NULL != info->mpi_info)
+	if(MPI_INFO_nullptr != info->mpi_info)
 	    MPI_Info_free(&info->mpi_info);
     }
 #endif /* H5_HAVE_PARALLEL */
@@ -792,10 +770,11 @@ int rm_dtype_node(dlife_helper_t *helper, void *under, hid_t under_vol_id, datat
 
             file_info->opened_dtypes_cnt--;
             if(file_info->opened_dtypes_cnt == 0)
-                assert(file_info->opened_dtypes == NULL);
+                assert(file_info->opened_dtypes == nullptr);
 
             // Decrement refcount on file info
             DT_LL_TOTAL_TIME += (get_time_usec() - start);
+            std::cout << "rm_dtype_node() file_no: " << file_info->file_no << std::endl;
             rm_file_node(helper, file_info->file_no);
 
             return 0;
@@ -886,10 +865,11 @@ int rm_grp_node(dlife_helper_t *helper, void *under_obj, hid_t under_vol_id, gro
 
             file_info->opened_grps_cnt--;
             if (file_info->opened_grps_cnt == 0)
-                assert(file_info->opened_grps == NULL);
+                assert(file_info->opened_grps == nullptr);
 
             // Decrement refcount on file info
             GRP_LL_TOTAL_TIME += (get_time_usec() - start);
+            std::cout << "rm_grp_node() file_no: " << file_info->file_no << std::endl;
             rm_file_node(helper, file_info->file_no);
 
             return 0;
@@ -980,11 +960,12 @@ int rm_attr_node(dlife_helper_t *helper, void *under_obj, hid_t under_vol_id, at
 
             file_info->opened_attrs_cnt--;
             if(file_info->opened_attrs_cnt == 0)
-                assert(file_info->opened_attrs == NULL);
+                assert(file_info->opened_attrs == nullptr);
 
             ATTR_LL_TOTAL_TIME += (get_time_usec() - start);
 
             // Decrement refcount on file info
+            std::cout << "rm_attr_node() file_no: " << file_info->file_no << std::endl;
             rm_file_node(helper, file_info->file_no);
 
             return 0;
@@ -1045,59 +1026,82 @@ int rm_file_node(dlife_helper_t* helper, unsigned long file_no)
     file_dlife_info_t* cur;
     file_dlife_info_t* last;
 
-    assert(helper);
-    assert(helper->opened_files);
-    assert(helper->opened_files_cnt);
-    assert(file_no);
 
-    cur = helper->opened_files;
-    last = cur;
-    while(cur) {
-        // Node found
-        if(cur->file_no == file_no) {
-            // Decrement file node's refcount
-            cur->ref_cnt--;
+    std::cout << "rm_file_node() file_no : " << file_no << std::endl;
+    // assert(file_no);
 
-            // If refcount == 0, remove file node & maybe print file stats
-            if(cur->ref_cnt == 0) {
-                // Sanity checks
-                assert(0 == cur->opened_datasets_cnt);
-                assert(0 == cur->opened_grps_cnt);
-                assert(0 == cur->opened_dtypes_cnt);
-                assert(0 == cur->opened_attrs_cnt);
+    try {
+        // assert(helper);
+        // assert(helper->opened_files);
+        // assert(helper->opened_files_cnt);
+        // assert(file_no);
+        if (!helper)
+            throw std::runtime_error("Invalid helper object");
+        if (!helper->opened_files)
+            throw std::runtime_error("No opened files");
+        if (helper->opened_files_cnt == 0)
+            throw std::runtime_error("Invalid opened files count");
+        if (file_no == 0)
+            throw std::runtime_error("Invalid file number");
 
-                // Unlink from list of opened files
-                if(cur == helper->opened_files) //first node is the target
-                    helper->opened_files = helper->opened_files->next;
-                else
-                    last->next = cur->next;
+        cur = helper->opened_files;
+        last = cur;
 
-                // Free file info
-                file_info_free(cur);
+        while(cur) {
+            // Node found
+            if(cur->file_no == file_no) {
+                // Decrement file node's refcount
+                cur->ref_cnt--;
 
-                // Update connector info
-                helper->opened_files_cnt--;
-                if(helper->opened_files_cnt == 0)
-                    assert(helper->opened_files == NULL);
+                // If refcount == 0, remove file node & maybe print file stats
+                if(cur->ref_cnt == 0) {
+                    // Sanity checks
+                    assert(0 == cur->opened_datasets_cnt);
+                    assert(0 == cur->opened_grps_cnt);
+                    assert(0 == cur->opened_dtypes_cnt);
+                    assert(0 == cur->opened_attrs_cnt);
+
+                    // Unlink from list of opened files
+                    if(cur == helper->opened_files) //first node is the target
+                        helper->opened_files = helper->opened_files->next;
+                    else
+                        last->next = cur->next;
+
+                    // Free file info
+                    file_info_free(cur);
+
+                    // Update connector info
+                    helper->opened_files_cnt--;
+                    if(helper->opened_files_cnt == 0)
+                        assert(helper->opened_files == nullptr);
+                }
+
+                break;
             }
 
-            break;
+            // Advance to next file node
+            last = cur;
+            cur = cur->next;
         }
 
-        // Advance to next file node
-        last = cur;
-        cur = cur->next;
+        std::cout << "rm_file_node: helper->opened_files_cnt = " << helper->opened_files_cnt << std::endl;
+
+        FILE_LL_TOTAL_TIME += (get_time_usec() - start);
+
+        return helper->opened_files_cnt;
+
+    } catch (const std::exception& e) {
+        std::cout << "Assertion failed: " << e.what() << std::endl;
+        return 0;
     }
 
-    FILE_LL_TOTAL_TIME += (get_time_usec() - start);
-    return helper->opened_files_cnt;
 }
 
 file_dlife_info_t* _search_home_file(unsigned long obj_file_no){
     file_dlife_info_t* cur;
 
     if(DLIFE_HELPER->opened_files_cnt < 1)
-        return NULL;
+        return nullptr;
 
     cur = DLIFE_HELPER->opened_files;
     while (cur) {
@@ -1109,7 +1113,7 @@ file_dlife_info_t* _search_home_file(unsigned long obj_file_no){
         cur = cur->next;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 dataset_dlife_info_t * add_dataset_node(unsigned long obj_file_no,
@@ -1211,12 +1215,12 @@ int rm_dataset_node(dlife_helper_t *helper, void *under_obj, hid_t under_vol_id,
 
             file_info->opened_datasets_cnt--;
             if(file_info->opened_datasets_cnt == 0)
-                assert(file_info->opened_datasets == NULL);
+                assert(file_info->opened_datasets == nullptr);
 
             // Decrement refcount on file info
             DS_LL_TOTAL_TIME += (get_time_usec() - start);
+            std::cout << "rm_dataset_node() file_no: " << file_info->file_no << std::endl;
             rm_file_node(helper, file_info->file_no);
-
             return 0;
         }
 
@@ -1289,7 +1293,7 @@ dataset_dlife_info_t * new_ds_dlife_info(void* under_object, hid_t vol_id, H5O_t
     if (ds_info->ds_class == H5S_SIMPLE) {
         // dimension_cnt, dimensions, and dset_space_size are not ready here
         ds_info->dimension_cnt = (unsigned)H5Sget_simple_extent_ndims(ds_id);
-        H5Sget_simple_extent_dims(ds_id, ds_info->dimensions, NULL);
+        H5Sget_simple_extent_dims(ds_id, ds_info->dimensions, nullptr);
         ds_info->dset_space_size = (hsize_t)H5Sget_simple_extent_npoints(ds_id);
 
         ds_info->ds_class = H5Sget_simple_extent_type(ds_id);
@@ -1325,7 +1329,7 @@ static int get_native_info(void *obj, H5I_type_t target_obj_type, hid_t connecto
     vol_cb_args.args.get_info.oinfo  = oinfo;
     vol_cb_args.args.get_info.fields = H5O_INFO_BASIC;
 
-    if(H5VLobject_get(obj, &loc_params, connector_id, &vol_cb_args, dxpl_id, NULL) < 0)
+    if(H5VLobject_get(obj, &loc_params, connector_id, &vol_cb_args, dxpl_id, nullptr) < 0)
         return -1;
 
     return 0;
@@ -1341,7 +1345,7 @@ static int get_native_file_no(const H5VL_datalife_t *file_obj, unsigned long *fi
     vol_cb_args.op_type              = H5VL_FILE_GET_FILENO;
     vol_cb_args.args.get_fileno.fileno = fileno;
 
-    if(H5VLfile_get(file_obj->under_object, file_obj->under_vol_id, &vol_cb_args, H5P_DEFAULT, NULL) < 0)
+    if(H5VLfile_get(file_obj->under_object, file_obj->under_vol_id, &vol_cb_args, H5P_DEFAULT, nullptr) < 0)
         return -1;
 
     return 0;
@@ -1364,7 +1368,7 @@ H5VL_datalife_t *_file_open_common(void *under, hid_t vol_id,
 herr_t datalife_file_setup(const char* str_in, char* file_path_out, Prov_level* level_out, char* format_out){
     //acceptable format: path=$path_str;level=$level_int;format=$format_str
     char tmp_str[100] = {'\0'};
-    char* toklist[4] = {NULL};
+    char* toklist[4] = {nullptr};
     int i;
     char *p;
 
@@ -1372,9 +1376,9 @@ herr_t datalife_file_setup(const char* str_in, char* file_path_out, Prov_level* 
 
     i = 0;
     p = strtok(tmp_str, ";");
-    while(p != NULL) {
+    while(p != nullptr) {
         toklist[i] = strdup(p);
-        p = strtok(NULL, ";");
+        p = strtok(nullptr, ";");
         i++;
     }
 
@@ -1395,7 +1399,7 @@ H5VL_datalife_t * _fake_obj_new(file_dlife_info_t *root_file, hid_t under_vol_id
 {
     H5VL_datalife_t* obj;
 
-    obj = H5VL_datalife_new_obj(NULL, under_vol_id, DLIFE_HELPER);
+    obj = H5VL_datalife_new_obj(nullptr, under_vol_id, DLIFE_HELPER);
     obj->my_type = H5I_FILE;  // FILE should work fine as a parent obj for all.
     obj->generic_dlife_info = (void*)root_file;
 
@@ -1422,7 +1426,7 @@ H5VL_datalife_t * _obj_wrap_under(void *under, H5VL_datalife_t *upper_o,
                                     hid_t dxpl_id, void **req)
 {
     H5VL_datalife_t *obj;
-    file_dlife_info_t *file_info = NULL;
+    file_dlife_info_t *file_info = nullptr;
 
     if (under) {
         H5O_info2_t oinfo;
@@ -1432,7 +1436,11 @@ H5VL_datalife_t * _obj_wrap_under(void *under, H5VL_datalife_t *upper_o,
         //open from types
         switch(upper_o->my_type) {
             case H5I_DATASET:
+                file_info = ((object_dlife_info_t *)(upper_o->generic_dlife_info))->file_info;
+                break;
             case H5I_GROUP:
+                file_info = ((object_dlife_info_t *)(upper_o->generic_dlife_info))->file_info;
+                break;
             case H5I_DATATYPE:
             case H5I_ATTR:
                 file_info = ((object_dlife_info_t *)(upper_o->generic_dlife_info))->file_info;
@@ -1454,7 +1462,7 @@ H5VL_datalife_t * _obj_wrap_under(void *under, H5VL_datalife_t *upper_o,
             case H5I_ERROR_STACK:
             case H5I_NTYPES:
             default:
-                file_info = NULL;  // Error
+                file_info = nullptr;  // Error
                 break;
         }
         assert(file_info);
@@ -1474,10 +1482,13 @@ H5VL_datalife_t * _obj_wrap_under(void *under, H5VL_datalife_t *upper_o,
             get_native_info(under, target_obj_type, upper_o->under_vol_id,
                             dxpl_id, &oinfo);
             token = oinfo.token;
+            std::cout << "_obj_wrap_under() oinfo.fileno: " << oinfo.fileno << std::endl;
             file_no = oinfo.fileno;
         }
         else
             get_native_file_no(obj, &file_no);
+        
+        std::cout << "_obj_wrap_under() get_native_file_no: " << file_no << std::endl;
 
         switch (target_obj_type) {
             case H5I_DATASET:
@@ -1493,7 +1504,7 @@ H5VL_datalife_t * _obj_wrap_under(void *under, H5VL_datalife_t *upper_o,
                 obj->my_type = H5I_GROUP;
                 break;
 
-            case H5I_FILE: //newly added. if target_obj_name == NULL: it's a fake upper_o
+            case H5I_FILE: //newly added. if target_obj_name == nullptr: it's a fake upper_o
                 obj->generic_dlife_info = add_file_node(DLIFE_HELPER, target_obj_name, file_no);
                 obj->my_type = H5I_FILE;
                 break;
@@ -1513,13 +1524,13 @@ H5VL_datalife_t * _obj_wrap_under(void *under, H5VL_datalife_t *upper_o,
             case H5I_DATASPACE:
             case H5I_VFL:
             case H5I_VOL:
-                /* TODO(candice): this is redundant */
+                // /* TODO(candice): this is redundant */
                 // obj->generic_dlife_info = add_dataset_node(file_no, obj, token, file_info, target_obj_name, dxpl_id, req);
                 // obj->my_type = H5I_VOL;
 
                 // file_ds_created(file_info); //candice added
                 // file_ds_accessed(file_info);
-                break;
+                // break;
             case H5I_GENPROP_CLS:
             case H5I_GENPROP_LST:
             case H5I_ERROR_CLASS:
@@ -1531,7 +1542,7 @@ H5VL_datalife_t * _obj_wrap_under(void *under, H5VL_datalife_t *upper_o,
         }
     } /* end if */
     else
-        obj = NULL;
+        obj = nullptr;
 
     return obj;
 }
@@ -1558,7 +1569,7 @@ unsigned int genHash(const char *msg) {
 
 void _dic_init(void){
     for(int i = 0; i < STAT_FUNC_MOD; i++){
-        FUNC_DIC[i] = NULL;
+        FUNC_DIC[i] = nullptr;
     }
 }
 
@@ -1754,7 +1765,7 @@ void _preset_dic_print(void){
 //not file_dlife_info_t!
 void file_stats_dlife_write(const file_dlife_info_t* file_info) {
     if(!file_info){
-       printf("file_stats_dlife_write(): ds_info is NULL.\n");
+       printf("file_stats_dlife_write(): ds_info is nullptr.\n");
         return;
     }
 
@@ -1772,7 +1783,7 @@ void file_stats_dlife_write(const file_dlife_info_t* file_info) {
 void dataset_stats_dlife_write(const dataset_dlife_info_t* dset_info){
 
     if(!dset_info){
-        printf("dataset_stats_dlife_write(): dset_info is NULL.\n");
+        printf("dataset_stats_dlife_write(): dset_info is nullptr.\n");
         return;
     }
 //    printf("Dataset name = %s,\ndata type class = %d, data space class = %d, data space size = %llu, data type size =%p.\n",
@@ -1815,7 +1826,7 @@ void dataset_stats_dlife_write(const dataset_dlife_info_t* dset_info){
 
 void datatype_stats_dlife_write(const datatype_dlife_info_t* dt_info) {
     if(!dt_info){
-        //printf("datatype_stats_dlife_write(): ds_info is NULL.\n");
+        //printf("datatype_stats_dlife_write(): ds_info is nullptr.\n");
         return;
     }
     //printf("Datatype name = %s, commited %d times, datatype get is called %d times.\n", dt_info->dtype_name, dt_info->datatype_commit_cnt, dt_info->datatype_get_cnt);
@@ -1823,7 +1834,7 @@ void datatype_stats_dlife_write(const datatype_dlife_info_t* dt_info) {
 
 void group_stats_dlife_write(const group_dlife_info_t* grp_info) {
     if(!grp_info){
-        //printf("group_stats_dlife_write(): grp_info is NULL.\n");
+        //printf("group_stats_dlife_write(): grp_info is nullptr.\n");
         return;
     }
     //printf("group_stats_dlife_write() is yet to be implemented.\n");
@@ -1831,7 +1842,7 @@ void group_stats_dlife_write(const group_dlife_info_t* grp_info) {
 
 void attribute_stats_dlife_write(const attribute_dlife_info_t *attr_info) {
     if(!attr_info){
-        //printf("attribute_stats_dlife_write(): attr_info is NULL.\n");
+        //printf("attribute_stats_dlife_write(): attr_info is nullptr.\n");
         return;
     }
     //printf("attribute_stats_dlife_write() is yet to be implemented.\n");
@@ -1883,12 +1894,15 @@ void dlife_helper_teardown(dlife_helper_t* helper){
                 break;
         }
 #endif
+
+#ifdef DATALIFE_SCHEMA
         if (helper->dlife_level == File_only || helper->dlife_level == File_and_print) {
-            // helper->dlife_file_handle.flush();
-            // helper->dlife_file_handle.close();
-            fflush(helper->dlife_file_handle);
-            fclose(helper->dlife_file_handle);
+            helper->dlife_file_handle.flush();
+            helper->dlife_file_handle.close();
+            // fflush(helper->dlife_file_handle);
+            // fclose(helper->dlife_file_handle);
         }
+#endif
         if(helper->dlife_file_path)
             free(helper->dlife_file_path);
         if(helper->dlife_line_format)
@@ -1964,7 +1978,7 @@ int dlife_write(dlife_helper_t* helper_in, const char* msg, unsigned long durati
 // void dump_file_stat_yaml(FILE *f, const file_dlife_info_t* file_info)
 // {
 //     if (!file_info) {
-//         fprintf(f, "dump_file_stat_yaml(): ds_info is NULL.\n");
+//         fprintf(f, "dump_file_stat_yaml(): ds_info is nullptr.\n");
 //         return;
 //     }
 
@@ -1989,7 +2003,7 @@ int dlife_write(dlife_helper_t* helper_in, const char* msg, unsigned long durati
 // {
 
 //     if(!dset_info){
-//         fprintf(f,"dump_dset_stat_yaml(): dset_info is NULL.\n");
+//         fprintf(f,"dump_dset_stat_yaml(): dset_info is nullptr.\n");
 //         return;
 //     }
 
@@ -2038,105 +2052,66 @@ int dlife_write(dlife_helper_t* helper_in, const char* msg, unsigned long durati
 
 
 
-void dump_file_stat_yaml(file_dlife_info_t* file_info)
+void dump_file_stat_yaml(std::ofstream &out, const file_dlife_info_t* file_info)
 {
-    std::string file_path = "/qfs/people/tang584/scripts/PyFLEXTRKR/hm_wrf_tbradar_demo/dl-data-stat.yaml";
-    std::ofstream out;
-    out.open(file_path, std::ios_base::app);
 
-    if(out.is_open())
-    {
-        if (!file_info) {
-            out << "dump_file_stat_yaml(): ds_info is NULL." << std::endl;
-            return;
-        }
-
-        out << "- file-" << file_info->sorder_id << "_" << file_info->porder_id << ":" << std::endl;
-        out << "\tname: " << file_info->file_name << std::endl;
-        out << "\tsize: " << file_info->file_size << std::endl;
-        out << "\tintent: " << file_info->intent << std::endl;
-
-        out << "\theader_size: " << file_info->header_size << std::endl;
-        out << "\tsieve_buf_size: " << file_info->sieve_buf_size << std::endl;
-    }
-    else{
-        std::cout << "dump_file_stat_yaml(): failed to open file." << std::endl;
+    if (!file_info) {
+        out << "dump_file_stat_yaml(): ds_info is nullptr." << std::endl;
+        return;
     }
 
-    out.close();
+    std::cout << "dump_file_stat_yaml(): start." << std::endl;
 
-    // // TODO: add stats in VOL
-    // out << "\tds_created: " << file_info->ds_created << std::endl;
-    // out << "\tds_accessed: " << file_info->ds_accessed << std::endl;
-    // out << "\tgrp_created: " << file_info->grp_created << std::endl;
-    // out << "\tgrp_accessed: " << file_info->grp_accessed << std::endl;
-    // out << "\tdtypes_created: " << file_info->dtypes_created << std::endl;
-    // out << "\tdtypes_accessed: " << file_info->dtypes_accessed << std::endl;
+
+    out << "- file-" << file_info->sorder_id << "_" << file_info->porder_id << ":" << std::endl;
+    out << "\tname: " << file_info->file_name << std::endl;
+    out << "\tsize: " << file_info->file_size << std::endl;
+    out << "\tintent: " << file_info->intent << std::endl;
+
+    out << "\theader_size: " << file_info->header_size << std::endl;
+    out << "\tsieve_buf_size: " << file_info->sieve_buf_size << std::endl;
+
+    // Ensure all the data is flushed to the file
+    // out.flush();
+
+
 }
 
-void dump_dset_stat_yaml(dataset_dlife_info_t* dset_info)
+void dump_dset_stat_yaml(std::ofstream &out, const dataset_dlife_info_t* dset_info)
 {   
-    std::string file_path = "/qfs/people/tang584/scripts/PyFLEXTRKR/hm_wrf_tbradar_demo/dl-data-stat.yaml";
-    std::ofstream out;
-    out.open(file_path, std::ios_base::app);
 
-    if (out.is_open())
-    {
-        if (!dset_info) {
-            out << "dump_dset_stat_yaml(): dset_info is NULL." << std::endl;
-            return;
-        }
-
-        out << "- file-" << dset_info->pfile_sorder_id << "_" << dset_info->pfile_porder_id << ":" << std::endl;
-        out << "\tname: " << dset_info->pfile_name << std::endl;
-
-        out << "\tdset-" << dset_info->pfile_sorder_id << "_" << dset_info->pfile_porder_id << "-"
-            << dset_info->sorder_id << "_" << dset_info->porder_id << ":" << std::endl;
-        out << "\t\tname: " << dset_info->obj_info.name << std::endl;
-        // out << "\t\tlayout: " << dset_info->layout << std::endl;
-        // out << "\t\toffset: " << dset_info->dset_offset << std::endl;
-        // out << "\t\tdata_type_class: " << dset_info->dt_class << std::endl;
-        // out << "\t\ttype_size: " << dset_info->dset_type_size << std::endl;
-        // out << "\t\tn_elements: " << dset_info->dset_n_elements << std::endl;
-        // out << "\t\tstorage_size: " << dset_info->storage_size << std::endl;
-        out << "\t\tn_dimension: " << dset_info->dimension_cnt << std::endl;
-        out << "\t\tdimensions: [";
-        for (size_t i = 0; i < dset_info->dimension_cnt; i++) {
-            out << dset_info->dimensions[i];
-            if (i < dset_info->dimension_cnt - 1)
-                out << ",";
-        }
-        out << "]" << std::endl;
-
-        
-
-    }
-    else{
-        std::cout << "Unable to open file";
+    if (!dset_info) {
+        out << "dump_dset_stat_yaml(): ds_info is nullptr." << std::endl;
+        return;
     }
 
-    out.close();
+    std::cout << "dump_dset_stat_yaml(): start." << std::endl;
 
-    // unsigned long total_io_size;
-    // if (dset_info->dataset_read_cnt > 0) {
-    //     out << "\t\tread_cnt: " << dset_info->dataset_read_cnt << std::endl;
-    //     total_io_size = dset_info->total_bytes_read;
-    //     if (dset_info->blob_get_cnt > 0) {
-    //         out << "\t\tblob_get_cnt: " << dset_info->blob_get_cnt << std::endl;
-    //         total_io_size += dset_info->total_bytes_blob_get;
-    //     }
-    //     out << "\t\tread_io_size: " << total_io_size << std::endl;
-    // }
 
-    // if (dset_info->dataset_write_cnt > 0) {
-    //     out << "\t\twrite_cnt: " << dset_info->dataset_write_cnt << std::endl;
-    //     total_io_size = dset_info->total_bytes_written;
-    //     if (dset_info->blob_put_cnt > 0) {
-    //         out << "\t\tblob_put_cnt: " << dset_info->blob_put_cnt << std::endl;
-    //         total_io_size += dset_info->total_bytes_blob_put;
-    //     }
-    //     out << "\t\twrite_io_size: " << total_io_size << std::endl;
-    // }
+    out << "- file-" << dset_info->pfile_sorder_id << "_" << dset_info->pfile_porder_id << ":" << std::endl;
+    out << "\tname: " << dset_info->pfile_name << std::endl;
+
+    out << "\tdset-" << dset_info->pfile_sorder_id << "_" << dset_info->pfile_porder_id << "-"
+        << dset_info->sorder_id << "_" << dset_info->porder_id << ":" << std::endl;
+    out << "\t\tname: " << dset_info->obj_info.name << std::endl;
+    out << "\t\tlayout: " << dset_info->layout << std::endl;
+    out << "\t\toffset: " << dset_info->dset_offset << std::endl;
+    out << "\t\tdata_type_class: " << dset_info->dt_class << std::endl;
+    out << "\t\ttype_size: " << dset_info->dset_type_size << std::endl;
+    out << "\t\tn_elements: " << dset_info->dset_n_elements << std::endl;
+    out << "\t\tstorage_size: " << dset_info->storage_size << std::endl;
+    out << "\t\tn_dimension: " << dset_info->dimension_cnt << std::endl;
+    out << "\t\tdimensions: [";
+    for (size_t i = 0; i < dset_info->dimension_cnt; i++) {
+        out << dset_info->dimensions[i];
+        if (i < dset_info->dimension_cnt - 1)
+            out << ",";
+    }
+    out << "]" << std::endl;
+
+    // // Ensure all the data is flushed to the file
+    // out.flush();
+
 }
 
 // void print_order_id()
@@ -2156,7 +2131,7 @@ void H5VL_arrow_get_selected_sub_region(hid_t space_id, size_t org_type_size) {
     // 1. get the memspace dimensional information
     // subRegionInfo->type_size = type_size;
     hsize_t g_sdim[H5S_MAX_RANK];
-    int sranks = H5Sget_simple_extent_dims(space_id, g_sdim, NULL);
+    int sranks = H5Sget_simple_extent_dims(space_id, g_sdim, nullptr);
     int32_t g_rows = 1;
     for (int i = 0; i < sranks - 1; ++i) {
         g_rows *= g_sdim[i];
@@ -2196,7 +2171,7 @@ void H5VL_arrow_get_selected_sub_region(hid_t space_id, size_t org_type_size) {
     size_t nelem;
     // hsize_t seq_start_off;
     int ndim = H5Sget_simple_extent_ndims(space_id);
-    uint64_t *seq_start_off = (uint64_t *)malloc(sizeof(uint64_t) * ndim);
+    uint64_t *seq_start_off = new uint64_t[ndim]; //(uint64_t *)malloc(sizeof(uint64_t) * ndim);
 
     size_t seq_len;
     H5Ssel_iter_get_seq_list(sel_iter_id, 1, (size_t)type_size, &nseq, &nelem, seq_start_off, &seq_len);
@@ -2283,7 +2258,7 @@ void file_info_print(char * func_name, void * obj, hid_t fapl_id, hid_t dxpl_id)
     // get file intent
     if(!file_info->intent){
         char * intent = file_get_intent(file->under_object, file->under_vol_id, dxpl_id);
-        file_info->intent = intent ? strdup(intent) : NULL;
+        file_info->intent = intent ? strdup(intent) : nullptr;
     }
     
     file_info->file_size = file_get_size(file->under_object, file->under_vol_id, dxpl_id);
@@ -2310,10 +2285,6 @@ void file_info_print(char * func_name, void * obj, hid_t fapl_id, hid_t dxpl_id)
     // printf("\"file_name_hex\": %p, ", file_info->file_name);
     printf("\"file_no\": %d, ", file_info->file_no); //H5FD_t *_file->fileno same
     printf("\"access_size\": %d, ", 0);
-    printf("\"offset\": %d, ", -1);
-
-    printf("\"logical_addr\": %d, ", -1);
-    printf("\"blob_idx\": %d, ", -1);
 
     printf("\"header_size\": %ld, ", file_info->header_size);
     printf("\"sieve_buf_size\": %ld, ", file_info->sieve_buf_size);
@@ -2385,6 +2356,63 @@ char * get_datatype_class_str(hid_t type_id){
         return "H5T_NCLASSES";
 }
 
+void print_my_type(char * func_name, hid_t type_id){
+    printf("\"func_name\": \"%s\", ", func_name);
+    switch(type_id){
+        case H5I_DATASET:
+            printf("H5I_DATASET\n");
+            break;
+        case H5I_GROUP:
+            printf("H5I_GROUP\n");
+            break;
+        case H5I_DATATYPE:
+            printf("H5I_DATATYPE\n");
+            break;
+        case H5I_ATTR:
+            printf("H5I_ATTR\n");
+            break;
+        case H5I_FILE:
+            printf("H5I_FILE\n");
+            break;
+        case H5I_UNINIT:
+            printf("H5I_UNINIT\n");
+            break;
+        case H5I_BADID:
+            printf("H5I_BADID\n");
+            break;
+        case H5I_DATASPACE:
+            printf("H5I_DATASPACE\n");
+            break;
+        case H5I_VFL:
+            printf("H5I_VFL\n");
+            break;
+        case H5I_VOL:
+            printf("H5I_VOL\n");
+            break;
+        case H5I_GENPROP_CLS:
+            printf("H5I_GENPROP_CLS\n");
+            break;
+        case H5I_GENPROP_LST:
+            printf("H5I_GENPROP_LST\n");
+            break;
+        case H5I_ERROR_CLASS:
+            printf("H5I_ERROR_CLASS\n");
+            break;
+        case H5I_ERROR_MSG:
+            printf("H5I_ERROR_MSG\n");
+            break;
+        case H5I_ERROR_STACK:
+            printf("H5I_ERROR_STACK\n");
+            break;
+        case H5I_NTYPES:
+            printf("H5I_NTYPES\n");
+            break;
+        default:
+            printf("H5I_UNKNOWN\n");
+            break;
+    }
+}
+
 void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
     hid_t file_space_id, void * obj, hid_t dxpl_id, const void *buf, size_t obj_idx)
 {
@@ -2396,7 +2424,7 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
     // printf("dataset_info_print dset_info [%p]\n",dset_info);
     // printf("dataset_info_print total_bytes_written [%p]\n", &dset_info->total_bytes_written);
 
-    // if (dset_info->total_bytes_written == NULL){
+    // if (dset_info->total_bytes_written == nullptr){
     //     dset_info->total_bytes_written = malloc(sizeof(size_t));
     //     dset_info->total_bytes_written = 0;
     // }
@@ -2417,34 +2445,39 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
         unsigned int dimension_cnt = H5Sget_simple_extent_ndims(space_id);
         dset_info->dimension_cnt = dimension_cnt;
         if(dimension_cnt > 0)
-            dset_info->dimensions = static_cast<hsize_t*>(malloc(dimension_cnt * sizeof(hsize_t*)));
+            dset_info->dimensions = new hsize_t[dimension_cnt]; //static_cast<hsize_t*>(malloc(dimension_cnt * sizeof(hsize_t*)));
         hsize_t maxdims[dimension_cnt];
         H5Sget_simple_extent_dims(space_id, dset_info->dimensions, maxdims);
     }
     // unsigned int ndim = (unsigned)H5Sget_simple_extent_ndims(space_id);
     // hsize_t dimensions[ndim];
-    // H5Sget_simple_extent_dims(space_id, dimensions, NULL);
+    // H5Sget_simple_extent_dims(space_id, dimensions, nullptr);
     if(!dset_info->layout)
     {
         // get layout type (only available at creation time?)
         hid_t dcpl_id = dataset_get_dcpl(dset->under_object, dset->under_vol_id,dxpl_id);
         // only valid with creation property list
         char * layout = dataset_get_layout(dcpl_id); 
-        dset_info->layout = layout ? strdup(layout) : NULL;
+        dset_info->layout = layout ? strdup(layout) : nullptr;
     }
 
     if(strcmp(dset_info->layout,"H5D_CONTIGUOUS") == 0)
         dset_info->storage_size = H5Sget_simple_extent_npoints(space_id) * dset_info->dset_type_size ;
 
 
-    if(strcmp(func_name,"H5VLdataset_create") != 0)
-        if((dset_info->storage_size == NULL) || (dset_info->storage_size < 1))
+    if(strcmp(func_name,"H5VLdataset_create") != 0){
+        if((!dset_info->storage_size) || (dset_info->storage_size < 1))
             dset_info->storage_size = dataset_get_storage_size(dset->under_object, dset->under_vol_id, dxpl_id);
-
-    if ((dset_info->dset_offset == NULL) || (dset_info->dset_offset == -1))
-        dset_info->dset_offset = dataset_get_offset(dset->under_object, dset->under_vol_id, dxpl_id);
+    }
 
 
+    if ((!dset_info->dset_offset)){
+        if(strcmp(dset_info->layout,"H5D_CONTIGUOUS")==0)
+            dset_info->dset_offset = dataset_get_offset(dset->under_object, dset->under_vol_id, dxpl_id);
+        else
+            dset_info->dset_offset = -1;
+    }
+        
 
     // assert(dset_info);
 
@@ -2487,7 +2520,7 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
 
     // printf("\"dset_space_size\": \"%ld\", ", dset_info->dset_space_size);
 
-    // char *token_str = NULL;
+    // char *token_str = nullptr;
     printf("\"dset_token\": %ld, ", dset_info->obj_info.token);
 
     // printf("\"dset_name_addr\": \"%p\", ", dset_info->obj_info.name);
@@ -2576,7 +2609,7 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
     printf("}\n");
 
 
-    // if (mem_space_id != NULL && mem_type_id != NULL){
+    // if (mem_space_id != nullptr && mem_type_id != nullptr){
     //     H5VL_arrow_get_selected_sub_region(mem_space_id, H5Tget_size(mem_type_id)); //dset_info->dset_type_size
     // }
 
@@ -2598,7 +2631,7 @@ haddr_t * blob_id_to_addr(void ** p){
 /* Reset value in destination */
     hbool_t  all_zero = true; /* True if address was all zeroes */
     unsigned u;               /* Local index variable */
-    haddr_t *addr_p =static_cast<haddr_t*>(malloc(sizeof(haddr_t)));
+    haddr_t *addr_p = new haddr_t; //static_cast<haddr_t*>(malloc(sizeof(haddr_t)));
     uint8_t **pp = reinterpret_cast<uint8_t**>(p);
     size_t addr_len = 4;
 
@@ -2648,7 +2681,7 @@ haddr_t * blob_id_to_addr(void ** p){
 //     dataset_dlife_info_t * dset_info = (dataset_dlife_info_t*)dset->generic_dlife_info;
 //     assert(dset_info);
 //     // printf("\"dset_name\": \"%s\", ", dset_info->obj_info.name); //TODO
-//     // char *token_str = NULL;
+//     // char *token_str = nullptr;
 //     // printf("\"dset_token_str\": \"%s\", ", H5Otoken_to_str(space_id, &dset_info->obj_info.token, &token_str));
 //     printf("\"dset_token\": %ld, ", dset_info->obj_info.token);
 //     printf("\"storage_size\": %ld, ", dset_info->storage_size);
@@ -2767,14 +2800,14 @@ void blob_info_print(char * func_name, void * obj, hid_t dxpl_id,
 
             printf("\"dset_name\": \"%s\", ", dset_info->obj_info.name); //TODO
         
-            // char *token_str = NULL;
+            // char *token_str = nullptr;
             // printf("\"dset_token_str\": \"%s\", ", H5Otoken_to_str(space_id, &dset_info->obj_info.token, &token_str));
             printf("\"dset_token\": %ld, ", dset_info->obj_info.token);
 
             // size_t token_idx = malloc(sizeof(size_t));
             // decode_uint32((void *) &dset_info->obj_info.token, token_idx);
 
-            size_t* token_idx = static_cast<size_t*>(malloc(sizeof(size_t)));
+            size_t* token_idx; //new size_t; static_cast<size_t*>(malloc(sizeof(size_t)));
             decode_uint32(reinterpret_cast<uint32_t*>(&dset_info->obj_info.token), reinterpret_cast<const uint8_t*>(token_idx));
 
             // printf("\"token_idx\": %zu, ", token_idx);

@@ -5,6 +5,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <iostream>
+#include <fstream>
+
 #include "hdf5.h"
 #include "datalife_vol.h"
 // #include "md5.h"
@@ -81,8 +84,8 @@ typedef struct FileTracker {
 typedef struct ProvenanceHelper {
     /* Provenance properties */
     char* dlife_file_path;
-    FILE* dlife_file_handle;
-    // std::ofstream dlife_file_handle;
+    // FILE* dlife_file_handle;
+    std::ofstream dlife_file_handle;
     Prov_level dlife_level;
     char* dlife_line_format;
     char user_name[32];

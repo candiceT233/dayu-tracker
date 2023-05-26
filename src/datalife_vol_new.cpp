@@ -49,7 +49,7 @@
 
 // #include "hdf5dev.h"
 #include "datalife_vol.h"
-#include "datalife_vol_int.h"
+#include "datalife_vol_int.hpp"
 
 
 /************/
@@ -355,7 +355,7 @@ H5VL_datalife_register(void)
 static herr_t
 H5VL_datalife_init(hid_t vipl_id)
 {
-    dlLockInit(&myLock);
+    // dlLockInit(&myLock);
 
 #ifdef DATALIFE_PT_LOGGING
     printf("DATALIFE VOL INIT\n");
@@ -439,7 +439,7 @@ H5VL_datalife_info_copy(const void *_info)
 #endif
 
     /* Allocate new VOL info struct for the DATALIFE connector */
-    new_info = (H5VL_datalife_info_t *)calloc(1, sizeof(H5VL_datalife_info_t));
+    new_info = new H5VL_datalife_info_t(); //(H5VL_datalife_info_t *)calloc(1, sizeof(H5VL_datalife_info_t));
 
     /* Increment reference count on underlying VOL ID, and copy the VOL info */
     new_info->under_vol_id = info->under_vol_id;
@@ -666,7 +666,7 @@ H5VL_datalife_str_to_info(const char *str, void **_info)
     assert(under_vol_info_end > under_vol_info_start);
 
     if(under_vol_info_end != (under_vol_info_start + 1)) {
-        under_vol_info_str = (char *)malloc((size_t)(under_vol_info_end - under_vol_info_start));
+        under_vol_info_str = new char[under_vol_info_end - under_vol_info_start];//(char *)malloc((size_t)(under_vol_info_end - under_vol_info_start));
         memcpy(under_vol_info_str, under_vol_info_start + 1, (size_t)((under_vol_info_end - under_vol_info_start) - 1));
         *(under_vol_info_str + (under_vol_info_end - under_vol_info_start)) = '\0';
 
@@ -675,12 +675,14 @@ H5VL_datalife_str_to_info(const char *str, void **_info)
     } /* end else */
 
     /* Allocate new datalife VOL connector info and set its fields */
-    info = (H5VL_datalife_info_t *)calloc(1, sizeof(H5VL_datalife_info_t));
+    info = new H5VL_datalife_info_t(); //(H5VL_datalife_info_t *)calloc(1, sizeof(H5VL_datalife_info_t));
     info->under_vol_id = under_vol_id;
     info->under_vol_info = under_vol_info;
 
-    info->dlife_file_path = (char *)calloc(64, sizeof(char));
-    info->dlife_line_format = (char *)calloc(64, sizeof(char));
+    // info->dlife_file_path = (char *)calloc(64, sizeof(char));
+    // info->dlife_line_format = (char *)calloc(64, sizeof(char));
+    info->dlife_file_path = new char[64];
+    info->dlife_line_format = new char[64];
 
     if(datalife_file_setup(under_vol_info_end, info->dlife_file_path, &(info->dlife_level), info->dlife_line_format) != 0){
         free(info->dlife_file_path);
@@ -760,7 +762,8 @@ H5VL_datalife_get_wrap_ctx(const void *obj, void **wrap_ctx)
     unsigned long start = get_time_usec();
     unsigned long m1, m2;
 
-    const H5VL_datalife_t *o = (const H5VL_datalife_t *)obj;
+    const H5VL_datalife_t *o = static_cast<const H5VL_datalife_t *>(obj);
+
     H5VL_datalife_wrap_ctx_t *new_wrap_ctx;
 
 #ifdef DATALIFE_PT_LOGGING
@@ -768,21 +771,25 @@ H5VL_datalife_get_wrap_ctx(const void *obj, void **wrap_ctx)
 #endif
 
     assert(o->my_type != 0);
-
+    print_my_type("H5VL_datalife_get_wrap_ctx",o->my_type);
     /* Allocate new VOL object wrapping context for the DATALIFE connector */
-    new_wrap_ctx = (H5VL_datalife_wrap_ctx_t *)calloc(1, sizeof(H5VL_datalife_wrap_ctx_t));
+    new_wrap_ctx = new H5VL_datalife_wrap_ctx_t(); //(H5VL_datalife_wrap_ctx_t *)calloc(1, sizeof(H5VL_datalife_wrap_ctx_t));
     switch(o->my_type){
         case H5I_DATASET:
+            new_wrap_ctx->file_info = static_cast<object_dlife_info_t *>(o->generic_dlife_info)->file_info;
+            break;
         case H5I_GROUP:
+            new_wrap_ctx->file_info = static_cast<object_dlife_info_t *>(o->generic_dlife_info)->file_info;
+            break;
         case H5I_DATATYPE:
+            new_wrap_ctx->file_info = static_cast<object_dlife_info_t *>(o->generic_dlife_info)->file_info;
+            break;
         case H5I_ATTR:
-            new_wrap_ctx->file_info = ((object_dlife_info_t *)(o->generic_dlife_info))->file_info;
+            new_wrap_ctx->file_info = static_cast<object_dlife_info_t *>(o->generic_dlife_info)->file_info;
             break;
-
         case H5I_FILE:
-            new_wrap_ctx->file_info = (file_dlife_info_t*)(o->generic_dlife_info);
+            new_wrap_ctx->file_info = static_cast<file_dlife_info_t *>(o->generic_dlife_info);
             break;
-
         case H5I_UNINIT:
         case H5I_BADID:
         case H5I_DATASPACE:
@@ -795,7 +802,8 @@ H5VL_datalife_get_wrap_ctx(const void *obj, void **wrap_ctx)
         case H5I_ERROR_STACK:
         case H5I_NTYPES:
         default:
-            printf("%s:%d: unexpected type: my_type = %d\n", __func__, __LINE__, (int)o->my_type);
+            // printf("%s:%d: unexpected type: my_type = %d\n", __func__, __LINE__, (int)o->my_type);
+            std::cout << __func__ << ":" << __LINE__ << ": unexpected type: my_type = " << static_cast<int>(o->my_type) << std::endl;
             break;
     }
 
@@ -915,6 +923,7 @@ H5VL_datalife_unwrap_object(void *obj)
                 break;
 
             case H5I_FILE:
+                std::cout << "H5VL_datalife_unwrap_object() fileno: " << ((file_dlife_info_t *)o->generic_dlife_info)->file_no << std::endl;
                 rm_file_node(o->dlife_helper, ((file_dlife_info_t *)o->generic_dlife_info)->file_no);
                 break;
 
@@ -967,6 +976,9 @@ H5VL_datalife_free_wrap_ctx(void *_wrap_ctx)
     err_id = H5Eget_current_stack();
 
     // Release hold on underlying file_info
+    std::cout << "H5VL_datalife_free_wrap_ctx() fileno: " << wrap_ctx->file_info->file_no << std::endl;
+    //  std::cout << "H5VL_datalife_free_wrap_ctx() fileno: " << wrap_ctx->file_no << std::endl; // always 0
+    // if(wrap_ctx->file_info->file_no != 0)
     rm_file_node(DLIFE_HELPER, wrap_ctx->file_info->file_no);
 
     /* Release underlying VOL ID and wrap context */
@@ -1066,7 +1078,8 @@ H5VL_datalife_attr_open(void *obj, const H5VL_loc_params_t *loc_params,
             if(size_ret > 0) {
                 size_t buf_len = (size_t)(size_ret + 1);
 
-                attr_name = (char *)malloc(buf_len);
+                // attr_name = (char *)malloc(buf_len);
+                attr_name = new char[buf_len];
                 size_ret = attr_get_name(under, o->under_vol_id, dxpl_id, buf_len, attr_name);
                 if(size_ret >= 0)
                     name = attr_name;
@@ -1231,6 +1244,13 @@ H5VL_datalife_attr_specific(void *obj, const H5VL_loc_params_t *loc_params,
 
 #ifdef DATALIFE_PT_LOGGING
     printf("DATALIFE VOL ATTRIBUTE Specific\n");
+
+    // H5VL_datalife_t *dset = (H5VL_datalife_t *)obj;
+    // dataset_dlife_info_t * dset_info = (dataset_dlife_info_t*)dset->generic_dlife_info;    
+    // // assert(dset_info);
+
+    // std::cout << "H5VL_datalife_attr_specific() dset_name: " << dset_info->dset_name << std::endl;
+    // std::cout << "H5VL_datalife_attr_specific() args: " << args->args.exists.name << std::endl;
 #endif
 
     m1 = get_time_usec();
@@ -2013,8 +2033,14 @@ H5VL_datalife_dataset_close(void *dset, hid_t dxpl_id, void **req)
     dataset_info_print("H5VLdataset_close", NULL, NULL, NULL, dset, dxpl_id, NULL, NULL);
     BLOB_SORDER=0;
     // printf("\n\n");
+#endif
+
+#ifdef DATALIFE_SCHEMA
+
+    dump_dset_stat_yaml(DLIFE_HELPER->dlife_file_handle,dset_info);
     
 #endif
+
     m1 = get_time_usec();
     ret_value = H5VLdataset_close(o->under_object, o->under_vol_id, dxpl_id, req);
     m2 = get_time_usec();
@@ -2039,12 +2065,7 @@ H5VL_datalife_dataset_close(void *dset, hid_t dxpl_id, void **req)
     }
 #endif
 
-#ifdef DATALIFE_SCHEMA
-    // dlLockAcquire(&myLock);
-    // // dump_dset_stat_yaml(DLIFE_HELPER->dlife_file_handle,dset_info);
-    // dump_dset_stat_yaml(dset_info);
-    // dlLockRelease(&myLock);
-#endif
+
 
     TOTAL_DLIFE_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -2552,7 +2573,7 @@ H5VL_datalife_file_open(const char *name, unsigned flags, hid_t fapl_id,
     file_dlife_info_t* file_info = static_cast<file_dlife_info_t*>(file->generic_dlife_info);
     
     /* Allocate memory for file_name */
-    file_info->file_name = (char*) malloc(strlen(name) + 1);
+    file_info->file_name = new char[strlen(name) + 1]; //(char*) malloc(strlen(name) + 1);
     /* Copy name to file_name */
     strcpy(file_info->file_name, name);
     
@@ -2888,13 +2909,13 @@ H5VL_datalife_file_close(void *file, hid_t dxpl_id, void **req)
     // printf("H5VLfile_close Time[%ld]", get_time_usec());
     // printf(" FileName[%s]\n", file_info->file_name);
     file_info_print("H5VLfile_close", file, NULL, dxpl_id);
+    unsigned long file_no = file_info->file_no;
 #endif
 
 #ifdef DATALIFE_SCHEMA
-    dlLockAcquire(&myLock);
-    // dump_file_stat_yaml(DLIFE_HELPER->dlife_file_handle,file_info);
-    dump_file_stat_yaml(file_info);
-    dlLockRelease(&myLock);
+    // myLock.lock();
+    dump_file_stat_yaml(DLIFE_HELPER->dlife_file_handle,file_info);
+    // myLock.unlock();
 #endif
 
 
@@ -2916,8 +2937,9 @@ H5VL_datalife_file_close(void *file, hid_t dxpl_id, void **req)
 
     /* Release our wrapper, if underlying file was closed */
     if(ret_value >= 0){
+        std::cout << "H5VL_datalife_file_close() file_no: " << ((file_dlife_info_t*)(o->generic_dlife_info))->file_no << std::endl;
         rm_file_node(DLIFE_HELPER, ((file_dlife_info_t*)(o->generic_dlife_info))->file_no);
-
+        // rm_file_node(DLIFE_HELPER, file_no);
         H5VL_datalife_free_obj(o);
     }
 
