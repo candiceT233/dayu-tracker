@@ -24,10 +24,10 @@ typedef struct H5VL_dlife_file_info_t file_dlife_info_t;
 typedef struct H5VL_dlife_blob_info_t blob_dlife_info_t;
 
 unsigned long FILE_SORDER;
-unsigned long FILE_PORDER;
+// unsigned long FILE_PORDER;
 
 unsigned long DSET_SORDER;
-unsigned long DSET_PORDER;
+// unsigned long DSET_PORDER;
 
 unsigned long BLOB_SORDER;
 unsigned long BLOB_PORDER;
@@ -68,7 +68,6 @@ typedef struct FileTracker file_list_t;
 typedef struct FileTracker {
     char * name;
     unsigned long sorder_id;
-    unsigned long porder_id;
     unsigned long time; // at self create time
     // size_t size;
     // char op_type[10]; // create/open/close
@@ -137,7 +136,6 @@ struct H5VL_dlife_file_info_t {//assigned when a file is closed, serves to store
     /* candice added for more stats start */
     char* intent; // TODO: convert to unsigned int type for less conversion
     unsigned long sorder_id;
-    unsigned long porder_id;
     hid_t fapl_id;
     hsize_t file_size;
     hsize_t header_size;
@@ -209,9 +207,7 @@ struct H5VL_dlife_dataset_info_t {
     hid_t dspace_id;
     hid_t dtype_id;
     unsigned long sorder_id;
-    unsigned long porder_id;
     unsigned long pfile_sorder_id;
-    unsigned long pfile_porder_id;
     unsigned long start_time;
     unsigned long end_time;
     /* candice added for more dset stats end */

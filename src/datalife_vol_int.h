@@ -587,9 +587,7 @@ dataset_dlife_info_t *new_dataset_info(file_dlife_info_t *root_file,
 
     // initialize dset_info values
     info->sorder_id=0;
-    info->porder_id=0;
     info->pfile_sorder_id = 0;
-    info->pfile_porder_id = 0;
 
     info->blob_put_cnt = 0;
     info->total_bytes_blob_put = 0;
@@ -645,7 +643,6 @@ file_dlife_info_t* new_file_info(const char* fname, unsigned long file_no)
     info->dlife_helper = DLIFE_HELPER;
     info->file_no = file_no;
     info->sorder_id=0;
-    info->porder_id=0;
     return info;
 }
 
@@ -1016,11 +1013,9 @@ file_dlife_info_t* add_file_node(dlife_helper_t* helper, const char* file_name,
     // Increment refcount on file node
     cur->ref_cnt++;
 
-    // if(DLIFE_HELPER->opened_files_cnt > 1){
-    //     cur->porder_id =++FILE_PORDER;
-    // } else {
-    //     cur->sorder_id =++FILE_SORDER;
-    // }
+    dlLockAcquire(&myLock);
+    cur->sorder_id =++FILE_SORDER;
+    dlLockRelease(&myLock);
 
     FILE_LL_TOTAL_TIME += (get_time_usec() - start);
     return cur;
@@ -1162,19 +1157,9 @@ dataset_dlife_info_t * add_dataset_node(unsigned long obj_file_no,
     cur->sorder_id = ++DSET_SORDER;
     dlLockRelease(&myLock);
 
-    cur->porder_id = 0;
-    printf("add_dataset_node: sorder_id %d\n", cur->sorder_id);
 
     // Add useful info when dataset node is added
     // cur->obj_info.name = strdup(ds_name);
-
-    // TODO: do parallel order?
-    // if(file_info->opened_datasets_cnt > 1){
-    //     cur->porder_id = ++DSET_PORDER;
-    // } else {
-    //     cur->sorder_id = ++DSET_SORDER;
-    // }
-    // printf("add_dataset_node: sorder_id %d, porder_id %d\n", cur->sorder_id, cur->porder_id);
 
     // Increment refcount on dataset
     cur->obj_info.ref_cnt++;
@@ -1771,9 +1756,7 @@ void file_stats_dlife_write(const file_dlife_info_t* file_info) {
 
     printf("File Close Statistic Summary Start ===========================================\n");
     printf("File name = %s \n",file_info->file_name);
-    printf("File order_id = %ld_%ld \n",
-        file_info->sorder_id,
-        file_info->porder_id);
+    printf("File order_id = %ld\n",file_info->sorder_id);
     printf("H5 file closed, %d datasets are created, %d datasets are accessed.\n", file_info->ds_created, file_info->ds_accessed);
     printf("File Close Statistic Summary End =============================================\n");
 
@@ -1791,11 +1774,7 @@ void dataset_stats_dlife_write(const dataset_dlife_info_t* dset_info){
 
     printf("Dataset Close Statistic Summary Start ===========================================\n");
     printf("Dataset name = %s \n",dset_info->obj_info.name);
-    printf("Dataset order_id = %ld_%ld-%ld_%ld \n",
-        dset_info->pfile_sorder_id,
-        dset_info->pfile_porder_id,
-        dset_info->sorder_id,
-        dset_info->porder_id);
+    printf("Dataset order_id = %ld-%ld \n",dset_info->pfile_sorder_id,dset_info->sorder_id);
     printf("Dataset parent file name = %s \n",dset_info->pfile_name);
     printf("Dataset type class = %d \n",dset_info->dt_class);
     printf("Dataset type size = %ld \n",dset_info->dset_type_size);
@@ -1979,7 +1958,8 @@ void dump_file_stat_yaml(FILE *f, const file_dlife_info_t* file_info)
         return;
     }
     
-    fprintf(f,"- file-%ld_%ld:\n",file_info->sorder_id, file_info->porder_id);
+    fprintf(f,"- file-%ld:\n",file_info->sorder_id);
+
     fprintf(f,"\tname: \"%s\"\n", file_info->file_name);
     fprintf(f,"\tsize: %ld\n", file_info->file_size);
     fprintf(f,"\tintent: %s\n", file_info->intent);
@@ -2004,12 +1984,11 @@ void dump_dset_stat_yaml(FILE *f, const dataset_dlife_info_t* dset_info)
         return;
     }
 
-    fprintf(f,"- file-%ld_%ld:\n",dset_info->pfile_sorder_id, dset_info->pfile_porder_id);
+    fprintf(f,"- file-%ld:\n",dset_info->pfile_sorder_id);
+
     fprintf(f,"\tname: \"%s\"\n", dset_info->pfile_name);
 
-    fprintf(f,"\tdset-%ld_%ld-%ld:\n",
-        dset_info->pfile_sorder_id, dset_info->pfile_porder_id,
-        dset_info->sorder_id);
+    fprintf(f,"\tdset-%ld-%ld:\n",dset_info->pfile_sorder_id, dset_info->sorder_id);
 
     fprintf(f,"\t\tname: \"%s\"\n", dset_info->obj_info.name);
     fprintf(f,"\t\tlayout: %s\n", dset_info->layout);
