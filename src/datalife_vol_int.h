@@ -2550,8 +2550,8 @@ void group_info_print(char * func_name, void *obj, void *args,
     printf("\n");
 }
 
-uint32_t decode_uint32(uint32_t value, const uint8_t *p) {
-    // uint32_t value = 0;
+void decode_uint32(uint32_t* value, const uint8_t* p) {
+    *value = 0;
     
     *value |= (uint32_t)(*p++) << 24;
     *value |= (uint32_t)(*p++) << 16;
