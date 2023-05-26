@@ -1383,7 +1383,6 @@ H5VL_datalife_dataset_create(void *obj, const H5VL_loc_params_t *loc_params,
 
     dataset_dlife_info_t * dset_info = (dataset_dlife_info_t*)dset->generic_dlife_info;
     
-    dset_info->pfile_name = file_info->file_name ? strdup(file_info->file_name) : NULL;
 
     dset_info->pfile_sorder_id = file_info->sorder_id;
     dset_info->pfile_porder_id = file_info->porder_id;
@@ -1403,8 +1402,8 @@ H5VL_datalife_dataset_create(void *obj, const H5VL_loc_params_t *loc_params,
     // printf("H5VLdataset_create: sorder_id %d, porder_id %d\n", dset_info->sorder_id, dset_info->porder_id);
     // dlLockRelease(&myLock);
 
-    if(!dset_info->obj_info.name)
-        dset_info->obj_info.name = ds_name ? strdup(ds_name) : NULL;
+    // if(!dset_info->obj_info.name)
+    //     dset_info->obj_info.name = ds_name ? strdup(ds_name) : NULL;
 
     if(!dset_info->dspace_id)
         dset_info->dspace_id = space_id;
@@ -1469,7 +1468,6 @@ H5VL_datalife_dataset_open(void *obj, const H5VL_loc_params_t *loc_params,
     // printf("FileName[%s]\n", file_info->file_name);
     dataset_dlife_info_t * dset_info = (dataset_dlife_info_t*)dset->generic_dlife_info;
 
-    dset_info->pfile_name = file_info->file_name ? strdup(file_info->file_name) : NULL;
     // char *last_delim = strrchr(file_info->file_name, '/');
     // if (last_delim != NULL) {
     //     dset_info->pfile_name = strdup(last_delim + 1);
@@ -1477,7 +1475,6 @@ H5VL_datalife_dataset_open(void *obj, const H5VL_loc_params_t *loc_params,
     //     // No delimiter found, copy the whole string
     //     dset_info->pfile_name = strdup(file_info->file_name);
     // }
-    // dset_info->pfile_name = file_info->file_name;
 
     dset_info->pfile_sorder_id = file_info->sorder_id;
     dset_info->pfile_porder_id = file_info->porder_id;
@@ -2017,22 +2014,17 @@ H5VL_datalife_dataset_close(void *dset, hid_t dxpl_id, void **req)
     dataset_dlife_info_t* dset_info = (dataset_dlife_info_t*)o->generic_dlife_info;
     assert(dset_info);
 
-    // hid_t dspace_id = dataset_get_space(o->under_object, o->under_vol_id, dxpl_id);
-    // // Add the rest of dataset stats before closing
-    // dset_info->dset_n_elements = H5Sget_select_npoints(dspace_id);
-        
-    // unsigned int dimension_cnt = H5Sget_simple_extent_ndims(dspace_id);
-    // dset_info->dimension_cnt = dimension_cnt;
-    // if(dimension_cnt > 0)
-    //     dset_info->dimensions = malloc( dimension_cnt * sizeof(hsize_t *));
-    // hsize_t maxdims[dimension_cnt];
-    // H5Sget_simple_extent_dims(dspace_id, dset_info->dimensions, maxdims);
-
     dataset_info_print("H5VLdataset_close", NULL, NULL, NULL, dset, dxpl_id, NULL, NULL);
     BLOB_SORDER=0;
     // printf("\n\n");
-    
 #endif
+
+#ifdef DATALIFE_SCHEMA
+    dlLockAcquire(&myLock);
+    dump_dset_stat_yaml(DLIFE_HELPER->dlife_file_handle,dset_info);
+    dlLockRelease(&myLock);
+#endif
+
     m1 = get_time_usec();
     ret_value = H5VLdataset_close(o->under_object, o->under_vol_id, dxpl_id, req);
     m2 = get_time_usec();
@@ -2057,11 +2049,7 @@ H5VL_datalife_dataset_close(void *dset, hid_t dxpl_id, void **req)
     }
 #endif
 
-#ifdef DATALIFE_SCHEMA
-    dlLockAcquire(&myLock);
-    dump_dset_stat_yaml(DLIFE_HELPER->dlife_file_handle,dset_info);
-    dlLockRelease(&myLock);
-#endif
+
 
     TOTAL_DLIFE_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -2430,27 +2418,6 @@ H5VL_datalife_file_create(const char *name, unsigned flags, hid_t fcpl_id,
 
         file = _file_open_common(under, info->under_vol_id, name);
 
-#ifdef DATALIFE_LOGGING
-    // printf(" H5VLfile_create_name : %s \n",name);
-    file_dlife_info_t *file_info = file->generic_dlife_info;
-    // file_info->file_name = (char*) malloc(strlen(name) + 1);
-    file_info->file_name = name ? strdup(name) : NULL;
-    if(DLIFE_HELPER->opened_files_cnt > 2){
-        FILE_PORDER+=1;
-        file_info->porder_id =FILE_PORDER;
-    } else {
-        FILE_SORDER+=1;
-        file_info->sorder_id =FILE_SORDER;
-    }
-
-    // H5Pget_meta_block_size(fapl_id, &file_info->header_size);
-    // H5Pget_sieve_buf_size(fapl_id, &file_info->sieve_buf_size);
-    if(!file_info->fapl_id)
-        file_info->fapl_id = fapl_id;
-    
-    file_info_print("H5VLfile_create", file, fapl_id, dxpl_id);
-
-#endif
 
 #ifdef H5_HAVE_PARALLEL
         if(have_mpi_comm_info) {
@@ -2493,6 +2460,27 @@ H5VL_datalife_file_create(const char *name, unsigned flags, hid_t fcpl_id,
 	    MPI_Info_free(&mpi_info);
     }
 #endif /* H5_HAVE_PARALLEL */
+
+#ifdef DATALIFE_LOGGING
+    // printf(" H5VLfile_create_name : %s \n",name);
+    file_dlife_info_t *file_info = file->generic_dlife_info;
+    // file_info->file_name = (char*) malloc(strlen(name) + 1);
+    // file_info->file_name = name ? strdup(name) : NULL;
+
+    if(DLIFE_HELPER->opened_files_cnt > 2){
+        file_info->porder_id =++FILE_PORDER;
+    } else {
+        file_info->sorder_id =++FILE_SORDER;
+    }
+
+    // H5Pget_meta_block_size(fapl_id, &file_info->header_size);
+    // H5Pget_sieve_buf_size(fapl_id, &file_info->sieve_buf_size);
+    if(!file_info->fapl_id)
+        file_info->fapl_id = fapl_id;
+    
+    file_info_print("H5VLfile_create", file, fapl_id, dxpl_id);
+
+#endif
 
     TOTAL_DLIFE_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return (void *)file;
@@ -2563,26 +2551,7 @@ H5VL_datalife_file_open(const char *name, unsigned flags, hid_t fapl_id,
             DLIFE_HELPER = dlife_helper_init(info->dlife_file_path, info->dlife_level, info->dlife_line_format);
 
         file = _file_open_common(under, info->under_vol_id, name);
-#ifdef DATALIFE_LOGGING
-    // printf(" H5VLfile_open_name : %s \n",name);
-    file_dlife_info_t *file_info = file->generic_dlife_info;
-    
-    if(DLIFE_HELPER->opened_files_cnt > 2){
-        FILE_PORDER+=1;
-        file_info->porder_id =FILE_PORDER;
-    } else {
-        FILE_SORDER+=1;
-        file_info->sorder_id =FILE_SORDER;
-    }
 
-    // H5Pget_meta_block_size(fapl_id, &file_info->header_size);
-    // H5Pget_sieve_buf_size(fapl_id, &file_info->sieve_buf_size);
-    if(!file_info->fapl_id)
-        file_info->fapl_id = fapl_id;
-    file_info_print("H5VLfile_open", file, fapl_id, dxpl_id);
-    // Add File node to Tracker
-
-#endif
 
 #ifdef H5_HAVE_PARALLEL
         if(have_mpi_comm_info) {
@@ -2625,6 +2594,25 @@ H5VL_datalife_file_open(const char *name, unsigned flags, hid_t fapl_id,
 	    MPI_Info_free(&mpi_info);
     }
 #endif /* H5_HAVE_PARALLEL */
+
+#ifdef DATALIFE_LOGGING
+    // printf(" H5VLfile_open_name : %s \n",name);
+    file_dlife_info_t *file_info = file->generic_dlife_info;
+    
+    if(DLIFE_HELPER->opened_files_cnt > 1){
+        file_info->porder_id =++FILE_PORDER;
+    } else {
+        file_info->sorder_id =++FILE_SORDER;
+    }
+
+    // H5Pget_meta_block_size(fapl_id, &file_info->header_size);
+    // H5Pget_sieve_buf_size(fapl_id, &file_info->sieve_buf_size);
+    if(!file_info->fapl_id)
+        file_info->fapl_id = fapl_id;
+    file_info_print("H5VLfile_open", file, fapl_id, dxpl_id);
+    // Add File node to Tracker
+
+#endif
 
     TOTAL_DLIFE_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return (void *)file;
@@ -2807,7 +2795,6 @@ H5VL_datalife_file_specific(void *file, H5VL_file_specific_args_t *args,
         /* Wrap reopened file struct pointer, if we reopened one */
         if(ret_value >= 0 && args->args.reopen.file) {
             char *file_name = ((file_dlife_info_t*)(o->generic_dlife_info))->file_name;
-
             *args->args.reopen.file = _file_open_common(*args->args.reopen.file, under_vol_id, file_name);
 
             // Shouldn't need to duplicate MPI Comm & Info
@@ -2892,6 +2879,8 @@ H5VL_datalife_file_close(void *file, hid_t dxpl_id, void **req)
     printf("DATALIFE VOL FILE Close\n");
 #endif
 
+
+
 #ifdef DATALIFE_LOGGING
     file_dlife_info_t* file_info = (file_dlife_info_t*)o->generic_dlife_info;
     file_info->file_size = file_get_size(o->under_object,o->under_vol_id, dxpl_id);
@@ -2903,10 +2892,10 @@ H5VL_datalife_file_close(void *file, hid_t dxpl_id, void **req)
 
 #ifdef DATALIFE_SCHEMA
     dlLockAcquire(&myLock);
+    // printf("H5VLfile_close() file_info->file_name : %s\n", file_info->file_name);;
     dump_file_stat_yaml(DLIFE_HELPER->dlife_file_handle,file_info);
     dlLockRelease(&myLock);
 #endif
-
 
 #ifdef DATALIFE_PROV_LOGGING
     if(o){
@@ -3608,11 +3597,8 @@ H5VL_datalife_object_open(void *obj, const H5VL_loc_params_t *loc_params,
         //     // No delimiter found, copy the whole string
         //     dset_info->pfile_name = strdup(file_info->file_name);
         // }
-
-        // dset_info->pfile_name = file_info->file_name;
         
         /* Copy name to file_name */
-        dset_info->pfile_name = file_info->file_name ? strdup(file_info->file_name) : NULL;
 
         dset_info->pfile_sorder_id = file_info->sorder_id;
         dset_info->pfile_porder_id = file_info->porder_id;
@@ -3724,7 +3710,7 @@ H5VL_datalife_object_get(void *obj, const H5VL_loc_params_t *loc_params, H5VL_ob
         file_dlife_info_t * file_info = dset_info->obj_info.file_info;
         
         /* Copy name to file_name */
-        dset_info->pfile_name = file_info->file_name ? strdup(file_info->file_name) : NULL;
+
         // char *last_delim = strrchr(file_info->file_name, '/');
         // if (last_delim != NULL) {
         //     dset_info->pfile_name = strdup(last_delim + 1);
@@ -3732,8 +3718,6 @@ H5VL_datalife_object_get(void *obj, const H5VL_loc_params_t *loc_params, H5VL_ob
         //     // No delimiter found, copy the whole string
         //     dset_info->pfile_name = strdup(file_info->file_name);
         // }
-
-        // dset_info->pfile_name = file_info->file_name;
 
         dset_info->pfile_sorder_id = file_info->sorder_id;
         dset_info->pfile_porder_id = file_info->porder_id;

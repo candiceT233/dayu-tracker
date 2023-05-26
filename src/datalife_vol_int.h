@@ -639,9 +639,9 @@ file_dlife_info_t* new_file_info(const char* fname, unsigned long file_no)
 
     info = (file_dlife_info_t *)calloc(1, sizeof(file_dlife_info_t));
 
-    // info->file_name = fname ? strdup(fname) : NULL;
-    info->file_name = malloc(sizeof(char) * (strlen(fname) + 1));
-    strcpy(info->file_name, fname);
+    info->file_name = fname ? strdup(fname) : NULL;
+    // info->file_name = malloc(sizeof(char) * (strlen(fname) + 1));
+    // strcpy(info->file_name, fname);
     info->dlife_helper = DLIFE_HELPER;
     info->file_no = file_no;
     info->sorder_id=0;
@@ -683,6 +683,9 @@ void dataset_info_free(dataset_dlife_info_t* info)
 {
     if(info->obj_info.name)
         free(info->obj_info.name);
+
+    if(info->pfile_name)
+        free(info->pfile_name);
     free(info);
 }
 
@@ -1013,6 +1016,12 @@ file_dlife_info_t* add_file_node(dlife_helper_t* helper, const char* file_name,
     // Increment refcount on file node
     cur->ref_cnt++;
 
+    // if(DLIFE_HELPER->opened_files_cnt > 1){
+    //     cur->porder_id =++FILE_PORDER;
+    // } else {
+    //     cur->sorder_id =++FILE_SORDER;
+    // }
+
     FILE_LL_TOTAL_TIME += (get_time_usec() - start);
     return cur;
 }
@@ -1147,6 +1156,7 @@ dataset_dlife_info_t * add_dataset_node(unsigned long obj_file_no,
     /* Add dset info that requires parent file info */
     // cur->pfile_name = malloc(sizeof(char) * (strlen(file_info->file_name) + 1));
     // strcpy(cur->pfile_name, file_info->file_name);
+    cur->pfile_name = file_info->file_name ? strdup(file_info->file_name) : NULL;
 
     dlLockAcquire(&myLock);
     cur->sorder_id = ++DSET_SORDER;
@@ -1963,13 +1973,14 @@ int dlife_write(dlife_helper_t* helper_in, const char* msg, unsigned long durati
     /* candice added routine implementation start*/
 void dump_file_stat_yaml(FILE *f, const file_dlife_info_t* file_info)
 {
+    
     if(!file_info){
        fprintf(f,"dump_file_stat_yaml(): ds_info is NULL.\n");
         return;
     }
     
     fprintf(f,"- file-%ld_%ld:\n",file_info->sorder_id, file_info->porder_id);
-    fprintf(f,"\tname: %s\n", file_info->file_name);
+    fprintf(f,"\tname: \"%s\"\n", file_info->file_name);
     fprintf(f,"\tsize: %ld\n", file_info->file_size);
     fprintf(f,"\tintent: %s\n", file_info->intent);
 
@@ -1994,13 +2005,13 @@ void dump_dset_stat_yaml(FILE *f, const dataset_dlife_info_t* dset_info)
     }
 
     fprintf(f,"- file-%ld_%ld:\n",dset_info->pfile_sorder_id, dset_info->pfile_porder_id);
-    fprintf(f,"\tname: %s\n", dset_info->pfile_name);
+    fprintf(f,"\tname: \"%s\"\n", dset_info->pfile_name);
 
     fprintf(f,"\tdset-%ld_%ld-%ld:\n",
         dset_info->pfile_sorder_id, dset_info->pfile_porder_id,
         dset_info->sorder_id);
 
-    fprintf(f,"\t\tname: %s\n", dset_info->obj_info.name);
+    fprintf(f,"\t\tname: \"%s\"\n", dset_info->obj_info.name);
     fprintf(f,"\t\tlayout: %s\n", dset_info->layout);
     fprintf(f,"\t\toffset: %ld\n", dset_info->dset_offset);
     fprintf(f,"\t\tdata_type_class: %d\n", dset_info->dt_class);
