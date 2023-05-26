@@ -14,7 +14,7 @@ AR=ar
 DEBUG= -g -O0 -DDEBUG # -DDATALIFE_PT_LOGGING #-DDATALIFE_PROV_LOGGING -DDATALIFE_MORE_LOGGING 
 INCLUDES=-I$(HDF5_DIR)/include 
 
-CFLAGS = $(DEBUG) -fPIC $(INCLUDES) -w -DDATALIFE_LOGGING -DDATALIFE_SCHEMA #-Wall -DDATALIFE_SCHEMA
+CFLAGS = $(DEBUG) -fPIC $(INCLUDES) -w -DDATALIFE_LOGGING #-DDATALIFE_SCHEMA #-Wall -DDATALIFE_SCHEMA
 
 LIBS=-L$(HDF5_DIR)/lib -lhdf5 -lz -lcrypto
 
@@ -26,7 +26,7 @@ LDFLAGS = $(DEBUG) $(LIBS)
 ARFLAGS = rs
 
 # Shared library VOL connector
-DYNSRC = datalife_vol_new.cpp # datalife_vol datalife_vol_new datalife_vol_int
+DYNSRC = datalife_vol_new.c # datalife_vol datalife_vol_new datalife_vol_int
 DYNOBJ = $(DYNSRC:.c=.o)
 # Uncomment this line Linux builds:
 DYNLIB = libh5datalife.so #libh5datalife.so
@@ -47,7 +47,7 @@ $(EXEXE): $(EXSRC) $(STATLIB) $(DYNLIB)
 	$(CC) $(CFLAGS) $^ -o $(EXEXE) $(LDFLAGS)
 
 $(DYNLIB): $(DYNSRC)
-	$(CXX) $(CFLAGS) $(DYNLDFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $(DYNLDFLAGS) $^ -o $@
 
 .PHONY: clean all
 clean:

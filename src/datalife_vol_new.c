@@ -2041,7 +2041,7 @@ H5VL_datalife_dataset_close(void *dset, hid_t dxpl_id, void **req)
 
 #ifdef DATALIFE_SCHEMA
     // dlLockAcquire(&myLock);
-    // // dump_dset_stat_yaml(DLIFE_HELPER->dlife_file_handle,dset_info);
+    // dump_dset_stat_yaml(DLIFE_HELPER->dlife_file_handle,dset_info);
     // dump_dset_stat_yaml(dset_info);
     // dlLockRelease(&myLock);
 #endif
@@ -2415,7 +2415,7 @@ H5VL_datalife_file_create(const char *name, unsigned flags, hid_t fcpl_id,
 
 #ifdef DATALIFE_LOGGING
     // printf(" H5VLfile_create_name : %s \n",name);
-    file_dlife_info_t* file_info = static_cast<file_dlife_info_t*>(file->generic_dlife_info);
+    file_dlife_info_t* file_info = (file_dlife_info_t*)(file->generic_dlife_info);
 
     // file_info->file_name = (char*) malloc(strlen(name) + 1);
     file_info->file_name = name ? strdup(name) : NULL;
@@ -2549,7 +2549,7 @@ H5VL_datalife_file_open(const char *name, unsigned flags, hid_t fapl_id,
         file = _file_open_common(under, info->under_vol_id, name);
 #ifdef DATALIFE_LOGGING
     // printf(" H5VLfile_open_name : %s \n",name);
-    file_dlife_info_t* file_info = static_cast<file_dlife_info_t*>(file->generic_dlife_info);
+    file_dlife_info_t* file_info = (file_dlife_info_t*)(file->generic_dlife_info);
     
     /* Allocate memory for file_name */
     file_info->file_name = (char*) malloc(strlen(name) + 1);
@@ -2765,7 +2765,7 @@ H5VL_datalife_file_specific(void *file, H5VL_file_specific_args_t *args,
         new_args = args;
 
         /* Set object pointer for operation */
-        new_o = static_cast<H5VL_datalife_t *>(o->under_object);
+        new_o = (H5VL_datalife_t *)(o->under_object);
     } /* end else */
 
     m1 = get_time_usec();
@@ -2891,10 +2891,7 @@ H5VL_datalife_file_close(void *file, hid_t dxpl_id, void **req)
 #endif
 
 #ifdef DATALIFE_SCHEMA
-    dlLockAcquire(&myLock);
-    // dump_file_stat_yaml(DLIFE_HELPER->dlife_file_handle,file_info);
-    dump_file_stat_yaml(file_info);
-    dlLockRelease(&myLock);
+    dump_file_stat_yaml(DLIFE_HELPER->dlife_file_handle,file_info);
 #endif
 
 
