@@ -2509,43 +2509,43 @@ void group_info_print(char * func_name, void *obj, void *args,
 
     printf("\"func_name\": \"%s\", ", func_name);
 
-    if(strcmp(func_name,"H5VLgroup_get") == 0){
-        // H5VL_group_get_args_t * group_args = (H5VL_group_get_args_t*)args;
-
-        H5VL_datalife_t *group = (H5VL_datalife_t *)obj;
-        group_dlife_info_t* group_info = (group_dlife_info_t*)group->generic_dlife_info;
-
-        printf("\"group_token\": %ld, ", group_info->obj_info.token);
-        printf("\"group_name\": \"%s\", ", group_info->obj_info.name);
-
-        file_dlife_info_t * file_info = group_info->obj_info.file_info;
-        printf("\"file_name\": \"%s\", ", file_info->file_name);
-
-    } else {
-        // H5VL_loc_params_t * loc_params = (H5VL_loc_params_t*)args;
-
+    if(name != NULL)
         printf("\"group_name\": \"%s\", ", name);
 
-        H5VL_datalife_t *file = (H5VL_datalife_t *)obj;
-        file_dlife_info_t * file_info = (file_dlife_info_t*)file->generic_dlife_info;
+    H5VL_datalife_t *file = (H5VL_datalife_t *)obj;
+    file_dlife_info_t * file_info = (file_dlife_info_t*)file->generic_dlife_info;
 
-        group_dlife_info_t* group_info = file_info->opened_grps;
-        printf("\"opened_grps_cnt\": %d, ", file_info->opened_grps_cnt);
-        if(file_info->opened_grps_cnt > 0){
-            // only 1 dset opened at a time
-            // dataset_dlife_info_t * dset_info = malloc(sizeof(dataset_dlife_info_t));
-            while (group_info) {
-                
-                printf("\"group_info->obj_info.token\": %ld, ", group_info->obj_info.token);
-                printf("\"group_info->obj_info.name\": \"%s\", ", group_info->obj_info.name);
+    group_dlife_info_t* group_info = file_info->opened_grps;
+    printf("\"opened_grps_cnt\": %d, ", file_info->opened_grps_cnt);
+    if(file_info->opened_grps_cnt > 0){
+        // only 1 dset opened at a time
+        // dataset_dlife_info_t * dset_info = malloc(sizeof(dataset_dlife_info_t));
+        while (group_info) {
+            
+            printf("\"group_info->obj_info.token\": %ld, ", group_info->obj_info.token);
+            printf("\"group_info->obj_info.name\": \"%s\", ", group_info->obj_info.name);
 
-                group_info = group_info->next; // Move to the next node
-            }
+            group_info = group_info->next; // Move to the next node
         }
-
-        printf("\"file_name\": \"%s\", ", file_info->file_name);
-
     }
+
+    printf("\"file_name\": \"%s\", ", file_info->file_name);
+
+    // if(strcmp(func_name,"H5VLgroup_get") == 0){
+    //     // H5VL_group_get_args_t * group_args = (H5VL_group_get_args_t*)args;
+
+    //     H5VL_datalife_t *group = (H5VL_datalife_t *)obj;
+    //     group_dlife_info_t* group_info = (group_dlife_info_t*)group->generic_dlife_info;
+
+    //     printf("\"group_token\": %ld, ", group_info->obj_info.token);
+    //     printf("\"group_name\": \"%s\", ", group_info->obj_info.name);
+
+    //     file_dlife_info_t * file_info = group_info->obj_info.file_info;
+    //     printf("\"file_name\": \"%s\", ", file_info->file_name);
+
+    // } else {
+    //     // H5VL_loc_params_t * loc_params = (H5VL_loc_params_t*)args;
+    // }
 
     printf("\n");
 }

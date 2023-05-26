@@ -3066,9 +3066,6 @@ H5VL_datalife_group_get(void *obj, H5VL_group_get_args_t *args, hid_t dxpl_id,
     if(o)
         dlife_write(o->dlife_helper, __func__, get_time_usec() - start);
 
-#ifdef DATALIFE_LOGGING
-    group_info_print("H5VLgroup_get",obj, args, NULL, NULL, dxpl_id, req);
-#endif
 
     TOTAL_DLIFE_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
