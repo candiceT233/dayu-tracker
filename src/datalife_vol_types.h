@@ -132,7 +132,7 @@ typedef struct H5VL_datalife_wrap_ctx_t {
 
 struct H5VL_dlife_file_info_t {//assigned when a file is closed, serves to store stats (copied from shared_file_info)
     dlife_helper_t* dlife_helper;  //pointer shared among all layers, one per process.
-    char* file_name;
+    const char* file_name;
     unsigned long file_no;
 
     /* candice added for more stats start */
