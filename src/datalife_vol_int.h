@@ -573,6 +573,7 @@ datatype_dlife_info_t *new_dtype_info(file_dlife_info_t* root_file,
     info->obj_info.dlife_helper = DLIFE_HELPER;
     info->obj_info.file_info = root_file;
     info->obj_info.name = name ? strdup(name) : NULL;
+    info->obj_info.name = name;
     info->obj_info.token = token;
 
     return info;
@@ -1413,11 +1414,11 @@ H5VL_datalife_t * _obj_wrap_under(void *under, H5VL_datalife_t *upper_o,
         //open from types
         switch(upper_o->my_type) {
             case H5I_DATASET:
-                file_info = ((object_dlife_info_t *)(upper_o->generic_dlife_info))->file_info;
-                break;
+                // file_info = ((object_dlife_info_t *)(upper_o->generic_dlife_info))->file_info;
+                // break;
             case H5I_GROUP:
-                file_info = ((object_dlife_info_t *)(upper_o->generic_dlife_info))->file_info;
-                break;
+                // file_info = ((object_dlife_info_t *)(upper_o->generic_dlife_info))->file_info;
+                // break;
             case H5I_DATATYPE:
             case H5I_ATTR:
                 file_info = ((object_dlife_info_t *)(upper_o->generic_dlife_info))->file_info;
@@ -2530,22 +2531,6 @@ void group_info_print(char * func_name, void *obj, void *args,
     }
 
     printf("\"file_name\": \"%s\", ", file_info->file_name);
-
-    // if(strcmp(func_name,"H5VLgroup_get") == 0){
-    //     // H5VL_group_get_args_t * group_args = (H5VL_group_get_args_t*)args;
-
-    //     H5VL_datalife_t *group = (H5VL_datalife_t *)obj;
-    //     group_dlife_info_t* group_info = (group_dlife_info_t*)group->generic_dlife_info;
-
-    //     printf("\"group_token\": %ld, ", group_info->obj_info.token);
-    //     printf("\"group_name\": \"%s\", ", group_info->obj_info.name);
-
-    //     file_dlife_info_t * file_info = group_info->obj_info.file_info;
-    //     printf("\"file_name\": \"%s\", ", file_info->file_name);
-
-    // } else {
-    //     // H5VL_loc_params_t * loc_params = (H5VL_loc_params_t*)args;
-    // }
 
     printf("\n");
 }
