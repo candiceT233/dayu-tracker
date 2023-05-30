@@ -2091,6 +2091,12 @@ void dump_dset_stat_yaml(FILE *f, const dataset_dlife_info_t* dset_info)
     fprintf(f,"\t\tdset_name: \"%s\"\n", dset_info->obj_info.name);
     fprintf(f,"\t\tclose_time: %ld\n", get_time_usec());
 
+    if(dset_info->dataset_read_cnt > 0)
+        fprintf(f,"\t\tdataset_read_cnt: %ld\n", dset_info->dataset_read_cnt);
+    if(dset_info->dataset_write_cnt > 0)
+        fprintf(f,"\t\tdataset_write_cnt: %ld\n", dset_info->dataset_write_cnt);
+    // TODO: add read/write cnt for PARALLEL?
+
     fprintf(f,"\t\tstorage_size: %ld\n", dset_info->storage_size);
     fprintf(f,"\t\tdata_file_pages: [%ld,%ld]\n", dset_info->data_file_page_start, dset_info->data_file_page_end);
     if (dset_info->metadata_file_pages_cnt > 0){
@@ -2612,7 +2618,7 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
         char token_buffer[20]; // Assuming a maximum of 20 characters for the string representation
         sprintf(token_buffer, "%d", dset_info->obj_info.token); // Convert to string
         token_number = strtol(token_buffer, NULL, 10); // Convert string to long
-        printf("token_number: %ld\n", token_number);
+        // printf("token_number: %ld\n", token_number);
         size_t meta_page = token_number / DLIFE_HELPER->hermes_page_size;
 
         dset_info->metadata_file_pages_cnt++;
