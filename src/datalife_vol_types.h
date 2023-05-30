@@ -140,6 +140,8 @@ struct H5VL_dlife_file_info_t {//assigned when a file is closed, serves to store
     hsize_t file_size;
     hsize_t header_size;
     size_t  sieve_buf_size;
+    hsize_t alignment;
+    hsize_t threshold;
     /* candice added for more stats end */
 
 #ifdef H5_HAVE_PARALLEL
