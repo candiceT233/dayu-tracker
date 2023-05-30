@@ -2326,7 +2326,7 @@ char * get_datatype_class_str(hid_t type_id){
 void attribute_info_print(char * func_name, void *obj,  const H5VL_loc_params_t *loc_params,
     H5VL_attr_specific_args_t *args, hid_t dxpl_id, void **req)
 {
-    printf("\"func_name\": \"%s\", ", func_name);
+    printf("{\"func_name\": \"%s\", ", func_name);
 
 
     H5VL_datalife_t *file = (H5VL_datalife_t *)obj;
@@ -2336,9 +2336,11 @@ void attribute_info_print(char * func_name, void *obj,  const H5VL_loc_params_t 
     attribute_dlife_info_t * attr_info = (attribute_dlife_info_t*)file->generic_dlife_info;
     file_dlife_info_t * file_info = attr_info->obj_info.file_info;
 
-    printf("\"file_name\": \"%s\", ", file_info->file_name);
     printf("\"attr_token\": %ld, ", attr_info->obj_info.token);
     printf("\"attr_name\": \"%s\", ", attr_info->obj_info.name);
+
+    printf("\"file_name\": \"%s\", ", file_info->file_name);
+
 
     printf("}\n");
 }
@@ -2353,7 +2355,7 @@ void group_info_print(char * func_name, void *obj, void *args,
     //     H5VL_loc_params_t * extra_args = (H5VL_loc_params_t*)args;
     //     // "H5VLgroup_open" "H5VLgroup_create"
 
-    printf("\"func_name\": \"%s\", ", func_name);
+    printf("\"{func_name\": \"%s\", ", func_name);
 
     if(strcmp(func_name,"H5VLgroup_get") == 0){
         // H5VL_group_get_args_t * group_args = (H5VL_group_get_args_t*)args;
@@ -2393,7 +2395,7 @@ void group_info_print(char * func_name, void *obj, void *args,
 
     }
 
-    printf("\n");
+    printf("}\n");
 }
 
 
@@ -2449,7 +2451,7 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
         dset_info->storage_size = H5Sget_simple_extent_npoints(space_id) * dset_info->dset_type_size ;
 
 
-    if(strcmp(func_name,"H5VLdataset_create") != 0)
+    if(strcmp(func_name,"H5VLdataset_create") != 0 ) //&& strcmp(func_name,"H5VLget_object") != 0
         if((dset_info->storage_size == NULL) || (dset_info->storage_size < 1))
             dset_info->storage_size = dataset_get_storage_size(dset->under_object, dset->under_vol_id, dxpl_id);
 

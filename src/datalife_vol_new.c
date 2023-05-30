@@ -721,21 +721,39 @@ H5VL_datalife_get_object(const void *obj)
 #ifdef DATALIFE_PT_LOGGING
     printf("DATALIFE VOL Get Object\n");
 #endif
-#ifdef DATALIFE_MORE_LOGGING
-    if (o->my_type == H5I_FILE){
-        file_info_print("H5VLget_object", obj, NULL, NULL);
-    }
-    if(o->my_type == H5I_DATASET){
 
-        dataset_info_print("H5VLget_object", NULL, NULL, NULL, obj, NULL, NULL, NULL);
-    }
-#endif
 
     m1 = get_time_usec();
     ret = H5VLget_object(o->under_object, o->under_vol_id);
     m2 = get_time_usec();
 
     dlife_write(o->dlife_helper, __func__, get_time_usec() - start);
+
+#ifdef DATALIFE_MORE_LOGGING
+    // WARNING: below causes memory leak
+
+    if (o->my_type == H5I_FILE){
+        file_info_print("H5VLget_object", obj, NULL, NULL);
+    }
+
+    if(o->my_type == H5I_GROUP){
+        group_info_print("H5VLget_object", obj, NULL, NULL, NULL, NULL, NULL);
+    }
+
+#endif
+
+#ifdef DATALIFE_LOGGING
+
+    // printf("H5VLget_object(): %ld, \n", obj);
+
+    if(o->my_type == H5I_ATTR){
+        attribute_info_print("H5VLget_object", obj, NULL, NULL, NULL, NULL);
+    }
+    if(o->my_type == H5I_DATASET){
+
+        dataset_info_print("H5VLget_object", NULL, NULL, NULL, obj, NULL, NULL, NULL);
+    }
+#endif
 
     TOTAL_DLIFE_OVERHEAD += (get_time_usec() - start - (m2 - m1));
 
@@ -1084,7 +1102,7 @@ H5VL_datalife_attr_open(void *obj, const H5VL_loc_params_t *loc_params,
     if(o)
         dlife_write(o->dlife_helper, __func__, get_time_usec() - start);
 
-#ifdef DATALIFE_TEST_LOGGING
+#ifdef DATALIFE_LOGGING
     attribute_info_print("H5VLattr_open", obj, loc_params, NULL, dxpl_id, req);
 #endif
 
@@ -1168,8 +1186,9 @@ H5VL_datalife_attr_write(void *attr, hid_t mem_type_id, const void *buf,
     if(o)
         dlife_write(o->dlife_helper, __func__, get_time_usec() - start);
 
-#ifdef DATALIFE_TEST_LOGGING
-    printf("H5VL_datalife_attr_write-buf \"%s\"\n");
+#ifdef DATALIFE_LOGGING
+    // printf("H5VL_datalife_attr_write-buf \"%s\"\n");
+    // object.token connects to the dataset
     attribute_info_print("H5VLattr_write", attr, NULL, NULL, dxpl_id, req);
 #endif
 
@@ -1253,7 +1272,8 @@ H5VL_datalife_attr_specific(void *obj, const H5VL_loc_params_t *loc_params,
     if(o)
         dlife_write(o->dlife_helper, __func__, get_time_usec() - start);
 
-#ifdef DATALIFE_TEST_LOGGING
+#ifdef DATALIFE_MORE_LOGGING
+    // get the dataset name, not the attr name
     attribute_info_print("H5VLattr_specific", obj, loc_params, args, dxpl_id, req);
 #endif
 
@@ -2962,7 +2982,7 @@ H5VL_datalife_group_create(void *obj, const H5VL_loc_params_t *loc_params,
     if(o)
         dlife_write(o->dlife_helper, __func__, get_time_usec() - start);
 
-#ifdef DATALIFE_TEST_LOGGING
+#ifdef DATALIFE_LOGGING
     group_info_print("H5VLgroup_create", obj, loc_params, name, gapl_id, dxpl_id, req);
 #endif
 
@@ -3008,7 +3028,7 @@ H5VL_datalife_group_open(void *obj, const H5VL_loc_params_t *loc_params,
     if(o)
         dlife_write(o->dlife_helper, __func__, get_time_usec() - start);
 
-#ifdef DATALIFE_TEST_LOGGING
+#ifdef DATALIFE_LOGGING
     group_info_print("H5VLgroup_open", obj, loc_params, name, gapl_id, dxpl_id, req);
 #endif
 
@@ -3052,7 +3072,7 @@ H5VL_datalife_group_get(void *obj, H5VL_group_get_args_t *args, hid_t dxpl_id,
     if(o)
         dlife_write(o->dlife_helper, __func__, get_time_usec() - start);
 
-#ifdef DATALIFE_TEST_LOGGING
+#ifdef DATALIFE_LOGGING
     group_info_print("H5VLgroup_get",obj, args, NULL, NULL, dxpl_id, req);
 #endif
 
@@ -4256,7 +4276,7 @@ H5VL_datalife_blob_put(void *obj, const void *buf, size_t size,
         blob_id, ctx);
     m2 = get_time_usec();
 
-#ifdef DATALIFE_LOGGING
+#ifdef DATALIFE_TEST_LOGGING
 
     // assert(file_info);
     // printf("\"H5VLblob_put-func\": ");
@@ -4288,6 +4308,7 @@ H5VL_datalife_blob_put(void *obj, const void *buf, size_t size,
 
     
     blob_info_print("H5VLblob_put", obj, NULL, size, blob_id, buf, ctx);
+
 
 #endif
 
@@ -4328,7 +4349,7 @@ H5VL_datalife_blob_get(void *obj, const void *blob_id, void *buf,
     ret_value = H5VLblob_get(o->under_object, o->under_vol_id, blob_id, buf,size, ctx);
     m2 = get_time_usec();
 
-#ifdef DATALIFE_LOGGING
+#ifdef DATALIFE_TEST_LOGGING
     file_dlife_info_t* file_info = (file_dlife_info_t*)o->generic_dlife_info;
     dataset_dlife_info_t * dset_info = (dataset_dlife_info_t*)file_info->opened_datasets;
 
