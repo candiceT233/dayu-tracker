@@ -28,6 +28,11 @@
 #define H5VL_DATALIFE_VALUE       909           /* VOL connector ID */
 #define H5VL_DATALIFE_VERSION     2
 
+#define SUCCEED 0
+#define FAIL    (-1)
+#define H5_REQUEST_NULL NULL
+#define DEFAULT_PAGE_SIZE 8192
+
 typedef enum ProvLevel {
     Default, //no file write, only screen print
     Print_only,

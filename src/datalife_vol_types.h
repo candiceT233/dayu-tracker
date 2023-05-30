@@ -45,8 +45,8 @@ unsigned long TOTAL_VFD_WRITE;
 unsigned long START_ADDR;
 unsigned long END_ADDR;
 unsigned long ACC_SIZE;
-unsigned long START_BLOB;
-unsigned long END_BLOB;
+unsigned long START_PAGE;
+unsigned long END_PAGE;
 
 int TASK_ID = 0;
 
@@ -92,6 +92,9 @@ typedef struct ProvenanceHelper {
     file_list_t * fhead;
     file_list_t * fcurr;
     file_dlife_info_t* opened_files;//linkedlist,
+    /* candice added fields start */
+    size_t hermes_page_size;
+    /* candice added fields end*/
 } dlife_helper_t;
 
 typedef struct H5VL_datalife_t {
@@ -142,6 +145,7 @@ struct H5VL_dlife_file_info_t {//assigned when a file is closed, serves to store
     size_t  sieve_buf_size;
     hsize_t alignment;
     hsize_t threshold;
+    unsigned long open_time;
     /* candice added for more stats end */
 
 #ifdef H5_HAVE_PARALLEL
@@ -191,37 +195,38 @@ struct H5VL_dlife_dataset_info_t {
 
     H5T_class_t dt_class;               //data type class
     H5S_class_t ds_class;               //data space class
-    char * layout;                      // TODO(candice): convert to unsigned int type for less conversion
+    char * layout;                      
     unsigned int dimension_cnt;
     // hsize_t dimensions[H5S_MAX_RANK];
     hsize_t * dimensions; // candice: save space
     size_t dset_type_size;
-    hsize_t dset_space_size;            //unsigned long long TODO: same as nelements!
+    // hsize_t dset_space_size;            //same as nelements!
+    int dataset_read_cnt;
+    int dataset_write_cnt;
 
     /* candice added for more dset stats start */
+    // hid_t dset_id;                   // this should own by application
     char * pfile_name;                  // parent file name
     char *dset_name;
     haddr_t dset_offset;
     hsize_t storage_size;
     size_t dset_n_elements;
     ssize_t hyper_nblocks;
-    // hid_t dset_id;
     hid_t dspace_id;
     hid_t dtype_id;
     unsigned long sorder_id;
-    unsigned long pfile_sorder_id;
-    unsigned long start_time;
-    unsigned long end_time;
+    unsigned long pfile_sorder_id;      // parent file sequential order ID
+    size_t data_file_page_start;
+    size_t data_file_page_end;
+    size_t * metadata_file_pages;
+    size_t metadata_file_pages_cnt;
+    // size_t metadata_file_page_end; // TODO: how to obtain the end?
+    char * dset_select_type;
+    size_t dset_select_npoints;
+
     /* candice added for more dset stats end */
 
-    
-    // hsize_t total_bytes_written =0;
-    // hsize_t total_write_time =0;
-    // hsize_t total_bytes_read =0;
-    // hsize_t total_read_time =0
-    
-    int dataset_read_cnt;
-    int dataset_write_cnt;
+
     /* candice added for recording blob start */
     int blob_put_cnt;
     size_t total_bytes_blob_put;
