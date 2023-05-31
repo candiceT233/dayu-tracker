@@ -388,7 +388,7 @@ static ssize_t attr_get_name(void *under_obj, hid_t under_vol_id, hid_t dxpl_id,
     vol_cb_args.args.get_name.loc_params.type     = H5VL_OBJECT_BY_SELF;
     vol_cb_args.args.get_name.loc_params.obj_type = H5I_ATTR;
     vol_cb_args.args.get_name.buf_size            = buf_size;
-    vol_cb_args.args.get_name.buf                 = buf;
+    vol_cb_args.args.get_name.buf                 = (char*)buf;
     vol_cb_args.args.get_name.attr_name_len       = &attr_name_len;
 
     if (H5VLattr_get(under_obj, under_vol_id, &vol_cb_args, dxpl_id, NULL) < 0)
@@ -631,12 +631,19 @@ dlife_helper_t * dlife_helper_init( char* file_path, Prov_level dlife_level, cha
     new_helper->dlife_line_format = strdup(dlife_line_format);
     new_helper->dlife_level = dlife_level;
     new_helper->pid = getpid();
+    // print new_helper pid
+    printf("vfd new_helper pid: %d\n", new_helper->pid);
+
     new_helper->tid = pthread_self();
 
     new_helper->opened_files = NULL;
     new_helper->opened_files_cnt = 0;
 
+    /* VFD vars start */
+    // new_helper->vfd_opened_files = NULL;
+    // new_helper->vfd_opened_files_cnt = 0;
     new_helper->hermes_page_size = get_hermes_page_size();
+    /* VFD vars end */
 
     getlogin_r(new_helper->user_name, 32);
 
@@ -657,9 +664,9 @@ datatype_dlife_info_t *new_dtype_info(file_dlife_info_t* root_file,
     info->obj_info.dlife_helper = DLIFE_HELPER;
     info->obj_info.file_info = root_file;
     // info->obj_info.name = name ? strdup(name) : NULL;
-    info->obj_info.name = malloc(sizeof(char) * (strlen(name) + 1));
+    info->obj_info.name = (char*) malloc(sizeof(char) * (strlen(name) + 1));
     strcpy(info->obj_info.name, name);
-    info->obj_info.name = name;
+    info->obj_info.name = (char*) name;
     info->obj_info.token = token;
 
     return info;
@@ -674,7 +681,7 @@ dataset_dlife_info_t *new_dataset_info(file_dlife_info_t *root_file,
     info->obj_info.dlife_helper = DLIFE_HELPER;
     info->obj_info.file_info = root_file;
     // info->obj_info.name = name ? strdup(name) : NULL;
-    info->obj_info.name = malloc(sizeof(char) * (strlen(name) + 1));
+    info->obj_info.name = (char*) malloc(sizeof(char) * (strlen(name) + 1));
     strcpy(info->obj_info.name, name);
     // printf("new_dataset_info() name: %s\n", name);
     // printf("new_dataset_info() info->obj_info.name: %s\n", info->obj_info.name);
@@ -703,7 +710,7 @@ group_dlife_info_t *new_group_info(file_dlife_info_t *root_file,
     info->obj_info.dlife_helper = DLIFE_HELPER;
     info->obj_info.file_info = root_file;
     // info->obj_info.name = name ? strdup(name) : NULL;
-    info->obj_info.name = malloc(sizeof(char) * (strlen(name) + 1));
+    info->obj_info.name = (char*) malloc(sizeof(char) * (strlen(name) + 1));
     strcpy(info->obj_info.name, name);
     info->obj_info.token = token;
 
@@ -719,7 +726,7 @@ attribute_dlife_info_t *new_attribute_info(file_dlife_info_t *root_file,
     info->obj_info.dlife_helper = DLIFE_HELPER;
     info->obj_info.file_info = root_file;
     // info->obj_info.name = name ? strdup(name) : NULL;
-    info->obj_info.name = malloc(sizeof(char) * (strlen(name) + 1));
+    info->obj_info.name = (char*) malloc(sizeof(char) * (strlen(name) + 1));
     strcpy(info->obj_info.name, name);
     info->obj_info.token = token;
 
@@ -760,7 +767,7 @@ void file_info_free(file_dlife_info_t* info)
     }
 #endif /* H5_HAVE_PARALLEL */
     if(info->file_name)
-        free(info->file_name);
+        free((void*)info->file_name);
     free(info);
 }
 
@@ -1110,10 +1117,11 @@ file_dlife_info_t* add_file_node(dlife_helper_t* helper, const char* file_name,
     cur->open_time = get_time_usec();
 
     dlLockAcquire(&myLock);
-    cur->sorder_id =++FILE_SORDER;
+    cur->sorder_id =FILE_SORDER; // sync order with VFD, no add
     dlLockRelease(&myLock);
 
     FILE_LL_TOTAL_TIME += (get_time_usec() - start);
+
     return cur;
 }
 
@@ -2042,110 +2050,83 @@ int dlife_write(dlife_helper_t* helper_in, const char* msg, unsigned long durati
 void dump_file_stat_yaml(FILE *f, const file_dlife_info_t* file_info)
 {
     
-    if(!file_info){
-       fprintf(f,"dump_file_stat_yaml(): ds_info is NULL.\n");
+    if (!file_info) {
+        fprintf(f, "dump_file_stat_yaml(): file_info is NULL.\n");
         return;
     }
-    
-    fprintf(f,"- file-%ld:\n",file_info->sorder_id);
 
-    fprintf(f,"\tfile_name: \"%s\"\n", file_info->file_name);
-    fprintf(f,"\topen_time: %ld\n", file_info->open_time);
-    fprintf(f,"\tclose_time: %ld\n", get_time_usec());
+    fprintf(f, "- file-%ld:\n", file_info->sorder_id);
+    fprintf(f, "  file_name: \"%s\"\n", file_info->file_name);
+    fprintf(f, "  open_time: %ld\n", file_info->open_time);
+    fprintf(f, "  close_time: %ld\n", get_time_usec());
+    fprintf(f, "  file_size: %zu\n", file_info->file_size);
+    fprintf(f, "  header_size: %zu\n", file_info->header_size);
+    fprintf(f, "  sieve_buf_size: %zu\n", file_info->sieve_buf_size);
+    fprintf(f, "  file_intent: [\"%s\"]\n", file_info->intent);
 
-    fprintf(f,"\tfile_size: %ld\n", file_info->file_size);
-    fprintf(f,"\theader_size: %ld\n", file_info->header_size);
-    fprintf(f,"\tsieve_buf_size: %ld\n", file_info->sieve_buf_size);
-
-    fprintf(f,"\tfile_intent: [\"%s\"]\n", file_info->intent);
-
-    if(file_info->ds_created)
-        fprintf(f,"\tds_created: %ld\n", file_info->ds_created); // need extra tracking to remove duplicates
-    if(file_info->ds_accessed)
-        fprintf(f,"\tds_accessed: %ld\n", file_info->ds_accessed); // need extra tracking to remove duplicates
-    if(file_info->grp_created)
-        fprintf(f,"\tgrp_created: %ld\n", file_info->grp_created);
-    if(file_info->grp_accessed)
-        fprintf(f,"\tgrp_accessed: %ld\n", file_info->grp_accessed);
-    if(file_info->dtypes_created)
-        fprintf(f,"\tdtypes_created: %ld\n", file_info->dtypes_created);
-    if(file_info->dtypes_accessed)
-        fprintf(f,"\tdtypes_accessed: %ld\n", file_info->dtypes_accessed);
+    if (file_info->ds_created)
+        fprintf(f, "  ds_created: %d\n", file_info->ds_created);
+    if (file_info->ds_accessed)
+        fprintf(f, "  ds_accessed: %d\n", file_info->ds_accessed);
+    if (file_info->grp_created)
+        fprintf(f, "  grp_created: %d\n", file_info->grp_created);
+    if (file_info->grp_accessed)
+        fprintf(f, "  grp_accessed: %d\n", file_info->grp_accessed);
+    if (file_info->dtypes_created)
+        fprintf(f, "  dtypes_created: %d\n", file_info->dtypes_created);
+    if (file_info->dtypes_accessed)
+        fprintf(f, "  dtypes_accessed: %d\n", file_info->dtypes_accessed);
 
 }
 
 void dump_dset_stat_yaml(FILE *f, const dataset_dlife_info_t* dset_info)
 {
 
-    if(!dset_info){
-        fprintf(f,"dump_dset_stat_yaml(): dset_info is NULL.\n");
+    if (!dset_info) {
+        fprintf(f, "dump_dset_stat_yaml(): dset_info is NULL.\n");
         return;
     }
 
-    fprintf(f,"- file-%ld:\n",dset_info->pfile_sorder_id);
+    fprintf(f, "- file-%ld:\n", dset_info->pfile_sorder_id);
+    fprintf(f, "  file_name: \"%s\"\n", dset_info->pfile_name);
+    fprintf(f, "  dset-%ld-%ld:\n", dset_info->pfile_sorder_id, dset_info->sorder_id);
+    fprintf(f, "    dset_name: \"%s\"\n", dset_info->obj_info.name);
+    fprintf(f, "    close_time: %ld\n", get_time_usec());
 
-    fprintf(f,"\tfile_name: \"%s\"\n", dset_info->pfile_name);
+    if (dset_info->dataset_read_cnt > 0)
+        fprintf(f, "    dataset_read_cnt: %ld\n", dset_info->dataset_read_cnt);
+    if (dset_info->dataset_write_cnt > 0)
+        fprintf(f, "    dataset_write_cnt: %ld\n", dset_info->dataset_write_cnt);
 
-    fprintf(f,"\tdset-%ld-%ld:\n",dset_info->pfile_sorder_id, dset_info->sorder_id);
+    fprintf(f, "    storage_size: %ld\n", dset_info->storage_size);
+    fprintf(f, "    data_file_pages: [%ld,%ld]\n", dset_info->data_file_page_start, dset_info->data_file_page_end);
 
-    fprintf(f,"\t\tdset_name: \"%s\"\n", dset_info->obj_info.name);
-    fprintf(f,"\t\tclose_time: %ld\n", get_time_usec());
-
-    if(dset_info->dataset_read_cnt > 0)
-        fprintf(f,"\t\tdataset_read_cnt: %ld\n", dset_info->dataset_read_cnt);
-    if(dset_info->dataset_write_cnt > 0)
-        fprintf(f,"\t\tdataset_write_cnt: %ld\n", dset_info->dataset_write_cnt);
-    // TODO: add read/write cnt for PARALLEL?
-
-    fprintf(f,"\t\tstorage_size: %ld\n", dset_info->storage_size);
-    fprintf(f,"\t\tdata_file_pages: [%ld,%ld]\n", dset_info->data_file_page_start, dset_info->data_file_page_end);
-    if (dset_info->metadata_file_pages_cnt > 0){
-        fprintf(f,"\t\tmetadata_file_pages: [" );
-        for(int i=0; i< dset_info->metadata_file_pages_cnt; i++){
-            fprintf(f,"%ld", dset_info->metadata_file_pages[i]);
-            if(i < dset_info->metadata_file_pages_cnt - 1)
-                fprintf(f,",");
+    if (dset_info->metadata_file_pages_cnt > 0) {
+        fprintf(f, "    metadata_file_pages: [");
+        for (size_t i = 0; i < dset_info->metadata_file_pages_cnt; i++) {
+            fprintf(f, "%ld", dset_info->metadata_file_pages[i]);
+            if (i < dset_info->metadata_file_pages_cnt - 1)
+                fprintf(f, ",");
         }
-        fprintf(f,"]\n");
+        fprintf(f, "]\n");
     }
 
-    fprintf(f,"\t\tlayout: \"%s\"\n", dset_info->layout);
-    fprintf(f,"\t\toffset: %ld\n", dset_info->dset_offset);
-    fprintf(f,"\t\tdata_type_class: \"%s\"\n", get_datatype_class_str(dset_info->dt_class));
-    fprintf(f,"\t\ttype_size: %ld\n", dset_info->dset_type_size);
-    fprintf(f,"\t\tn_elements: %d\n", dset_info->dset_n_elements);
-    fprintf(f,"\t\tdset_select_type: \"%s\"\n", dset_info->dset_select_type);
-    fprintf(f,"\t\tdset_select_npoints: %ld\n", dset_info->dset_select_npoints);
-    
-    fprintf(f,"\t\tn_dimension: %ld\n", dset_info->dimension_cnt);
-    fprintf(f,"\t\tdimensions: [");
-    for (int i=0; i < dset_info->dimension_cnt; i++){
-    fprintf(f,"%ld,",dset_info->dimensions[i]);
+    fprintf(f, "    layout: \"%s\"\n", dset_info->layout);
+    fprintf(f, "    offset: %ld\n", dset_info->dset_offset);
+    fprintf(f, "    data_type_class: \"%s\"\n", get_datatype_class_str(dset_info->dt_class));
+    fprintf(f, "    type_size: %ld\n", dset_info->dset_type_size);
+    fprintf(f, "    n_elements: %d\n", dset_info->dset_n_elements);
+    fprintf(f, "    dset_select_type: \"%s\"\n", dset_info->dset_select_type);
+    fprintf(f, "    dset_select_npoints: %ld\n", dset_info->dset_select_npoints);
+    fprintf(f, "    n_dimension: %ld\n", dset_info->dimension_cnt);
+
+    fprintf(f, "    dimensions: [");
+    for (size_t i = 0; i < dset_info->dimension_cnt; i++) {
+        fprintf(f, "%ld", dset_info->dimensions[i]);
+        if (i < dset_info->dimension_cnt - 1)
+            fprintf(f, ",");
     }
-    fprintf(f,"]\n");
-
-
-    // unsigned long total_io_size;
-    // if(dset_info->dataset_read_cnt > 0){
-    //     fprintf(f,"\t\tread_cnt: %ld\n", dset_info->dataset_read_cnt);
-    //     total_io_size = dset_info->total_bytes_read;
-    //     if(dset_info->blob_get_cnt > 0){
-    //         fprintf(f,"\t\tblob_get_cnt: %ld\n", dset_info->blob_get_cnt);
-    //         total_io_size+=dset_info->total_bytes_blob_get;
-    //     }
-    //     fprintf(f,"\t\tread_io_size: %ld\n", total_io_size);
-    // }
-
-    // if(dset_info->dataset_write_cnt > 0){
-    //     fprintf(f,"\t\twrite_cnt: %ld\n", dset_info->dataset_write_cnt);
-    //     total_io_size = dset_info->total_bytes_written;
-    //     if(dset_info->blob_put_cnt > 0){
-    //         fprintf(f,"\t\tblob_put_cnt: %ld\n", dset_info->blob_put_cnt);
-    //         total_io_size+=dset_info->total_bytes_blob_put;
-    //     }
-    //     fprintf(f,"\t\twrite_io_size: %ld\n", total_io_size);
-    // }
-
+    fprintf(f, "]\n");
 }
 
 // void print_order_id()
@@ -2439,9 +2420,7 @@ void file_info_print(char * func_name, void * obj, hid_t fapl_id, hid_t dxpl_id)
     file_info->file_size = file_size;
     printf("\"file_size\": %ld, ", file_size);
 
-    printf("\"file_intent\": [");
-    printf("\"%s\",", file_get_intent(file->under_object, file->under_vol_id, dxpl_id));
-    printf("], ");
+    printf("\"file_intent\": [\"%s\"], ", file_get_intent(file->under_object, file->under_vol_id, dxpl_id));
 
 	int mdc_nelmts;
     size_t rdcc_nslots;
@@ -2577,7 +2556,7 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
         unsigned int dimension_cnt = H5Sget_simple_extent_ndims(space_id);
         dset_info->dimension_cnt = dimension_cnt;
         if(dimension_cnt > 0)
-            dset_info->dimensions = malloc( dimension_cnt * sizeof(hsize_t *));
+            dset_info->dimensions = (hsize_t *)malloc( dimension_cnt * sizeof(hsize_t *));
         hsize_t maxdims[dimension_cnt];
         H5Sget_simple_extent_dims(space_id, dset_info->dimensions, maxdims);
     }
@@ -2622,7 +2601,7 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
         size_t meta_page = token_number / DLIFE_HELPER->hermes_page_size;
 
         dset_info->metadata_file_pages_cnt++;
-        dset_info->metadata_file_pages = realloc(dset_info->metadata_file_pages, 1 * sizeof(size_t));
+        dset_info->metadata_file_pages = (size_t*) realloc(dset_info->metadata_file_pages, 1 * sizeof(size_t));
         dset_info->metadata_file_pages[0] = meta_page;
 
     } // TODO: add more metadata file pages?
@@ -2649,8 +2628,8 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
             end_page = END_PAGE;
             dlLockRelease(&myLock);
 
-            dset_info->data_file_page_start = END_PAGE;
-            dset_info->data_file_page_end = (END_ADDR + dset_info->storage_size) / hermes_page_size;
+            dset_info->data_file_page_start = end_page;
+            dset_info->data_file_page_end = (end_addr + dset_info->storage_size) / hermes_page_size;
 
             // TODO: add START_PAGE to metadata_file_pages if not exist
             // if (!is_page_in_list(dset_info->metadata_file_pages, metadata_file_pages_cnt, page)) {
@@ -2745,16 +2724,14 @@ uint32_t decode_uint32(uint32_t value, const uint8_t *p) {
     return value;
 }
 
-haddr_t blob_id_to_addr(void ** p){
+haddr_t * blob_id_to_addr(void ** p){
 
 /* Reset value in destination */
     hbool_t  all_zero = true; /* True if address was all zeroes */
     unsigned u;               /* Local index variable */
-    haddr_t *addr_p = malloc(sizeof(haddr_t));
-    uint8_t **pp = p;
+    haddr_t *addr_p = (haddr_t *) malloc(sizeof(haddr_t));
+    uint8_t **pp = (uint8_t **)p;
     size_t addr_len = 4;
-
-    
 
     /* Decode bytes from address */
     for (u = 0; u < addr_len; u++) {
@@ -2783,7 +2760,8 @@ haddr_t blob_id_to_addr(void ** p){
             // printf("blob_id_debug_to_addr %d %d %d\n",u,u,u);
         } /* end if */
         else if (!all_zero)
-            HDassert(0 == **pp); /*overflow */
+            assert(0 == **pp); // modify for C++ use
+            // HDassert(0 == **pp); /*overflow */
     }                            /* end for */
 
     /* If 'all_zero' is still TRUE, the address was entirely composed of '0xff'
@@ -2816,13 +2794,13 @@ void blob_info_print(char * func_name, void * obj, hid_t dxpl_id,
     file_dlife_info_t * file_info = (file_dlife_info_t*)file->generic_dlife_info;
 
     if(!obj)
-        obj = -1;
+        obj = (void*) -1;
     if(!size)
-        size = -1;
+        size = (size_t)-1;
     if(!blob_id)
-        blob_id = -1;
+        blob_id = (void*)-1;
     if(!ctx)
-        ctx = -1;
+        ctx = (void*)-1;
 
     assert(file_info);
 
@@ -2924,8 +2902,8 @@ void blob_info_print(char * func_name, void * obj, hid_t dxpl_id,
             // printf("\"dset_token_str\": \"%s\", ", H5Otoken_to_str(space_id, &dset_info->obj_info.token, &token_str));
             printf("\"dset_token\": %ld, ", dset_info->obj_info.token);
 
-            size_t  token_idx = malloc(sizeof(size_t));
-            decode_uint32((void *) &dset_info->obj_info.token, token_idx);
+            size_t  token_idx = (size_t) malloc(sizeof(size_t));
+            decode_uint32((size_t) &dset_info->obj_info.token, (const uint8_t*)token_idx);
             // printf("\"token_idx\": %zu, ", token_idx);
             long long token_idx_addr = (long long) token_idx;
             unsigned char* tptr = (unsigned char*)token_idx_addr;
@@ -3036,3 +3014,17 @@ void file_ds_accessed(file_dlife_info_t* info)
     if(info)
         info->ds_accessed++;
 }
+
+
+
+// #ifdef __cplusplus
+// extern "C"
+// {
+// #endif
+
+// extern void dlLockAcquire(DLLock* lock);
+// extern void dlLockRelease(DLLock* lock);
+
+// #ifdef __cplusplus
+// }
+// #endif

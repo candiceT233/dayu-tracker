@@ -63,22 +63,11 @@ static const char * write_func = "H5FD__hermes_write";
 
 /* DsetTracker Related Code Start */
 /* candice added for tracking object access start */
-typedef struct FileTracker file_list_t;
 
-typedef struct FileTracker {
-    char * name;
-    unsigned long sorder_id;
-    unsigned long time; // at self create time
-    // size_t size;
-    // char op_type[10]; // create/open/close
-    // int access_cnt;
-    // dset_list_t *dset;
-    file_list_t *next;
-} file_list_t;
 /* candice added for tracking object access end */
 
-typedef struct ProvenanceHelper {
-    /* Provenance properties */
+typedef struct DatalifeHelper {
+    /* Datalife properties */
     char* dlife_file_path;
     FILE* dlife_file_handle;
     Prov_level dlife_level;
@@ -89,11 +78,12 @@ typedef struct ProvenanceHelper {
     char proc_name[64];
     int ptr_cnt;
     int opened_files_cnt;
-    file_list_t * fhead;
-    file_list_t * fcurr;
     file_dlife_info_t* opened_files;//linkedlist,
+    
     /* candice added fields start */
     size_t hermes_page_size;
+    // int vfd_opened_files_cnt;
+    // vfd_file_dlife_info_t* vfd_opened_files;//linkedlist,
     /* candice added fields end*/
 } dlife_helper_t;
 
@@ -130,6 +120,8 @@ typedef struct H5VL_datalife_wrap_ctx_t {
 //    char* func_name;
 //    int func_cnt;//stats
 //} H5VL_dlife_t;
+
+
 
 struct H5VL_dlife_file_info_t {//assigned when a file is closed, serves to store stats (copied from shared_file_info)
     dlife_helper_t* dlife_helper;  //pointer shared among all layers, one per process.
@@ -293,6 +285,8 @@ struct H5VL_dlife_attribute_info_t {
 };
 
 
+
+
 // TODO(candice) : added blob type for tracking
 struct H5VL_dlife_blob_info_t {
     object_dlife_info_t obj_info;        // Generic datalife. info
@@ -356,9 +350,8 @@ struct H5VL_dlife_blob_info_t {
 
 
 
-
-
 /* lock */
 typedef struct {
     pthread_mutex_t mutex;
 } DLLock;
+
