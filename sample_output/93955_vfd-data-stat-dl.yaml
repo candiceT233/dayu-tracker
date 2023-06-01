@@ -1,0 +1,170 @@
+- file-2:
+  file_name: "/qfs/projects/oddite/tang584/flextrkr_runs/wrf_tbradar/tracking/cloudid_20150506_000000.nc"
+  open_time: 1685594606206115
+  close_time: 1685594609267970
+  file_intent: ["H5F_ACC_RDWR","H5F_ACC_TRUNC","H5F_ACC_CREAT"]
+  file_no: 0
+  file_read_cnt: 0
+  file_write_cnt: 729
+  file_size: 0
+  H5FD_MEM_DRAW: 52
+    read_cnt: 52
+    write_cnt: 0
+    read_bytes: 7746756
+    write_bytes: 0
+  H5FD_MEM_OHDR:
+    read_cnt: 474
+    write_cnt: 0
+    read_bytes: 142657
+    write_bytes: 0
+  H5FD_MEM_SUPER:
+    read_cnt: 28
+    write_cnt: 0
+    read_bytes: 1344
+    write_bytes: 0
+  H5FD_MEM_BTREE:
+    read_cnt: 122
+    write_cnt: 0
+    read_bytes: 92332
+    write_bytes: 0
+  H5FD_MEM_LHEAP:
+    read_cnt: 53
+    write_cnt: 0
+    read_bytes: 18178
+    write_bytes: 0
+- file-1:
+  file_name: "/qfs/projects/oddite/tang584/flextrkr_runs/input_data/wrf_tbradar/wrfout_rainrate_tb_zh_mh_2015-05-06_00:00:00.nc"
+  open_time: 1685594583742673
+  close_time: 1685594609271104
+  file_intent: []
+  file_no: 0
+  file_read_cnt: 72
+  file_write_cnt: 0
+  file_size: 17684963
+  H5FD_MEM_DRAW: 17
+    read_cnt: 17
+    write_cnt: 0
+    read_bytes: 17647648
+    write_bytes: 0
+  H5FD_MEM_OHDR:
+    read_cnt: 38
+    write_cnt: 0
+    read_bytes: 9833
+    write_bytes: 0
+  H5FD_MEM_SUPER:
+    read_cnt: 3
+    write_cnt: 0
+    read_bytes: 56
+    write_bytes: 0
+  H5FD_MEM_BTREE:
+    read_cnt: 12
+    write_cnt: 0
+    read_bytes: 23588
+    write_bytes: 0
+  H5FD_MEM_LHEAP:
+    read_cnt: 2
+    write_cnt: 0
+    read_bytes: 1536
+    write_bytes: 0
+- file-3:
+  file_name: "/qfs/projects/oddite/tang584/flextrkr_runs/wrf_tbradar/tracking/cloudid_20150506_000000.nc"
+  open_time: 1685594609295011
+  close_time: 1685594611944100
+  file_intent: []
+  file_no: 0
+  file_read_cnt: 127
+  file_write_cnt: 0
+  file_size: 7737570
+  H5FD_MEM_DRAW: 5
+    read_cnt: 5
+    write_cnt: 0
+    read_bytes: 14696
+    write_bytes: 0
+  H5FD_MEM_OHDR:
+    read_cnt: 84
+    write_cnt: 0
+    read_bytes: 21373
+    write_bytes: 0
+  H5FD_MEM_SUPER:
+    read_cnt: 3
+    write_cnt: 0
+    read_bytes: 56
+    write_bytes: 0
+  H5FD_MEM_BTREE:
+    read_cnt: 30
+    write_cnt: 0
+    read_bytes: 67032
+    write_bytes: 0
+  H5FD_MEM_LHEAP:
+    read_cnt: 5
+    write_cnt: 0
+    read_bytes: 4096
+    write_bytes: 0
+- file-4:
+  file_name: "/qfs/projects/oddite/tang584/flextrkr_runs/wrf_tbradar/tracking/cloudid_20150506_010000.nc"
+  open_time: 1685594611949900
+  close_time: 1685594612141261
+  file_intent: []
+  file_no: 0
+  file_read_cnt: 127
+  file_write_cnt: 0
+  file_size: 7569557
+  H5FD_MEM_DRAW: 5
+    read_cnt: 5
+    write_cnt: 0
+    read_bytes: 14736
+    write_bytes: 0
+  H5FD_MEM_OHDR:
+    read_cnt: 84
+    write_cnt: 0
+    read_bytes: 21373
+    write_bytes: 0
+  H5FD_MEM_SUPER:
+    read_cnt: 3
+    write_cnt: 0
+    read_bytes: 56
+    write_bytes: 0
+  H5FD_MEM_BTREE:
+    read_cnt: 30
+    write_cnt: 0
+    read_bytes: 67032
+    write_bytes: 0
+  H5FD_MEM_LHEAP:
+    read_cnt: 5
+    write_cnt: 0
+    read_bytes: 4096
+    write_bytes: 0
+- file-5:
+  file_name: "/qfs/projects/oddite/tang584/flextrkr_runs/wrf_tbradar/tracking/track_20150506_010000.nc"
+  open_time: 1685594615276350
+  close_time: 1685594615331080
+  file_intent: ["H5F_ACC_RDWR","H5F_ACC_TRUNC","H5F_ACC_CREAT"]
+  file_no: 0
+  file_read_cnt: 0
+  file_write_cnt: 241
+  file_size: 0
+  H5FD_MEM_DRAW: 20
+    read_cnt: 20
+    write_cnt: 0
+    read_bytes: 57119
+    write_bytes: 0
+  H5FD_MEM_OHDR:
+    read_cnt: 140
+    write_cnt: 0
+    read_bytes: 48442
+    write_bytes: 0
+  H5FD_MEM_SUPER:
+    read_cnt: 12
+    write_cnt: 0
+    read_bytes: 576
+    write_bytes: 0
+  H5FD_MEM_BTREE:
+    read_cnt: 43
+    write_cnt: 0
+    read_bytes: 28732
+    write_bytes: 0
+  H5FD_MEM_LHEAP:
+    read_cnt: 26
+    write_cnt: 0
+    read_bytes: 14573
+    write_bytes: 0
