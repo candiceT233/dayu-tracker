@@ -47,6 +47,7 @@ unsigned long ATTR_LL_TOTAL_TIME;       //attribute
 //shorten function id: use hash value
 static char* FUNC_DIC[STAT_FUNC_MOD];
 
+
 /* locks */
 void dlLockInit(DLLock* lock) {
     pthread_mutex_init(&lock->mutex, NULL);
@@ -180,7 +181,7 @@ char * get_datatype_class_str(hid_t type_id);
     
     /* candice added routine prototypes start */
 void dump_file_stat_yaml(FILE *f, const file_dlife_info_t* file_info);
-void dump_dset_stat_yaml(FILE *f, const dataset_dlife_info_t* dset_info);
+void dump_dset_stat_yaml(FILE *f, dataset_dlife_info_t* dset_info);
 // void print_order_id();
 // void tracker_insert_file(file_list_t** head_ref, file_dlife_info_t * file_info);
 // void print_all_tracker(file_list_t * head);
@@ -193,6 +194,11 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
     hid_t file_space_id, void * obj, hid_t dxpl_id, const void *buf, size_t obj_idx);
 void blob_info_print(char * func_name, void * obj, hid_t dxpl_id, 
     size_t size, void * blob_id, const void * buf, void *ctx);
+
+
+int is_page_in_list(size_t *list, size_t list_size, size_t page);
+void print_list(const size_t *list, size_t list_size);
+void add_meta_page_to_list(size_t **list, size_t *list_size, size_t page);
 
     /* candice added routine prototypes end */
 
@@ -229,15 +235,49 @@ size_t get_hermes_page_size() {
     return DEFAULT_PAGE_SIZE; // Default page size of 8192 bytes
 }
 
+
+
 // Function to check if a page is already in the list
 int is_page_in_list(size_t *list, size_t list_size, size_t page) {
     for (size_t i = 0; i < list_size; i++) {
+        printf("Checking page %zu in the list\n", list[i]);
         if (list[i] == page) {
             return 1; // Page found in the list
         }
     }
     return 0; // Page not found in the list
 }
+
+void print_list(const size_t *list, size_t list_size) {
+    printf("List contents: ");
+    for (size_t i = 0; i < list_size; i++) {
+        printf("%zu ", list[i]);
+    }
+    printf("\n");
+}
+
+void add_meta_page_to_list(size_t **list, size_t *list_size, size_t page) {
+    // printf("Adding page %zu to the list\n", page);
+
+    // Check if the page is already in the list
+    if (!is_page_in_list(*list, *list_size, page)) {
+        // Allocate memory for a larger list
+        size_t new_list_size = *list_size + 1;
+        size_t *new_list = realloc(*list, new_list_size * sizeof(size_t));
+        if (new_list == NULL) {
+            perror("Failed to allocate memory for the list");
+            return;
+        }
+        // Update the list and size
+        *list = new_list;
+        (*list)[*list_size] = page;
+        *list_size = new_list_size;
+    }
+
+
+}
+
+
 
 
 /*-------------------------------------------------------------------------
@@ -462,6 +502,21 @@ char * dataset_get_layout(hid_t plist_id)
         return "H5D_LAYOUT_ERROR";
 }
 
+static hsize_t attribute_get_storage_size(void *under_attr, hid_t under_vol_id, hid_t dxpl_id)
+{
+    H5VL_attr_get_args_t vol_cb_args; /* Arguments to VOL callback */
+    hsize_t                 storage_size = 0;
+
+    /* Set up VOL callback arguments */
+    vol_cb_args.op_type                            = H5VL_ATTR_GET_STORAGE_SIZE;
+    vol_cb_args.args.get_storage_size.data_size    = &storage_size;
+
+    if(H5VLattr_get(under_attr, under_vol_id, &vol_cb_args, dxpl_id, NULL) < 0)
+        return H5I_INVALID_HID;
+
+    return storage_size;
+}
+
 static hsize_t dataset_get_storage_size(void *under_dset, hid_t under_vol_id, hid_t dxpl_id)
 {
     H5VL_dataset_get_args_t vol_cb_args; /* Arguments to VOL callback */
@@ -631,10 +686,14 @@ dlife_helper_t * dlife_helper_init( char* file_path, Prov_level dlife_level, cha
     new_helper->dlife_line_format = strdup(dlife_line_format);
     new_helper->dlife_level = dlife_level;
     new_helper->pid = getpid();
-    // print new_helper pid
-    printf("vfd new_helper pid: %d\n", new_helper->pid);
-
     new_helper->tid = pthread_self();
+
+    // update file path with PID
+    int prefix_len = snprintf(NULL, 0, "%d_%s", getpid(), file_path);
+    new_helper->dlife_file_path = (char*)malloc((prefix_len + 1) * sizeof(char));
+    snprintf(new_helper->dlife_file_path, prefix_len + 1, "%d_%s", getpid(), file_path);
+
+    printf("vol new_helper dlife_file_path: %s\n", new_helper->dlife_file_path);
 
     new_helper->opened_files = NULL;
     new_helper->opened_files_cnt = 0;
@@ -1254,10 +1313,19 @@ dataset_dlife_info_t * add_dataset_node(unsigned long obj_file_no,
 
     /* Add dset info that requires parent file info */
     cur->pfile_name = file_info->file_name ? strdup(file_info->file_name) : NULL;
-    cur->metadata_file_pages_cnt = 0;
+
+    // // TODO: update meta_page to tracking object
+    // cur->metadata_file_pages = NULL;
+    // cur->metadata_file_pages_cnt = 0;
+    // size_t token_number;
+    // char token_buffer[20]; // Assuming a maximum of 20 characters for the string representation
+    // sprintf(token_buffer, "%d", cur->obj_info.token); // Convert to string
+    // token_number = strtol(token_buffer, NULL, 10); // Convert string to long
+    // size_t meta_page = token_number / DLIFE_HELPER->hermes_page_size;
+    // add_meta_page_to_list(cur->metadata_file_pages, cur->metadata_file_pages_cnt, meta_page);
 
     dlLockAcquire(&myLock);
-    cur->sorder_id = ++DSET_SORDER;
+    cur->sorder_id = ++DATA_SORDER;
     dlLockRelease(&myLock);
 
     // Increment refcount on dataset
@@ -2079,7 +2147,7 @@ void dump_file_stat_yaml(FILE *f, const file_dlife_info_t* file_info)
 
 }
 
-void dump_dset_stat_yaml(FILE *f, const dataset_dlife_info_t* dset_info)
+void dump_dset_stat_yaml(FILE *f, dataset_dlife_info_t* dset_info)
 {
 
     if (!dset_info) {
@@ -2101,16 +2169,6 @@ void dump_dset_stat_yaml(FILE *f, const dataset_dlife_info_t* dset_info)
     fprintf(f, "    storage_size: %ld\n", dset_info->storage_size);
     fprintf(f, "    data_file_pages: [%ld,%ld]\n", dset_info->data_file_page_start, dset_info->data_file_page_end);
 
-    if (dset_info->metadata_file_pages_cnt > 0) {
-        fprintf(f, "    metadata_file_pages: [");
-        for (size_t i = 0; i < dset_info->metadata_file_pages_cnt; i++) {
-            fprintf(f, "%ld", dset_info->metadata_file_pages[i]);
-            if (i < dset_info->metadata_file_pages_cnt - 1)
-                fprintf(f, ",");
-        }
-        fprintf(f, "]\n");
-    }
-
     fprintf(f, "    layout: \"%s\"\n", dset_info->layout);
     fprintf(f, "    offset: %ld\n", dset_info->dset_offset);
     fprintf(f, "    data_type_class: \"%s\"\n", get_datatype_class_str(dset_info->dt_class));
@@ -2128,13 +2186,6 @@ void dump_dset_stat_yaml(FILE *f, const dataset_dlife_info_t* dset_info)
     }
     fprintf(f, "]\n");
 }
-
-// void print_order_id()
-// {
-//     printf("OrderID[%ld_%ld-%ld_%ld]",
-//         FILE_SORDER,FILE_PORDER,
-//         DSET_SORDER, DSET_PORDER);
-// }
 
 void H5VL_arrow_get_selected_sub_region(hid_t space_id, size_t org_type_size) {
 
@@ -2357,9 +2408,9 @@ void file_info_print(char * func_name, void * obj, hid_t fapl_id, hid_t dxpl_id)
     }
 
 
-    void * buf_ptr_ptr;
-    size_t buf_len_ptr;
-    H5Pget_file_image(file_info->fapl_id, &buf_ptr_ptr, &buf_len_ptr);
+    // void * buf_ptr_ptr;
+    // size_t buf_len_ptr;
+    // H5Pget_file_image(file_info->fapl_id, &buf_ptr_ptr, &buf_len_ptr);
 
 
     H5F_fspace_strategy_t strategy;
@@ -2456,7 +2507,6 @@ void attribute_info_print(char * func_name, void *obj,  const H5VL_loc_params_t 
 {
     printf("{\"func_name\": \"%s\", ", func_name);
 
-
     H5VL_datalife_t *file = (H5VL_datalife_t *)obj;
     // file_dlife_info_t * file_info = (file_dlife_info_t*)file->generic_dlife_info;
     // printf("\"file_name\": \"%s\", ", file_info->file_name);
@@ -2465,7 +2515,11 @@ void attribute_info_print(char * func_name, void *obj,  const H5VL_loc_params_t 
     file_dlife_info_t * file_info = attr_info->obj_info.file_info;
 
     printf("\"attr_token\": %ld, ", attr_info->obj_info.token);
-    printf("\"attr_name\": \"%s\", ", attr_info->obj_info.name);
+
+    if(strcmp(func_name,"H5VLattr_open") == 0)
+        printf("\"dataset_name\": \"%s\", ", attr_info->obj_info.name);
+    else
+        printf("\"attr_name\": \"%s\", ", attr_info->obj_info.name);
 
     printf("\"file_name\": \"%s\", ", file_info->file_name);
 
@@ -2542,6 +2596,7 @@ char * H5S_select_type_to_str(H5S_sel_type type){
     }
 }
 
+// TODO: update dataset_info to tracking object
 void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
     hid_t file_space_id, void * obj, hid_t dxpl_id, const void *buf, size_t obj_idx)
 {
@@ -2589,23 +2644,6 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
         dset_info->layout = layout ? strdup(layout) : NULL;
     }
 
-
-
-    // metadata_file_pages first page added with token
-    if(dset_info->metadata_file_pages_cnt == 0){
-        size_t token_number;
-        char token_buffer[20]; // Assuming a maximum of 20 characters for the string representation
-        sprintf(token_buffer, "%d", dset_info->obj_info.token); // Convert to string
-        token_number = strtol(token_buffer, NULL, 10); // Convert string to long
-        // printf("token_number: %ld\n", token_number);
-        size_t meta_page = token_number / DLIFE_HELPER->hermes_page_size;
-
-        dset_info->metadata_file_pages_cnt++;
-        dset_info->metadata_file_pages = (size_t*) realloc(dset_info->metadata_file_pages, 1 * sizeof(size_t));
-        dset_info->metadata_file_pages[0] = meta_page;
-
-    } // TODO: add more metadata file pages?
-
     if(strcmp(func_name,"H5VLdataset_create") != 0 
         && strcmp(func_name,"H5VLget_object") != 0 ){
         if((dset_info->storage_size == NULL) || (dset_info->storage_size < 1))
@@ -2616,25 +2654,28 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
             size_t end_addr;
             size_t start_page;
             size_t end_page;
+            size_t access_size;
 
             dlLockAcquire(&myLock);
             dset_info->storage_size = dataset_get_storage_size(dset->under_object, dset->under_vol_id, dxpl_id);
             // printf("Critical section storage_size: %ld addr[%ld, %ld] size[%ld], hermes_blobs[%ld, %ld]\n", 
-            //     dset_info->storage_size, START_ADDR, END_ADDR, ACC_SIZE, START_PAGE, END_PAGE);
+            //     dset_info->storage_size, START_ADDR, END_ADDR, ACC_SIZE);
 
             start_addr = START_ADDR;
             end_addr = END_ADDR;
-            start_page = START_PAGE;
-            end_page = END_PAGE;
+            access_size = ACC_SIZE;
             dlLockRelease(&myLock);
 
-            dset_info->data_file_page_start = end_page;
-            dset_info->data_file_page_end = (end_addr + dset_info->storage_size) / hermes_page_size;
+            start_page = start_addr/hermes_page_size;
+            end_page = end_addr/hermes_page_size;
 
-            // TODO: add START_PAGE to metadata_file_pages if not exist
-            // if (!is_page_in_list(dset_info->metadata_file_pages, metadata_file_pages_cnt, page)) {
-
-
+            if(access_size == dset_info->storage_size){
+                dset_info->data_file_page_start = start_page;
+                dset_info->data_file_page_end = end_page;
+            } else {
+                dset_info->data_file_page_start = end_page;
+                dset_info->data_file_page_end = (end_addr + dset_info->storage_size) / hermes_page_size;
+            }
         }
     } //&& strcmp(func_name,"H5VLget_object") != 0
 
@@ -2679,6 +2720,7 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
     printf("\"dset_name\": \"%s\", ", dset_info->obj_info.name);
 
     printf("\"dset_token\": %ld, ", dset_info->obj_info.token);
+
     // printf("\"dset_token.__data\": [");
     // for (size_t i = 0; i < 16; i++)
     // {
@@ -2724,14 +2766,14 @@ uint32_t decode_uint32(uint32_t value, const uint8_t *p) {
     return value;
 }
 
-haddr_t * blob_id_to_addr(void ** p){
+haddr_t * decode_to_addr(void ** p){
 
 /* Reset value in destination */
     hbool_t  all_zero = true; /* True if address was all zeroes */
     unsigned u;               /* Local index variable */
     haddr_t *addr_p = (haddr_t *) malloc(sizeof(haddr_t));
     uint8_t **pp = (uint8_t **)p;
-    size_t addr_len = 4;
+    size_t addr_len = sizeof(haddr_t);
 
     /* Decode bytes from address */
     for (u = 0; u < addr_len; u++) {
@@ -2760,8 +2802,7 @@ haddr_t * blob_id_to_addr(void ** p){
             // printf("blob_id_debug_to_addr %d %d %d\n",u,u,u);
         } /* end if */
         else if (!all_zero)
-            assert(0 == **pp); // modify for C++ use
-            // HDassert(0 == **pp); /*overflow */
+            HDassert(0 == **pp); /*overflow */
     }                            /* end for */
 
     /* If 'all_zero' is still TRUE, the address was entirely composed of '0xff'
@@ -2793,6 +2834,9 @@ void blob_info_print(char * func_name, void * obj, hid_t dxpl_id,
     H5VL_datalife_t *file = (H5VL_datalife_t *)obj;
     file_dlife_info_t * file_info = (file_dlife_info_t*)file->generic_dlife_info;
 
+    printf("{\"func_name\": \"%s\", ", func_name);
+
+
     if(!obj)
         obj = (void*) -1;
     if(!size)
@@ -2803,9 +2847,6 @@ void blob_info_print(char * func_name, void * obj, hid_t dxpl_id,
         ctx = (void*)-1;
 
     assert(file_info);
-
-    printf("{\"func_name\": \"%s\", ", func_name);
-    
 
     // H5Pget_elink_file_cache_size(file_info->fapl_id, &efc_size);
     // H5Pget_fapl_direct(file_info->fapl_id, &boundary, &block_size, &cbuf_siz);
@@ -2851,11 +2892,14 @@ void blob_info_print(char * func_name, void * obj, hid_t dxpl_id,
 
     printf("\"blob_id\": %ld, ", blob_id);
 
-    haddr_t * addr_p = blob_id_to_addr(&blob_id);
-    // printf("\"addr_p\": %ld, ", addr_p);
-    // printf("Content at addr_p : %zu, ", *(unsigned char*) (long long) addr_p);
+    haddr_t * addr_p = decode_to_addr(&blob_id);
+    printf("\"addr_p\": %ld, ", addr_p);
+    printf("Content at addr_p : %zu, ", *(unsigned char*) (long long) addr_p);
     
-
+    if(!size)
+        printf("\"access_size\": %d, ", 0);
+    else
+        printf("\"access_size\": %ld, ", size);
 
     // int ndset = file_info->opened_datasets_cnt;
     printf("\"opened_datasets_cnt\": %d, ", file_info->opened_datasets_cnt);
@@ -2883,19 +2927,6 @@ void blob_info_print(char * func_name, void * obj, hid_t dxpl_id,
 
             printf("\"time(us)\": %ld, ", get_time_usec());
 
-            // if(!obj)
-            //     printf("\"obj\": %d, ", -1);
-            // else
-            //     printf("\"obj\": %p, ", obj);
-            
-            // if(!dxpl_id)
-            //     printf("\"dxpl_id\": %d, ", -1);
-            // else
-            //     printf("\"dxpl_id\": %p, ", dxpl_id);
-
-            // printf("\"ctx\": %ld, ", ctx);
-            // printf("\"&ctx\": %p, ", &ctx);
-
             printf("\"dset_name\": \"%s\", ", dset_info->obj_info.name); //TODO
         
             // char *token_str = NULL;
@@ -2911,22 +2942,10 @@ void blob_info_print(char * func_name, void * obj, hid_t dxpl_id,
 
             // printf("\"obj_token\": %ld, ", dset_info->obj_info.token); // a fixed number 800
             printf("\"file_no\": %ld, ", file_info->file_no); // matches dset_name
-
-            if(!size)
-                printf("\"access_size\": %d, ", 0);
-            else
-                printf("\"access_size\": %ld, ", size);
-            
-
             printf("\"offset\": %ld, ", dset_info->dset_offset); //TODO: get blob offset
-
             printf("\"layout\": \"%s\", ", dset_info->layout); //TODO: blob layout?
             printf("\"dt_class\": \"%s\", ", get_datatype_class_str(dset_info->dt_class));
-
-
-            // printf("\"type_size\": %ld, ", H5Tget_size(type_id));
             printf("\"storage_size\": %ld, ", dset_info->storage_size);
-
             printf("\"n_elements\": %ld, ", dset_info->dset_n_elements);
             printf("\"dimension_cnt\": %d, ", dset_info->dimension_cnt); //H5Sget_simple_extent_ndims gets negative
 
@@ -2936,17 +2955,6 @@ void blob_info_print(char * func_name, void * obj, hid_t dxpl_id,
                     printf("%ld,", dset_info->dimensions[i]);
             }
             printf("], ");
-
-            // printf("\"space_id\": %d, ", space_id);
-            // printf("\"mem_type_id\": %d, ", -1);
-            // printf("\"file_space_id\": %d, ", -1);
-
-            // size_t total_read_bytes = dset_info->total_bytes_read + dset_info->total_bytes_blob_get;
-            // size_t total_write_bytes = dset_info->total_bytes_written + dset_info->total_bytes_blob_put;
-            // printf("\"total_read_bytes\": %ld, ", total_read_bytes );
-            // printf("\"total_write_bytes\": %ld, ", total_write_bytes );
-
-            // printf("\"blob_sorder\": %ld, ", BLOB_SORDER);
 
             printf("\"dset_addr\": %p, ", obj);
             printf("}\n");

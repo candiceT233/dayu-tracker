@@ -7,6 +7,7 @@
 
 #include "hdf5.h"
 #include "datalife_vol.h"
+
 // #include "md5.h"
 
 
@@ -26,7 +27,7 @@ typedef struct H5VL_dlife_blob_info_t blob_dlife_info_t;
 unsigned long FILE_SORDER;
 // unsigned long FILE_PORDER;
 
-unsigned long DSET_SORDER;
+unsigned long DATA_SORDER;
 // unsigned long DSET_PORDER;
 
 unsigned long BLOB_SORDER;
@@ -210,8 +211,7 @@ struct H5VL_dlife_dataset_info_t {
     unsigned long pfile_sorder_id;      // parent file sequential order ID
     size_t data_file_page_start;
     size_t data_file_page_end;
-    size_t * metadata_file_pages;
-    size_t metadata_file_pages_cnt;
+
     // size_t metadata_file_page_end; // TODO: how to obtain the end?
     char * dset_select_type;
     size_t dset_select_npoints;
@@ -280,6 +280,9 @@ struct H5VL_dlife_attribute_info_t {
                                         // generic upcasts to work
 
     int func_cnt;//stats
+    unsigned long sorder_id;
+    int attr_read_cnt;
+    int attr_write_cnt;
 
     attribute_dlife_info_t *next;
 };
@@ -354,4 +357,5 @@ struct H5VL_dlife_blob_info_t {
 typedef struct {
     pthread_mutex_t mutex;
 } DLLock;
+
 
