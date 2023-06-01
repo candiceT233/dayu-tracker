@@ -6,23 +6,23 @@
 #include <string.h>
 
 #include "hdf5.h"
-#include "datalife_vol.h"
+#include "tracker_vol.h"
 
 // #include "md5.h"
-#include "uthash.h"
+// #include "uthash.h"
 
 
 /************/
 /* Typedefs */
 /************/
 
-typedef struct H5VL_dlife_dataset_info_t dataset_dlife_info_t;
-typedef struct H5VL_dlife_group_info_t group_dlife_info_t;
-typedef struct H5VL_dlife_datatype_info_t datatype_dlife_info_t;
-typedef struct H5VL_dlife_attribute_info_t attribute_dlife_info_t;
-typedef struct H5VL_dlife_file_info_t file_dlife_info_t;
+typedef struct H5VL_tkr_dataset_info_t dataset_tkr_info_t;
+typedef struct H5VL_tkr_group_info_t group_tkr_info_t;
+typedef struct H5VL_tkr_datatype_info_t datatype_tkr_info_t;
+typedef struct H5VL_tkr_attribute_info_t attribute_tkr_info_t;
+typedef struct H5VL_tkr_file_info_t file_tkr_info_t;
 
-typedef struct H5VL_dlife_blob_info_t blob_dlife_info_t;
+typedef struct H5VL_tkr_blob_info_t blob_tkr_info_t;
 
 unsigned long FILE_SORDER;
 // unsigned long FILE_PORDER;
@@ -67,65 +67,65 @@ static const char * write_func = "H5FD__hermes_write";
 
 /* candice added for tracking object access end */
 
-typedef struct DatalifeHelper {
-    /* Datalife properties */
-    char* dlife_file_path;
-    FILE* dlife_file_handle;
-    Prov_level dlife_level;
-    char* dlife_line_format;
+typedef struct TrackerHelper {
+    /* Tracker properties */
+    char* tkr_file_path;
+    FILE* tkr_file_handle;
+    Track_level tkr_level;
+    char* tkr_line_format;
     char user_name[32];
     int pid;
     pthread_t tid;
     char proc_name[64];
     int ptr_cnt;
     int opened_files_cnt;
-    file_dlife_info_t* opened_files;//linkedlist,
+    file_tkr_info_t* opened_files;//linkedlist,
     
     /* candice added fields start */
     size_t hermes_page_size;
     // int vfd_opened_files_cnt;
-    // vfd_file_dlife_info_t* vfd_opened_files;//linkedlist,
+    // vfd_file_tkr_info_t* vfd_opened_files;//linkedlist,
     /* candice added fields end*/
-} dlife_helper_t;
+} tkr_helper_t;
 
-typedef struct H5VL_datalife_t {
+typedef struct H5VL_tracker_t {
     hid_t  under_vol_id;        /* ID for underlying VOL connector */
     void  *under_object;        /* Info object for underlying VOL connector */
     H5I_type_t my_type;         /* obj type, dataset, datatype, etc. */
-    dlife_helper_t *dlife_helper; /* pointer shared among all layers, one per process. */
-    void *generic_dlife_info;    /* Pointer to a class-specific datalife info struct. */
+    tkr_helper_t *tkr_helper; /* pointer shared among all layers, one per process. */
+    void *generic_tkr_info;    /* Pointer to a class-specific tracker info struct. */
                                 /* Should be cast to layer-specific type before use, */
-                                /* such as file_dlife_info, dataset_dlife_info. */
-} H5VL_datalife_t;
+                                /* such as file_tkr_info, dataset_tkr_info. */
+} H5VL_tracker_t;
 
 // TODO(candice) : add for blob object
-typedef struct H5VL_datalife_blob_t {
+typedef struct H5VL_tracker_blob_t {
     int my_type;         /* obj type, dataset, datatype, etc. */
-    // dlife_helper_t *dlife_helper; /* pointer shared among all layers, one per process. */
-    blob_dlife_info_t * blob_info;    /* Pointer to blob datalife info struct. */
-} H5VL_datalife_blob_t;
+    // tkr_helper_t *tkr_helper; /* pointer shared among all layers, one per process. */
+    blob_tkr_info_t * blob_info;    /* Pointer to blob tracker info struct. */
+} H5VL_tracker_blob_t;
 
-/* The DATALIFE VOL wrapper context */
-typedef struct H5VL_datalife_wrap_ctx_t {
-    dlife_helper_t *dlife_helper; /* shared pointer */
+/* The TRACKER VOL wrapper context */
+typedef struct H5VL_tracker_wrap_ctx_t {
+    tkr_helper_t *tkr_helper; /* shared pointer */
     hid_t under_vol_id;         /* VOL ID for under VOL */
     void *under_wrap_ctx;       /* Object wrapping context for under VOL */
-    file_dlife_info_t *file_info;
+    file_tkr_info_t *file_info;
     unsigned long file_no;
     hid_t dtype_id;             /* only used by datatype */
-} H5VL_datalife_wrap_ctx_t;
+} H5VL_tracker_wrap_ctx_t;
 
 //======================================= statistics =======================================
-//typedef struct H5VL_dlife_t {
+//typedef struct H5VL_tkr_t {
 //    void   *under_object;
 //    char* func_name;
 //    int func_cnt;//stats
-//} H5VL_dlife_t;
+//} H5VL_tkr_t;
 
 
 
-struct H5VL_dlife_file_info_t {//assigned when a file is closed, serves to store stats (copied from shared_file_info)
-    dlife_helper_t* dlife_helper;  //pointer shared among all layers, one per process.
+struct H5VL_tkr_file_info_t {//assigned when a file is closed, serves to store stats (copied from shared_file_info)
+    tkr_helper_t* tkr_helper;  //pointer shared among all layers, one per process.
     const char* file_name;
     unsigned long file_no;
 
@@ -151,13 +151,13 @@ struct H5VL_dlife_file_info_t {//assigned when a file is closed, serves to store
 
     /* Currently open objects */
     int opened_datasets_cnt;
-    dataset_dlife_info_t *opened_datasets;
+    dataset_tkr_info_t *opened_datasets;
     int opened_grps_cnt;
-    group_dlife_info_t *opened_grps;
+    group_tkr_info_t *opened_grps;
     int opened_dtypes_cnt;
-    datatype_dlife_info_t *opened_dtypes;
+    datatype_tkr_info_t *opened_dtypes;
     int opened_attrs_cnt;
-    attribute_dlife_info_t *opened_attrs;
+    attribute_tkr_info_t *opened_attrs;
 
     /* Statistics */
     int ds_created;
@@ -167,21 +167,21 @@ struct H5VL_dlife_file_info_t {//assigned when a file is closed, serves to store
     int dtypes_created;
     int dtypes_accessed;
 
-    file_dlife_info_t *next;
+    file_tkr_info_t *next;
 };
 
-// Common datalife information, for all objects
-typedef struct H5VL_dlife_object_info_t {
-    dlife_helper_t *dlife_helper;         //pointer shared among all layers, one per process.
-    file_dlife_info_t *file_info;        // Pointer to file info for object's file
+// Common tracker information, for all objects
+typedef struct H5VL_tkr_object_info_t {
+    tkr_helper_t *tkr_helper;         //pointer shared among all layers, one per process.
+    file_tkr_info_t *file_info;        // Pointer to file info for object's file
     H5O_token_t token;                  // Unique ID within file for object
     char *name;                         // Name of object within file
                                         // (possibly NULL and / or non-unique)
-    int ref_cnt;                        // # of references to this datalife info
-} object_dlife_info_t;
+    int ref_cnt;                        // # of references to this tracker info
+} object_tkr_info_t;
 
-struct H5VL_dlife_dataset_info_t {
-    object_dlife_info_t obj_info;        // Generic datalife. info
+struct H5VL_tkr_dataset_info_t {
+    object_tkr_info_t obj_info;        // Generic tracker. info
                                         // Must be first field in struct, for
                                         // generic upcasts to work
     
@@ -228,7 +228,7 @@ struct H5VL_dlife_dataset_info_t {
     hsize_t total_blob_get_time;
 
     int used_blob_cnt;
-    blob_dlife_info_t * used_blobs;
+    blob_tkr_info_t * used_blobs;
     /* candice added for recording blob end */
 #ifdef H5_HAVE_PARALLEL
     int ind_dataset_read_cnt;
@@ -240,13 +240,13 @@ struct H5VL_dlife_dataset_info_t {
 #endif /* H5_HAVE_PARALLEL */
     int access_cnt;
 
-    dataset_dlife_info_t *next;
+    dataset_tkr_info_t *next;
 };
 
 
 
-struct H5VL_dlife_group_info_t {
-    object_dlife_info_t obj_info;        // Generic datalife. info
+struct H5VL_tkr_group_info_t {
+    object_tkr_info_t obj_info;        // Generic tracker. info
                                         // Must be first field in struct, for
                                         // generic upcasts to work
 
@@ -254,16 +254,16 @@ struct H5VL_dlife_group_info_t {
 //    int group_get_cnt;
 //    int group_specific_cnt;
 
-    group_dlife_info_t *next;
+    group_tkr_info_t *next;
 };
 
-typedef struct H5VL_dlife_link_info_t {
+typedef struct H5VL_tkr_link_info_t {
     int link_get_cnt;
     int link_specific_cnt;
-} link_dlife_info_t;
+} link_tkr_info_t;
 
-struct H5VL_dlife_datatype_info_t {
-    object_dlife_info_t obj_info;        // Generic datalife. info
+struct H5VL_tkr_datatype_info_t {
+    object_tkr_info_t obj_info;        // Generic tracker. info
                                         // Must be first field in struct, for
                                         // generic upcasts to work
 
@@ -271,11 +271,11 @@ struct H5VL_dlife_datatype_info_t {
     int datatype_commit_cnt;
     int datatype_get_cnt;
 
-    datatype_dlife_info_t *next;
+    datatype_tkr_info_t *next;
 };
 
-struct H5VL_dlife_attribute_info_t {
-    object_dlife_info_t obj_info;        // Generic datalife. info
+struct H5VL_tkr_attribute_info_t {
+    object_tkr_info_t obj_info;        // Generic tracker. info
                                         // Must be first field in struct, for
                                         // generic upcasts to work
 
@@ -284,18 +284,18 @@ struct H5VL_dlife_attribute_info_t {
     int attr_read_cnt;
     int attr_write_cnt;
 
-    attribute_dlife_info_t *next;
+    attribute_tkr_info_t *next;
 };
 
 
 
 
 // TODO(candice) : added blob type for tracking
-struct H5VL_dlife_blob_info_t {
-    object_dlife_info_t obj_info;        // Generic datalife. info
+struct H5VL_tkr_blob_info_t {
+    object_tkr_info_t obj_info;        // Generic tracker. info
                                         // Must be first field in struct, for
                                         // generic upcasts to work
-    // dataset_dlife_info_t
+    // dataset_tkr_info_t
     
     /* candice added for recording blob start */
     // int blob_put_cnt;
@@ -325,7 +325,7 @@ struct H5VL_dlife_blob_info_t {
     int access_type; // 0 for put, 1 for get
     int access_cnt;
     
-    blob_dlife_info_t *next;
+    blob_tkr_info_t *next;
 };
 
 
@@ -358,57 +358,57 @@ typedef struct {
 
 
 
-/* Dataset Tracking Object Start */
-typedef struct H5VL_dset_track_t dset_track_t;
+// /* Dataset Tracking Object Start */
+// typedef struct H5VL_dset_track_t dset_track_t;
 
-typedef struct {
-    char *file_name;    // Parent file name
-    char *dset_name;     // Dataset name
-} DsetTrackKey;
+// typedef struct {
+//     char *file_name;    // Parent file name
+//     char *dset_name;     // Dataset name
+// } DsetTrackKey;
 
-typedef struct {
-    DsetTrackKey key;               // Key for the hash table entry
-    dset_track_t *dset_track_info;       // Value associated with the key
-    UT_hash_handle hh;              // Uthash handle
-} DsetTrackHashEntry;
+// typedef struct {
+//     DsetTrackKey key;               // Key for the hash table entry
+//     dset_track_t *dset_track_info;       // Value associated with the key
+//     UT_hash_handle hh;              // Uthash handle
+// } DsetTrackHashEntry;
 
-/* runtime tracking data object */
-typedef struct H5VL_dset_track_t {
-    // DsetTrackKey key;
+// /* runtime tracking data object */
+// typedef struct H5VL_dset_track_t {
+//     // DsetTrackKey key;
     
-    char *token_str;     // Token string
-    H5T_class_t dt_class;               //data type class
-    H5S_class_t ds_class;               //data space class
-    char * layout;                      
-    unsigned int dimension_cnt;
-    hsize_t * dimensions;
-    size_t dset_type_size;
-    int dataset_read_cnt;
-    int dataset_write_cnt;
+//     char *token_str;     // Token string
+//     H5T_class_t dt_class;               //data type class
+//     H5S_class_t ds_class;               //data space class
+//     char * layout;                      
+//     unsigned int dimension_cnt;
+//     hsize_t * dimensions;
+//     size_t dset_type_size;
+//     int dataset_read_cnt;
+//     int dataset_write_cnt;
 
 
-    haddr_t dset_offset;
-    hsize_t storage_size;
-    size_t dset_n_elements; // (hsize_t)H5Sget_simple_extent_npoints(ds_id) or all dimentions multiply
-    ssize_t hyper_nblocks; // H5Sget_select_hyper_nblocks(space_id)
-    hid_t dspace_id;
+//     haddr_t dset_offset;
+//     hsize_t storage_size;
+//     size_t dset_n_elements; // (hsize_t)H5Sget_simple_extent_npoints(ds_id) or all dimentions multiply
+//     ssize_t hyper_nblocks; // H5Sget_select_hyper_nblocks(space_id)
+//     hid_t dspace_id;
 
-    unsigned long sorder_id;
-    unsigned long pfile_sorder_id;      // parent file sequential order ID
-    size_t data_file_page_start;
-    size_t data_file_page_end;
+//     unsigned long sorder_id;
+//     unsigned long pfile_sorder_id;      // parent file sequential order ID
+//     size_t data_file_page_start;
+//     size_t data_file_page_end;
 
-    size_t * metadata_file_pages;
-    int metadata_file_pages_cnt;
+//     size_t * metadata_file_pages;
+//     int metadata_file_pages_cnt;
     
-    char * dset_select_type;
-    size_t dset_select_npoints;
+//     char * dset_select_type;
+//     size_t dset_select_npoints;
 
-    /* TODO: H5_HAVE_PARALLEL */
-    int access_cnt;
+//     /* TODO: H5_HAVE_PARALLEL */
+//     int access_cnt;
 
-    dset_track_t *next;
-} dset_track_t;
+//     dset_track_t *next;
+// } dset_track_t;
 
 
 

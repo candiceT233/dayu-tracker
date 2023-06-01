@@ -9,11 +9,11 @@ CC=mpicc
 # CC=gcc
 # CC=h5cc
 AR=ar
-# -DDATALIFE_LOGGING -DDATALIFE_PROV_LOGGING -DDATALIFE_MORE_LOGGING -DDATALIFE_PT_LOGGING -DDATALIFE_TEST_LOGGING
-DEBUG= -g -O0 -DDEBUG #-DDATALIFE_TEST_LOGGING
+# TRACKER_LOGGING TRACKER_PROV_LOGGING TRACKER_MORE_LOGGING TRACKER_PT_LOGGING TRACKER_TEST_LOGGING
+DEBUG= -g -O0 -DDEBUG -DTRACKER_LOGGING #-DTRACKER_TEST_LOGGING
 INCLUDES=-I$(HDF5_DIR)/include 
 
-CFLAGS = $(DEBUG) -fPIC $(INCLUDES) -w -DDATALIFE_LOGGING -DDATALIFE_SCHEMA #-Wall 
+CFLAGS = $(DEBUG) -fPIC $(INCLUDES) -w -DTRACKER_SCHEMA #-Wall 
 
 LIBS=-L$(HDF5_DIR)/lib -lhdf5 -lz -lcrypto
 
@@ -25,13 +25,13 @@ LDFLAGS = $(DEBUG) $(LIBS)
 ARFLAGS = rs
 
 # Shared library VOL connector
-DYNSRC = datalife_vol_new.c # datalife_vol datalife_vol_new datalife_vol_int
+DYNSRC = tracker_vol_new.c # tracker_vol tracker_vol_new tracker_vol_int
 DYNOBJ = $(DYNSRC:.c=.o)
 # Uncomment this line Linux builds:
-DYNLIB = libh5datalife.so #libh5datalife.so
+DYNLIB = libh5tracker.so #libh5tracker.so
 # Uncomment this line MacOS builds:
-# DYNLIB = libh5datalife.dylib
-DYNDBG = libh5datalife.dylib.dSYM
+# DYNLIB = libh5tracker.dylib
+DYNDBG = libh5tracker.dylib.dSYM
 
 
 # # Testcase section

@@ -14,26 +14,26 @@
  * Purpose:	The public header file for the pass-through VOL connector.
  */
 
-#ifndef _datalife_vol_H
-#define _datalife_vol_H
+#ifndef _tracker_vol_H
+#define _tracker_vol_H
 
 /* Public headers needed by this file */
 #include "H5VLpublic.h"        /* Virtual Object Layer                 */
 
 /* Identifier for the pass-through VOL connector */
-#define H5VL_PROVNC	(H5VL_datalife_register())
+#define H5VL_PROVNC	(H5VL_tracker_register())
 
 /* Characteristics of the pass-through VOL connector */
-#define H5VL_DATALIFE_NAME        "datalife"
-#define H5VL_DATALIFE_VALUE       909           /* VOL connector ID */
-#define H5VL_DATALIFE_VERSION     2
+#define H5VL_TRACKER_NAME        "tracker"
+#define H5VL_TRACKER_VALUE       909           /* VOL connector ID */
+#define H5VL_TRACKER_VERSION     2
 
 #define SUCCEED 0
 #define FAIL    (-1)
 #define H5_REQUEST_NULL NULL
 #define DEFAULT_PAGE_SIZE 8192
 
-typedef enum ProvLevel {
+typedef enum TrackLevel {
     Default, //no file write, only screen print
     Print_only,
     File_only,
@@ -41,27 +41,27 @@ typedef enum ProvLevel {
     Level4,
     Level5,
     Disabled
-}Prov_level;
+}Track_level;
 
 /* Pass-through VOL connector info */
-typedef struct H5VL_datalife_info_t {
+typedef struct H5VL_tracker_info_t {
     hid_t under_vol_id;         /* VOL ID for under VOL */
     void *under_vol_info;       /* VOL info for under VOL */
-    char* dlife_file_path;
-    Prov_level dlife_level;
-    char* dlife_line_format;
-} H5VL_datalife_info_t;
+    char* tkr_file_path;
+    Track_level tkr_level;
+    char* tkr_line_format;
+} H5VL_tracker_info_t;
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-H5_DLL hid_t H5VL_datalife_register(void);
+H5_DLL hid_t H5VL_tracker_register(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _datalife_vol_H */
+#endif /* _tracker_vol_H */
 
