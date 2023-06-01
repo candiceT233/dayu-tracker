@@ -2389,6 +2389,30 @@ void file_info_print(char * func_name, void * obj, hid_t fapl_id, hid_t fcpl_id,
     // printf("\"file_name_addr\": \"%p\", ", file_info->file_name);
     if(fapl_id != NULL){
         printf("\"fapl_id\": %p, ", fapl_id);
+        hsize_t curr_offset;
+        H5Pget_family_offset(file_info->fapl_id, &curr_offset);
+        printf("\"H5Pget_family_offset\": %ld, ", curr_offset);
+
+        int mdc_nelmts;
+        size_t rdcc_nslots;
+        size_t rdcc_nbytes;
+        double rdcc_w0;
+        if(H5Pget_cache(fapl_id, &mdc_nelmts, &rdcc_nslots, &rdcc_nbytes, &rdcc_w0) > 0){
+            printf("\"H5Pget_cache-mdc_nelmts\": %d, ", mdc_nelmts); // TODO: ?
+            printf("\"H5Pget_cache-rdcc_nslots\": %ld, ", rdcc_nslots);
+            printf("\"H5Pget_cache-rdcc_nbytes\": %ld, ", rdcc_nbytes);
+            printf("\"H5Pget_cache-rdcc_w0\": %f, ", rdcc_w0); // TODO: ?
+        }
+
+        size_t buf_size;
+        unsigned min_meta_perc;
+        unsigned min_raw_perc;
+        if(H5Pget_page_buffer_size(fapl_id, &buf_size, &min_meta_perc, &min_raw_perc) > 0){
+        printf("\"H5Pget_page_buffer_size-buf_size\": %ld, ", buf_size);
+        printf("\"H5Pget_page_buffer_size-min_meta_perc\": %d, ", min_meta_perc); // TODO: ?
+        printf("\"H5Pget_page_buffer_size-min_raw_perc\": %ld, ", min_raw_perc);
+        }
+
     }
     // get file intent
     if(!file_info->intent){
@@ -2413,9 +2437,7 @@ void file_info_print(char * func_name, void * obj, hid_t fapl_id, hid_t fcpl_id,
             }
         }
 
-        hsize_t curr_offset;
-        H5Pget_family_offset(file_info->fapl_id, &curr_offset);
-        printf("\"H5Pget_family_offset\": %ld, ", curr_offset);
+
     }
 
 
@@ -2467,25 +2489,7 @@ void file_info_print(char * func_name, void * obj, hid_t fapl_id, hid_t fcpl_id,
 
     printf("\"file_intent\": [\"%s\"], ", file_get_intent(file->under_object, file->under_vol_id, dxpl_id));
 
-	int mdc_nelmts;
-    size_t rdcc_nslots;
-    size_t rdcc_nbytes;
-    double rdcc_w0;
-    if(H5Pget_cache(file_info->fapl_id, &mdc_nelmts, &rdcc_nslots, &rdcc_nbytes, &rdcc_w0) > 0){
-        printf("\"H5Pget_cache-mdc_nelmts\": %d, ", mdc_nelmts); // TODO: ?
-        printf("\"H5Pget_cache-rdcc_nslots\": %ld, ", rdcc_nslots);
-        printf("\"H5Pget_cache-rdcc_nbytes\": %ld, ", rdcc_nbytes);
-        printf("\"H5Pget_cache-rdcc_w0\": %f, ", rdcc_w0); // TODO: ?
-    }
 
-    size_t buf_size;
-    unsigned min_meta_perc;
-    unsigned min_raw_perc;
-    if(H5Pget_page_buffer_size(file_info->fapl_id, &buf_size, &min_meta_perc, &min_raw_perc) > 0){
-    printf("\"H5Pget_page_buffer_size-buf_size\": %ld, ", buf_size);
-    printf("\"H5Pget_page_buffer_size-min_meta_perc\": %d, ", min_meta_perc); // TODO: ?
-    printf("\"H5Pget_page_buffer_size-min_raw_perc\": %ld, ", min_raw_perc);
-    }
     
 
     // printf("}");
