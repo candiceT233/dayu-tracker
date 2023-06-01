@@ -1585,7 +1585,9 @@ static herr_t H5VL_tracker_dataset_read(size_t count, void *dset[],
                 dset_info->dspace_id = mem_space_id[obj_idx];
             if(!dset_info->dtype_id)
                 dset_info->dtype_id = mem_type_id[obj_idx];
-            
+
+
+
             dataset_info_update("H5VLdataset_read", mem_type_id[obj_idx], mem_space_id[obj_idx], file_space_id[obj_idx], dset[obj_idx], NULL, buf[obj_idx], obj_idx); //H5P_DATASET_XFER
             dataset_info_print("H5VLdataset_read", mem_type_id[obj_idx], mem_space_id[obj_idx], file_space_id[obj_idx], dset[obj_idx], NULL, buf[obj_idx], obj_idx); //H5P_DATASET_XFER
 
@@ -1709,7 +1711,7 @@ static herr_t H5VL_tracker_dataset_write(size_t count, void *dset[],
                 dset_info->dtype_id = mem_type_id[obj_idx];
             
             dset_info->dataset_write_cnt++;
-
+            
             dataset_info_update("H5VLdataset_write", mem_type_id[obj_idx], mem_space_id[obj_idx], file_space_id[obj_idx], dset[obj_idx], NULL, buf[obj_idx], obj_idx); //H5P_DATASET_XFER
             dataset_info_print("H5VLdataset_write", mem_type_id[obj_idx], mem_space_id[obj_idx], file_space_id[obj_idx], dset[obj_idx], NULL, buf[obj_idx], obj_idx); //H5P_DATASET_XFER
 

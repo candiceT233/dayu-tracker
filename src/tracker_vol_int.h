@@ -2413,17 +2413,6 @@ void file_info_print(char * func_name, void * obj, hid_t fapl_id, hid_t fcpl_id,
             }
         }
 
-        size_t sizeof_addr;
-        size_t sizeof_size;
-        if(H5Pget_sizes(file_info->fapl_id, &sizeof_addr, &sizeof_size) > 0){
-            printf("\"sizeof_addr\": %ld, ", sizeof_addr);
-            printf("\"sizeof_size\": %ld, ", sizeof_size);
-        }
-
-        size_t usrblk_size;
-        if(H5Pget_userblock(file_info->fapl_id, &usrblk_size) > 0){
-            printf("\"usrblk_size\": %ld, ", usrblk_size);
-        }
         hsize_t curr_offset;
         H5Pget_family_offset(file_info->fapl_id, &curr_offset);
         printf("\"H5Pget_family_offset\": %ld, ", curr_offset);
