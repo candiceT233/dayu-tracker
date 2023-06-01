@@ -3024,15 +3024,3 @@ void file_ds_accessed(file_dlife_info_t* info)
 }
 
 
-
-// #ifdef __cplusplus
-// extern "C"
-// {
-// #endif
-
-// extern void dlLockAcquire(DLLock* lock);
-// extern void dlLockRelease(DLLock* lock);
-
-// #ifdef __cplusplus
-// }
-// #endif

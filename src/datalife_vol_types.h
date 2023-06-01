@@ -9,7 +9,7 @@
 #include "datalife_vol.h"
 
 // #include "md5.h"
-
+#include "uthash.h"
 
 
 /************/
@@ -351,11 +351,65 @@ struct H5VL_dlife_blob_info_t {
 // }
 
 
-
-
 /* lock */
 typedef struct {
     pthread_mutex_t mutex;
 } DLLock;
+
+
+
+/* Dataset Tracking Object Start */
+typedef struct H5VL_dset_track_t dset_track_t;
+
+typedef struct {
+    char *file_name;    // Parent file name
+    char *dset_name;     // Dataset name
+} DsetTrackKey;
+
+typedef struct {
+    DsetTrackKey key;               // Key for the hash table entry
+    dset_track_t *dset_track_info;       // Value associated with the key
+    UT_hash_handle hh;              // Uthash handle
+} DsetTrackHashEntry;
+
+/* runtime tracking data object */
+typedef struct H5VL_dset_track_t {
+    // DsetTrackKey key;
+    
+    char *token_str;     // Token string
+    H5T_class_t dt_class;               //data type class
+    H5S_class_t ds_class;               //data space class
+    char * layout;                      
+    unsigned int dimension_cnt;
+    hsize_t * dimensions;
+    size_t dset_type_size;
+    int dataset_read_cnt;
+    int dataset_write_cnt;
+
+
+    haddr_t dset_offset;
+    hsize_t storage_size;
+    size_t dset_n_elements; // (hsize_t)H5Sget_simple_extent_npoints(ds_id) or all dimentions multiply
+    ssize_t hyper_nblocks; // H5Sget_select_hyper_nblocks(space_id)
+    hid_t dspace_id;
+
+    unsigned long sorder_id;
+    unsigned long pfile_sorder_id;      // parent file sequential order ID
+    size_t data_file_page_start;
+    size_t data_file_page_end;
+
+    size_t * metadata_file_pages;
+    int metadata_file_pages_cnt;
+    
+    char * dset_select_type;
+    size_t dset_select_npoints;
+
+    /* TODO: H5_HAVE_PARALLEL */
+    int access_cnt;
+
+    dset_track_t *next;
+} dset_track_t;
+
+
 
 
