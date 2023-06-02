@@ -816,6 +816,12 @@ file_tkr_info_t* new_file_info(const char* fname, unsigned long file_no)
     info->tkr_helper = TKR_HELPER;
     info->file_no = file_no;
     info->sorder_id=0;
+    info->ds_created =0;
+    info->ds_accessed =0;
+    info->grp_created =0;
+    info->grp_accessed =0;
+    info->dtypes_created =0;
+    info->dtypes_accessed =0;
     return info;
 }
 
@@ -1325,15 +1331,10 @@ dataset_tkr_info_t * add_dataset_node(unsigned long obj_file_no,
 
     /* Add dset info that requires parent file info */
     cur->pfile_name = file_info->file_name ? strdup(file_info->file_name) : NULL;
-    // // TODO: update meta_page to tracking object
-    // cur->metadata_file_pages = NULL;
-    // cur->metadata_file_pages_cnt = 0;
-    // size_t token_number;
-    // char token_buffer[20]; // Assuming a maximum of 20 characters for the string representation
-    // sprintf(token_buffer, "%d", cur->obj_info.token); // Convert to string
-    // token_number = strtol(token_buffer, NULL, 10); // Convert string to long
-    // size_t meta_page = token_number / TKR_HELPER->hermes_page_size;
-    // add_meta_page_to_list(cur->metadata_file_pages, cur->metadata_file_pages_cnt, meta_page);
+    // TODO: update meta_page to tracking object
+    cur->metadata_file_page = NULL;
+    cur->metadata_file_page = (size_t) malloc(sizeof(size_t));
+    cur->metadata_file_page = token_to_num(cur->obj_info.token) / TKR_HELPER->hermes_page_size;
 
     tkrLockAcquire(&myLock);
     cur->sorder_id = ++DATA_SORDER;
@@ -2143,18 +2144,13 @@ void log_file_stat_yaml(FILE *f, const file_tkr_info_t* file_info)
     fprintf(f, "  sieve_buf_size: %zu\n", file_info->sieve_buf_size);
     fprintf(f, "  file_intent: [\"%s\"]\n", file_info->intent);
 
-    if (file_info->ds_created)
-        fprintf(f, "  ds_created: %d\n", file_info->ds_created);
-    if (file_info->ds_accessed)
-        fprintf(f, "  ds_accessed: %d\n", file_info->ds_accessed);
-    if (file_info->grp_created)
-        fprintf(f, "  grp_created: %d\n", file_info->grp_created);
-    if (file_info->grp_accessed)
-        fprintf(f, "  grp_accessed: %d\n", file_info->grp_accessed);
-    if (file_info->dtypes_created)
-        fprintf(f, "  dtypes_created: %d\n", file_info->dtypes_created);
-    if (file_info->dtypes_accessed)
-        fprintf(f, "  dtypes_accessed: %d\n", file_info->dtypes_accessed);
+
+    fprintf(f, "  ds_created: %d\n", file_info->ds_created);
+    fprintf(f, "  ds_accessed: %d\n", file_info->ds_accessed);
+    fprintf(f, "  grp_created: %d\n", file_info->grp_created);
+    fprintf(f, "  grp_accessed: %d\n", file_info->grp_accessed);
+    fprintf(f, "  dtypes_created: %d\n", file_info->dtypes_created);
+    fprintf(f, "  dtypes_accessed: %d\n", file_info->dtypes_accessed);
 
     fprintf(f, "Total-Overhead(ms): %ld\n", TOTAL_TKR_OVERHEAD/1000);
 
@@ -2322,34 +2318,50 @@ void H5VL_arrow_get_selected_sub_region(hid_t space_id, size_t org_type_size) {
 
 
 
-char * get_datatype_class_str(hid_t type_id){
+char* get_datatype_class_str(hid_t type_id) {
+    switch (type_id) {
+        case H5T_NO_CLASS:
+            return "H5T_NO_CLASS";
+        case H5T_INTEGER:
+            return "H5T_INTEGER";
+        case H5T_FLOAT:
+            return "H5T_FLOAT";
+        case H5T_TIME:
+            return "H5T_TIME";
+        case H5T_STRING:
+            return "H5T_STRING";
+        case H5T_BITFIELD:
+            return "H5T_BITFIELD";
+        case H5T_OPAQUE:
+            return "H5T_OPAQUE";
+        case H5T_COMPOUND:
+            return "H5T_COMPOUND";
+        case H5T_REFERENCE:
+            return "H5T_REFERENCE";
+        case H5T_ENUM:
+            return "H5T_ENUM";
+        case H5T_VLEN:
+            return "H5T_VLEN";
+        case H5T_ARRAY:
+            return "H5T_ARRAY";
+        default:
+            return "H5T_NCLASSES";
+    }
+}
 
-    if (type_id == H5T_NO_CLASS)
-        return "H5T_NO_CLASS";
-    else if (type_id == H5T_INTEGER)
-        return "H5T_INTEGER";
-    else if (type_id == H5T_FLOAT)
-        return "H5T_FLOAT";
-    else if (type_id == H5T_TIME)
-        return "H5T_TIME";
-    else if (type_id == H5T_STRING)
-        return "H5T_STRING";
-    else if (type_id == H5T_BITFIELD)
-        return "H5T_BITFIELD";
-    else if (type_id == H5T_OPAQUE)
-        return "H5T_OPAQUE";
-    else if (type_id == H5T_COMPOUND)
-        return "H5T_COMPOUND";
-    else if (type_id == H5T_REFERENCE)
-        return "H5T_REFERENCE";
-    else if (type_id == H5T_ENUM)
-        return "H5T_ENUM";
-    else if (type_id == H5T_VLEN)
-        return "H5T_VLEN";
-    else if (type_id == H5T_ARRAY)
-        return "H5T_ARRAY";
-    else
-        return "H5T_NCLASSES";
+char* get_dataspace_class_str(H5S_class_t class_id) {
+    switch (class_id) {
+        case H5S_NO_CLASS:
+            return "H5S_NO_CLASS";
+        case H5S_SCALAR:
+            return "H5S_SCALAR";
+        case H5S_SIMPLE:
+            return "H5S_SIMPLE";
+        case H5S_NULL:
+            return "H5S_NULL";
+        default:
+            return "H5S_NO_CLASS";
+    }
 }
 
 void file_info_update(char * func_name, void * obj, hid_t fapl_id, hid_t fcpl_id, hid_t dxpl_id)
@@ -3042,10 +3054,18 @@ dset_track_t *create_dset_track_info(dataset_tkr_info_t* dset_info) {
         track_entry->pfile_sorder_id = dset_info->pfile_sorder_id;
         track_entry->data_file_page_start = dset_info->data_file_page_start;
         track_entry->data_file_page_end = dset_info->data_file_page_end;
-        myll_add(&track_entry->sorder_ids, &track_entry->sorder_ids_end, dset_info->sorder_id);
-        myll_add(&track_entry->metadata_file_pages, &track_entry->metadata_file_pages_end, dset_info->dset_offset);
+
+        track_entry->sorder_ids = NULL;
+        track_entry->sorder_ids_end = NULL;
+        track_entry->metadata_file_pages = NULL;
+        track_entry->metadata_file_pages_end = NULL;
+
+        myll_add(&(track_entry->sorder_ids), &(track_entry->sorder_ids_end), dset_info->sorder_id);
+        myll_add(&(track_entry->metadata_file_pages), &(track_entry->metadata_file_pages_end), dset_info->metadata_file_page);
         track_entry->dset_select_type = strdup(dset_info->dset_select_type);
         track_entry->dset_select_npoints = dset_info->dset_select_npoints;
+
+
     }
     return track_entry;
 }
@@ -3099,6 +3119,17 @@ void remove_dset_track_info(char * key) {
     pthread_mutex_unlock(&(lock.mutex));
 }
 
+void print_ht_token_numbers();
+void free_dset_track_info(dset_track_t *dset_track_info);
+
+int myll_print(myll_t *head);
+void myll_to_file(FILE * file, myll_t *head);
+void myll_free(myll_t **head);
+void myll_add(myll_t **head, myll_t **tail, unsigned long new_data);
+
+void update_dset_track_info(char * key, dataset_tkr_info_t* dset_info);
+void add_to_dset_ht(dataset_tkr_info_t* dset_info);
+
 void log_dset_ht_yaml(FILE* f) {
     DsetTrackHashEntry* entry = NULL;
     int count = 0;
@@ -3109,56 +3140,62 @@ void log_dset_ht_yaml(FILE* f) {
     // Traverse the hash table and print the token number and key of each entry
     for (entry = lock.hash_table; entry != NULL; entry = entry->hh.next) {
         if(entry->logged == 0){
-        char* file_name = NULL;
-        char* dset_name = NULL;
-        decode_two_strings(entry->key, &file_name, &dset_name);
-        dset_track_t* dset_track_info = entry->dset_track_info;
+            char* file_name = NULL;
+            char* dset_name = NULL;
+            decode_two_strings(entry->key, &file_name, &dset_name);
+            dset_track_t* dset_track_info = entry->dset_track_info;
 
-        fprintf(f, "- file-%ld:\n", dset_track_info->pfile_sorder_id);
-        fprintf(f, "  file_name: \"%s\"\n", file_name);
-        fprintf(f, "  - dset:\n");
-        fprintf(f, "      dset_name: \"%s\"\n", dset_name);
-        fprintf(f, "      start_time: %ld\n", dset_track_info->start_time);
-        fprintf(f, "      token: %ld\n", dset_track_info->token_num);
-        fprintf(f, "      dt_class: %d\n", dset_track_info->dt_class);
-        fprintf(f, "      ds_class: %d\n", dset_track_info->ds_class);
-        fprintf(f, "      layout: \"%s\"\n", dset_track_info->layout);
-        fprintf(f, "      storage_size: %ld\n", dset_track_info->storage_size);
-        fprintf(f, "      dset_n_elements: %ld\n", dset_track_info->dset_n_elements);
-        fprintf(f, "      dimension_cnt: %d\n", dset_track_info->dimension_cnt);
-        fprintf(f, "      dimensions: [");
-        for (int i = 0; i < dset_track_info->dimension_cnt; i++) {
-            fprintf(f, "%ld ", dset_track_info->dimensions[i]);
-        }
-        fprintf(f, "]\n");
-        fprintf(f, "      dset_type_size: %d\n", dset_track_info->dset_type_size);
-        fprintf(f, "      dataset_read_cnt: %d\n", dset_track_info->dataset_read_cnt);
-        fprintf(f, "      dataset_write_cnt: %d\n", dset_track_info->dataset_write_cnt);
-        fprintf(f, "      dset_offset: %ld\n", dset_track_info->dset_offset);
-        fprintf(f, "      dset_select_type: \"%s\"\n", dset_track_info->dset_select_type);
-        fprintf(f, "      dset_select_npoints: %ld\n", dset_track_info->dset_select_npoints);
-        fprintf(f, "      data_file_pages: [%ld,%ld]\n", dset_track_info->data_file_page_start, dset_track_info->data_file_page_end);
+            fprintf(f, "- file-%ld:\n", dset_track_info->pfile_sorder_id);
+            fprintf(f, "  file_name: \"%s\"\n", file_name);
+            fprintf(f, "  - dset:\n");
+            fprintf(f, "      dset_name: \"%s\"\n", dset_name);
+            fprintf(f, "      start_time: %ld\n", dset_track_info->start_time);
+            // fprintf(f, "      token: %ld\n", dset_track_info->token_num);
+            fprintf(f, "      dt_class: \"%s\"\n", get_datatype_class_str(dset_track_info->dt_class));
+            fprintf(f, "      ds_class: \"%s\"\n", get_dataspace_class_str(dset_track_info->ds_class));
+            fprintf(f, "      layout: \"%s\"\n", dset_track_info->layout);
+            fprintf(f, "      storage_size: %ld\n", dset_track_info->storage_size);
+            fprintf(f, "      dset_n_elements: %ld\n", dset_track_info->dset_n_elements);
+            fprintf(f, "      dimension_cnt: %d\n", dset_track_info->dimension_cnt);
+            fprintf(f, "      dimensions: [");
+            for (int i = 0; i < dset_track_info->dimension_cnt; i++) {
+                fprintf(f, "%ld, ", dset_track_info->dimensions[i]);
+            }
+            fprintf(f, "]\n");
+            fprintf(f, "      dset_type_size: %d\n", dset_track_info->dset_type_size);
+            fprintf(f, "      dataset_read_cnt: %d\n", dset_track_info->dataset_read_cnt);
+            fprintf(f, "      dataset_write_cnt: %d\n", dset_track_info->dataset_write_cnt);
+            fprintf(f, "      dset_offset: %ld\n", dset_track_info->dset_offset);
+            fprintf(f, "      dset_select_type: \"%s\"\n", dset_track_info->dset_select_type);
+            fprintf(f, "      dset_select_npoints: %ld\n", dset_track_info->dset_select_npoints);
+            fprintf(f, "      data_file_pages: [%ld,%ld]\n", dset_track_info->data_file_page_start, dset_track_info->data_file_page_end);
 
-        // fprintf(f, "    metadata_file_pages: [");
-        // for (int i = 0; i < dset_track_info->metadata_file_page_cnt; i++) {
-        //     fprintf(f, "%ld ", dset_track_info->metadata_file_pages[i]);
-        // }
-        // fprintf(f, "]\n");
+            fprintf(f, "      metadata_file_pages: [");
+            myll_to_file(f, dset_track_info->metadata_file_pages);
+            fprintf(f, "]\n");
 
-        entry->logged = 1;
+            fprintf(f, "      access_orders: [");
+            myll_to_file(f, dset_track_info->sorder_ids);
+            fprintf(f, "]\n");
 
-        count++;
+            entry->logged = 1;
+
+            count++;
         }
     }
 
-    // fprintf(f, "Total number of tracker entries: %d\n", count);
     // fprintf(f, "\n");
 
     // Release the lock
     pthread_mutex_unlock(&(lock.mutex));
     fflush(f);
 
+    printf("Total number of dataset entries: %d\n", count);
+
+
 }
+
+
 
 // Print info of all dset_track_t objects in the hash table
 void print_ht_info() {
@@ -3218,6 +3255,8 @@ void print_ht_info() {
     pthread_mutex_unlock(&(lock.mutex));
 }
 
+
+
 // Print the token numbers of all dset_track_t objects in the hash table
 void print_ht_token_numbers() {
     DsetTrackHashEntry *entry = NULL;
@@ -3238,7 +3277,6 @@ void print_ht_token_numbers() {
     // Release the lock
     pthread_mutex_unlock(&(lock.mutex));
 }
-
 
 // Free the memory of a dset_track_t object
 void free_dset_track_info(dset_track_t *dset_track_info) {
@@ -3265,13 +3303,15 @@ void myll_free(myll_t **head) {
     *head = NULL;
 }
 
+
+
 // return the size of the linked list
 int myll_print(myll_t *head) {
     printf("Linked List Values: ");
     myll_t *current = head;
     int count =0;
     while (current != NULL) {
-        printf("%ld, ", (current->data));
+        printf("%ld, ", current->data);
         current = current->next;
         count ++;
     }
@@ -3279,14 +3319,31 @@ int myll_print(myll_t *head) {
     return count;
 }
 
+void myll_to_file(FILE * f, myll_t *head) {
+    myll_t *current = head;
+    int count =0;
+    while (current != NULL) {
+        fprintf(f, "%ld, ", current->data);
+        current = current->next;
+        count ++;
+    }
+    printf("\n");
+    return count;
+}
+
+
+
 void myll_add(myll_t **head, myll_t **tail, unsigned long new_data) {
     // Check if the new data already exists in the linked list
     myll_t *current = *head;
     while (current != NULL) {
-        if (current->data == new_data)
+        if (current->data == new_data){
+            // printf("Data [%ld] already exists in the linked list\n", new_data);
             return;
+        }
         current = current->next;
     }
+    // printf("Adding data [%ld] to the linked list\n", new_data);
 
     myll_t *new_node = (myll_t *)malloc(sizeof(myll_t));
     if (new_node == NULL) {
@@ -3306,6 +3363,8 @@ void myll_add(myll_t **head, myll_t **tail, unsigned long new_data) {
         *tail = new_node;
     }
 }
+
+
 
 void update_dset_track_info(char * key, dataset_tkr_info_t* dset_info) {
     DsetTrackHashEntry *entry = NULL;
@@ -3338,14 +3397,16 @@ void update_dset_track_info(char * key, dataset_tkr_info_t* dset_info) {
             entry->dset_track_info->dset_offset = dset_info->dset_offset;
         }
 
-        myll_add(&entry->dset_track_info->sorder_ids, &entry->dset_track_info->sorder_ids_end, dset_info->sorder_id);
-        myll_add(&entry->dset_track_info->metadata_file_pages, &entry->dset_track_info->metadata_file_pages_end, dset_info->dset_offset);
+        myll_add(&(entry->dset_track_info->sorder_ids), &(entry->dset_track_info->sorder_ids_end), dset_info->sorder_id);
+        myll_add(&entry->dset_track_info->metadata_file_pages, &entry->dset_track_info->metadata_file_pages_end, dset_info->metadata_file_page);
 
     }
 
     // Release the lock
     pthread_mutex_unlock(&(lock.mutex));
 }
+
+
 
 void add_to_dset_ht(dataset_tkr_info_t* dset_info){
 

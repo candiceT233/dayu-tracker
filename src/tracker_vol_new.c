@@ -1422,6 +1422,7 @@ H5VL_tracker_dataset_create(void *obj, const H5VL_loc_params_t *loc_params,
     dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)dset->generic_tkr_info;
     
     dset_info->pfile_sorder_id = file_info->sorder_id;
+    file_info->ds_created++;
 
     if(!dset_info->dspace_id)
         dset_info->dspace_id = space_id;

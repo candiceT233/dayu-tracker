@@ -213,6 +213,7 @@ struct H5VL_tkr_dataset_info_t {
     unsigned long pfile_sorder_id;      // parent file sequential order ID
     size_t data_file_page_start;
     size_t data_file_page_end;
+    size_t metadata_file_page;          // usually the token number
 
     // size_t metadata_file_page_end; // TODO: how to obtain the end?
     char * dset_select_type;
@@ -361,7 +362,6 @@ struct H5VL_tkr_blob_info_t {
 
 typedef struct H5VL_dset_track_t dset_track_t;
 
-
 typedef struct {
     char * key;            // Key for the hash table entry
     dset_track_t *dset_track_info;  // Value associated with the key
@@ -371,7 +371,7 @@ typedef struct {
 
 typedef struct myll_t {
     unsigned long data;
-    struct myll* next;
+    struct myll_t* next;
 } myll_t;
 
 typedef struct H5VL_dset_track_t {
@@ -401,8 +401,8 @@ typedef struct H5VL_dset_track_t {
 
     myll_t * sorder_ids; // linked-list head pointer
     myll_t * sorder_ids_end; // linked-list tail pointer
-    myll_t *metadata_file_pages; // linked-list head pointer
-    myll_t *metadata_file_pages_end; // linked-list tail pointer
+    myll_t * metadata_file_pages; // linked-list head pointer
+    myll_t * metadata_file_pages_end; // linked-list tail pointer
 
     char * dset_select_type; // TODO: use to check for bytes
     size_t dset_select_npoints;
