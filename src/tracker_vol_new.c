@@ -357,7 +357,7 @@ H5VL_tracker_init(hid_t vipl_id)
 {
     /* initialize all locks */
     tkrLockInit(&myLock);
-    init_lock();
+    init_hasn_lock();
 
 #ifdef TRACKER_PT_LOGGING
     printf("TRACKER VOL INIT\n");
@@ -405,6 +405,9 @@ H5VL_tracker_term(void)
 #endif
     // Release resources, etc.
 #ifdef TRACKER_SCHEMA
+    
+    // printf("Total number of dataset entries: %d\n", HASH_COUNT(lock.hash_table));
+
     tkr_helper_teardown(TKR_HELPER);
 #endif
     TKR_HELPER = NULL;
@@ -1419,10 +1422,11 @@ H5VL_tracker_dataset_create(void *obj, const H5VL_loc_params_t *loc_params,
 #ifdef TRACKER_SCHEMA
     
     file_tkr_info_t * file_info = (file_tkr_info_t*)o->generic_tkr_info;
+    file_ds_created(file_info);
     dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)dset->generic_tkr_info;
     
     dset_info->pfile_sorder_id = file_info->sorder_id;
-    file_info->ds_created++;
+
 
     if(!dset_info->dspace_id)
         dset_info->dspace_id = space_id;
@@ -2892,6 +2896,13 @@ H5VL_tracker_group_create(void *obj, const H5VL_loc_params_t *loc_params,
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
 
+#ifdef TRACKER_SCHEMA
+    H5VL_tracker_t *file = (H5VL_tracker_t *)obj;
+    file_tkr_info_t * file_info = (file_tkr_info_t*)file->generic_tkr_info;
+    file_grp_created(file_info);
+    // group_info_update("H5VLgroup_create", obj, loc_params, name, gapl_id, dxpl_id);
+#endif
+
 #ifdef TRACKER_LOGGING
     group_info_print("H5VLgroup_create", obj, loc_params, name, gapl_id, dxpl_id, req);
 #endif
@@ -2940,6 +2951,13 @@ H5VL_tracker_group_open(void *obj, const H5VL_loc_params_t *loc_params,
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
 #endif
 
+#ifdef TRACKER_SCHEMA
+    H5VL_tracker_t *file = (H5VL_tracker_t *)obj;
+    file_tkr_info_t * file_info = (file_tkr_info_t*)file->generic_tkr_info;
+    file_grp_accessed(file_info);
+    // group_info_update("H5VLgroup_create", obj, loc_params, name, gapl_id, dxpl_id);
+#endif
+
 #ifdef TRACKER_LOGGING
     group_info_print("H5VLgroup_open", obj, loc_params, name, gapl_id, dxpl_id, req);
 #endif
@@ -2984,6 +3002,14 @@ H5VL_tracker_group_get(void *obj, H5VL_group_get_args_t *args, hid_t dxpl_id,
 #ifdef TRACKER_PROV_LOGGING
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
+
+#ifdef TRACKER_SCHEMA
+    H5VL_tracker_t *group = (H5VL_tracker_t *)obj;
+    group_tkr_info_t* group_info = (group_tkr_info_t*)group->generic_tkr_info;
+    file_tkr_info_t* file_info = (file_tkr_info_t*)group_info->obj_info.file_info;
+    file_grp_accessed(file_info);
+    // group_info_update("H5VLgroup_create", obj, loc_params, name, gapl_id, dxpl_id);
 #endif
 
 #ifdef TRACKER_LOGGING

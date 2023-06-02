@@ -357,9 +357,6 @@ struct H5VL_tkr_blob_info_t {
 
 
 /* Dataset Tracking Object Start */
-
-
-
 typedef struct H5VL_dset_track_t dset_track_t;
 
 typedef struct {
@@ -378,6 +375,7 @@ typedef struct H5VL_dset_track_t {
     // char *file_name;    // Parent file name
     // char *dset_name;     // Dataset name
     unsigned long start_time; // Start time of the dataset
+    unsigned long end_time; // End time of the dataset
     size_t token_num;                   // Token number
     H5T_class_t dt_class;               // Data type class
     H5S_class_t ds_class;               // Data space class

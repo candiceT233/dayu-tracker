@@ -88,7 +88,7 @@ static H5VL_tracker_t *H5VL_tracker_new_obj(void *under_obj,
     hid_t under_vol_id, tkr_helper_t* helper);
 static herr_t H5VL_tracker_free_obj(H5VL_tracker_t *obj);
 
-/* DataLife Callbacks prototypes */
+/* Tracker Callbacks prototypes */
 static hid_t dataset_get_type(void *under_dset, hid_t under_vol_id, hid_t dxpl_id);
 static hid_t dataset_get_space(void *under_dset, hid_t under_vol_id, hid_t dxpl_id);
 static hid_t dataset_get_dcpl(void *under_dset, hid_t under_vol_id, hid_t dxpl_id);
@@ -165,7 +165,7 @@ void _dic_init(void);
 void _dic_free(void);
 
 
-/* DataLife internal print and logs prototypes */
+/* Tracker internal print and logs prototypes */
 void _dic_print(void);
 void _preset_dic_print(void);
 void file_stats_tkr_write(const file_tkr_info_t* file_info);
@@ -200,19 +200,32 @@ int is_page_in_list(size_t *list, size_t list_size, size_t page);
 void print_list(const size_t *list, size_t list_size);
 void add_meta_page_to_list(size_t **list, size_t *list_size, size_t page);
 
+
+void init_hasn_lock();
+void print_ht_token_numbers();
+void free_dset_track_info(dset_track_t *dset_track_info);
+
+int myll_print(myll_t *head);
+void myll_to_file(FILE * file, myll_t *head);
+void myll_free(myll_t **head);
+void myll_add(myll_t **head, myll_t **tail, unsigned long new_data);
+
+dset_track_t *create_dset_track_info(dataset_tkr_info_t* dset_info);
+void remove_dset_track_info(char * key);
+void update_dset_track_info(char * key, dataset_tkr_info_t* dset_info);
+void add_dset_track_info(char * key, dset_track_t *dset_track_info);
+void add_to_dset_ht(dataset_tkr_info_t* dset_info);
+
     /* candice added routine prototypes end */
 
 
-/* DataLife objects prototypes */
+/* Tracker objects prototypes */
 void file_ds_created(file_tkr_info_t* info);
 void file_ds_accessed(file_tkr_info_t* info);
-
-
-
-
-
-
-
+void file_grp_created(file_tkr_info_t* info);
+void file_grp_accessed(file_tkr_info_t* info);
+void file_dtypes_created(file_tkr_info_t* info);
+void file_dtypes_accessed(file_tkr_info_t* info);
 
 
 
@@ -366,7 +379,7 @@ H5VL_tracker_free_obj(H5VL_tracker_t *obj)
 
 
 
-/* DataLife Callbacks implementation */
+/* Tracker Callbacks implementation */
 herr_t object_get_name(void * obj, 
     const H5VL_loc_params_t * loc_params,
     hid_t connector_id,
@@ -1833,7 +1846,7 @@ void tkr_log_open_things(FILE *f)
 
 
 
-/* DataLife internal print and logs implementation */
+/* Tracker internal print and logs implementation */
 
 void _dic_print(void){
     for(int i = 0; i < STAT_FUNC_MOD; i++){
@@ -2135,8 +2148,14 @@ void log_file_stat_yaml(FILE *f, const file_tkr_info_t* file_info)
         return;
     }
 
+    char* file_name = strrchr(file_info->file_name, '/');
+    if(file_name)
+        file_name++;
+    else
+        file_name = (char*)file_info->file_name;
+
     fprintf(f, "- file-%ld:\n", file_info->sorder_id);
-    fprintf(f, "  file_name: \"%s\"\n", file_info->file_name);
+    fprintf(f, "  file_name: \"%s\"\n", file_name);
     fprintf(f, "  open_time: %ld\n", file_info->open_time);
     fprintf(f, "  close_time: %ld\n", get_time_usec());
     fprintf(f, "  file_size: %zu\n", file_info->file_size);
@@ -2153,6 +2172,8 @@ void log_file_stat_yaml(FILE *f, const file_tkr_info_t* file_info)
     fprintf(f, "  dtypes_accessed: %d\n", file_info->dtypes_accessed);
 
     fprintf(f, "Total-Overhead(ms): %ld\n", TOTAL_TKR_OVERHEAD/1000);
+
+    fflush(f);
 
 }
 
@@ -2648,11 +2669,12 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
                 dset_info->data_file_page_end = (end_addr + dset_info->storage_size) / hermes_page_size;
             }
         }
+
     } //&& strcmp(func_name,"H5VLget_object") != 0
 
     if(strcmp(dset_info->layout,"H5D_CONTIGUOUS") == 0)
-        dset_info->storage_size = H5Sget_simple_extent_npoints(space_id) * dset_info->dset_type_size;
-    
+        dset_info->storage_size = dset_info->dset_n_elements * dset_info->dset_type_size;
+
     // if(strcmp(dset_info->layout,"H5D_CONTIGUOUS") == 0)
     if ((dset_info->dset_offset == NULL) || (dset_info->dset_offset < 0) && dxpl_id != NULL)
         
@@ -3007,13 +3029,28 @@ void decode_two_strings(const char* encoded_str, char** file_name, char** dset_n
     }
 }
 
-/* DataLife objects implementations */
+/* Tracker objects implementations */
 void file_ds_created(file_tkr_info_t *info)
 {
     assert(info);
     if(info)
         info->ds_created++;
 }
+void file_grp_created(file_tkr_info_t *info)
+{
+    assert(info);
+    if(info)
+        info->grp_created++;
+}
+void file_dtypes_created(file_tkr_info_t *info)
+{
+    assert(info);
+    if(info)
+        info->dtypes_created++;
+}
+
+
+
 
 //counting how many times datasets are opened in a file.
 //Called by a DS
@@ -3022,6 +3059,18 @@ void file_ds_accessed(file_tkr_info_t* info)
     assert(info);
     if(info)
         info->ds_accessed++;
+}
+void file_grp_accessed(file_tkr_info_t *info)
+{
+    assert(info);
+    if(info)
+        info->grp_accessed++;
+}
+void file_dtypes_accessed(file_tkr_info_t *info)
+{
+    assert(info);
+    if(info)
+        info->dtypes_accessed++;
 }
 
 
@@ -3034,6 +3083,7 @@ dset_track_t *create_dset_track_info(dataset_tkr_info_t* dset_info) {
         // Initialize the fields
         memset(track_entry, 0, sizeof(dset_track_t));
         track_entry->start_time = dset_info->start_time;
+        track_entry->end_time = get_time_usec();
         track_entry->token_num = token_to_num(dset_info->obj_info.token);
         track_entry->dt_class = dset_info->dt_class;
         track_entry->ds_class = dset_info->ds_class;
@@ -3071,10 +3121,11 @@ dset_track_t *create_dset_track_info(dataset_tkr_info_t* dset_info) {
 }
 
 // Initialize the lock
-void init_lock() {
+void init_hasn_lock() {
     pthread_mutex_init(&(lock.mutex), NULL);
     lock.hash_table = NULL;
 }
+
 
 // Add a dset_track_t object to the hash table
 void add_dset_track_info(char * key, dset_track_t *dset_track_info) {
@@ -3095,6 +3146,9 @@ void add_dset_track_info(char * key, dset_track_t *dset_track_info) {
         pthread_mutex_unlock(&(lock.mutex));
     }
 }
+
+
+
 
 // Remove a dset_track_t object from the hash table
 void remove_dset_track_info(char * key) {
@@ -3119,37 +3173,27 @@ void remove_dset_track_info(char * key) {
     pthread_mutex_unlock(&(lock.mutex));
 }
 
-void print_ht_token_numbers();
-void free_dset_track_info(dset_track_t *dset_track_info);
-
-int myll_print(myll_t *head);
-void myll_to_file(FILE * file, myll_t *head);
-void myll_free(myll_t **head);
-void myll_add(myll_t **head, myll_t **tail, unsigned long new_data);
-
-void update_dset_track_info(char * key, dataset_tkr_info_t* dset_info);
-void add_to_dset_ht(dataset_tkr_info_t* dset_info);
 
 void log_dset_ht_yaml(FILE* f) {
     DsetTrackHashEntry* entry = NULL;
-    int count = 0;
 
     // Acquire the lock before accessing the hash table
     pthread_mutex_lock(&(lock.mutex));
 
     // Traverse the hash table and print the token number and key of each entry
     for (entry = lock.hash_table; entry != NULL; entry = entry->hh.next) {
-        if(entry->logged == 0){
+        if(entry->logged == 0) {
             char* file_name = NULL;
             char* dset_name = NULL;
             decode_two_strings(entry->key, &file_name, &dset_name);
             dset_track_t* dset_track_info = entry->dset_track_info;
 
             fprintf(f, "- file-%ld:\n", dset_track_info->pfile_sorder_id);
-            fprintf(f, "  file_name: \"%s\"\n", file_name);
+            fprintf(f, "    file_name: \"%s\"\n", file_name);
             fprintf(f, "  - dset:\n");
             fprintf(f, "      dset_name: \"%s\"\n", dset_name);
             fprintf(f, "      start_time: %ld\n", dset_track_info->start_time);
+            fprintf(f, "      end_time: %ld\n", dset_track_info->end_time);
             // fprintf(f, "      token: %ld\n", dset_track_info->token_num);
             fprintf(f, "      dt_class: \"%s\"\n", get_datatype_class_str(dset_track_info->dt_class));
             fprintf(f, "      ds_class: \"%s\"\n", get_dataspace_class_str(dset_track_info->ds_class));
@@ -3164,7 +3208,9 @@ void log_dset_ht_yaml(FILE* f) {
             fprintf(f, "]\n");
             fprintf(f, "      dset_type_size: %d\n", dset_track_info->dset_type_size);
             fprintf(f, "      dataset_read_cnt: %d\n", dset_track_info->dataset_read_cnt);
+            fprintf(f, "      total_bytes_read: %d\n", (dset_track_info->dataset_read_cnt * dset_track_info->storage_size));
             fprintf(f, "      dataset_write_cnt: %d\n", dset_track_info->dataset_write_cnt);
+            fprintf(f, "      total_bytes_written: %d\n", (dset_track_info->dataset_write_cnt * dset_track_info->storage_size));
             fprintf(f, "      dset_offset: %ld\n", dset_track_info->dset_offset);
             fprintf(f, "      dset_select_type: \"%s\"\n", dset_track_info->dset_select_type);
             fprintf(f, "      dset_select_npoints: %ld\n", dset_track_info->dset_select_npoints);
@@ -3178,10 +3224,20 @@ void log_dset_ht_yaml(FILE* f) {
             myll_to_file(f, dset_track_info->sorder_ids);
             fprintf(f, "]\n");
 
-            entry->logged = 1;
+            // // Remove the entry from the hash table
+            // HASH_DEL(lock.hash_table, entry);
 
-            count++;
+            // // Free the memory of the dset_track_t object
+            // free_dset_track_info(entry->dset_track_info);
+            // free(entry);
+
+            // // Free the memory of the file_name and dset_name
+            // free(file_name);
+            // free(dset_name);
+
+            entry->logged = 1;
         }
+
     }
 
     // fprintf(f, "\n");
@@ -3189,9 +3245,6 @@ void log_dset_ht_yaml(FILE* f) {
     // Release the lock
     pthread_mutex_unlock(&(lock.mutex));
     fflush(f);
-
-    printf("Total number of dataset entries: %d\n", count);
-
 
 }
 
@@ -3244,8 +3297,6 @@ void print_ht_info() {
         //     printf("%ld ", dset_track_info->metadata_file_pages[i]);
         // }
         // printf("]\n");
-
-
         count++;
     }
     printf("Total number of tracker entries: %d\n", count);
@@ -3327,7 +3378,6 @@ void myll_to_file(FILE * f, myll_t *head) {
         current = current->next;
         count ++;
     }
-    printf("\n");
     return count;
 }
 
@@ -3383,15 +3433,14 @@ void update_dset_track_info(char * key, dataset_tkr_info_t* dset_info) {
             entry->dset_track_info->token_num = new_token;
             // TODO update metadata_file_pages if new_token
         }
+        // update end time
+        entry->dset_track_info->end_time = get_time_usec();
+
         if(dset_info->dataset_read_cnt > 0){
             entry->dset_track_info->dataset_read_cnt += dset_info->dataset_read_cnt;
-            size_t bytes_read = dset_info->dataset_read_cnt * dset_info->storage_size;
-            entry->dset_track_info->total_bytes_read += bytes_read;
         }
         if(dset_info->dataset_write_cnt > 0){
             entry->dset_track_info->dataset_write_cnt += dset_info->dataset_write_cnt;
-            size_t bytes_written = dset_info->dataset_write_cnt * dset_info->storage_size;
-            entry->dset_track_info->total_bytes_written += bytes_written;
         }
         if(dset_info->dset_offset > -1){
             entry->dset_track_info->dset_offset = dset_info->dset_offset;
