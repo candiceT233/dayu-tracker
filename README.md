@@ -6,7 +6,7 @@ Below statistcs still ned to fix:
 - correctly track group, dtype, attr
 - possible mapping of attr to dataset?
 - collect dataset end time correctly (not at log time, but at last access time)
-- dask 2 process working, 4 process not working, use pid-file lock?
+- dask 2 process working, 4 process not working, use pid-file lock? seems like must use `HDF5_USE_FILE_LOCKING='TRUE'`.
 
 ## Use
 - Currently only work for `level=2` file output, file name start with process ID.
