@@ -9,6 +9,7 @@
 #include "tracker_vol.h"
 
 // #include "md5.h"
+#include <openssl/md5.h>
 #include "../utils/uthash/src/uthash.h"
 
 
@@ -201,6 +202,7 @@ struct H5VL_tkr_dataset_info_t {
     // hid_t dset_id;                   // this should own by application
     char * pfile_name;                  // parent file name
     char *dset_name;
+    unsigned long start_time;
     haddr_t dset_offset;
     hsize_t storage_size;
     size_t dset_n_elements;
@@ -359,18 +361,23 @@ struct H5VL_tkr_blob_info_t {
 
 typedef struct H5VL_dset_track_t dset_track_t;
 
-typedef struct {
-    char *file_name;    // Parent file name
-    char *dset_name;     // Dataset name
-} DsetTrackKey;
 
 typedef struct {
-    DsetTrackKey key;               // Key for the hash table entry
+    char * key;            // Key for the hash table entry
     dset_track_t *dset_track_info;  // Value associated with the key
+    bool logged;             // Whether the entry has been logged
     UT_hash_handle hh;              // Uthash handle
 } DsetTrackHashEntry;
 
+typedef struct myll_t {
+    unsigned long data;
+    struct myll* next;
+} myll_t;
+
 typedef struct H5VL_dset_track_t {
+    // char *file_name;    // Parent file name
+    // char *dset_name;     // Dataset name
+    unsigned long start_time; // Start time of the dataset
     size_t token_num;                   // Token number
     H5T_class_t dt_class;               // Data type class
     H5S_class_t ds_class;               // Data space class
@@ -380,21 +387,27 @@ typedef struct H5VL_dset_track_t {
     size_t dset_type_size;
     int dataset_read_cnt;
     int dataset_write_cnt;
+    size_t total_bytes_read;
+    size_t total_bytes_written;
     haddr_t dset_offset;
     hsize_t storage_size;
     size_t dset_n_elements;
     ssize_t hyper_nblocks;
-    hid_t dspace_id;
-    unsigned long sorder_id;
+
+
     unsigned long pfile_sorder_id;
     size_t data_file_page_start;
     size_t data_file_page_end;
-    size_t *metadata_file_pages;
-    int metadata_file_pages_cnt;
-    char *dset_select_type;
+
+    myll_t * sorder_ids; // linked-list head pointer
+    myll_t * sorder_ids_end; // linked-list tail pointer
+    myll_t *metadata_file_pages; // linked-list head pointer
+    myll_t *metadata_file_pages_end; // linked-list tail pointer
+
+    char * dset_select_type; // TODO: use to check for bytes
     size_t dset_select_npoints;
-    int access_cnt;
-    dset_track_t *next;
+    // int access_cnt;
+    // dset_track_t *next;
 } dset_track_t;
 
 
