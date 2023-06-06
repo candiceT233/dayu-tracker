@@ -7,7 +7,7 @@
     file_read_cnt: 0
     file_write_cnt: 729
     file_size: 0
-    metadata:
+    data:
     - H5FD_MEM_DRAW:
         read_bytes: 0
         read_cnt: 0
@@ -15,6 +15,7 @@
         write_bytes: 7746756
         write_cnt: 52
         write_ranges: {83:(0,0),89:(1,1),94:(0,0),100:(1,166),104:(0,0),111:(167,251),116:(0,0),124:(252,552),129:(0,0),146:(553,563),151:(0,0),167:(563,568),172:(0,0),188:(569,574),191:(0,0),205:(575,575),208:(0,0),222:(575,575),227:(0,0),243:(576,685),248:(0,0),264:(686,687),269:(0,0),285:(688,693),290:(0,0),306:(694,699),311:(0,0),331:(700,799),336:(0,0),355:(800,897),360:(0,0),379:(898,907),384:(0,0),402:(907,921),407:(0,0),424:(921,930),429:(0,0),446:(931,936),451:(0,0),468:(937,939),473:(0,0),492:(939,941),497:(0,0),515:(941,942),524:(0,0),587:(942,942),596:(0,0),662:(942,943),671:(0,0),737:(943,944),744:(0,0),797:(944,944)}
+    metadata:
     - H5FD_MEM_OHDR:
         read_bytes: 0
         read_cnt: 0
@@ -56,7 +57,7 @@ Task:
     file_read_cnt: 72
     file_write_cnt: 0
     file_size: 17684963
-    metadata:
+    data:
     - H5FD_MEM_DRAW:
         read_bytes: 17647648
         read_cnt: 17
@@ -64,6 +65,7 @@ Task:
         write_bytes: 0
         write_cnt: 0
         write_ranges: {}
+    metadata:
     - H5FD_MEM_OHDR:
         read_bytes: 9833
         read_cnt: 38
@@ -105,7 +107,7 @@ Task:
     file_read_cnt: 0
     file_write_cnt: 729
     file_size: 0
-    metadata:
+    data:
     - H5FD_MEM_DRAW:
         read_bytes: 0
         read_cnt: 0
@@ -113,6 +115,7 @@ Task:
         write_bytes: 7578743
         write_cnt: 52
         write_ranges: {884:(0,0),890:(1,1),895:(0,0),901:(1,166),905:(0,0),912:(167,251),917:(0,0),925:(252,550),930:(0,0),947:(551,561),952:(0,0),968:(561,567),973:(0,0),989:(567,573),992:(0,0),1006:(573,573),1009:(0,0),1023:(573,574),1028:(0,0),1044:(574,678),1049:(0,0),1065:(678,680),1070:(0,0),1086:(680,686),1091:(0,0),1107:(686,692),1112:(0,0),1132:(692,787),1137:(0,0),1156:(787,880),1161:(0,0),1180:(880,889),1185:(0,0),1203:(889,902),1208:(0,0),1225:(902,911),1230:(0,0),1247:(911,916),1252:(0,0),1269:(917,919),1274:(0,0),1293:(919,920),1298:(0,0),1316:(921,922),1325:(0,0),1388:(922,922),1397:(0,0),1463:(922,922),1472:(0,0),1538:(923,923),1545:(0,0),1598:(923,924)}
+    metadata:
     - H5FD_MEM_OHDR:
         read_bytes: 0
         read_cnt: 0
@@ -154,7 +157,7 @@ Task:
     file_read_cnt: 72
     file_write_cnt: 0
     file_size: 17327618
-    metadata:
+    data:
     - H5FD_MEM_DRAW:
         read_bytes: 17290303
         read_cnt: 17
@@ -162,6 +165,7 @@ Task:
         write_bytes: 0
         write_cnt: 0
         write_ranges: {}
+    metadata:
     - H5FD_MEM_OHDR:
         read_bytes: 9833
         read_cnt: 38
@@ -203,7 +207,7 @@ Task:
     file_read_cnt: 129
     file_write_cnt: 0
     file_size: 7737570
-    metadata:
+    data:
     - H5FD_MEM_DRAW:
         read_bytes: 58978
         read_cnt: 7
@@ -211,6 +215,7 @@ Task:
         write_bytes: 0
         write_cnt: 0
         write_ranges: {}
+    metadata:
     - H5FD_MEM_OHDR:
         read_bytes: 21373
         read_cnt: 84
@@ -252,7 +257,7 @@ Task:
     file_read_cnt: 129
     file_write_cnt: 0
     file_size: 7569557
-    metadata:
+    data:
     - H5FD_MEM_DRAW:
         read_bytes: 59555
         read_cnt: 7
@@ -260,6 +265,7 @@ Task:
         write_bytes: 0
         write_cnt: 0
         write_ranges: {}
+    metadata:
     - H5FD_MEM_OHDR:
         read_bytes: 21373
         read_cnt: 84
@@ -301,7 +307,7 @@ Task:
     file_read_cnt: 0
     file_write_cnt: 241
     file_size: 0
-    metadata:
+    data:
     - H5FD_MEM_DRAW:
         read_bytes: 0
         read_cnt: 0
@@ -309,6 +315,7 @@ Task:
         write_bytes: 57119
         write_cnt: 20
         write_ranges: {2119:(0,0),2125:(1,1),2129:(0,0),2134:(1,1),2139:(0,0),2147:(2,2),2152:(0,0),2160:(3,3),2165:(0,0),2182:(4,4),2187:(0,0),2203:(4,5),2211:(0,0),2247:(5,5),2254:(0,0),2274:(5,6),2281:(0,0),2302:(6,6),2309:(0,0),2331:(6,6)}
+    metadata:
     - H5FD_MEM_OHDR:
         read_bytes: 0
         read_cnt: 0
@@ -350,7 +357,7 @@ Task:
     file_read_cnt: 124
     file_write_cnt: 0
     file_size: 7737570
-    metadata:
+    data:
     - H5FD_MEM_DRAW:
         read_bytes: 4112
         read_cnt: 2
@@ -358,6 +365,7 @@ Task:
         write_bytes: 0
         write_cnt: 0
         write_ranges: {}
+    metadata:
     - H5FD_MEM_OHDR:
         read_bytes: 21373
         read_cnt: 84
@@ -399,7 +407,7 @@ Task:
     file_read_cnt: 124
     file_write_cnt: 0
     file_size: 7569557
-    metadata:
+    data:
     - H5FD_MEM_DRAW:
         read_bytes: 4112
         read_cnt: 2
@@ -407,6 +415,7 @@ Task:
         write_bytes: 0
         write_cnt: 0
         write_ranges: {}
+    metadata:
     - H5FD_MEM_OHDR:
         read_bytes: 21373
         read_cnt: 84
