@@ -2063,6 +2063,7 @@ void tkr_helper_teardown(tkr_helper_t* helper){
                 break;
         }
 #endif
+        
         if(helper->tkr_level == File_only 
             || helper->tkr_level ==File_and_print){//no file
             fflush(helper->tkr_file_handle);
@@ -2155,23 +2156,26 @@ void log_file_stat_yaml(FILE *f, const file_tkr_info_t* file_info)
         file_name = (char*)file_info->file_name;
 
     fprintf(f, "- file-%ld:\n", file_info->sorder_id);
-    fprintf(f, "  file_name: \"%s\"\n", file_name);
-    fprintf(f, "  open_time: %ld\n", file_info->open_time);
-    fprintf(f, "  close_time: %ld\n", get_time_usec());
-    fprintf(f, "  file_size: %zu\n", file_info->file_size);
-    fprintf(f, "  header_size: %zu\n", file_info->header_size);
-    fprintf(f, "  sieve_buf_size: %zu\n", file_info->sieve_buf_size);
-    fprintf(f, "  file_intent: [\"%s\"]\n", file_info->intent);
+    fprintf(f, "    file_name: \"%s\"\n", file_name);
+    fprintf(f, "    open_time: %ld\n", file_info->open_time);
+    fprintf(f, "    close_time: %ld\n", get_time_usec());
+    fprintf(f, "    file_size: %zu\n", file_info->file_size);
+    fprintf(f, "    header_size: %zu\n", file_info->header_size);
+    fprintf(f, "    sieve_buf_size: %zu\n", file_info->sieve_buf_size);
+    fprintf(f, "    file_intent: [\"%s\"]\n", file_info->intent);
 
 
-    fprintf(f, "  ds_created: %d\n", file_info->ds_created);
-    fprintf(f, "  ds_accessed: %d\n", file_info->ds_accessed);
-    fprintf(f, "  grp_created: %d\n", file_info->grp_created);
-    fprintf(f, "  grp_accessed: %d\n", file_info->grp_accessed);
-    fprintf(f, "  dtypes_created: %d\n", file_info->dtypes_created);
-    fprintf(f, "  dtypes_accessed: %d\n", file_info->dtypes_accessed);
+    fprintf(f, "    ds_created: %d\n", file_info->ds_created);
+    fprintf(f, "    ds_accessed: %d\n", file_info->ds_accessed);
+    fprintf(f, "    grp_created: %d\n", file_info->grp_created);
+    fprintf(f, "    grp_accessed: %d\n", file_info->grp_accessed);
+    fprintf(f, "    dtypes_created: %d\n", file_info->dtypes_created);
+    fprintf(f, "    dtypes_accessed: %d\n", file_info->dtypes_accessed);
 
-    fprintf(f, "Total-Overhead(ms): %ld\n", TOTAL_TKR_OVERHEAD/1000);
+
+    fprintf(f, "Task:\n");
+    fprintf(f, "- task_id: %d\n", getpid());
+    fprintf(f, "    VOL-Total-Overhead(ms): %ld\n", TOTAL_TKR_OVERHEAD/1000);
 
     fflush(f);
 
@@ -3190,37 +3194,38 @@ void log_dset_ht_yaml(FILE* f) {
 
             fprintf(f, "- file-%ld:\n", dset_track_info->pfile_sorder_id);
             fprintf(f, "    file_name: \"%s\"\n", file_name);
-            fprintf(f, "  - dset:\n");
-            fprintf(f, "      dset_name: \"%s\"\n", dset_name);
-            fprintf(f, "      start_time: %ld\n", dset_track_info->start_time);
-            fprintf(f, "      end_time: %ld\n", dset_track_info->end_time);
+            fprintf(f, "    datasets:\n");
+            fprintf(f, "    - dset:\n");
+            fprintf(f, "        dset_name: \"%s\"\n", dset_name);
+            fprintf(f, "        start_time: %ld\n", dset_track_info->start_time);
+            fprintf(f, "        end_time: %ld\n", dset_track_info->end_time);
             // fprintf(f, "      token: %ld\n", dset_track_info->token_num);
-            fprintf(f, "      dt_class: \"%s\"\n", get_datatype_class_str(dset_track_info->dt_class));
-            fprintf(f, "      ds_class: \"%s\"\n", get_dataspace_class_str(dset_track_info->ds_class));
-            fprintf(f, "      layout: \"%s\"\n", dset_track_info->layout);
-            fprintf(f, "      storage_size: %ld\n", dset_track_info->storage_size);
-            fprintf(f, "      dset_n_elements: %ld\n", dset_track_info->dset_n_elements);
-            fprintf(f, "      dimension_cnt: %d\n", dset_track_info->dimension_cnt);
-            fprintf(f, "      dimensions: [");
+            fprintf(f, "        dt_class: \"%s\"\n", get_datatype_class_str(dset_track_info->dt_class));
+            fprintf(f, "        ds_class: \"%s\"\n", get_dataspace_class_str(dset_track_info->ds_class));
+            fprintf(f, "        layout: \"%s\"\n", dset_track_info->layout);
+            fprintf(f, "        storage_size: %ld\n", dset_track_info->storage_size);
+            fprintf(f, "        dset_n_elements: %ld\n", dset_track_info->dset_n_elements);
+            fprintf(f, "        dimension_cnt: %d\n", dset_track_info->dimension_cnt);
+            fprintf(f, "        dimensions: [");
             for (int i = 0; i < dset_track_info->dimension_cnt; i++) {
                 fprintf(f, "%ld, ", dset_track_info->dimensions[i]);
             }
             fprintf(f, "]\n");
-            fprintf(f, "      dset_type_size: %d\n", dset_track_info->dset_type_size);
-            fprintf(f, "      dataset_read_cnt: %d\n", dset_track_info->dataset_read_cnt);
-            fprintf(f, "      total_bytes_read: %d\n", (dset_track_info->dataset_read_cnt * dset_track_info->storage_size));
-            fprintf(f, "      dataset_write_cnt: %d\n", dset_track_info->dataset_write_cnt);
-            fprintf(f, "      total_bytes_written: %d\n", (dset_track_info->dataset_write_cnt * dset_track_info->storage_size));
-            fprintf(f, "      dset_offset: %ld\n", dset_track_info->dset_offset);
-            fprintf(f, "      dset_select_type: \"%s\"\n", dset_track_info->dset_select_type);
-            fprintf(f, "      dset_select_npoints: %ld\n", dset_track_info->dset_select_npoints);
-            fprintf(f, "      data_file_pages: [%ld,%ld]\n", dset_track_info->data_file_page_start, dset_track_info->data_file_page_end);
+            fprintf(f, "        dset_type_size: %d\n", dset_track_info->dset_type_size);
+            fprintf(f, "        dataset_read_cnt: %d\n", dset_track_info->dataset_read_cnt);
+            fprintf(f, "        total_bytes_read: %d\n", (dset_track_info->dataset_read_cnt * dset_track_info->storage_size));
+            fprintf(f, "        dataset_write_cnt: %d\n", dset_track_info->dataset_write_cnt);
+            fprintf(f, "        total_bytes_written: %d\n", (dset_track_info->dataset_write_cnt * dset_track_info->storage_size));
+            fprintf(f, "        dset_offset: %ld\n", dset_track_info->dset_offset);
+            fprintf(f, "        dset_select_type: \"%s\"\n", dset_track_info->dset_select_type);
+            fprintf(f, "        dset_select_npoints: %ld\n", dset_track_info->dset_select_npoints);
+            fprintf(f, "        data_file_pages: [%ld,%ld]\n", dset_track_info->data_file_page_start, dset_track_info->data_file_page_end);
 
-            fprintf(f, "      metadata_file_pages: [");
+            fprintf(f, "        metadata_file_pages: [");
             myll_to_file(f, dset_track_info->metadata_file_pages);
             fprintf(f, "]\n");
 
-            fprintf(f, "      access_orders: [");
+            fprintf(f, "        access_orders: [");
             myll_to_file(f, dset_track_info->sorder_ids);
             fprintf(f, "]\n");
 

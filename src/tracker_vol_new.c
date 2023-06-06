@@ -2824,6 +2824,7 @@ H5VL_tracker_file_close(void *file, hid_t dxpl_id, void **req)
     tkrLockRelease(&myLock);
 
     // print_ht_token_numbers();
+
     tkrLockAcquire(&myLock);
     log_file_stat_yaml(TKR_HELPER->tkr_file_handle,file_info);
     tkrLockRelease(&myLock);
