@@ -26,7 +26,7 @@
 /* Characteristics of the pass-through VOL connector */
 #define H5VL_TRACKER_NAME        "tracker"
 #define H5VL_TRACKER_VALUE       909           /* VOL connector ID */
-#define H5VL_TRACKER_VERSION     2
+#define H5VL_TRACKER_VERSION     1
 
 #define SUCCEED 0
 #define FAIL    (-1)

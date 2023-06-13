@@ -2,7 +2,8 @@
 # HDF5_DIR=/home/mtang11/install/hdf5-1_13_1
 # HDF5_DIR=/qfs/people/tang584/.conda/pkgs/hdf5-1.14.0-nompi_h5231ba7_103
 # HDF5_DIR=/qfs/people/tang584/.conda/pkgs/hdf5-1.14.0-nompi_hb72d44e_103
-HDF5_DIR=$(HOME)/install/hdf5
+# HDF5_DIR=$(HOME)/install/hdf5
+HDF5_DIR=$(HOME)/.conda/envs/pyflextrkr_copy
 # HDF5_DIR=/Users/koziol/HDF5/github/hpc-io/async_vol_register_optional/build_parallel_debug/hdf5
 
 CC=mpicc
@@ -10,7 +11,7 @@ CC=mpicc
 # CC=h5cc
 AR=ar
 # TRACKER_LOGGING TRACKER_PROV_LOGGING TRACKER_MORE_LOGGING TRACKER_PT_LOGGING TRACKER_TEST_LOGGING
-DEBUG= -g -O0 -DDEBUG #-DTRACKER_LOGGING #-DTRACKER_TEST_LOGGING
+DEBUG= -g -O0 -DDEBUG -gdwarf-4 -gdwarf-3 -gdwarf-2 #-DTRACKER_TEST_LOGGING -gdwarf-2, -gdwarf-3 or -gdwarf-4
 INCLUDES=-I$(HDF5_DIR)/include 
 
 CFLAGS = $(DEBUG) -fPIC $(INCLUDES) -w -DTRACKER_SCHEMA #-Wall 

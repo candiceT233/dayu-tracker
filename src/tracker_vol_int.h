@@ -191,7 +191,7 @@ void log_dset_ht_yaml(FILE *f);
 void H5VL_arrow_get_selected_sub_region(hid_t space_id, size_t org_type_size);
 void file_info_print(char * func_name, void * obj, hid_t fapl_id, hid_t fcpl_id, hid_t dxpl_id);
 void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
-    hid_t file_space_id, void * obj, hid_t dxpl_id, const void *buf, size_t obj_idx);
+    hid_t file_space_id, void * obj, hid_t dxpl_id);
 void blob_info_print(char * func_name, void * obj, hid_t dxpl_id, 
     size_t size, void * blob_id, const void * buf, void *ctx);
 
@@ -710,9 +710,9 @@ tkr_helper_t * tkr_helper_init( char* file_path, Track_level tkr_level, char* tk
     new_helper->tid = pthread_self();
 
     // update file path with PID
-    int prefix_len = snprintf(NULL, 0, "%d_%s", getpid(), file_path);
+    int prefix_len = snprintf(NULL, 0, "%d_vol-%s", getpid(), file_path);
     new_helper->tkr_file_path = (char*)malloc((prefix_len + 1) * sizeof(char));
-    snprintf(new_helper->tkr_file_path, prefix_len + 1, "%d_%s", getpid(), file_path);
+    snprintf(new_helper->tkr_file_path, prefix_len + 1, "%d_vol-%s", getpid(), file_path);
 
     printf("vol new_helper tkr_file_path: %s\n", new_helper->tkr_file_path);
 
@@ -730,7 +730,7 @@ tkr_helper_t * tkr_helper_init( char* file_path, Track_level tkr_level, char* tk
     if(new_helper->tkr_level == File_only || new_helper->tkr_level == File_and_print)
         new_helper->tkr_file_handle = fopen(new_helper->tkr_file_path, "a");
 
-    _dic_init();
+    // _dic_init();
     return new_helper;
 }
 
@@ -760,9 +760,9 @@ dataset_tkr_info_t *new_dataset_info(file_tkr_info_t *root_file,
     info = (dataset_tkr_info_t *)calloc(1, sizeof(dataset_tkr_info_t));
     info->obj_info.tkr_helper = TKR_HELPER;
     info->obj_info.file_info = root_file;
-    // info->obj_info.name = name ? strdup(name) : NULL;
-    info->obj_info.name = (char*) malloc(sizeof(char) * (strlen(name) + 1));
-    strcpy(info->obj_info.name, name);
+    info->obj_info.name = name ? strdup(name) : NULL;
+    // info->obj_info.name = (char*) malloc(sizeof(char) * (strlen(name) + 1));
+    // strcpy(info->obj_info.name, name);
     // printf("new_dataset_info() name: %s\n", name);
     // printf("new_dataset_info() info->obj_info.name: %s\n", info->obj_info.name);
     info->obj_info.token = token;
@@ -870,8 +870,8 @@ void group_info_free(group_tkr_info_t* info)
 
 void dataset_info_free(dataset_tkr_info_t* info)
 {
-    if(info->obj_info.name)
-        free(info->obj_info.name);
+    // if(info->obj_info.name)
+    //     free(info->obj_info.name);
 
     if(info->pfile_name)
         free(info->pfile_name);
@@ -2063,19 +2063,21 @@ void tkr_helper_teardown(tkr_helper_t* helper){
                 break;
         }
 #endif
-        
+        tkrLockDestroy(&myLock);
+
         if(helper->tkr_level == File_only 
             || helper->tkr_level ==File_and_print){//no file
             fflush(helper->tkr_file_handle);
             fclose(helper->tkr_file_handle);
         }
-        if(helper->tkr_file_path)
-            free(helper->tkr_file_path);
-        if(helper->tkr_line_format)
-            free(helper->tkr_line_format);
 
-        free(helper);
-        _dic_free();
+        // if(helper->tkr_file_path)
+        //     free(helper->tkr_file_path);
+        // if(helper->tkr_line_format)
+        //     free(helper->tkr_line_format);
+
+        // free(helper);
+        // _dic_free();
     }
 }
 
@@ -2133,8 +2135,10 @@ int tkr_write(tkr_helper_t* helper_in, const char* msg, unsigned long duration){
         fputs(pline, helper_in->tkr_file_handle);
     }
 //    unsigned tmp = TKR_WRITE_TOTAL_TIME;
-    TKR_WRITE_TOTAL_TIME += (get_time_usec() - start);
+    
 #endif
+    fflush(helper_in->tkr_file_handle); // TODO: check if this is necessary
+    TKR_WRITE_TOTAL_TIME += (get_time_usec() - start);
     return 0;
 }
 
@@ -2148,6 +2152,8 @@ void log_file_stat_yaml(FILE *f, const file_tkr_info_t* file_info)
         fprintf(f, "log_file_stat_yaml(): file_info is NULL.\n");
         return;
     }
+
+    log_dset_ht_yaml(f);
 
     char* file_name = strrchr(file_info->file_name, '/');
     if(file_name)
@@ -2593,7 +2599,7 @@ char * H5S_select_type_to_str(H5S_sel_type type){
 
 // TODO: update dataset_info to tracking object
 void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
-    hid_t file_space_id, void * obj, hid_t dxpl_id, const void *buf, size_t obj_idx)
+    hid_t file_space_id, void * obj, hid_t dxpl_id)
 {
     H5VL_tracker_t *dset = (H5VL_tracker_t *)obj;
     dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)dset->generic_tkr_info; 
@@ -2618,7 +2624,7 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
         H5S_sel_type sel_stype = H5Sget_select_type(space_id);
         dset_info->dset_select_type = H5S_select_type_to_str(sel_stype);
     }
-    if(!dset_info->dset_select_npoints){
+    if(!dset_info->dset_select_npoints && H5Iis_valid(space_id) > 0){
         dset_info->dset_select_npoints = H5Sget_select_npoints(space_id);
     }
 
@@ -2636,7 +2642,9 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
         hid_t dcpl_id = dataset_get_dcpl(dset->under_object, dset->under_vol_id,dxpl_id);
         // only valid with creation property list
         char * layout = dataset_get_layout(dcpl_id); 
-        dset_info->layout = layout ? strdup(layout) : NULL;
+        // dset_info->layout = layout ? strdup(layout) : NULL;
+        dset_info->layout = (char*) malloc(sizeof(char) * (strlen(layout) + 1));
+        strcpy(dset_info->layout, layout);
     }
 
 
@@ -2656,7 +2664,6 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
             dset_info->storage_size = dataset_get_storage_size(dset->under_object, dset->under_vol_id, dxpl_id);
             // printf("Critical section storage_size: %ld addr[%ld, %ld] size[%ld], hermes_blobs[%ld, %ld]\n", 
             //     dset_info->storage_size, START_ADDR, END_ADDR, ACC_SIZE);
-
             start_addr = START_ADDR;
             end_addr = END_ADDR;
             access_size = ACC_SIZE;
@@ -2672,26 +2679,26 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
                 dset_info->data_file_page_start = end_page;
                 dset_info->data_file_page_end = (end_addr + dset_info->storage_size) / hermes_page_size;
             }
+
+            if(strcmp(dset_info->layout,"H5D_CONTIGUOUS") == 0)
+                dset_info->storage_size = dset_info->dset_n_elements * dset_info->dset_type_size;
+
         }
 
     } //&& strcmp(func_name,"H5VLget_object") != 0
 
-    if(strcmp(dset_info->layout,"H5D_CONTIGUOUS") == 0)
-        dset_info->storage_size = dset_info->dset_n_elements * dset_info->dset_type_size;
-
     // if(strcmp(dset_info->layout,"H5D_CONTIGUOUS") == 0)
     if ((dset_info->dset_offset == NULL) || (dset_info->dset_offset < 0) && dxpl_id != NULL)
-        
         dset_info->dset_offset = dataset_get_offset(dset->under_object, dset->under_vol_id, dxpl_id);
 
 #ifdef TRACKER_LOGGING
-    dataset_info_print(func_name, mem_type_id, mem_space_id, file_space_id, obj, dxpl_id, buf, obj_idx);
+    dataset_info_print(func_name, mem_type_id, mem_space_id, file_space_id, obj, dxpl_id);
 #endif
 
 }
 
 void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
-    hid_t file_space_id, void * obj, hid_t dxpl_id, const void *buf, size_t obj_idx)
+    hid_t file_space_id, void * obj, hid_t dxpl_id)
 {
 
     
@@ -3009,6 +3016,7 @@ char* encode_two_strings(const char* file_path, const char* dset_name) {
     size_t encoded_len = file_name_len + dset_name_len + 1; // 1 for '@'
 
     char* encoded_str = (char*)malloc(encoded_len + 1); // +1 for null terminator
+    
     snprintf(encoded_str, encoded_len + 1, "%s@%s", file_name, dset_name);
 
     return encoded_str;
@@ -3466,7 +3474,9 @@ void add_to_dset_ht(dataset_tkr_info_t* dset_info){
 
     // Create a DsetTrackKey for the key
     char * key;
+    tkrLockAcquire(&myLock);
     key = encode_two_strings(dset_info->pfile_name, dset_info->obj_info.name);
+    tkrLockRelease(&myLock);
 
     // Acquire the lock before accessing the hash table
     pthread_mutex_lock(&(lock.mutex));
