@@ -19,3 +19,6 @@
         - bucket: /tmp/test_hermes/hi.txt
           promote_blobs: [ 7, 8 ]
           demote_blobs: [ 5, 6 ]
+
+
+

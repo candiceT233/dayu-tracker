@@ -1,0 +1,299 @@
+VFD Stat File: ../stat_to_sankey/example_stat/1p9f9s_run/168881_vfd-data-stat-dl.yaml
+    - file_name: "tracknumbers_20150506.0000_20150506.0800.nc"
+      - file_op_range: [0, 72]
+      - file_op_range: [133, 13473]
+    - file_name: "cloudid_20150506_000000.nc"
+      - file_op_range: [72, 265]
+    - file_name: "cloudid_20150506_010000.nc"
+      - file_op_range: [265, 1702]
+    - file_name: "cloudid_20150506_020000.nc"
+      - file_op_range: [1702, 3154]
+    - file_name: "cloudid_20150506_030000.nc"
+      - file_op_range: [3154, 4670]
+    - file_name: "cloudid_20150506_040000.nc"
+      - file_op_range: [4670, 6186]
+    - file_name: "cloudid_20150506_050000.nc"
+      - file_op_range: [6186, 7646]
+    - file_name: "cloudid_20150506_060000.nc"
+      - file_op_range: [7646, 9226]
+    - file_name: "cloudid_20150506_070000.nc"
+      - file_op_range: [9226, 10714]
+    - file_name: "cloudid_20150506_080000.nc"
+      - file_op_range: [10714, 12186]
+    - file_name: "trackstats_20150506.0000_20150506.0800.nc"
+      - file_op_range: [12186, 14717]
+    - file_name: "trackstats_sparse_20150506.0000_20150506.0800.nc"
+      - file_op_range: [14717, 14901]
+168881 Max IO IDX: 14901
+
+
+VFD Stat File: ../stat_to_sankey/example_stat/1p9f9s_run/77100_vfd-data-stat-dl.yaml
+    - file_name: "track_20150506_010000.nc"
+      - file_op_range: [0, 56]
+      - file_op_range: [56, 117]
+    - file_name: "cloudid_20150506_000000.nc"
+      - file_op_range: [117, 241]
+    - file_name: "cloudid_20150506_010000.nc"
+      - file_op_range: [241, 365]
+      - file_op_range: [426, 550]
+    - file_name: "track_20150506_020000.nc"
+      - file_op_range: [365, 426]
+    - file_name: "cloudid_20150506_020000.nc"
+      - file_op_range: [550, 674]
+      - file_op_range: [735, 859]
+    - file_name: "track_20150506_030000.nc"
+      - file_op_range: [674, 735]
+    - file_name: "cloudid_20150506_030000.nc"
+      - file_op_range: [859, 983]
+      - file_op_range: [1044, 1168]
+    - file_name: "track_20150506_040000.nc"
+      - file_op_range: [983, 1044]
+    - file_name: "cloudid_20150506_040000.nc"
+      - file_op_range: [1168, 1292]
+      - file_op_range: [1353, 1477]
+    - file_name: "track_20150506_050000.nc"
+      - file_op_range: [1292, 1353]
+    - file_name: "cloudid_20150506_050000.nc"
+      - file_op_range: [1477, 1601]
+      - file_op_range: [1662, 1786]
+    - file_name: "track_20150506_060000.nc"
+      - file_op_range: [1601, 1662]
+    - file_name: "cloudid_20150506_060000.nc"
+      - file_op_range: [1786, 1910]
+      - file_op_range: [1971, 2095]
+    - file_name: "track_20150506_070000.nc"
+      - file_op_range: [1910, 1971]
+    - file_name: "cloudid_20150506_070000.nc"
+      - file_op_range: [2095, 2219]
+      - file_op_range: [2280, 2404]
+    - file_name: "track_20150506_080000.nc"
+      - file_op_range: [2219, 2280]
+    - file_name: "cloudid_20150506_080000.nc"
+      - file_op_range: [2404, 2528]
+    - file_name: "tracknumbers_20150506.0000_20150506.0800.nc"
+      - file_op_range: [2528, 2952]
+77100 Max IO IDX: 2952
+
+
+VFD Stat File: ../stat_to_sankey/example_stat/1p9f9s_run/167838_vfd-data-stat-dl.yaml
+    - file_name: "mcs_tracks_robust_20150506.0000_20150506.0800.nc"
+      - file_op_range: [0, 442]
+      - file_op_range: [11213, 11308]
+    - file_name: "mcstrack_20150506_000000.nc"
+      - file_op_range: [442, 1734]
+    - file_name: "mcstrack_20150506_010000.nc"
+      - file_op_range: [720, 1733]
+      - file_op_range: [1733, 3026]
+    - file_name: "mcstrack_20150506_020000.nc"
+      - file_op_range: [2012, 3025]
+      - file_op_range: [3025, 4318]
+    - file_name: "mcstrack_20150506_030000.nc"
+      - file_op_range: [3304, 4317]
+      - file_op_range: [4317, 5610]
+    - file_name: "mcstrack_20150506_040000.nc"
+      - file_op_range: [4596, 5609]
+      - file_op_range: [5609, 6902]
+    - file_name: "mcstrack_20150506_050000.nc"
+      - file_op_range: [5888, 6901]
+      - file_op_range: [6901, 8194]
+    - file_name: "mcstrack_20150506_060000.nc"
+      - file_op_range: [7180, 8193]
+      - file_op_range: [8193, 9486]
+    - file_name: "mcstrack_20150506_070000.nc"
+      - file_op_range: [8472, 9485]
+      - file_op_range: [9485, 10778]
+    - file_name: "mcstrack_20150506_080000.nc"
+      - file_op_range: [9764, 10777]
+    - file_name: "mcs_tracks_final_20150506.0000_20150506.0800.nc"
+      - file_op_range: [10777, 14287]
+167838 Max IO IDX: 14287
+
+
+VFD Stat File: ../stat_to_sankey/example_stat/1p9f9s_run/5904_vfd-data-stat-dl.yaml
+Error in ../stat_to_sankey/example_stat/1p9f9s_run/5904_vfd-data-stat-dl.yaml stat {'file_name': 'cloudid_20150506_050000.nc', 'open_time': 1686711085339720, 'close_time': 0, 'file_intent': [], 'file_no': 0, 'file_read_cnt': 0, 'file_write_cnt': 0, 'file_size': 7118442, 'data': None, 'metadata': None}
+Error in ../stat_to_sankey/example_stat/1p9f9s_run/5904_vfd-data-stat-dl.yaml stat {'file_name': 'cloudid_20150506_040000.nc', 'open_time': 1686711085495597, 'close_time': 0, 'file_intent': [], 'file_no': 0, 'file_read_cnt': 0, 'file_write_cnt': 0, 'file_size': 7214109, 'data': None, 'metadata': None}
+Error in ../stat_to_sankey/example_stat/1p9f9s_run/5904_vfd-data-stat-dl.yaml stat {'file_name': 'cloudid_20150506_020000.nc', 'open_time': 1686711086021205, 'close_time': 0, 'file_intent': [], 'file_no': 0, 'file_read_cnt': 0, 'file_write_cnt': 0, 'file_size': 7419552, 'data': None, 'metadata': None}
+Error in ../stat_to_sankey/example_stat/1p9f9s_run/5904_vfd-data-stat-dl.yaml stat {'file_name': 'cloudid_20150506_070000.nc', 'open_time': 1686711097439446, 'close_time': 0, 'file_intent': [], 'file_no': 0, 'file_read_cnt': 0, 'file_write_cnt': 0, 'file_size': 6931018, 'data': None, 'metadata': None}
+    - file_name: "cloudid_20150506_050000.nc"
+      - file_op_range: [0, 511]
+      - file_op_range: [764, 1029]
+      - file_op_range: [1155, 0]
+      - file_op_range: [1278, 1279]
+    - file_name: "cloudid_20150506_040000.nc"
+      - file_op_range: [249, 640]
+      - file_op_range: [891, 1030]
+      - file_op_range: [1154, 0]
+      - file_op_range: [1402, 1403]
+    - file_name: "cloudid_20150506_030000.nc"
+      - file_op_range: [376, 641]
+      - file_op_range: [1891, 1892]
+      - file_op_range: [3379, 3518]
+      - file_op_range: [3894, 3895]
+    - file_name: "cloudid_20150506_010000.nc"
+      - file_op_range: [505, 897]
+      - file_op_range: [2624, 2625]
+      - file_op_range: [3508, 3646]
+      - file_op_range: [4018, 4019]
+    - file_name: "cloudid_20150506_060000.nc"
+      - file_op_range: [635, 1027]
+      - file_op_range: [1153, 1154]
+      - file_op_range: [3251, 3517]
+    - file_name: "cloudid_20150506_020000.nc"
+      - file_op_range: [1020, 1155]
+      - file_op_range: [1403, 0]
+      - file_op_range: [1526, 3256]
+      - file_op_range: [4385, 4386]
+    - file_name: "track_20150506_060000.nc"
+      - file_op_range: [0, 1768]
+    - file_name: "track_20150506_050000.nc"
+      - file_op_range: [0, 2133]
+    - file_name: "track_20150506_040000.nc"
+      - file_op_range: [1279, 2374]
+    - file_name: "track_20150506_020000.nc"
+      - file_op_range: [0, 2870]
+    - file_name: "cloudid_20150506_070000.nc"
+      - file_op_range: [2497, 3001]
+      - file_op_range: [3646, 0]
+      - file_op_range: [3641, 4262]
+      - file_op_range: [4874, 4875]
+    - file_name: "cloudid_20150506_000000.nc"
+      - file_op_range: [2994, 3384]
+      - file_op_range: [4750, 4751]
+    - file_name: "cloudid_20150506_080000.nc"
+      - file_op_range: [3124, 3516]
+      - file_op_range: [3769, 3770]
+    - file_name: "track_20150506_080000.nc"
+      - file_op_range: [0, 4261]
+    - file_name: "track_20150506_030000.nc"
+      - file_op_range: [4262, 4627]
+    - file_name: "track_20150506_010000.nc"
+      - file_op_range: [3895, 5116]
+    - file_name: "track_20150506_070000.nc"
+      - file_op_range: [4019, 5481]
+5904 Max IO IDX: 5481
+
+
+VFD Stat File: ../stat_to_sankey/example_stat/1p9f9s_run/11179_vfd-data-stat-dl.yaml
+    - file_name: "mcs_tracks_robust_20150506.0000_20150506.0800.nc"
+      - file_op_range: [0, 3402]
+    - file_name: "mcs_tracks_pf_20150506.0000_20150506.0800.nc"
+      - file_op_range: [369, 539]
+11179 Max IO IDX: 3402
+
+
+VFD Stat File: ../stat_to_sankey/example_stat/1p9f9s_run/75190_vfd-data-stat-dl.yaml
+    - file_name: "cloudid_20150506_040000.nc"
+      - file_op_range: [0, 800]
+    - file_name: "wrfout_rainrate_tb_zh_mh_2015-05-06_04:00:00.nc"
+      - file_op_range: [55, 71]
+    - file_name: "cloudid_20150506_010000.nc"
+      - file_op_range: [71, 1601]
+    - file_name: "wrfout_rainrate_tb_zh_mh_2015-05-06_01:00:00.nc"
+      - file_op_range: [856, 872]
+    - file_name: "cloudid_20150506_060000.nc"
+      - file_op_range: [872, 2402]
+    - file_name: "wrfout_rainrate_tb_zh_mh_2015-05-06_06:00:00.nc"
+      - file_op_range: [1657, 1673]
+    - file_name: "cloudid_20150506_050000.nc"
+      - file_op_range: [1673, 3203]
+    - file_name: "wrfout_rainrate_tb_zh_mh_2015-05-06_05:00:00.nc"
+      - file_op_range: [2458, 2474]
+    - file_name: "cloudid_20150506_080000.nc"
+      - file_op_range: [2474, 4004]
+    - file_name: "wrfout_rainrate_tb_zh_mh_2015-05-06_08:00:00.nc"
+      - file_op_range: [3259, 3275]
+    - file_name: "cloudid_20150506_000000.nc"
+      - file_op_range: [3275, 4805]
+    - file_name: "wrfout_rainrate_tb_zh_mh_2015-05-06_00:00:00.nc"
+      - file_op_range: [4060, 4076]
+    - file_name: "cloudid_20150506_020000.nc"
+      - file_op_range: [4076, 5606]
+    - file_name: "wrfout_rainrate_tb_zh_mh_2015-05-06_02:00:00.nc"
+      - file_op_range: [4861, 4877]
+    - file_name: "cloudid_20150506_030000.nc"
+      - file_op_range: [4877, 6407]
+    - file_name: "wrfout_rainrate_tb_zh_mh_2015-05-06_03:00:00.nc"
+      - file_op_range: [5662, 5678]
+    - file_name: "cloudid_20150506_070000.nc"
+      - file_op_range: [5678, 7208]
+    - file_name: "wrfout_rainrate_tb_zh_mh_2015-05-06_07:00:00.nc"
+      - file_op_range: [6463, 6479]
+75190 Max IO IDX: 7208
+
+
+VFD Stat File: ../stat_to_sankey/example_stat/1p9f9s_run/170958_vfd-data-stat-dl.yaml
+    - file_name: "cloudid_20150506_000000.nc"
+      - file_op_range: [0, 360]
+    - file_name: "wrf_landmask.nc"
+      - file_op_range: [198, 222]
+      - file_op_range: [407, 431]
+      - file_op_range: [616, 640]
+      - file_op_range: [825, 849]
+      - file_op_range: [1034, 1058]
+      - file_op_range: [1243, 1267]
+      - file_op_range: [1452, 1476]
+      - file_op_range: [1661, 1685]
+      - file_op_range: [1870, 1894]
+    - file_name: "cloudid_20150506_010000.nc"
+      - file_op_range: [222, 569]
+    - file_name: "cloudid_20150506_020000.nc"
+      - file_op_range: [431, 778]
+    - file_name: "cloudid_20150506_030000.nc"
+      - file_op_range: [640, 987]
+    - file_name: "cloudid_20150506_040000.nc"
+      - file_op_range: [849, 1196]
+    - file_name: "cloudid_20150506_050000.nc"
+      - file_op_range: [1058, 1405]
+    - file_name: "cloudid_20150506_060000.nc"
+      - file_op_range: [1267, 1614]
+    - file_name: "cloudid_20150506_070000.nc"
+      - file_op_range: [1476, 1823]
+    - file_name: "cloudid_20150506_080000.nc"
+      - file_op_range: [1685, 2032]
+    - file_name: "mcs_tracks_pf_20150506.0000_20150506.0800.nc"
+      - file_op_range: [1894, 2800]
+    - file_name: "mcs_tracks_20150506.0000_20150506.0800.nc"
+      - file_op_range: [132, 2088]
+170958 Max IO IDX: 2800
+
+
+VFD Stat File: ../stat_to_sankey/example_stat/1p9f9s_run/157121_vfd-data-stat-dl.yaml
+    - file_name: "mcs_tracks_robust_20150506.0000_20150506.0800.nc"
+      - file_op_range: [0, 555]
+    - file_name: "mcstrack_20150506_000000.nc"
+      - file_op_range: [555, 6480]
+    - file_name: "cloudid_20150506_000000.nc"
+      - file_op_range: [678, 703]
+    - file_name: "mcstrack_20150506_010000.nc"
+      - file_op_range: [703, 12405]
+    - file_name: "cloudid_20150506_010000.nc"
+      - file_op_range: [6603, 6628]
+    - file_name: "mcstrack_20150506_020000.nc"
+      - file_op_range: [6628, 18330]
+    - file_name: "cloudid_20150506_020000.nc"
+      - file_op_range: [12528, 12553]
+    - file_name: "mcstrack_20150506_030000.nc"
+      - file_op_range: [12553, 24255]
+    - file_name: "cloudid_20150506_030000.nc"
+      - file_op_range: [18453, 18478]
+    - file_name: "mcstrack_20150506_040000.nc"
+      - file_op_range: [18478, 30180]
+    - file_name: "cloudid_20150506_040000.nc"
+      - file_op_range: [24378, 24403]
+    - file_name: "mcstrack_20150506_050000.nc"
+      - file_op_range: [24403, 36105]
+    - file_name: "cloudid_20150506_050000.nc"
+      - file_op_range: [30303, 30328]
+    - file_name: "mcstrack_20150506_060000.nc"
+      - file_op_range: [30328, 42030]
+    - file_name: "cloudid_20150506_060000.nc"
+      - file_op_range: [36228, 36253]
+    - file_name: "mcstrack_20150506_070000.nc"
+      - file_op_range: [36253, 47955]
+    - file_name: "cloudid_20150506_070000.nc"
+      - file_op_range: [42153, 42178]
+    - file_name: "mcstrack_20150506_080000.nc"
+      - file_op_range: [42178, 53880]
+    - file_name: "cloudid_20150506_080000.nc"
+      - file_op_range: [48078, 48103]
+157121 Max IO IDX: 53880
