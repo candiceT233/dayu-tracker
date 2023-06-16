@@ -7,8 +7,8 @@
 run_idfeature:
   order: 0
   task_pid: 75190
-  task_op_range: [0, 7208]
-  total_op_range: [0, 7208]
+  task_op_range: [0, 14416]
+  total_op_range: [0, 14416]
   input:
     - "wrfout_rainrate_tb_zh_mh_2015-05-06_00:00:00.nc"
     - "wrfout_rainrate_tb_zh_mh_2015-05-06_01:00:00.nc"
@@ -34,8 +34,8 @@ run_idfeature:
 run_tracksingle:
   order: 1
   task_pid: 5904
-  task_op_range: [0, 5481]
-  total_op_range: [7208, 12689]
+  task_op_range: [0, 10962]
+  total_op_range: [14416, 25378]
   input:
     - "cloudid_20150506_000000.nc"
     - "cloudid_20150506_010000.nc"
@@ -59,8 +59,8 @@ run_tracksingle:
 run_gettracks:
   order: 2
   task_pid: 77100
-  task_op_range: [0, 2952]
-  total_op_range: [12689, 15641]
+  task_op_range: [0, 5904]
+  total_op_range: [25378, 31282]
   input:
     - file_name: "track_20150506_010000.nc"
     - file_name: "cloudid_20150506_000000.nc"
@@ -92,8 +92,8 @@ run_gettracks:
 run_trackstats:
   order: 3
   task_pid: 168881
-  task_op_range: [0, 14901]
-  total_op_range: [15641, 30542]
+  task_op_range: [0, 29802]
+  total_op_range: [31282, 61084]
   input:
     - file_name: "tracknumbers_20150506.0000_20150506.0800.nc"
     - file_name: "cloudid_20150506_000000.nc"
@@ -113,8 +113,8 @@ run_trackstats:
 run_identifymcs:
   order: 4
   task_pid: 98522
-  task_op_range: [0, 1058]
-  total_op_range: [30542, 31599]
+  task_op_range: [0, 2116]
+  total_op_range: [61084, 63199]
   input:
     - file_name: "trackstats_sparse_20150506.0000_20150506.0800.nc"
   output:
@@ -123,8 +123,8 @@ run_identifymcs:
 run_matchpf:
   order: 5
   task_pid: 170958
-  task_op_range: [0, 2800]
-  total_op_range: [31599, 34399]
+  task_op_range: [0, 5600]
+  total_op_range: [63199, 68800]
   input:
     - "cloudid_20150506_000000.nc"
     - "cloudid_20150506_010000.nc"
@@ -143,8 +143,8 @@ run_matchpf:
 run_mcsstats:
   order: 6
   task_pid: 11179
-  task_op_range: [0, 3402]
-  total_op_range: [34399, 37801]
+  task_op_range: [0, 6804]
+  total_op_range: [68800, 75604]
   input:
     - "mcs_tracks_pf_20150506.0000_20150506.0800.nc"
   output:
@@ -153,8 +153,8 @@ run_mcsstats:
 run_robustmcs:
   order: 7
   task_pid: 157121
-  task_op_range: [0, 53880]
-  total_op_range: [37801, 91681]
+  task_op_range: [0, 107760]
+  total_op_range: [75604, 182364]
   input:
     - "mcs_tracks_robust_20150506.0000_20150506.0800.nc"
     - "cloudid_20150506_000000.nc"
@@ -180,8 +180,8 @@ run_robustmcs:
 run_mapfeature:
   order: 8
   task_pid: 167838
-  task_op_range: [0, 14287]
-  total_op_range: [91681, 105968]
+  task_op_range: [0, 28574]
+  total_op_range: [182364, 210938]
   input:
     - "mcstrack_20150506_000000.nc"
     - "mcstrack_20150506_010000.nc"
