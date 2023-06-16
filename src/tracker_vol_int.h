@@ -180,7 +180,8 @@ char * get_datatype_class_str(hid_t type_id);
 
     
     /* candice added routine prototypes start */
-void log_file_stat_yaml(FILE *f, const file_tkr_info_t* file_info);
+// void log_file_stat_yaml(FILE *f, const file_tkr_info_t* file_info);
+void log_file_stat_yaml(tkr_helper_t* helper_in, const file_tkr_info_t* file_info);
 void log_dset_ht_yaml(FILE *f);
 // void print_order_id();
 // void tracker_insert_file(file_list_t** head_ref, file_tkr_info_t * file_info);
@@ -727,8 +728,8 @@ tkr_helper_t * tkr_helper_init( char* file_path, Track_level tkr_level, char* tk
 
     getlogin_r(new_helper->user_name, 32);
 
-    if(new_helper->tkr_level == File_only || new_helper->tkr_level == File_and_print)
-        new_helper->tkr_file_handle = fopen(new_helper->tkr_file_path, "a");
+    // if(new_helper->tkr_level == File_only || new_helper->tkr_level == File_and_print)
+    //     new_helper->tkr_file_handle = fopen(new_helper->tkr_file_path, "a");
 
     // _dic_init();
     return new_helper;
@@ -2022,6 +2023,7 @@ void tkr_helper_teardown(tkr_helper_t* helper){
 
 #ifdef TRACKER_PROV_LOGGING
         char pline[512];
+        FILE * file_handle = fopen(helper->tkr_file_path, "a");
 
         sprintf(pline,
                 "TOTAL_TKR_OVERHEAD %llu\n"
@@ -2043,11 +2045,11 @@ void tkr_helper_teardown(tkr_helper_t* helper){
 
         switch(helper->tkr_level){
             case File_only:
-                fputs(pline, helper->tkr_file_handle);
+                fputs(pline, file_handle);
                 break;
 
             case File_and_print:
-                fputs(pline, helper->tkr_file_handle);
+                fputs(pline, file_handle);
                 printf("%s", pline);
                 break;
 
@@ -2062,14 +2064,18 @@ void tkr_helper_teardown(tkr_helper_t* helper){
             default:
                 break;
         }
+
+        fflush(file_handle);
+        fclose(file_handle);
 #endif
         tkrLockDestroy(&myLock);
+        destroy_hash_lock();
 
-        if(helper->tkr_level == File_only 
-            || helper->tkr_level ==File_and_print){//no file
-            fflush(helper->tkr_file_handle);
-            fclose(helper->tkr_file_handle);
-        }
+        // if(helper->tkr_level == File_only 
+        //     || helper->tkr_level ==File_and_print){//no file
+        //     fflush(helper->tkr_file_handle);
+        //     fclose(helper->tkr_file_handle);
+        // }
 
         // if(helper->tkr_file_path)
         //     free(helper->tkr_file_path);
@@ -2106,16 +2112,18 @@ int tkr_write(tkr_helper_t* helper_in, const char* msg, unsigned long duration){
                 break;
     }
 #ifdef TRACKER_PROV_LOGGING
+    FILE * file_handle = fopen(helper_in->tkr_file_path, "a");
+
     sprintf(pline, "%s %llu(us)\n",  msg, duration);//assume less than 64 functions
 
     //printf("Func name:[%s], hash index = [%u], overhead = [%llu]\n",  msg, genHash(msg), duration);
     switch(helper_in->tkr_level){
         case File_only:
-            fputs(pline, helper_in->tkr_file_handle);
+            fputs(pline, file_handle);
             break;
 
         case File_and_print:
-            fputs(pline, helper_in->tkr_file_handle);
+            fputs(pline, file_handle);
             printf("%s", pline);
             break;
 
@@ -2132,12 +2140,14 @@ int tkr_write(tkr_helper_t* helper_in, const char* msg, unsigned long duration){
     }
 
     if(helper_in->tkr_level == (File_only | File_and_print )){
-        fputs(pline, helper_in->tkr_file_handle);
+        fputs(pline, file_handle);
     }
 //    unsigned tmp = TKR_WRITE_TOTAL_TIME;
-    
+    fflush(file_handle); // TODO: check if this is necessary
+    fclose(file_handle);
 #endif
-    fflush(helper_in->tkr_file_handle); // TODO: check if this is necessary
+
+
     TKR_WRITE_TOTAL_TIME += (get_time_usec() - start);
     return 0;
 }
@@ -2145,8 +2155,9 @@ int tkr_write(tkr_helper_t* helper_in, const char* msg, unsigned long duration){
 
 
     /* candice added routine implementation start*/
-void log_file_stat_yaml(FILE *f, const file_tkr_info_t* file_info)
+void log_file_stat_yaml(tkr_helper_t* helper_in, const file_tkr_info_t* file_info)
 {
+    FILE * f = fopen(helper_in->tkr_file_path, "a");
     
     if (!file_info) {
         fprintf(f, "log_file_stat_yaml(): file_info is NULL.\n");
@@ -2184,6 +2195,7 @@ void log_file_stat_yaml(FILE *f, const file_tkr_info_t* file_info)
     fprintf(f, "    VOL-Total-Overhead(ms): %ld\n", TOTAL_TKR_OVERHEAD/1000);
 
     fflush(f);
+    fclose(f);
 
 }
 
@@ -3019,6 +3031,17 @@ char* encode_two_strings(const char* file_path, const char* dset_name) {
     
     snprintf(encoded_str, encoded_len + 1, "%s@%s", file_name, dset_name);
 
+    // // Copy file_name to encoded_str
+    // strncpy(encoded_str, file_name, file_name_len);
+    // encoded_str[file_name_len] = '\0'; // Null-terminate the copied file_name
+
+    // // Append '@' to encoded_str
+    // encoded_str[file_name_len] = '@';
+
+    // // Copy dset_name to encoded_str after the '@'
+    // strncpy(encoded_str + file_name_len + 1, dset_name, dset_name_len);
+    // encoded_str[encoded_len] = '\0'; // Null-terminate the entire encoded_str
+
     return encoded_str;
 }
 
@@ -3132,12 +3155,37 @@ dset_track_t *create_dset_track_info(dataset_tkr_info_t* dset_info) {
     return track_entry;
 }
 
+// Cleanup the hash table (using uthash)
+void cleanup_hash_table() {
+    DsetTrackHashEntry *current, *tmp;
+
+    // Iterate over the hash table and delete each entry using uthash macros
+    HASH_ITER(hh, lock.hash_table, current, tmp) {
+        HASH_DEL(lock.hash_table, current);
+        free(current);
+    }
+
+    // Set the hash table pointer to NULL
+    lock.hash_table = NULL;
+}
+
 // Initialize the lock
 void init_hasn_lock() {
     pthread_mutex_init(&(lock.mutex), NULL);
     lock.hash_table = NULL;
 }
 
+// Destroy the lock and cleanup the hash table
+void destroy_hash_lock() {
+    // Lock the mutex to ensure exclusive access during destruction
+    pthread_mutex_lock(&(lock.mutex));
+
+    // Cleanup the hash table
+    cleanup_hash_table();
+
+    // Destroy the mutex
+    pthread_mutex_destroy(&(lock.mutex));
+}
 
 // Add a dset_track_t object to the hash table
 void add_dset_track_info(char * key, dset_track_t *dset_track_info) {
@@ -3472,11 +3520,14 @@ void update_dset_track_info(char * key, dataset_tkr_info_t* dset_info) {
 
 void add_to_dset_ht(dataset_tkr_info_t* dset_info){
 
+    if(dset_info->pfile_name == NULL || dset_info->obj_info.name == NULL){
+        return;
+    }
     // Create a DsetTrackKey for the key
     char * key;
-    tkrLockAcquire(&myLock);
+    // tkrLockAcquire(&myLock);
     key = encode_two_strings(dset_info->pfile_name, dset_info->obj_info.name);
-    tkrLockRelease(&myLock);
+    // tkrLockRelease(&myLock);
 
     // Acquire the lock before accessing the hash table
     pthread_mutex_lock(&(lock.mutex));

@@ -1975,11 +1975,12 @@ H5VL_tracker_dataset_close(void *dset, hid_t dxpl_id, void **req)
 #ifdef TRACKER_PT_LOGGING
     printf("TRACKER VOL DATASET Close\n");
 #endif
-    dataset_tkr_info_t* dset_info = (dataset_tkr_info_t*)o->generic_tkr_info;
-    assert(dset_info);
+
 
 #ifdef TRACKER_SCHEMA
-
+    dataset_tkr_info_t* dset_info = (dataset_tkr_info_t*)o->generic_tkr_info;
+    assert(dset_info);
+    
     dataset_info_update("H5VLdataset_close", NULL, NULL, NULL, dset, dxpl_id);
     BLOB_SORDER=0;
 
@@ -2822,14 +2823,10 @@ H5VL_tracker_file_close(void *file, hid_t dxpl_id, void **req)
     file_info->file_size = file_get_size(o->under_object,o->under_vol_id, dxpl_id);
     file_info_update("H5VLfile_close", file, NULL, NULL, dxpl_id);
 
-    // tkrLockAcquire(&myLock);
-    // log_dset_ht_yaml(TKR_HELPER->tkr_file_handle);
-    // tkrLockRelease(&myLock);
-
     // print_ht_token_numbers();
 
     tkrLockAcquire(&myLock);
-    log_file_stat_yaml(TKR_HELPER->tkr_file_handle,file_info);
+    log_file_stat_yaml(TKR_HELPER,file_info);
     tkrLockRelease(&myLock);
 #endif
 
