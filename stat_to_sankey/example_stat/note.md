@@ -20,3 +20,4 @@
 5. Check if VFD "data" is correctly format
 6. Make all `- H5FD_MEM_XXX:` not a list item, they all listed as dictionary
 7. Make ranges values with list not tuple
+8. Record `HERMES_PAGE_SIZE` in VFD log!
