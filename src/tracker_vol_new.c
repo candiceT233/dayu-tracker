@@ -686,6 +686,9 @@ H5VL_tracker_str_to_info(const char *str, void **_info)
         info->tkr_level = File_only;
     }
 
+    /* init global helper */
+    TKR_HELPER = tkr_helper_init(info->tkr_file_path, info->tkr_level, info->tkr_line_format);
+
     /* Set return value */
     *_info = info;
 
@@ -2420,7 +2423,7 @@ H5VL_tracker_file_create(const char *name, unsigned flags, hid_t fcpl_id,
     }
 #endif /* H5_HAVE_PARALLEL */
 
-#ifdef TRACKER_LOGGING
+#ifdef TRACKER_SCHEMA
     // printf(" H5VLfile_create_name : %s \n",name);
     file_tkr_info_t *file_info = file->generic_tkr_info;
 
@@ -2544,7 +2547,7 @@ H5VL_tracker_file_open(const char *name, unsigned flags, hid_t fapl_id,
     }
 #endif /* H5_HAVE_PARALLEL */
 
-#ifdef TRACKER_LOGGING
+#ifdef TRACKER_SCHEMA
     // printf(" H5VLfile_open_name : %s \n",name);
     file_tkr_info_t *file_info = file->generic_tkr_info;
 

@@ -1208,6 +1208,8 @@ file_tkr_info_t* add_file_node(tkr_helper_t* helper, const char* file_name,
     cur->open_time = get_time_usec();
 
     tkrLockAcquire(&myLock);
+    // TODO(candice): only increment if file is not already open
+    FILE_SORDER+=1;
     cur->sorder_id =FILE_SORDER; // sync order with VFD, no add
     tkrLockRelease(&myLock);
 
