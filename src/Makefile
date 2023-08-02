@@ -3,11 +3,12 @@
 # HDF5_DIR=/qfs/people/tang584/.conda/pkgs/hdf5-1.14.0-nompi_h5231ba7_103
 # HDF5_DIR=/qfs/people/tang584/.conda/pkgs/hdf5-1.14.0-nompi_hb72d44e_103
 HDF5_DIR=$(HOME)/install/hdf5
+# HDF5_DIR=$(HOME)/miniconda3/envs/flextrkr
 # HDF5_DIR=$(HOME)/.conda/envs/pyflextrkr_copy
 
-CC=mpicc
+# CC=mpicc
 # CC=gcc
-# CC=h5cc
+CC=h5cc
 AR=ar
 # TRACKER_LOGGING TRACKER_PROV_LOGGING TRACKER_MORE_LOGGING TRACKER_PT_LOGGING TRACKER_TEST_LOGGING
 DEBUG= -g -O0 -DDEBUG -gdwarf-4 -gdwarf-3 -gdwarf-2 #-DTRACKER_TEST_LOGGING -gdwarf-2, -gdwarf-3 or -gdwarf-4

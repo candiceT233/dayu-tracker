@@ -5,7 +5,7 @@
 
 
 ## Done: Modification on VFD output
-1. need to modify "task" entry format for VFD
+1. need to modify "task" entry format for VFD (done)
 ```
 - Task:
   task_pid: xxx
@@ -21,7 +21,7 @@
 
 
 ## TODO: Modification on VOL output
-1. need to modify "task" entry format for VOL
+1. need to modify "task" entry format for VOL (done)
 ```
 - Task:
   task_pid: xxx

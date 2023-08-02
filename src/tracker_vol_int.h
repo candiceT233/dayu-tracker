@@ -836,6 +836,11 @@ file_tkr_info_t* new_file_info(const char* fname, unsigned long file_no)
     info->grp_accessed =0;
     info->dtypes_created =0;
     info->dtypes_accessed =0;
+
+    // // add task name
+    // const char* curr_task = getenv("CURR_TASK");
+    // info->task_name = curr_task ? strdup(curr_task) : NULL;
+
     return info;
 }
 
@@ -2176,6 +2181,8 @@ void log_file_stat_yaml(tkr_helper_t* helper_in, const file_tkr_info_t* file_inf
 
     fprintf(f, "- file-%ld:\n", file_info->sorder_id);
     fprintf(f, "    file_name: \"%s\"\n", file_name);
+    // const char* curr_task = getenv("CURR_TASK");
+    // fprintf(f, "    task_name: \"%s\"\n", curr_task);
     fprintf(f, "    open_time: %ld\n", file_info->open_time);
     fprintf(f, "    close_time: %ld\n", get_time_usec());
     fprintf(f, "    file_size: %zu\n", file_info->file_size);
@@ -2192,13 +2199,12 @@ void log_file_stat_yaml(tkr_helper_t* helper_in, const file_tkr_info_t* file_inf
     fprintf(f, "    dtypes_accessed: %d\n", file_info->dtypes_accessed);
 
 
-    fprintf(f, "Task:\n");
-    fprintf(f, "- task_id: %d\n", getpid());
-    fprintf(f, "    VOL-Total-Overhead(ms): %ld\n", TOTAL_TKR_OVERHEAD/1000);
+    fprintf(f, "- Task:\n");
+    fprintf(f, "  task_id: %d\n", getpid());
+    fprintf(f, "  VOL-Total-Overhead(ms): %ld\n", TOTAL_TKR_OVERHEAD/1000);
 
     fflush(f);
     fclose(f);
-
 }
 
 void H5VL_arrow_get_selected_sub_region(hid_t space_id, size_t org_type_size) {
@@ -3152,6 +3158,9 @@ dset_track_t *create_dset_track_info(dataset_tkr_info_t* dset_info) {
         track_entry->dset_select_type = strdup(dset_info->dset_select_type);
         track_entry->dset_select_npoints = dset_info->dset_select_npoints;
 
+        // Add current task name
+        const char* curr_task = getenv("CURR_TASK");
+        track_entry->task_name = curr_task ? strdup(curr_task) : NULL;
 
     }
     return track_entry;
@@ -3252,6 +3261,7 @@ void log_dset_ht_yaml(FILE* f) {
 
             fprintf(f, "- file-%ld:\n", dset_track_info->pfile_sorder_id);
             fprintf(f, "    file_name: \"%s\"\n", file_name);
+            fprintf(f, "    task_name: \"%s\"\n", dset_track_info->task_name);
             fprintf(f, "    datasets:\n");
             fprintf(f, "    - dset:\n");
             fprintf(f, "        dset_name: \"%s\"\n", dset_name);
@@ -3274,6 +3284,14 @@ void log_dset_ht_yaml(FILE* f) {
             fprintf(f, "        total_bytes_read: %d\n", (dset_track_info->dataset_read_cnt * dset_track_info->storage_size));
             fprintf(f, "        dataset_write_cnt: %d\n", dset_track_info->dataset_write_cnt);
             fprintf(f, "        total_bytes_written: %d\n", (dset_track_info->dataset_write_cnt * dset_track_info->storage_size));
+            if(dset_track_info->dataset_read_cnt > 0 && dset_track_info->dataset_write_cnt == 0) {
+                fprintf(f, "    access_type: read_only\n");
+            }
+            else if (dset_track_info->dataset_read_cnt == 0 && dset_track_info->dataset_write_cnt > 0) {
+                fprintf(f, "    access_type: write_only\n");
+            } else {
+                fprintf(f, "    access_type: read_write\n");
+            }
             fprintf(f, "        dset_offset: %ld\n", dset_track_info->dset_offset);
             fprintf(f, "        dset_select_type: \"%s\"\n", dset_track_info->dset_select_type);
             fprintf(f, "        dset_select_npoints: %ld\n", dset_track_info->dset_select_npoints);

@@ -132,6 +132,7 @@ struct H5VL_tkr_file_info_t {//assigned when a file is closed, serves to store s
 
     /* candice added for more stats start */
     char* intent; // TODO: convert to unsigned int type for less conversion
+    char* task_name;
     unsigned long sorder_id;
     hid_t fapl_id;
     hsize_t file_size;
@@ -374,6 +375,7 @@ typedef struct myll_t {
 typedef struct H5VL_dset_track_t {
     // char *file_name;    // Parent file name
     // char *dset_name;     // Dataset name
+    char * task_name;
     unsigned long start_time; // Start time of the dataset
     unsigned long end_time; // End time of the dataset
     size_t token_num;                   // Token number
