@@ -864,6 +864,8 @@ void file_info_free(file_tkr_info_t* info)
 #endif /* H5_HAVE_PARALLEL */
     if(info->file_name)
         free((void*)info->file_name);
+    // if(info->task_name)
+    //     free((void*)info->task_name);
     free(info);
 }
 
@@ -2181,8 +2183,15 @@ void log_file_stat_yaml(tkr_helper_t* helper_in, const file_tkr_info_t* file_inf
 
     fprintf(f, "- file-%ld:\n", file_info->sorder_id);
     fprintf(f, "    file_name: \"%s\"\n", file_name);
-    // const char* curr_task = getenv("CURR_TASK");
-    // fprintf(f, "    task_name: \"%s\"\n", curr_task);
+    // if(file_info->task_name != NULL){
+    //     fprintf(f, "    task_name: \"%s\"\n", file_info->task_name);
+    // }else{
+    //     const char* curr_task = getenv("CURR_TASK");
+    //     if (curr_task)
+    //         fprintf(f, "    task_name: \"%s\"\n", curr_task);
+    //     else
+    //         fprintf(f, "    task_name: \"\"\n");
+    // }
     fprintf(f, "    open_time: %ld\n", file_info->open_time);
     fprintf(f, "    close_time: %ld\n", get_time_usec());
     fprintf(f, "    file_size: %zu\n", file_info->file_size);
@@ -3261,6 +3270,16 @@ void log_dset_ht_yaml(FILE* f) {
 
             fprintf(f, "- file-%ld:\n", dset_track_info->pfile_sorder_id);
             fprintf(f, "    file_name: \"%s\"\n", file_name);
+            // if(dset_track_info->task_name != NULL){
+            //     fprintf(f, "    task_name: \"%s\"\n", dset_track_info->task_name);
+            // }else{
+            //     const char* curr_task = getenv("CURR_TASK");
+            //     if (curr_task)
+            //         fprintf(f, "    task_name: \"%s\"\n", curr_task);
+            //     else
+            //         fprintf(f, "    task_name: \"\"\n");
+            // }
+
             fprintf(f, "    task_name: \"%s\"\n", dset_track_info->task_name);
             fprintf(f, "    datasets:\n");
             fprintf(f, "    - dset:\n");
@@ -3285,12 +3304,12 @@ void log_dset_ht_yaml(FILE* f) {
             fprintf(f, "        dataset_write_cnt: %d\n", dset_track_info->dataset_write_cnt);
             fprintf(f, "        total_bytes_written: %d\n", (dset_track_info->dataset_write_cnt * dset_track_info->storage_size));
             if(dset_track_info->dataset_read_cnt > 0 && dset_track_info->dataset_write_cnt == 0) {
-                fprintf(f, "    access_type: read_only\n");
+                fprintf(f, "        access_type: read_only\n");
             }
             else if (dset_track_info->dataset_read_cnt == 0 && dset_track_info->dataset_write_cnt > 0) {
-                fprintf(f, "    access_type: write_only\n");
+                fprintf(f, "        access_type: write_only\n");
             } else {
-                fprintf(f, "    access_type: read_write\n");
+                fprintf(f, "        access_type: read_write\n");
             }
             fprintf(f, "        dset_offset: %ld\n", dset_track_info->dset_offset);
             fprintf(f, "        dset_select_type: \"%s\"\n", dset_track_info->dset_select_type);
