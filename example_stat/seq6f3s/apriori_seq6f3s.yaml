@@ -1,0 +1,185 @@
+0:
+  - bucket: wrfout_rainrate_tb_zh_mh_2015-05-06_00:00:00.nc
+    prefetch:
+    - op_count_range: [0,74]
+      promote_blobs: [0,33]
+  - bucket: wrfout_rainrate_tb_zh_mh_2015-05-06_01:00:00.nc
+    prefetch:
+    - op_count_range: [804,878]
+      promote_blobs: [0,33]
+  - bucket: wrfout_rainrate_tb_zh_mh_2015-05-06_02:00:00.nc
+    prefetch:
+    - op_count_range: [1608,1682]
+      promote_blobs: [0,32]
+  - bucket: wrfout_rainrate_tb_zh_mh_2015-05-06_03:00:00.nc
+    prefetch:
+    - op_count_range: [2412,2486]
+      promote_blobs: [0,31]
+  - bucket: wrfout_rainrate_tb_zh_mh_2015-05-06_04:00:00.nc
+    prefetch:
+    - op_count_range: [3216,3290]
+      promote_blobs: [0,31]
+  - bucket: wrfout_rainrate_tb_zh_mh_2015-05-06_05:00:00.nc
+    prefetch:
+    - op_count_range: [4020,4094]
+      promote_blobs: [0,30]
+  - bucket: wrfout_rainrate_tb_zh_mh_2015-05-06_00:00:00.nc
+    prefetch:
+    - op_count_range: [0,74]
+      demote_blobs: [0,33]
+  - bucket: wrfout_rainrate_tb_zh_mh_2015-05-06_01:00:00.nc
+    prefetch:
+    - op_count_range: [804,878]
+      demote_blobs: [0,33]
+  - bucket: wrfout_rainrate_tb_zh_mh_2015-05-06_02:00:00.nc
+    prefetch:
+    - op_count_range: [1608,1682]
+      demote_blobs: [0,32]
+  - bucket: wrfout_rainrate_tb_zh_mh_2015-05-06_03:00:00.nc
+    prefetch:
+    - op_count_range: [2412,2486]
+      demote_blobs: [0,31]
+  - bucket: wrfout_rainrate_tb_zh_mh_2015-05-06_04:00:00.nc
+    prefetch:
+    - op_count_range: [3216,3290]
+      demote_blobs: [0,31]
+  - bucket: wrfout_rainrate_tb_zh_mh_2015-05-06_05:00:00.nc
+    prefetch:
+    - op_count_range: [4020,4094]
+      demote_blobs: [0,30]
+  - bucket: cloudid_20150506_000000.nc
+    prefetch:
+    - op_count_range: [5206,5329]
+      promote_blobs: [0,14]
+  - bucket: cloudid_20150506_010000.nc
+    prefetch:
+    - op_count_range: [5913,6036]
+      promote_blobs: [0,14]
+  - bucket: cloudid_20150506_020000.nc
+    prefetch:
+    - op_count_range: [6620,6743]
+      promote_blobs: [0,14]
+  - bucket: cloudid_20150506_030000.nc
+    prefetch:
+    - op_count_range: [7327,7450]
+      promote_blobs: [0,13]
+  - bucket: cloudid_20150506_040000.nc
+    prefetch:
+    - op_count_range: [8034,8157]
+      promote_blobs: [0,13]
+  - bucket: cloudid_20150506_050000.nc
+    prefetch:
+    - op_count_range: [7910,8033]
+      promote_blobs: [0,13]
+  - bucket: cloudid_20150506_000000.nc
+    prefetch:
+    - op_count_range: [5206,5329]
+      demote_blobs: [0,14]
+  - bucket: cloudid_20150506_010000.nc
+    prefetch:
+    - op_count_range: [5913,6036]
+      demote_blobs: [0,14]
+  - bucket: cloudid_20150506_020000.nc
+    prefetch:
+    - op_count_range: [6620,6743]
+      demote_blobs: [0,14]
+  - bucket: cloudid_20150506_030000.nc
+    prefetch:
+    - op_count_range: [7327,7450]
+      demote_blobs: [0,13]
+  - bucket: cloudid_20150506_040000.nc
+    prefetch:
+    - op_count_range: [8034,8157]
+      demote_blobs: [0,13]
+  - bucket: cloudid_20150506_050000.nc
+    prefetch:
+    - op_count_range: [7910,8033]
+      demote_blobs: [0,13]
+  - bucket: track_20150506_010000.nc
+    prefetch:
+    - op_count_range: [8413,8532]
+      promote_blobs: [0,0]
+  - bucket: cloudid_20150506_000000.nc
+    prefetch:
+    - op_count_range: [8533,8656]
+      promote_blobs: [0,14]
+  - bucket: cloudid_20150506_010000.nc
+    prefetch:
+    - op_count_range: [8901,9024]
+      promote_blobs: [0,14]
+  - bucket: track_20150506_020000.nc
+    prefetch:
+    - op_count_range: [8781,8900]
+      promote_blobs: [0,0]
+  - bucket: cloudid_20150506_020000.nc
+    prefetch:
+    - op_count_range: [9269,9392]
+      promote_blobs: [0,14]
+  - bucket: track_20150506_030000.nc
+    prefetch:
+    - op_count_range: [9149,9268]
+      promote_blobs: [0,0]
+  - bucket: cloudid_20150506_030000.nc
+    prefetch:
+    - op_count_range: [9637,9760]
+      promote_blobs: [0,13]
+  - bucket: track_20150506_040000.nc
+    prefetch:
+    - op_count_range: [9517,9636]
+      promote_blobs: [0,0]
+  - bucket: cloudid_20150506_040000.nc
+    prefetch:
+    - op_count_range: [10005,10128]
+      promote_blobs: [0,13]
+  - bucket: track_20150506_050000.nc
+    prefetch:
+    - op_count_range: [9885,10004]
+      promote_blobs: [0,0]
+  - bucket: cloudid_20150506_050000.nc
+    prefetch:
+    - op_count_range: [10129,10252]
+      promote_blobs: [0,13]
+  - bucket: track_20150506_010000.nc
+    prefetch:
+    - op_count_range: [8413,8532]
+      demote_blobs: [0,0]
+  - bucket: cloudid_20150506_000000.nc
+    prefetch:
+    - op_count_range: [8533,8656]
+      demote_blobs: [0,14]
+  - bucket: cloudid_20150506_010000.nc
+    prefetch:
+    - op_count_range: [8901,9024]
+      demote_blobs: [0,14]
+  - bucket: track_20150506_020000.nc
+    prefetch:
+    - op_count_range: [8781,8900]
+      demote_blobs: [0,0]
+  - bucket: cloudid_20150506_020000.nc
+    prefetch:
+    - op_count_range: [9269,9392]
+      demote_blobs: [0,14]
+  - bucket: track_20150506_030000.nc
+    prefetch:
+    - op_count_range: [9149,9268]
+      demote_blobs: [0,0]
+  - bucket: cloudid_20150506_030000.nc
+    prefetch:
+    - op_count_range: [9637,9760]
+      demote_blobs: [0,13]
+  - bucket: track_20150506_040000.nc
+    prefetch:
+    - op_count_range: [9517,9636]
+      demote_blobs: [0,0]
+  - bucket: cloudid_20150506_040000.nc
+    prefetch:
+    - op_count_range: [10005,10128]
+      demote_blobs: [0,13]
+  - bucket: track_20150506_050000.nc
+    prefetch:
+    - op_count_range: [9885,10004]
+      demote_blobs: [0,0]
+  - bucket: cloudid_20150506_050000.nc
+    prefetch:
+    - op_count_range: [10129,10252]
+      demote_blobs: [0,13]
