@@ -1,6 +1,6 @@
 - file-2:
     file_name: "cloudid_20150506_000000.nc"
-    task_name: "run_idfeture"
+    task_name: "run_idfeature"
     open_time: 1690947044081926
     close_time: 1690947045096567
     file_intent: ["H5F_ACC_RDWR","H5F_ACC_TRUNC","H5F_ACC_CREAT"]

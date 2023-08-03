@@ -1,7 +1,6 @@
 - file-2:
     file_name: "cloudid_20150506_000000.nc"
     task_name: "run_idfeature"
-    task_name: "run_idfeature"
     open_time: 1690952641123858
     close_time: 1690952642132966
     file_intent: ["H5F_ACC_RDWR","H5F_ACC_TRUNC","H5F_ACC_CREAT"]
@@ -56,7 +55,6 @@
 
 - file-1:
     file_name: "wrfout_rainrate_tb_zh_mh_2015-05-06_00:00:00.nc"
-    task_name: "run_idfeature"
     task_name: "run_idfeature"
     open_time: 1690952627473525
     close_time: 1690952642137665
@@ -113,7 +111,6 @@
 - file-4:
     file_name: "cloudid_20150506_010000.nc"
     task_name: "run_idfeature"
-    task_name: "run_idfeature"
     open_time: 1690952654947654
     close_time: 1690952655910169
     file_intent: ["H5F_ACC_RDWR","H5F_ACC_TRUNC","H5F_ACC_CREAT"]
@@ -168,7 +165,6 @@
 
 - file-3:
     file_name: "wrfout_rainrate_tb_zh_mh_2015-05-06_01:00:00.nc"
-    task_name: "run_idfeature"
     task_name: "run_idfeature"
     open_time: 1690952642138486
     close_time: 1690952655914999
@@ -225,7 +221,6 @@
 - file-6:
     file_name: "cloudid_20150506_020000.nc"
     task_name: "run_idfeature"
-    task_name: "run_idfeature"
     open_time: 1690952668449227
     close_time: 1690952669415929
     file_intent: ["H5F_ACC_RDWR","H5F_ACC_TRUNC","H5F_ACC_CREAT"]
@@ -280,7 +275,6 @@
 
 - file-5:
     file_name: "wrfout_rainrate_tb_zh_mh_2015-05-06_02:00:00.nc"
-    task_name: "run_idfeature"
     task_name: "run_idfeature"
     open_time: 1690952655915479
     close_time: 1690952669420544
@@ -337,7 +331,6 @@
 - file-8:
     file_name: "cloudid_20150506_030000.nc"
     task_name: "run_idfeature"
-    task_name: "run_idfeature"
     open_time: 1690952681939079
     close_time: 1690952682913807
     file_intent: ["H5F_ACC_RDWR","H5F_ACC_TRUNC","H5F_ACC_CREAT"]
@@ -392,7 +385,6 @@
 
 - file-7:
     file_name: "wrfout_rainrate_tb_zh_mh_2015-05-06_03:00:00.nc"
-    task_name: "run_idfeature"
     task_name: "run_idfeature"
     open_time: 1690952669421030
     close_time: 1690952682917848
@@ -449,7 +441,6 @@
 - file-10:
     file_name: "cloudid_20150506_040000.nc"
     task_name: "run_idfeature"
-    task_name: "run_idfeature"
     open_time: 1690952695046134
     close_time: 1690952696006403
     file_intent: ["H5F_ACC_RDWR","H5F_ACC_TRUNC","H5F_ACC_CREAT"]
@@ -504,7 +495,6 @@
 
 - file-9:
     file_name: "wrfout_rainrate_tb_zh_mh_2015-05-06_04:00:00.nc"
-    task_name: "run_idfeature"
     task_name: "run_idfeature"
     open_time: 1690952682918353
     close_time: 1690952696010253
@@ -561,7 +551,6 @@
 - file-12:
     file_name: "cloudid_20150506_050000.nc"
     task_name: "run_idfeature"
-    task_name: "run_idfeature"
     open_time: 1690952708139806
     close_time: 1690952709111841
     file_intent: ["H5F_ACC_RDWR","H5F_ACC_TRUNC","H5F_ACC_CREAT"]
@@ -616,7 +605,6 @@
 
 - file-11:
     file_name: "wrfout_rainrate_tb_zh_mh_2015-05-06_05:00:00.nc"
-    task_name: "run_idfeature"
     task_name: "run_idfeature"
     open_time: 1690952696010727
     close_time: 1690952709115281
@@ -673,7 +661,6 @@
 - file-14:
     file_name: "cloudid_20150506_060000.nc"
     task_name: "run_idfeature"
-    task_name: "run_idfeature"
     open_time: 1690952720699502
     close_time: 1690952721660314
     file_intent: ["H5F_ACC_RDWR","H5F_ACC_TRUNC","H5F_ACC_CREAT"]
@@ -728,7 +715,6 @@
 
 - file-13:
     file_name: "wrfout_rainrate_tb_zh_mh_2015-05-06_06:00:00.nc"
-    task_name: "run_idfeature"
     task_name: "run_idfeature"
     open_time: 1690952709115744
     close_time: 1690952721663997
@@ -785,7 +771,6 @@
 - file-16:
     file_name: "cloudid_20150506_070000.nc"
     task_name: "run_idfeature"
-    task_name: "run_idfeature"
     open_time: 1690952732735869
     close_time: 1690952733666467
     file_intent: ["H5F_ACC_RDWR","H5F_ACC_TRUNC","H5F_ACC_CREAT"]
@@ -840,7 +825,6 @@
 
 - file-15:
     file_name: "wrfout_rainrate_tb_zh_mh_2015-05-06_07:00:00.nc"
-    task_name: "run_idfeature"
     task_name: "run_idfeature"
     open_time: 1690952721664506
     close_time: 1690952733669841
@@ -897,7 +881,6 @@
 - file-18:
     file_name: "cloudid_20150506_080000.nc"
     task_name: "run_idfeature"
-    task_name: "run_idfeature"
     open_time: 1690952744327209
     close_time: 1690952745250448
     file_intent: ["H5F_ACC_RDWR","H5F_ACC_TRUNC","H5F_ACC_CREAT"]
@@ -952,7 +935,6 @@
 
 - file-17:
     file_name: "wrfout_rainrate_tb_zh_mh_2015-05-06_08:00:00.nc"
-    task_name: "run_idfeature"
     task_name: "run_idfeature"
     open_time: 1690952733670277
     close_time: 1690952745253635
@@ -1009,7 +991,6 @@
 - file-19:
     file_name: "cloudid_20150506_000000.nc"
     task_name: "run_tracksingle"
-    task_name: "run_tracksingle"
     open_time: 1690952745256816
     close_time: 1690952745516437
     file_intent: ["NOT_SPECIFIED"]
@@ -1064,7 +1045,6 @@
 
 - file-20:
     file_name: "cloudid_20150506_010000.nc"
-    task_name: "run_tracksingle"
     task_name: "run_tracksingle"
     open_time: 1690952745518167
     close_time: 1690952745648122
@@ -1121,7 +1101,6 @@
 - file-23:
     file_name: "track_20150506_010000.nc"
     task_name: "run_tracksingle"
-    task_name: "run_tracksingle"
     open_time: 1690952747684326
     close_time: 1690952747882161
     file_intent: ["H5F_ACC_RDWR","H5F_ACC_TRUNC","H5F_ACC_CREAT"]
@@ -1176,7 +1155,6 @@
 
 - file-22:
     file_name: "cloudid_20150506_000000.nc"
-    task_name: "run_tracksingle"
     task_name: "run_tracksingle"
     open_time: 1690952747624649
     close_time: 1690952747883744
@@ -1233,7 +1211,6 @@
 - file-21:
     file_name: "cloudid_20150506_010000.nc"
     task_name: "run_tracksingle"
-    task_name: "run_tracksingle"
     open_time: 1690952747565068
     close_time: 1690952747885137
     file_intent: ["NOT_SPECIFIED"]
@@ -1288,7 +1265,6 @@
 
 - file-24:
     file_name: "cloudid_20150506_010000.nc"
-    task_name: "run_tracksingle"
     task_name: "run_tracksingle"
     open_time: 1690952747887265
     close_time: 1690952748014467
@@ -1345,7 +1321,6 @@
 - file-25:
     file_name: "cloudid_20150506_020000.nc"
     task_name: "run_tracksingle"
-    task_name: "run_tracksingle"
     open_time: 1690952748016166
     close_time: 1690952748141783
     file_intent: ["NOT_SPECIFIED"]
@@ -1400,7 +1375,6 @@
 
 - file-28:
     file_name: "track_20150506_020000.nc"
-    task_name: "run_tracksingle"
     task_name: "run_tracksingle"
     open_time: 1690952750284827
     close_time: 1690952750481111
@@ -1457,7 +1431,6 @@
 - file-27:
     file_name: "cloudid_20150506_010000.nc"
     task_name: "run_tracksingle"
-    task_name: "run_tracksingle"
     open_time: 1690952750226895
     close_time: 1690952750482731
     file_intent: ["NOT_SPECIFIED"]
@@ -1512,7 +1485,6 @@
 
 - file-26:
     file_name: "cloudid_20150506_020000.nc"
-    task_name: "run_tracksingle"
     task_name: "run_tracksingle"
     open_time: 1690952750167788
     close_time: 1690952750484226
@@ -1569,7 +1541,6 @@
 - file-29:
     file_name: "cloudid_20150506_020000.nc"
     task_name: "run_tracksingle"
-    task_name: "run_tracksingle"
     open_time: 1690952750486335
     close_time: 1690952750615072
     file_intent: ["NOT_SPECIFIED"]
@@ -1624,7 +1595,6 @@
 
 - file-30:
     file_name: "cloudid_20150506_030000.nc"
-    task_name: "run_tracksingle"
     task_name: "run_tracksingle"
     open_time: 1690952750616804
     close_time: 1690952750743853
@@ -1681,7 +1651,6 @@
 - file-33:
     file_name: "track_20150506_030000.nc"
     task_name: "run_tracksingle"
-    task_name: "run_tracksingle"
     open_time: 1690952752921080
     close_time: 1690952753117101
     file_intent: ["H5F_ACC_RDWR","H5F_ACC_TRUNC","H5F_ACC_CREAT"]
@@ -1736,7 +1705,6 @@
 
 - file-32:
     file_name: "cloudid_20150506_020000.nc"
-    task_name: "run_tracksingle"
     task_name: "run_tracksingle"
     open_time: 1690952752862675
     close_time: 1690952753118722
@@ -1793,7 +1761,6 @@
 - file-31:
     file_name: "cloudid_20150506_030000.nc"
     task_name: "run_tracksingle"
-    task_name: "run_tracksingle"
     open_time: 1690952752804127
     close_time: 1690952753120298
     file_intent: ["NOT_SPECIFIED"]
@@ -1848,7 +1815,6 @@
 
 - file-34:
     file_name: "cloudid_20150506_030000.nc"
-    task_name: "run_tracksingle"
     task_name: "run_tracksingle"
     open_time: 1690952753122397
     close_time: 1690952753251818
@@ -1905,7 +1871,6 @@
 - file-35:
     file_name: "cloudid_20150506_040000.nc"
     task_name: "run_tracksingle"
-    task_name: "run_tracksingle"
     open_time: 1690952753253421
     close_time: 1690952753380462
     file_intent: ["NOT_SPECIFIED"]
@@ -1960,7 +1925,6 @@
 
 - file-38:
     file_name: "track_20150506_040000.nc"
-    task_name: "run_tracksingle"
     task_name: "run_tracksingle"
     open_time: 1690952755506862
     close_time: 1690952755703899
@@ -2017,7 +1981,6 @@
 - file-37:
     file_name: "cloudid_20150506_030000.nc"
     task_name: "run_tracksingle"
-    task_name: "run_tracksingle"
     open_time: 1690952755449249
     close_time: 1690952755705550
     file_intent: ["NOT_SPECIFIED"]
@@ -2072,7 +2035,6 @@
 
 - file-36:
     file_name: "cloudid_20150506_040000.nc"
-    task_name: "run_tracksingle"
     task_name: "run_tracksingle"
     open_time: 1690952755390497
     close_time: 1690952755707092
@@ -2129,7 +2091,6 @@
 - file-39:
     file_name: "cloudid_20150506_040000.nc"
     task_name: "run_tracksingle"
-    task_name: "run_tracksingle"
     open_time: 1690952755708946
     close_time: 1690952755839653
     file_intent: ["NOT_SPECIFIED"]
@@ -2184,7 +2145,6 @@
 
 - file-40:
     file_name: "cloudid_20150506_050000.nc"
-    task_name: "run_tracksingle"
     task_name: "run_tracksingle"
     open_time: 1690952755841152
     close_time: 1690952755968533
@@ -2241,7 +2201,6 @@
 - file-43:
     file_name: "track_20150506_050000.nc"
     task_name: "run_tracksingle"
-    task_name: "run_tracksingle"
     open_time: 1690952758201937
     close_time: 1690952758399783
     file_intent: ["H5F_ACC_RDWR","H5F_ACC_TRUNC","H5F_ACC_CREAT"]
@@ -2296,7 +2255,6 @@
 
 - file-42:
     file_name: "cloudid_20150506_040000.nc"
-    task_name: "run_tracksingle"
     task_name: "run_tracksingle"
     open_time: 1690952758141363
     close_time: 1690952758401459
@@ -2353,7 +2311,6 @@
 - file-41:
     file_name: "cloudid_20150506_050000.nc"
     task_name: "run_tracksingle"
-    task_name: "run_tracksingle"
     open_time: 1690952758080740
     close_time: 1690952758403053
     file_intent: ["NOT_SPECIFIED"]
@@ -2408,7 +2365,6 @@
 
 - file-44:
     file_name: "cloudid_20150506_050000.nc"
-    task_name: "run_tracksingle"
     task_name: "run_tracksingle"
     open_time: 1690952758405058
     close_time: 1690952758534525
@@ -2465,7 +2421,6 @@
 - file-45:
     file_name: "cloudid_20150506_060000.nc"
     task_name: "run_tracksingle"
-    task_name: "run_tracksingle"
     open_time: 1690952758536009
     close_time: 1690952758669682
     file_intent: ["NOT_SPECIFIED"]
@@ -2520,7 +2475,6 @@
 
 - file-48:
     file_name: "track_20150506_060000.nc"
-    task_name: "run_tracksingle"
     task_name: "run_tracksingle"
     open_time: 1690952760998922
     close_time: 1690952761196788
@@ -2577,7 +2531,6 @@
 - file-47:
     file_name: "cloudid_20150506_050000.nc"
     task_name: "run_tracksingle"
-    task_name: "run_tracksingle"
     open_time: 1690952760941916
     close_time: 1690952761198570
     file_intent: ["NOT_SPECIFIED"]
@@ -2632,7 +2585,6 @@
 
 - file-46:
     file_name: "cloudid_20150506_060000.nc"
-    task_name: "run_tracksingle"
     task_name: "run_tracksingle"
     open_time: 1690952760882694
     close_time: 1690952761200180
@@ -2689,7 +2641,6 @@
 - file-49:
     file_name: "cloudid_20150506_060000.nc"
     task_name: "run_tracksingle"
-    task_name: "run_tracksingle"
     open_time: 1690952761202342
     close_time: 1690952761334351
     file_intent: ["NOT_SPECIFIED"]
@@ -2744,7 +2695,6 @@
 
 - file-50:
     file_name: "cloudid_20150506_070000.nc"
-    task_name: "run_tracksingle"
     task_name: "run_tracksingle"
     open_time: 1690952761335846
     close_time: 1690952761462347
@@ -2801,7 +2751,6 @@
 - file-53:
     file_name: "track_20150506_070000.nc"
     task_name: "run_tracksingle"
-    task_name: "run_tracksingle"
     open_time: 1690952763650547
     close_time: 1690952763846917
     file_intent: ["H5F_ACC_RDWR","H5F_ACC_TRUNC","H5F_ACC_CREAT"]
@@ -2857,7 +2806,6 @@
 - file-54:
     file_name: "cloudid_20150506_070000.nc"
     task_name: "run_tracksingle"
-    task_name: "run_tracksingle"
     open_time: 1690952763849108
     close_time: 1690952763849134
     file_intent: ["NOT_SPECIFIED"]
@@ -2877,7 +2825,6 @@
 
 - file-52:
     file_name: "cloudid_20150506_060000.nc"
-    task_name: "run_tracksingle"
     task_name: "run_tracksingle"
     open_time: 1690952763590972
     close_time: 1690952763949907
@@ -2934,7 +2881,6 @@
 - file-51:
     file_name: "cloudid_20150506_070000.nc"
     task_name: "run_tracksingle"
-    task_name: "run_tracksingle"
     open_time: 1690952763531420
     close_time: 1690952763974790
     file_intent: ["NOT_SPECIFIED"]
@@ -2989,7 +2935,6 @@
 
 - file-55:
     file_name: "cloudid_20150506_080000.nc"
-    task_name: "run_tracksingle"
     task_name: "run_tracksingle"
     open_time: 1690952763976457
     close_time: 1690952764105333
@@ -3046,7 +2991,6 @@
 - file-58:
     file_name: "track_20150506_080000.nc"
     task_name: "run_tracksingle"
-    task_name: "run_tracksingle"
     open_time: 1690952766254223
     close_time: 1690952766450577
     file_intent: ["H5F_ACC_RDWR","H5F_ACC_TRUNC","H5F_ACC_CREAT"]
@@ -3101,7 +3045,6 @@
 
 - file-59:
     file_name: "track_20150506_010000.nc"
-    task_name: "run_gettracks"
     task_name: "run_gettracks"
     open_time: 1690952766452444
     close_time: 1690952766473024
@@ -3158,7 +3101,6 @@
 - file-60:
     file_name: "track_20150506_010000.nc"
     task_name: "run_gettracks"
-    task_name: "run_gettracks"
     open_time: 1690952766473250
     close_time: 1690952766497474
     file_intent: ["NOT_SPECIFIED"]
@@ -3213,7 +3155,6 @@
 
 - file-61:
     file_name: "cloudid_20150506_000000.nc"
-    task_name: "run_gettracks"
     task_name: "run_gettracks"
     open_time: 1690952766498786
     close_time: 1690952766557995
@@ -3270,7 +3211,6 @@
 - file-62:
     file_name: "cloudid_20150506_010000.nc"
     task_name: "run_gettracks"
-    task_name: "run_gettracks"
     open_time: 1690952766559197
     close_time: 1690952766619684
     file_intent: ["NOT_SPECIFIED"]
@@ -3325,7 +3265,6 @@
 
 - file-63:
     file_name: "track_20150506_020000.nc"
-    task_name: "run_gettracks"
     task_name: "run_gettracks"
     open_time: 1690952766852133
     close_time: 1690952766877059
@@ -3382,7 +3321,6 @@
 - file-64:
     file_name: "cloudid_20150506_010000.nc"
     task_name: "run_gettracks"
-    task_name: "run_gettracks"
     open_time: 1690952766878377
     close_time: 1690952766937438
     file_intent: ["NOT_SPECIFIED"]
@@ -3437,7 +3375,6 @@
 
 - file-65:
     file_name: "cloudid_20150506_020000.nc"
-    task_name: "run_gettracks"
     task_name: "run_gettracks"
     open_time: 1690952766938832
     close_time: 1690952766999142
@@ -3494,7 +3431,6 @@
 - file-66:
     file_name: "track_20150506_030000.nc"
     task_name: "run_gettracks"
-    task_name: "run_gettracks"
     open_time: 1690952767170200
     close_time: 1690952767195229
     file_intent: ["NOT_SPECIFIED"]
@@ -3549,7 +3485,6 @@
 
 - file-67:
     file_name: "cloudid_20150506_020000.nc"
-    task_name: "run_gettracks"
     task_name: "run_gettracks"
     open_time: 1690952767196613
     close_time: 1690952767255497
@@ -3606,7 +3541,6 @@
 - file-68:
     file_name: "cloudid_20150506_030000.nc"
     task_name: "run_gettracks"
-    task_name: "run_gettracks"
     open_time: 1690952767256846
     close_time: 1690952767316104
     file_intent: ["NOT_SPECIFIED"]
@@ -3661,7 +3595,6 @@
 
 - file-69:
     file_name: "track_20150506_040000.nc"
-    task_name: "run_gettracks"
     task_name: "run_gettracks"
     open_time: 1690952767516534
     close_time: 1690952767541659
@@ -3718,7 +3651,6 @@
 - file-70:
     file_name: "cloudid_20150506_030000.nc"
     task_name: "run_gettracks"
-    task_name: "run_gettracks"
     open_time: 1690952767542996
     close_time: 1690952767603393
     file_intent: ["NOT_SPECIFIED"]
@@ -3773,7 +3705,6 @@
 
 - file-71:
     file_name: "cloudid_20150506_040000.nc"
-    task_name: "run_gettracks"
     task_name: "run_gettracks"
     open_time: 1690952767604660
     close_time: 1690952767666137
@@ -3830,7 +3761,6 @@
 - file-72:
     file_name: "track_20150506_050000.nc"
     task_name: "run_gettracks"
-    task_name: "run_gettracks"
     open_time: 1690952767859825
     close_time: 1690952767884540
     file_intent: ["NOT_SPECIFIED"]
@@ -3885,7 +3815,6 @@
 
 - file-73:
     file_name: "cloudid_20150506_040000.nc"
-    task_name: "run_gettracks"
     task_name: "run_gettracks"
     open_time: 1690952767885780
     close_time: 1690952767943179
@@ -3942,7 +3871,6 @@
 - file-74:
     file_name: "cloudid_20150506_050000.nc"
     task_name: "run_gettracks"
-    task_name: "run_gettracks"
     open_time: 1690952767944336
     close_time: 1690952768003939
     file_intent: ["NOT_SPECIFIED"]
@@ -3997,7 +3925,6 @@
 
 - file-75:
     file_name: "track_20150506_060000.nc"
-    task_name: "run_gettracks"
     task_name: "run_gettracks"
     open_time: 1690952768246811
     close_time: 1690952768272108
@@ -4054,7 +3981,6 @@
 - file-76:
     file_name: "cloudid_20150506_050000.nc"
     task_name: "run_gettracks"
-    task_name: "run_gettracks"
     open_time: 1690952768273521
     close_time: 1690952768330826
     file_intent: ["NOT_SPECIFIED"]
@@ -4109,7 +4035,6 @@
 
 - file-77:
     file_name: "cloudid_20150506_060000.nc"
-    task_name: "run_gettracks"
     task_name: "run_gettracks"
     open_time: 1690952768332128
     close_time: 1690952768392278
@@ -4166,7 +4091,6 @@
 - file-78:
     file_name: "track_20150506_070000.nc"
     task_name: "run_gettracks"
-    task_name: "run_gettracks"
     open_time: 1690952768628810
     close_time: 1690952768653860
     file_intent: ["NOT_SPECIFIED"]
@@ -4221,7 +4145,6 @@
 
 - file-56:
     file_name: "cloudid_20150506_080000.nc"
-    task_name: "run_tracksingle"
     task_name: "run_tracksingle"
     open_time: 1690952766136829
     close_time: 1690952768715026
@@ -4278,7 +4201,6 @@
 - file-57:
     file_name: "cloudid_20150506_070000.nc"
     task_name: "run_tracksingle"
-    task_name: "run_tracksingle"
     open_time: 1690952766195754
     close_time: 1690952768716646
     file_intent: ["NOT_SPECIFIED"]
@@ -4333,7 +4255,6 @@
 
 - file-79:
     file_name: "cloudid_20150506_060000.nc"
-    task_name: "run_gettracks"
     task_name: "run_gettracks"
     open_time: 1690952768655197
     close_time: 1690952768718124
@@ -4390,7 +4311,6 @@
 - file-80:
     file_name: "cloudid_20150506_070000.nc"
     task_name: "run_gettracks"
-    task_name: "run_gettracks"
     open_time: 1690952768719514
     close_time: 1690952768779233
     file_intent: ["NOT_SPECIFIED"]
@@ -4445,7 +4365,6 @@
 
 - file-81:
     file_name: "track_20150506_080000.nc"
-    task_name: "run_gettracks"
     task_name: "run_gettracks"
     open_time: 1690952768972365
     close_time: 1690952768997225
@@ -4502,7 +4421,6 @@
 - file-82:
     file_name: "cloudid_20150506_070000.nc"
     task_name: "run_gettracks"
-    task_name: "run_gettracks"
     open_time: 1690952768998562
     close_time: 1690952769056216
     file_intent: ["NOT_SPECIFIED"]
@@ -4557,7 +4475,6 @@
 
 - file-83:
     file_name: "cloudid_20150506_080000.nc"
-    task_name: "run_gettracks"
     task_name: "run_gettracks"
     open_time: 1690952769057817
     close_time: 1690952769116634
@@ -4614,7 +4531,6 @@
 - file-84:
     file_name: "tracknumbers_20150506.0000_20150506.0800.nc"
     task_name: "run_gettracks"
-    task_name: "run_gettracks"
     open_time: 1690952769339515
     close_time: 1690952769534398
     file_intent: ["H5F_ACC_RDWR","H5F_ACC_TRUNC","H5F_ACC_CREAT"]
@@ -4669,7 +4585,6 @@
 
 - file-85:
     file_name: "tracknumbers_20150506.0000_20150506.0800.nc"
-    task_name: "run_trackstats"
     task_name: "run_trackstats"
     open_time: 1690952769535757
     close_time: 1690952769643363
@@ -4726,7 +4641,6 @@
 - file-87:
     file_name: "cloudid_20150506_000000.nc"
     task_name: "run_trackstats"
-    task_name: "run_trackstats"
     open_time: 1690952769659554
     close_time: 1690952775938384
     file_intent: ["NOT_SPECIFIED"]
@@ -4781,7 +4695,6 @@
 
 - file-88:
     file_name: "cloudid_20150506_010000.nc"
-    task_name: "run_trackstats"
     task_name: "run_trackstats"
     open_time: 1690952775946414
     close_time: 1690952785254613
@@ -4838,7 +4751,6 @@
 - file-89:
     file_name: "cloudid_20150506_020000.nc"
     task_name: "run_trackstats"
-    task_name: "run_trackstats"
     open_time: 1690952785265025
     close_time: 1690952796786475
     file_intent: ["NOT_SPECIFIED"]
@@ -4893,7 +4805,6 @@
 
 - file-90:
     file_name: "cloudid_20150506_030000.nc"
-    task_name: "run_trackstats"
     task_name: "run_trackstats"
     open_time: 1690952796798265
     close_time: 1690952815160816
@@ -4950,7 +4861,6 @@
 - file-91:
     file_name: "cloudid_20150506_040000.nc"
     task_name: "run_trackstats"
-    task_name: "run_trackstats"
     open_time: 1690952815178047
     close_time: 1690952843648265
     file_intent: ["NOT_SPECIFIED"]
@@ -5005,7 +4915,6 @@
 
 - file-92:
     file_name: "cloudid_20150506_050000.nc"
-    task_name: "run_trackstats"
     task_name: "run_trackstats"
     open_time: 1690952843670693
     close_time: 1690952878488760
@@ -5062,7 +4971,6 @@
 - file-93:
     file_name: "cloudid_20150506_060000.nc"
     task_name: "run_trackstats"
-    task_name: "run_trackstats"
     open_time: 1690952878512370
     close_time: 1690952912234692
     file_intent: ["NOT_SPECIFIED"]
@@ -5117,7 +5025,6 @@
 
 - file-94:
     file_name: "cloudid_20150506_070000.nc"
-    task_name: "run_trackstats"
     task_name: "run_trackstats"
     open_time: 1690952912257151
     close_time: 1690952949615278
@@ -5174,7 +5081,6 @@
 - file-95:
     file_name: "cloudid_20150506_080000.nc"
     task_name: "run_trackstats"
-    task_name: "run_trackstats"
     open_time: 1690952949643523
     close_time: 1690952995205201
     file_intent: ["NOT_SPECIFIED"]
@@ -5229,7 +5135,6 @@
 
 - file-96:
     file_name: "trackstats_20150506.0000_20150506.0800.nc"
-    task_name: "run_trackstats"
     task_name: "run_trackstats"
     open_time: 1690952995608736
     close_time: 1690952996524220
@@ -5286,7 +5191,6 @@
 - file-97:
     file_name: "trackstats_sparse_20150506.0000_20150506.0800.nc"
     task_name: "run_trackstats"
-    task_name: "run_trackstats"
     open_time: 1690952996525734
     close_time: 1690952996933827
     file_intent: ["H5F_ACC_RDWR","H5F_ACC_TRUNC","H5F_ACC_CREAT"]
@@ -5341,7 +5245,6 @@
 
 - file-86:
     file_name: "tracknumbers_20150506.0000_20150506.0800.nc"
-    task_name: "run_trackstats"
     task_name: "run_trackstats"
     open_time: 1690952769644298
     close_time: 1690952996934655
@@ -5398,7 +5301,6 @@
 - file-98:
     file_name: "trackstats_sparse_20150506.0000_20150506.0800.nc"
     task_name: "run_identifymcs"
-    task_name: "run_identifymcs"
     open_time: 1690952996939654
     close_time: 1690952997315651
     file_intent: ["NOT_SPECIFIED"]
@@ -5453,7 +5355,6 @@
 
 - file-100:
     file_name: "mcs_tracks_20150506.0000_20150506.0800.nc"
-    task_name: "run_identifymcs"
     task_name: "run_identifymcs"
     open_time: 1690952997505069
     close_time: 1690952997760761
@@ -5510,7 +5411,6 @@
 - file-99:
     file_name: "trackstats_sparse_20150506.0000_20150506.0800.nc"
     task_name: "run_identifymcs"
-    task_name: "run_identifymcs"
     open_time: 1690952997316092
     close_time: 1690952997761786
     file_intent: ["NOT_SPECIFIED"]
@@ -5565,7 +5465,6 @@
 
 - file-103:
     file_name: "cloudid_20150506_000000.nc"
-    task_name: "run_matchpf"
     task_name: "run_matchpf"
     open_time: 1690952998854205
     close_time: 1690952999090954
@@ -5622,7 +5521,6 @@
 - file-102:
     file_name: "wrf_landmask.nc"
     task_name: "run_matchpf"
-    task_name: "run_matchpf"
     open_time: 1690952998769776
     close_time: 1690952999149716
     file_intent: ["NOT_SPECIFIED"]
@@ -5677,7 +5575,6 @@
 
 - file-105:
     file_name: "cloudid_20150506_010000.nc"
-    task_name: "run_matchpf"
     task_name: "run_matchpf"
     open_time: 1690952999239737
     close_time: 1690952999475885
@@ -5734,7 +5631,6 @@
 - file-104:
     file_name: "wrf_landmask.nc"
     task_name: "run_matchpf"
-    task_name: "run_matchpf"
     open_time: 1690952999153048
     close_time: 1690952999682776
     file_intent: ["NOT_SPECIFIED"]
@@ -5789,7 +5685,6 @@
 
 - file-107:
     file_name: "cloudid_20150506_020000.nc"
-    task_name: "run_matchpf"
     task_name: "run_matchpf"
     open_time: 1690952999771596
     close_time: 1690953000005314
@@ -5846,7 +5741,6 @@
 - file-106:
     file_name: "wrf_landmask.nc"
     task_name: "run_matchpf"
-    task_name: "run_matchpf"
     open_time: 1690952999686645
     close_time: 1690953000201756
     file_intent: ["NOT_SPECIFIED"]
@@ -5901,7 +5795,6 @@
 
 - file-109:
     file_name: "cloudid_20150506_030000.nc"
-    task_name: "run_matchpf"
     task_name: "run_matchpf"
     open_time: 1690953000288115
     close_time: 1690953000524517
@@ -5958,7 +5851,6 @@
 - file-108:
     file_name: "wrf_landmask.nc"
     task_name: "run_matchpf"
-    task_name: "run_matchpf"
     open_time: 1690953000205495
     close_time: 1690953000862163
     file_intent: ["NOT_SPECIFIED"]
@@ -6013,7 +5905,6 @@
 
 - file-111:
     file_name: "cloudid_20150506_040000.nc"
-    task_name: "run_matchpf"
     task_name: "run_matchpf"
     open_time: 1690953000950167
     close_time: 1690953001188830
@@ -6070,7 +5961,6 @@
 - file-110:
     file_name: "wrf_landmask.nc"
     task_name: "run_matchpf"
-    task_name: "run_matchpf"
     open_time: 1690953000865595
     close_time: 1690953001468476
     file_intent: ["NOT_SPECIFIED"]
@@ -6125,7 +6015,6 @@
 
 - file-113:
     file_name: "cloudid_20150506_050000.nc"
-    task_name: "run_matchpf"
     task_name: "run_matchpf"
     open_time: 1690953001556085
     close_time: 1690953001791576
@@ -6182,7 +6071,6 @@
 - file-112:
     file_name: "wrf_landmask.nc"
     task_name: "run_matchpf"
-    task_name: "run_matchpf"
     open_time: 1690953001471101
     close_time: 1690953002060232
     file_intent: ["NOT_SPECIFIED"]
@@ -6237,7 +6125,6 @@
 
 - file-115:
     file_name: "cloudid_20150506_060000.nc"
-    task_name: "run_matchpf"
     task_name: "run_matchpf"
     open_time: 1690953002148381
     close_time: 1690953002390090
@@ -6294,7 +6181,6 @@
 - file-114:
     file_name: "wrf_landmask.nc"
     task_name: "run_matchpf"
-    task_name: "run_matchpf"
     open_time: 1690953002063343
     close_time: 1690953002687954
     file_intent: ["NOT_SPECIFIED"]
@@ -6349,7 +6235,6 @@
 
 - file-117:
     file_name: "cloudid_20150506_070000.nc"
-    task_name: "run_matchpf"
     task_name: "run_matchpf"
     open_time: 1690953002776384
     close_time: 1690953003015181
@@ -6406,7 +6291,6 @@
 - file-116:
     file_name: "wrf_landmask.nc"
     task_name: "run_matchpf"
-    task_name: "run_matchpf"
     open_time: 1690953002691020
     close_time: 1690953003303787
     file_intent: ["NOT_SPECIFIED"]
@@ -6461,7 +6345,6 @@
 
 - file-119:
     file_name: "cloudid_20150506_080000.nc"
-    task_name: "run_matchpf"
     task_name: "run_matchpf"
     open_time: 1690953003393451
     close_time: 1690953003636582
@@ -6518,7 +6401,6 @@
 - file-118:
     file_name: "wrf_landmask.nc"
     task_name: "run_matchpf"
-    task_name: "run_matchpf"
     open_time: 1690953003307323
     close_time: 1690953003808290
     file_intent: ["NOT_SPECIFIED"]
@@ -6573,7 +6455,6 @@
 
 - file-120:
     file_name: "mcs_tracks_pf_20150506.0000_20150506.0800.nc"
-    task_name: "run_matchpf"
     task_name: "run_matchpf"
     open_time: 1690953003813919
     close_time: 1690953009242609
@@ -6630,7 +6511,6 @@
 - file-101:
     file_name: "mcs_tracks_20150506.0000_20150506.0800.nc"
     task_name: "run_matchpf"
-    task_name: "run_matchpf"
     open_time: 1690952997771828
     close_time: 1690953009244317
     file_intent: ["NOT_SPECIFIED"]
@@ -6685,7 +6565,6 @@
 
 - file-122:
     file_name: "mcs_tracks_robust_20150506.0000_20150506.0800.nc"
-    task_name: "run_robustmcs"
     task_name: "run_robustmcs"
     open_time: 1690953016933358
     close_time: 1690953024571844
@@ -6742,7 +6621,6 @@
 - file-121:
     file_name: "mcs_tracks_pf_20150506.0000_20150506.0800.nc"
     task_name: "run_robustmcs"
-    task_name: "run_robustmcs"
     open_time: 1690953009245868
     close_time: 1690953024574411
     file_intent: ["NOT_SPECIFIED"]
@@ -6797,7 +6675,6 @@
 
 - file-123:
     file_name: "mcs_tracks_robust_20150506.0000_20150506.0800.nc"
-    task_name: "run_mapfeature"
     task_name: "run_mapfeature"
     open_time: 1690953024575815
     close_time: 1690953039638830
@@ -6854,7 +6731,6 @@
 - file-125:
     file_name: "mcstrack_20150506_000000.nc"
     task_name: "run_mapfeature"
-    task_name: "run_mapfeature"
     open_time: 1690953039821121
     close_time: 1690953044775093
     file_intent: ["H5F_ACC_RDWR","H5F_ACC_TRUNC","H5F_ACC_CREAT"]
@@ -6909,7 +6785,6 @@
 
 - file-124:
     file_name: "cloudid_20150506_000000.nc"
-    task_name: "run_mapfeature"
     task_name: "run_mapfeature"
     open_time: 1690953039642250
     close_time: 1690953044797823
@@ -6966,7 +6841,6 @@
 - file-127:
     file_name: "mcstrack_20150506_010000.nc"
     task_name: "run_mapfeature"
-    task_name: "run_mapfeature"
     open_time: 1690953045118204
     close_time: 1690953049992617
     file_intent: ["H5F_ACC_RDWR","H5F_ACC_TRUNC","H5F_ACC_CREAT"]
@@ -7021,7 +6895,6 @@
 
 - file-126:
     file_name: "cloudid_20150506_010000.nc"
-    task_name: "run_mapfeature"
     task_name: "run_mapfeature"
     open_time: 1690953044818851
     close_time: 1690953049998023
@@ -7078,7 +6951,6 @@
 - file-129:
     file_name: "mcstrack_20150506_020000.nc"
     task_name: "run_mapfeature"
-    task_name: "run_mapfeature"
     open_time: 1690953050256650
     close_time: 1690953055379273
     file_intent: ["H5F_ACC_RDWR","H5F_ACC_TRUNC","H5F_ACC_CREAT"]
@@ -7133,7 +7005,6 @@
 
 - file-128:
     file_name: "cloudid_20150506_020000.nc"
-    task_name: "run_mapfeature"
     task_name: "run_mapfeature"
     open_time: 1690953050014850
     close_time: 1690953055382900
@@ -7190,7 +7061,6 @@
 - file-131:
     file_name: "mcstrack_20150506_030000.nc"
     task_name: "run_mapfeature"
-    task_name: "run_mapfeature"
     open_time: 1690953055607922
     close_time: 1690953060910441
     file_intent: ["H5F_ACC_RDWR","H5F_ACC_TRUNC","H5F_ACC_CREAT"]
@@ -7245,7 +7115,6 @@
 
 - file-130:
     file_name: "cloudid_20150506_030000.nc"
-    task_name: "run_mapfeature"
     task_name: "run_mapfeature"
     open_time: 1690953055387206
     close_time: 1690953060915759
@@ -7302,7 +7171,6 @@
 - file-133:
     file_name: "mcstrack_20150506_040000.nc"
     task_name: "run_mapfeature"
-    task_name: "run_mapfeature"
     open_time: 1690953061275911
     close_time: 1690953066480619
     file_intent: ["H5F_ACC_RDWR","H5F_ACC_TRUNC","H5F_ACC_CREAT"]
@@ -7357,7 +7225,6 @@
 
 - file-132:
     file_name: "cloudid_20150506_040000.nc"
-    task_name: "run_mapfeature"
     task_name: "run_mapfeature"
     open_time: 1690953060921299
     close_time: 1690953066487932
@@ -7414,7 +7281,6 @@
 - file-135:
     file_name: "mcstrack_20150506_050000.nc"
     task_name: "run_mapfeature"
-    task_name: "run_mapfeature"
     open_time: 1690953066755234
     close_time: 1690953071618307
     file_intent: ["H5F_ACC_RDWR","H5F_ACC_TRUNC","H5F_ACC_CREAT"]
@@ -7469,7 +7335,6 @@
 
 - file-134:
     file_name: "cloudid_20150506_050000.nc"
-    task_name: "run_mapfeature"
     task_name: "run_mapfeature"
     open_time: 1690953066506461
     close_time: 1690953071622140
@@ -7526,7 +7391,6 @@
 - file-137:
     file_name: "mcstrack_20150506_060000.nc"
     task_name: "run_mapfeature"
-    task_name: "run_mapfeature"
     open_time: 1690953071870105
     close_time: 1690953076719856
     file_intent: ["H5F_ACC_RDWR","H5F_ACC_TRUNC","H5F_ACC_CREAT"]
@@ -7581,7 +7445,6 @@
 
 - file-136:
     file_name: "cloudid_20150506_060000.nc"
-    task_name: "run_mapfeature"
     task_name: "run_mapfeature"
     open_time: 1690953071626164
     close_time: 1690953076727545
@@ -7638,7 +7501,6 @@
 - file-139:
     file_name: "mcstrack_20150506_070000.nc"
     task_name: "run_mapfeature"
-    task_name: "run_mapfeature"
     open_time: 1690953077093650
     close_time: 1690953081902461
     file_intent: ["H5F_ACC_RDWR","H5F_ACC_TRUNC","H5F_ACC_CREAT"]
@@ -7693,7 +7555,6 @@
 
 - file-138:
     file_name: "cloudid_20150506_070000.nc"
-    task_name: "run_mapfeature"
     task_name: "run_mapfeature"
     open_time: 1690953076735827
     close_time: 1690953081905915
@@ -7750,7 +7611,6 @@
 - file-141:
     file_name: "mcstrack_20150506_080000.nc"
     task_name: "run_mapfeature"
-    task_name: "run_mapfeature"
     open_time: 1690953082121000
     close_time: 1690953086961645
     file_intent: ["H5F_ACC_RDWR","H5F_ACC_TRUNC","H5F_ACC_CREAT"]
@@ -7805,7 +7665,6 @@
 
 - file-140:
     file_name: "cloudid_20150506_080000.nc"
-    task_name: "run_mapfeature"
     task_name: "run_mapfeature"
     open_time: 1690953081911044
     close_time: 1690953086967427
@@ -7862,7 +7721,6 @@
 - file-142:
     file_name: "mcs_tracks_robust_20150506.0000_20150506.0800.nc"
     task_name: "run_speed"
-    task_name: "run_speed"
     open_time: 1690953086979484
     close_time: 1690953094715279
     file_intent: ["NOT_SPECIFIED"]
@@ -7917,7 +7775,6 @@
 
 - file-143:
     file_name: "mcstrack_20150506_000000.nc"
-    task_name: "run_speed"
     task_name: "run_speed"
     open_time: 1690953094720017
     close_time: 1690953095260465
@@ -7974,7 +7831,6 @@
 - file-144:
     file_name: "mcstrack_20150506_010000.nc"
     task_name: "run_speed"
-    task_name: "run_speed"
     open_time: 1690953094862362
     close_time: 1690953095263653
     file_intent: ["NOT_SPECIFIED"]
@@ -8029,7 +7885,6 @@
 
 - file-145:
     file_name: "mcstrack_20150506_010000.nc"
-    task_name: "run_speed"
     task_name: "run_speed"
     open_time: 1690953095265273
     close_time: 1690953095751599
@@ -8086,7 +7941,6 @@
 - file-146:
     file_name: "mcstrack_20150506_020000.nc"
     task_name: "run_speed"
-    task_name: "run_speed"
     open_time: 1690953095395301
     close_time: 1690953095753738
     file_intent: ["NOT_SPECIFIED"]
@@ -8141,7 +7995,6 @@
 
 - file-147:
     file_name: "mcstrack_20150506_020000.nc"
-    task_name: "run_speed"
     task_name: "run_speed"
     open_time: 1690953095755475
     close_time: 1690953096217413
@@ -8198,7 +8051,6 @@
 - file-148:
     file_name: "mcstrack_20150506_030000.nc"
     task_name: "run_speed"
-    task_name: "run_speed"
     open_time: 1690953095885085
     close_time: 1690953096219508
     file_intent: ["NOT_SPECIFIED"]
@@ -8253,7 +8105,6 @@
 
 - file-149:
     file_name: "mcstrack_20150506_030000.nc"
-    task_name: "run_speed"
     task_name: "run_speed"
     open_time: 1690953096222022
     close_time: 1690953096720520
@@ -8310,7 +8161,6 @@
 - file-150:
     file_name: "mcstrack_20150506_040000.nc"
     task_name: "run_speed"
-    task_name: "run_speed"
     open_time: 1690953096356174
     close_time: 1690953096722577
     file_intent: ["NOT_SPECIFIED"]
@@ -8365,7 +8215,6 @@
 
 - file-151:
     file_name: "mcstrack_20150506_040000.nc"
-    task_name: "run_speed"
     task_name: "run_speed"
     open_time: 1690953096724322
     close_time: 1690953097256699
@@ -8422,7 +8271,6 @@
 - file-152:
     file_name: "mcstrack_20150506_050000.nc"
     task_name: "run_speed"
-    task_name: "run_speed"
     open_time: 1690953096860521
     close_time: 1690953097259364
     file_intent: ["NOT_SPECIFIED"]
@@ -8477,7 +8325,6 @@
 
 - file-153:
     file_name: "mcstrack_20150506_050000.nc"
-    task_name: "run_speed"
     task_name: "run_speed"
     open_time: 1690953097261135
     close_time: 1690953097775631
@@ -8534,7 +8381,6 @@
 - file-154:
     file_name: "mcstrack_20150506_060000.nc"
     task_name: "run_speed"
-    task_name: "run_speed"
     open_time: 1690953097391715
     close_time: 1690953097777708
     file_intent: ["NOT_SPECIFIED"]
@@ -8589,7 +8435,6 @@
 
 - file-155:
     file_name: "mcstrack_20150506_060000.nc"
-    task_name: "run_speed"
     task_name: "run_speed"
     open_time: 1690953097779465
     close_time: 1690953098274078
@@ -8646,7 +8491,6 @@
 - file-156:
     file_name: "mcstrack_20150506_070000.nc"
     task_name: "run_speed"
-    task_name: "run_speed"
     open_time: 1690953097909831
     close_time: 1690953098276161
     file_intent: ["NOT_SPECIFIED"]
@@ -8701,7 +8545,6 @@
 
 - file-157:
     file_name: "mcstrack_20150506_070000.nc"
-    task_name: "run_speed"
     task_name: "run_speed"
     open_time: 1690953098277968
     close_time: 1690953098750574
@@ -8758,7 +8601,6 @@
 - file-158:
     file_name: "mcstrack_20150506_080000.nc"
     task_name: "run_speed"
-    task_name: "run_speed"
     open_time: 1690953098408473
     close_time: 1690953098752628
     file_intent: ["NOT_SPECIFIED"]
@@ -8813,7 +8655,6 @@
 
 - file-159:
     file_name: "mcs_tracks_final_20150506.0000_20150506.0800.nc"
-    task_name: "run_speed"
     task_name: "run_speed"
     open_time: 1690953098760016
     close_time: 1690953108149208
