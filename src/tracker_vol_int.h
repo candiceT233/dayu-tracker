@@ -3282,7 +3282,7 @@ void log_dset_ht_yaml(FILE* f) {
 
             fprintf(f, "    task_name: \"%s\"\n", dset_track_info->task_name);
             fprintf(f, "    datasets:\n");
-            fprintf(f, "    - dset:\n");
+            // fprintf(f, "    - dset:\n");
             fprintf(f, "        dset_name: \"%s\"\n", dset_name);
             fprintf(f, "        start_time: %ld\n", dset_track_info->start_time);
             fprintf(f, "        end_time: %ld\n", dset_track_info->end_time);
