@@ -846,8 +846,8 @@ file_tkr_info_t* new_file_info(const char* fname, unsigned long file_no)
 
 void dtype_info_free(datatype_tkr_info_t* info)
 {
-    if(info->obj_info.name)
-        free(info->obj_info.name);
+    // if(info->obj_info.name)
+    //     free(info->obj_info.name);
     free(info);
 }
 
@@ -862,8 +862,8 @@ void file_info_free(file_tkr_info_t* info)
 	    MPI_Info_free(&info->mpi_info);
     }
 #endif /* H5_HAVE_PARALLEL */
-    if(info->file_name)
-        free((void*)info->file_name);
+    // if(info->file_name)
+    //     free((void*)info->file_name);
     // if(info->task_name)
     //     free((void*)info->task_name);
     free(info);
@@ -871,8 +871,8 @@ void file_info_free(file_tkr_info_t* info)
 
 void group_info_free(group_tkr_info_t* info)
 {
-    if(info->obj_info.name)
-        free(info->obj_info.name);
+    // if(info->obj_info.name)
+    //     free(info->obj_info.name);
     free(info);
 }
 
@@ -881,15 +881,15 @@ void dataset_info_free(dataset_tkr_info_t* info)
     // if(info->obj_info.name)
     //     free(info->obj_info.name);
 
-    if(info->pfile_name)
-        free(info->pfile_name);
+    // if(info->pfile_name)
+    //     free(info->pfile_name);
     free(info);
 }
 
 void attribute_info_free(attribute_tkr_info_t* info)
 {
-    if(info->obj_info.name)
-        free(info->obj_info.name);
+    // if(info->obj_info.name)
+    //     free(info->obj_info.name);
     free(info);
 }
 
@@ -1495,8 +1495,8 @@ dataset_tkr_info_t * new_ds_tkr_info(void* under_object, hid_t vol_id, H5O_token
     // ds_info->dset_offset = H5Dget_offset(ds_id); // TODO: all returns -1
     H5Sclose(ds_id);
 
-    dcpl_id = dataset_get_dcpl(under_object, vol_id, dxpl_id);
-    H5Pclose(dcpl_id);
+    // dcpl_id = dataset_get_dcpl(under_object, vol_id, dxpl_id);
+    // H5Pclose(dcpl_id);
 
     return ds_info;
 }
@@ -2175,14 +2175,16 @@ void log_file_stat_yaml(tkr_helper_t* helper_in, const file_tkr_info_t* file_inf
 
     log_dset_ht_yaml(f);
 
-    char* file_name = strrchr(file_info->file_name, '/');
+    // char* file_name = strrchr(file_info->file_name, '/');
+    char* file_name = (char *) file_info->file_name;
+
     if(file_name)
         file_name++;
     else
         file_name = (char*)file_info->file_name;
 
     fprintf(f, "- file-%ld:\n", file_info->sorder_id);
-    fprintf(f, "    file_name: \"%s\"\n", file_name);
+    fprintf(f, "    file_name: \"/%s\"\n", file_name);
     // if(file_info->task_name != NULL){
     //     fprintf(f, "    task_name: \"%s\"\n", file_info->task_name);
     // }else{
@@ -3033,8 +3035,12 @@ void blob_info_print(char * func_name, void * obj, hid_t dxpl_id,
     /* candice added routine implementation end*/
 
 char* encode_two_strings(const char* file_path, const char* dset_name) {
-    // Get the actual file name from path
-    char* file_name = strrchr(file_path, '/');
+    // // Get the actual file name from path
+    // char* file_name = strrchr(file_path, '/');
+
+    // Keep complete file path name
+    char * file_name = (char*)file_path;
+
     if(file_name)
         file_name++;
     else
@@ -3269,7 +3275,7 @@ void log_dset_ht_yaml(FILE* f) {
             dset_track_t* dset_track_info = entry->dset_track_info;
 
             fprintf(f, "- file-%ld:\n", dset_track_info->pfile_sorder_id);
-            fprintf(f, "    file_name: \"%s\"\n", file_name);
+            fprintf(f, "    file_name: \"/%s\"\n", file_name);
             // if(dset_track_info->task_name != NULL){
             //     fprintf(f, "    task_name: \"%s\"\n", dset_track_info->task_name);
             // }else{
@@ -3434,13 +3440,14 @@ void free_dset_track_info(dset_track_t *dset_track_info) {
     if (dset_track_info) {
         // free(dset_track_info->file_name);
         // free(dset_track_info->dset_name);
-        free(dset_track_info->layout);
-        free(dset_track_info->dimensions);
-        free(dset_track_info->sorder_ids);
-        free(dset_track_info->sorder_ids_end);
-        free(dset_track_info->metadata_file_pages);
-        free(dset_track_info->metadata_file_pages_end);
-        free(dset_track_info->dset_select_type);
+
+        // free(dset_track_info->layout);
+        // free(dset_track_info->dimensions);
+        // free(dset_track_info->sorder_ids);
+        // free(dset_track_info->sorder_ids_end);
+        // free(dset_track_info->metadata_file_pages);
+        // free(dset_track_info->metadata_file_pages_end);
+        // free(dset_track_info->dset_select_type);
         free(dset_track_info);
     }
 }

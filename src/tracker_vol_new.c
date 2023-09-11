@@ -562,8 +562,8 @@ H5VL_tracker_info_free(void *_info)
     H5Eset_current_stack(err_id);
 
     /* Free TRACKER info object itself */
-    free(info->tkr_file_path);
-    free(info->tkr_line_format);
+    // free(info->tkr_file_path);
+    // free(info->tkr_line_format);
     free(info);
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start);
@@ -679,8 +679,8 @@ H5VL_tracker_str_to_info(const char *str, void **_info)
     info->tkr_line_format = (char *)calloc(64, sizeof(char));
 
     if(tracker_file_setup(under_vol_info_end, info->tkr_file_path, &(info->tkr_level), info->tkr_line_format) != 0){
-        free(info->tkr_file_path);
-        free(info->tkr_line_format);
+        // free(info->tkr_file_path);
+        // free(info->tkr_line_format);
         info->tkr_line_format = NULL;
         info->tkr_file_path = NULL;
         info->tkr_level = File_only;
@@ -2823,12 +2823,10 @@ H5VL_tracker_file_close(void *file, hid_t dxpl_id, void **req)
     file_tkr_info_t* file_info = (file_tkr_info_t*)o->generic_tkr_info;
     
 #ifdef TRACKER_SCHEMA
+    tkrLockAcquire(&myLock);
     file_info->file_size = file_get_size(o->under_object,o->under_vol_id, dxpl_id);
     file_info_update("H5VLfile_close", file, NULL, NULL, dxpl_id);
-
     // print_ht_token_numbers();
-
-    tkrLockAcquire(&myLock);
     log_file_stat_yaml(TKR_HELPER,file_info);
     tkrLockRelease(&myLock);
 #endif
