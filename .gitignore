@@ -1,12 +1,14 @@
 # env
 venv_ddmd/
-
+.vscode/
 
 
 # logs
 *.err
 *.log
 *.out
+example_stat
 
 # others
 *.so
+host_ip

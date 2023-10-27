@@ -1,0 +1,41 @@
+#!/bin/bash
+
+
+module load openmpi/4.1.3
+
+. $HOME/spack/share/spack/setup-env.sh
+
+HDF5_DIR="`which h5cc |sed 's/.\{9\}$//'`"
+HDF5_BIN="$HDF5_DIR/bin"
+HDF5_LIB="$HDF5_DIR/lib"
+HDF5_INCLUDE="$HDF5_DIR/include"
+PATH="${HDF5_BIN}:${PATH}"
+LD_LIBRARY_PATH="${HDF5_LIB}:${LD_LIBRARY_PATH}"
+C_INCLUDE_PATH="${HDF5_INCLUDE}:${C_INCLUDE_PATH}"
+HDF5_PKG_CONFIG_PATH="$HDF5_DIR/lib/pkgconfig"
+PKG_CONFIG_PATH="${HDF5_PKG_CONFIG_PATH}:${PKG_CONFIG_PATH}"
+
+
+NETCDFC_DIR="/qfs/people/tang584/install/netcdf-c"
+NETCDFC_BIN="$NETCDFC_DIR/bin"
+NETCDFC_LIB="$NETCDFC_DIR/lib"
+NETCDFC_INCLUDE="$NETCDFC_DIR/include"
+PATH="${NETCDFC_BIN}:${PATH}"
+LD_LIBRARY_PATH="${NETCDFC_LIB}:${LD_LIBRARY_PATH}"
+C_INCLUDE_PATH="${NETCDFC_INCLUDE}:${C_INCLUDE_PATH}"
+NETCDFC_PKG_CONFIG_PATH="$NETCDFC_DIR/lib/pkgconfig"
+PKG_CONFIG_PATH="${NETCDFC_PKG_CONFIG_PATH}:${PKG_CONFIG_PATH}"
+
+ZLIB_PKG_CONFIG_PATH="/usr/lib64/pkgconfig"
+PKG_CONFIG_PATH="${ZLIB_PKG_CONFIG_PATH}:${PKG_CONFIG_PATH}"
+
+# set -x
+MPI_PATH="`which mpicc |sed 's/.\{10\}$//'`"
+MPI_BIN="$MPI_PATH/bin"
+MPI_LIB="$MPI_PATH/lib"
+MPI_INCLUDE="$MPI_PATH/include"
+[[ ":$PATH:" != *":${MPI_BIN}:"* ]] && PATH="${MPI_BIN}:${PATH}"
+[[ ":$LD_LIBRARY_PATH:" != *":${MPI_LIB}:"* ]] && LD_LIBRARY_PATH="${MPI_LIB}:${LD_LIBRARY_PATH}"
+[[ ":$C_INCLUDE_PATH:" != *":${MPI_INCLUDE}:"* ]] && C_INCLUDE_PATH="${MPI_INCLUDE}:${C_INCLUDE_PATH}"
+
+
