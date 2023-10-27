@@ -69,7 +69,7 @@ endif()
 # Set sources
 #------------------------------------------------------------------------------
 set(HDF5_VOL_PROV_SRCS
-  ${CMAKE_CURRENT_SOURCE_DIR}/datalife_vol.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/tracker_vol_new.c
 )
 
 #------------------------------------------------------------------------------

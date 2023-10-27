@@ -1,7 +1,7 @@
 #Your HDF5 install path
-# HDF5_DIR=/home/mtang11/install/hdf5-1_13_1
-# HDF5_DIR=/qfs/people/tang584/.conda/pkgs/hdf5-1.14.0-nompi_h5231ba7_103
-# HDF5_DIR=/qfs/people/tang584/.conda/pkgs/hdf5-1.14.0-nompi_hb72d44e_103
+
+# HDF5_DIR=$(HOME)/.conda/pkgs/hdf5-1.14.0-nompi_h5231ba7_103
+# HDF5_DIR=$(HOME)/.conda/pkgs/hdf5-1.14.0-nompi_hb72d44e_103
 HDF5_DIR=$(HOME)/install/hdf5
 # HDF5_DIR=$(HOME)/miniconda3/envs/flextrkr
 # HDF5_DIR=$(HOME)/.conda/envs/pyflextrkr_copy
@@ -16,7 +16,7 @@ INCLUDES=-I$(HDF5_DIR)/include
 
 CFLAGS = $(DEBUG) -fPIC $(INCLUDES) -w -DTRACKER_SCHEMA #-Wall 
 
-LIBS=-L$(HDF5_DIR)/lib -lhdf5 -lz -lcrypto
+LIBS=-L$(HDF5_DIR)/lib -lhdf5 -lz #-lcrypto
 
 # Uncomment this line MacOS builds:
 # DYNLDFLAGS = $(DEBUG) -dynamiclib -current_version 1.0 -fPIC $(LIBS)

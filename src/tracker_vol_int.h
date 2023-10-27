@@ -2,6 +2,10 @@
 #include <string.h>
 #include <stdint.h>
 #include <pthread.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/file.h> // Include for file locks
+#include <errno.h>
 
 #include "hdf5.h"
 #include "tracker_vol.h"
@@ -22,6 +26,8 @@
 #endif
 
 #define STAT_FUNC_MOD 733//a reasonably big size to avoid expensive collision handling, make sure it works with 62 function names.
+
+#define MAX_PATH_LENGTH 1024
 
 // #define UINT32DECODE(p, val) {                      \
 //     (val)  = (uint32_t)(*p++) << 24;                \
@@ -84,6 +90,7 @@ unsigned long get_time_usec(void) {
 /* Function prototypes */
 /********************* */
 /* Helper routines  */
+int getCurrentTask(char **curr_task);
 static H5VL_tracker_t *H5VL_tracker_new_obj(void *under_obj,
     hid_t under_vol_id, tkr_helper_t* helper);
 static herr_t H5VL_tracker_free_obj(H5VL_tracker_t *obj);
@@ -238,6 +245,62 @@ void file_dtypes_accessed(file_tkr_info_t* info);
 
 
 /* Helper routines implementation */
+
+int getCurrentTask(char **curr_task) {
+    // Get environment variables
+    const char *path_for_task_files = getenv("PATH_FOR_TASK_FILES");
+    const char *workflow_name = getenv("WORKFLOW_NAME");
+
+    if (path_for_task_files && workflow_name) {
+        // Construct the full file path
+        char file_path[MAX_PATH_LENGTH];
+        snprintf(file_path, MAX_PATH_LENGTH, "%s/%s_vfd.curr_task", path_for_task_files, workflow_name);
+
+        // Open the file with exclusive lock
+        int fd = open(file_path, O_RDONLY);
+        if (fd != -1) {
+            struct flock lock;
+            lock.l_type = F_RDLCK;
+            lock.l_start = 0;
+            lock.l_whence = SEEK_SET;
+            lock.l_len = 0;
+
+            // Attempt to obtain a shared lock on the file
+            if (fcntl(fd, F_SETLK, &lock) != -1) {
+                // Read the file content into a string
+                FILE *file_stream = fopen(file_path, "r");
+                if (file_stream) {
+                    fseek(file_stream, 0, SEEK_END);
+                    long file_size = ftell(file_stream);
+                    fseek(file_stream, 0, SEEK_SET);
+
+                    *curr_task = (char *)malloc(file_size + 1);
+                    if (*curr_task) {
+                        fread(*curr_task, 1, file_size, file_stream);
+                        (*curr_task)[file_size] = '\0';
+                        fclose(file_stream);
+                        close(fd);  // Release the lock
+                        return 1;
+                    } else {
+                        perror("Failed to allocate memory");
+                    }
+                } else {
+                    fprintf(stderr, "Failed to read file: %s\n", file_path);
+                }
+            } else {
+                fprintf(stderr, "Failed to obtain lock on file: %s\n", file_path);
+            }
+            close(fd);
+        } else {
+            fprintf(stderr, "Failed to open file: %s - %s\n", file_path, strerror(errno));
+        }
+    } else {
+        fprintf(stderr, "Missing environment variables: PATH_FOR_TASK_FILES and/or WORKFLOW_NAME\n");
+    }
+
+    return 0;
+}
+
 size_t get_hermes_page_size() {
     const char* env_value = getenv("HERMES_PAGE_SIZE");
     if (env_value != NULL) {
@@ -1309,8 +1372,6 @@ dataset_tkr_info_t * add_dataset_node(unsigned long obj_file_no,
     dataset_tkr_info_t* cur;
     int cmp_value;
 
-    
-
     assert(dset);
     assert(dset->under_object);
     assert(file_info_in);
@@ -1351,7 +1412,7 @@ dataset_tkr_info_t * add_dataset_node(unsigned long obj_file_no,
         file_info->opened_datasets = cur;
         file_info->opened_datasets_cnt++;
     }
-
+    // print to check file_info->file_name
     /* Add dset info that requires parent file info */
     cur->pfile_name = file_info->file_name ? strdup(file_info->file_name) : NULL;
     // TODO: update meta_page to tracking object
@@ -3173,9 +3234,32 @@ dset_track_t *create_dset_track_info(dataset_tkr_info_t* dset_info) {
         track_entry->dset_select_type = strdup(dset_info->dset_select_type);
         track_entry->dset_select_npoints = dset_info->dset_select_npoints;
 
-        // Add current task name
-        const char* curr_task = getenv("CURR_TASK");
-        track_entry->task_name = curr_task ? strdup(curr_task) : NULL;
+        // add task name
+        // const char* curr_task = getenv("CURR_TASK");
+        // track_entry->task_name = curr_task ? strdup(curr_task) : NULL;
+        char *curr_task = NULL;
+        if (getCurrentTask(&curr_task)) {
+            // printf("Current task is: %s\n", curr_task);
+
+            // Convert curr_task to char* and assign to info->task_name
+            pid_t pid = getpid();
+            size_t task_name_len = strlen(curr_task) + 1 + 10; // Extra space for appending the process ID
+            char *task_name_cstr = (char *)malloc(task_name_len);
+            if (task_name_cstr) {
+                snprintf(task_name_cstr, task_name_len, "%s-%d", curr_task, (int)pid);
+
+                track_entry->task_name = task_name_cstr ? strdup(task_name_cstr) : NULL;
+                // track_entry->task_name = task_name_cstr;
+            } else {
+                perror("Failed to allocate memory for task name");
+                // Handle the error as needed
+            }
+
+            free(curr_task);
+        } else {
+            fprintf(stderr, "Failed to get current task.\n");
+            // Handle the error as needed
+        }
 
     }
     return track_entry;
@@ -3286,7 +3370,16 @@ void log_dset_ht_yaml(FILE* f) {
             //         fprintf(f, "    task_name: \"\"\n");
             // }
 
-            fprintf(f, "    task_name: \"%s\"\n", dset_track_info->task_name);
+            // fprintf(f, "    task_name: \"%s\"\n", dset_track_info->task_name);
+
+            if (dset_track_info->task_name != NULL) {
+                fprintf(f, "    task_name: \"%s\"\n", dset_track_info->task_name);
+            } else {
+                char task_name[32]; // Adjust the buffer size as needed
+                snprintf(task_name, sizeof(task_name), "%d", getpid());
+                fprintf(f, "    task_name: \"%s\"\n", task_name);
+            }
+
             fprintf(f, "    datasets:\n");
             // fprintf(f, "    - dset:\n");
             fprintf(f, "        dset_name: \"%s\"\n", dset_name);
@@ -3572,6 +3665,7 @@ void add_to_dset_ht(dataset_tkr_info_t* dset_info){
     // Create a DsetTrackKey for the key
     char * key;
     // tkrLockAcquire(&myLock);
+    // get encode string name:
     key = encode_two_strings(dset_info->pfile_name, dset_info->obj_info.name);
     // tkrLockRelease(&myLock);
 
