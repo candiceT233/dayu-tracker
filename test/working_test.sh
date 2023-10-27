@@ -1,7 +1,7 @@
+#!/bin/bash
 
 
-
-DLIFE_VOL_DIR=../src
+TRACKER_VOL_DIR=../src/vol
 VOL_NAME="tracker"
 
 export WORKFLOW_NAME="h5_write_read"
@@ -13,16 +13,15 @@ mkdir -p $PATH_FOR_TASK_FILES
 IO_FILE="$(pwd)/sample.h5"
 
 SIMPLE_IO (){
-    LD_LIBRARY_PATH=$DLIFE_VOL_DIR:$LD_LIBRARY_PATH \
-        HDF5_VOL_CONNECTOR="${VOL_NAME} under_vol=0;under_info={};path=vol-${FUNCNAME[0]}.log;level=0;format=" \
-        HDF5_PLUGIN_PATH=$DLIFE_VOL_DIR \
+    schema_file=data-stat-vol.yaml
+    rm -rf ./*$schema_file
+    LD_LIBRARY_PATH=$TRACKER_VOL_DIR:$LD_LIBRARY_PATH \
+        HDF5_VOL_CONNECTOR="${VOL_NAME} under_vol=0;under_info={};path=${schema_file};level=2;format=" \
+        HDF5_PLUGIN_PATH=$TRACKER_VOL_DIR:$HDF5_PLUGIN_PATH \
         python3 h5_write_read.py $IO_FILE
 }
 
 # get execution time in ms
-
-rm -rf ./*_vol-vol-*.log
-
 start_time=$(date +%s%3N)
 SIMPLE_IO
 end_time=$(date +%s%3N)

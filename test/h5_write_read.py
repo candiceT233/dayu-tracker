@@ -2,6 +2,7 @@ import h5py
 import numpy as np
 import os
 import sys
+import time
 
 def set_curr_task(task):
     # os.environ['CURR_TASK'] = task
@@ -36,8 +37,37 @@ def set_curr_task(task):
         print("Invalid or missing PATH_FOR_TASK_FILES environment variable.")    
 
 
-def run_write_read(file_name):
+def run_write(file_name,datasets):
+    task_name="h5_write"
+    set_curr_task(task_name)
+    print(f"Running Task : {task_name}")
+    for i in range(len(datasets)):
+        with h5py.File(file_name, 'w') as hdf_file:
+            print(f"Writing dataset{i}")
+            hdf_file.create_dataset(f'dataset{i}', data=datasets[i])
+    
 
+def run_read(file_name,num_datasets):
+    task_name="h5_read"
+    set_curr_task(task_name)
+    print(f"Running Task : {task_name}")
+    datasets = []
+    for i in range(num_datasets):
+        with h5py.File(file_name, 'w') as hdf_file:
+            print(f"Reading dataset{i}")
+            read_data = np.array(hdf_file[f'dataset{i}'])
+            datasets.append(read_data)
+    
+    return datasets
+
+def check_equals(datasets_1, datasets_2):
+    for i in range(len(datasets_1)):
+        if not np.array_equal(datasets_1[i], datasets_2[i]):
+            print(f"Dataset {i}: Not Equal")
+        else:
+            print(f"Dataset {i}: Equal")
+
+def run_write_read(file_name):
     # Create some sample data
     data1 = np.random.rand(100)
     data2 = np.random.randint(0, 10, size=100)
@@ -45,13 +75,15 @@ def run_write_read(file_name):
     data4 = np.arange(100)
     
     set_curr_task("h5_write")
-    
     # Create an HDF5 file and write datasets
     with h5py.File(file_name, 'w') as hdf_file:
         hdf_file.create_dataset('dataset1', data=data1)
         hdf_file.create_dataset('dataset2', data=data2)
         hdf_file.create_dataset('dataset3', data=data3)
         hdf_file.create_dataset('dataset4', data=data4)
+    
+    # sleep 3 seconds
+    time.sleep(3)
     
     set_curr_task("h5_read")
     # Read datasets from the HDF5 file
@@ -74,6 +106,19 @@ def run_write_read(file_name):
     print("Dataset 4: Equal =", equal_data4)
 
 
+def write_read_separate(file_name):
+    # Create some sample data
+    data1 = np.random.rand(100)
+    data2 = np.random.randint(0, 10, size=100)
+    data3 = np.random.randn(100)
+    data4 = np.arange(100)
+    write_datasets = [data1, data2, data3, data4]
+    
+    run_write(file_name,write_datasets)
+    read_datasets = run_read(file_name,len(write_datasets))
+    
+    check_equals(write_datasets, read_datasets)
+
 # main
 if __name__ == "__main__":
     # get user argument with file name
@@ -84,4 +129,5 @@ if __name__ == "__main__":
     file_name = sys.argv[1]
     
     
-    run_write_read(file_name)
+    # run_write_read(file_name)
+    write_read_separate(file_name)
