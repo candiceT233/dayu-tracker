@@ -28,7 +28,7 @@ extern hid_t H5FDhermes_err_class_g;
 
 #define H5FD_HERMES_ERR_CLS_NAME "HDF5 HERMES VFD"
 #define H5FD_HERMES_ERR_LIB_NAME "HDF5 HERMES VFD"
-// #define H5SUBFILING_ERR_VER      "1.0.0"
+#define H5FD_HERMES_ERR_VER      "0.1.0"
 
 #define SUCCEED 0
 #define FAIL    (-1)

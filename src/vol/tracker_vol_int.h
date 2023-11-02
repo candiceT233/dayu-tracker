@@ -301,8 +301,8 @@ int getCurrentTask(char **curr_task) {
     return 0;
 }
 
-size_t get_hermes_page_size() {
-    const char* env_value = getenv("HERMES_PAGE_SIZE");
+size_t get_tracker_page_size() {
+    const char* env_value = getenv("TRACKER_VFD_PAGE_SIZE");
     if (env_value != NULL) {
         // Convert the environment variable value to size_t
         size_t page_size = (size_t)strtoul(env_value, NULL, 10);
@@ -786,7 +786,7 @@ tkr_helper_t * tkr_helper_init( char* file_path, Track_level tkr_level, char* tk
     /* VFD vars start */
     // new_helper->vfd_opened_files = NULL;
     // new_helper->vfd_opened_files_cnt = 0;
-    new_helper->hermes_page_size = get_hermes_page_size();
+    new_helper->tracker_page_size = get_tracker_page_size();
     /* VFD vars end */
 
     getlogin_r(new_helper->user_name, 32);
@@ -1418,7 +1418,7 @@ dataset_tkr_info_t * add_dataset_node(unsigned long obj_file_no,
     // TODO: update meta_page to tracking object
     cur->metadata_file_page = NULL;
     cur->metadata_file_page = (size_t) malloc(sizeof(size_t));
-    cur->metadata_file_page = token_to_num(cur->obj_info.token) / TKR_HELPER->hermes_page_size;
+    cur->metadata_file_page = token_to_num(cur->obj_info.token) / TKR_HELPER->tracker_page_size;
 
     tkrLockAcquire(&myLock);
     cur->sorder_id = ++DATA_SORDER;
@@ -2745,7 +2745,7 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
         if((dset_info->storage_size == NULL) || (dset_info->storage_size < 1))
         {
             // get storage size
-            size_t hermes_page_size = TKR_HELPER->hermes_page_size;
+            size_t tracker_page_size = TKR_HELPER->tracker_page_size;
             size_t start_addr;
             size_t end_addr;
             size_t start_page;
@@ -2754,22 +2754,21 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
 
             tkrLockAcquire(&myLock);
             dset_info->storage_size = dataset_get_storage_size(dset->under_object, dset->under_vol_id, dxpl_id);
-            // printf("Critical section storage_size: %ld addr[%ld, %ld] size[%ld], hermes_blobs[%ld, %ld]\n", 
-            //     dset_info->storage_size, START_ADDR, END_ADDR, ACC_SIZE);
+            
             start_addr = START_ADDR;
             end_addr = END_ADDR;
             access_size = ACC_SIZE;
             tkrLockRelease(&myLock);
 
-            start_page = start_addr/hermes_page_size;
-            end_page = end_addr/hermes_page_size;
+            start_page = start_addr/tracker_page_size;
+            end_page = end_addr/tracker_page_size;
 
             if(access_size == dset_info->storage_size){
                 dset_info->data_file_page_start = start_page;
                 dset_info->data_file_page_end = end_page;
             } else {
                 dset_info->data_file_page_start = end_page;
-                dset_info->data_file_page_end = (end_addr + dset_info->storage_size) / hermes_page_size;
+                dset_info->data_file_page_end = (end_addr + dset_info->storage_size) / tracker_page_size;
             }
 
             if(strcmp(dset_info->layout,"H5D_CONTIGUOUS") == 0)

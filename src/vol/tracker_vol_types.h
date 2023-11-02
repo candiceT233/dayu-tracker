@@ -52,8 +52,7 @@ unsigned long END_PAGE;
 
 int TASK_ID = 0;
 
-static const char * read_func = "H5FD__hermes_read";
-static const char * write_func = "H5FD__hermes_write";
+
 
 // unsigned long VFD_ADDR ;
 // extern haddr_t vfd_start_addr;
@@ -83,7 +82,7 @@ typedef struct TrackerHelper {
     file_tkr_info_t* opened_files;//linkedlist,
     
     /* candice added fields start */
-    size_t hermes_page_size;
+    size_t tracker_page_size;
     // int vfd_opened_files_cnt;
     // vfd_file_tkr_info_t* vfd_opened_files;//linkedlist,
     /* candice added fields end*/
