@@ -4,6 +4,7 @@
 module load openmpi/4.1.3
 
 . $HOME/spack/share/spack/setup-env.sh
+spack load zlib
 
 HDF5_DIR="`which h5cc |sed 's/.\{9\}$//'`"
 HDF5_BIN="$HDF5_DIR/bin"
@@ -26,8 +27,8 @@ C_INCLUDE_PATH="${NETCDFC_INCLUDE}:${C_INCLUDE_PATH}"
 NETCDFC_PKG_CONFIG_PATH="$NETCDFC_DIR/lib/pkgconfig"
 PKG_CONFIG_PATH="${NETCDFC_PKG_CONFIG_PATH}:${PKG_CONFIG_PATH}"
 
-ZLIB_PKG_CONFIG_PATH="/usr/lib64/pkgconfig"
-PKG_CONFIG_PATH="${ZLIB_PKG_CONFIG_PATH}:${PKG_CONFIG_PATH}"
+# ZLIB_PKG_CONFIG_PATH="/usr/lib64/pkgconfig"
+# PKG_CONFIG_PATH="${ZLIB_PKG_CONFIG_PATH}:${PKG_CONFIG_PATH}"
 
 # set -x
 MPI_PATH="`which mpicc |sed 's/.\{10\}$//'`"
