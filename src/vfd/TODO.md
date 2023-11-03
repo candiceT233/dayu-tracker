@@ -6,4 +6,5 @@
 4. write proper CMakeList.txt
 <!-- 5. test run in isolation -->
 6. test run with VOL
-
+7. Optimization
+  - sampling and block size
