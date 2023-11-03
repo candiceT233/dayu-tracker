@@ -6,14 +6,28 @@ HDF5_DIR=$(HOME)/install/hdf5
 # HDF5_DIR=$(HOME)/miniconda3/envs/flextrkr
 # HDF5_DIR=$(HOME)/.conda/envs/pyflextrkr_copy
 
-# CC=h5hlcc # gcc mpicc h5cc h5hlcc
-CC=h5cc # h5c++ h5hlc++
+
+CC=h5c++ 
+# h5c++ h5hlc++ gcc mpicc h5cc h5hlcc
+
+POSIX_FLAGS=-DH5_HAVE_SYS_TIME_H -DH5_HAVE_UNISTD_H \
+			-DH5_HAVE_PWD_H -DH5_HAVE_WAITPID \
+			-DH5_HAVE_SYS_STAT_H -DH5_HAVE_SYS_RESOURCE_H \
+			-DH5_HAVE_SYS_IOCTL_H -DH5_HAVE_DLFCN_H \
+			-DH5_HAVE_FLOCK -DH5_HAVE_SYS_FILE_H \
+			-DH5_HAVE_PREADWRITE
+
+# -DH5_HAVE_THREADSAFE -DH5_HAVE_PTHREAD_H
+# -DH5_HAVE_FLOCK -DH5_HAVE_SYS_FILE_H
+# -DH5_HAVE_THREADSAFE -DH5_HAVE_PTHREAD_H
+
 
 # TRACKER_LOGGING TRACKER_PROV_LOGGING TRACKER_MORE_LOGGING TRACKER_PT_LOGGING TRACKER_TEST_LOGGING
-DEBUG=-g -O0 -DDEBUG -gdwarf-4 -gdwarf-3 -gdwarf-2 #-DTRACKER_TEST_LOGGING -gdwarf-2, -gdwarf-3 or -gdwarf-4
+DEBUG=-g -O0 -DDEBUG -gdwarf-4 -gdwarf-3 -gdwarf-2 #-DDEBUG_LOG
+#-DTRACKER_TEST_LOGGING -gdwarf-2, -gdwarf-3 or -gdwarf-4
 INCLUDES=-I$(HDF5_DIR)/include 
 
-CFLAGS = $(DEBUG) -fPIC $(INCLUDES) -w -Wall 
+CFLAGS = $(DEBUG) -fPIC $(INCLUDES) -w -Wall $(POSIX_FLAGS)
 
 LIBS=-L$(HDF5_DIR)/lib -lhdf5 -lz
 
