@@ -28,7 +28,6 @@
 #include <cstring>
 #include <assert.h>
 #include <math.h>
-#include <iostream>
 
 
 #include <unistd.h>
@@ -52,7 +51,10 @@
 #include <time.h>       // for struct timespec, clock_gettime(CLOCK_MONOTONIC, &end);
 
 // For extracing runtime command
+#ifdef DEBUG_LOG
 #include <iostream>
+#endif
+
 #include <fstream>
 #include <sstream>
 #include <vector>
@@ -60,7 +62,9 @@
 #include <fcntl.h> // For flags like O_RDONLY
 /* candice added functions for I/O traces end */
 
-#define YOUR_MAX_INTENT_LENGTH 512
+#define MAX_FILE_INTENT_LENGTH 128
+#define MAX_CONF_STR_LENGTH 128
+#define H5FD_MAX_FILENAME_LEN 1024 // same as H5FD_MAX_FILENAME_LEN
 
 static
 unsigned long get_time_usec(void) {
@@ -158,16 +162,18 @@ struct H5FD_tkr_file_info_t { // used by VFD
 };
 
 
-/* The description of a file/bucket belonging to this driver. */
+/* The description of a file belonging to this driver. */
 typedef struct H5FD_tracker_vfd_t {
-  H5FD_t         pub;         /* public stuff, must be first           */
-  haddr_t        eoa;         /* end of allocated region               */
-  haddr_t        eof;         /* end of file; current file size        */
-  haddr_t        pos;         /* current file I/O position             */
-  int            op;          /* last operation                        */
-  int            fd;          /* the filesystem file descriptor        */
-  char           *filename_;  /* the name of the file */
-  unsigned       flags;       /* The flags passed from H5Fcreate/H5Fopen */
+    H5FD_t         pub; /* public stuff, must be first      */
+    int            fd;  /* the filesystem file descriptor   */
+    haddr_t        eoa; /* end of allocated region          */
+    haddr_t        eof; /* end of file; current file size   */
+    haddr_t        pos; /* current file I/O position        */
+    int op;  /* last operation                   */
+    bool           ignore_disabled_file_locks;
+    char           filename[H5FD_MAX_FILENAME_LEN]; /* Copy of file name from open operation */
+    bool fam_to_single;
+    unsigned       flags;       /* The flags passed from H5Fcreate/H5Fopen */
 
   /* custom VFD code start */
   hbool_t        logStat; /* write I/O stats to yaml file           */
@@ -226,7 +232,7 @@ bool extractPipeHandle(const std::string& commandLine, int& pipeHandle) {
             pipeHandle = std::stoi(pipeHandleStr);
             return true;
         } catch (const std::exception& e) {
-            std::cerr << "Failed to convert pipe_handle to an integer: " << e.what() << std::endl;
+            printf("pipe_handle: %s\n", pipeHandleStr.c_str());
         }
     }
     return false;
@@ -259,21 +265,20 @@ bool getCurrentTaskFromFile(std::string& curr_task) {
                     buffer << file_stream.rdbuf();
                     curr_task = buffer.str();
 
-                    // std::cout << "Content of " << file_path << ":\n" << curr_task << std::endl;
                     close(fd);  // Release the lock
                     return true;
                 } else {
-                    std::cerr << "Failed to read file: " << file_path << std::endl;
+                    printf("Failed to read file: %s\n", file_path.c_str());
                 }
             } else {
-                std::cerr << "Failed to obtain lock on file: " << file_path << std::endl;
+                printf("Failed to obtain lock on file: %s\n", file_path.c_str());
             }
             close(fd);
         } else {
-            std::cerr << "Failed to open file: " << file_path << " - " << strerror(errno) << std::endl;
+            printf("Failed to open file: %s - %s\n", file_path.c_str(), strerror(errno));
         }
     } else {
-        std::cerr << "Missing environment variables: PATH_FOR_TASK_FILES and/or WORKFLOW_NAME" << std::endl;
+        printf("Missing environment variables: PATH_FOR_TASK_FILES and/or WORKFLOW_NAME\n");
     }
 
     return false;
@@ -315,7 +320,7 @@ bool getCommandLineByPID(int pid, std::string& commandLine) {
 
         return true;
     } else {
-        std::cerr << "Failed to open cmdline file for PID " << pid << std::endl;
+        printf("Failed to open cmdline file for PID %d\n", pid);
         return false;
     }
 }
@@ -345,7 +350,6 @@ void parseEnvironmentVariable(char* file_path) {
         // Set a default file path
         strcpy(file_path, "vfd-data-stat.yaml");
     }
-    // std::cout << "parseEnvironmentVariable() File path: " << file_path << std::endl;
 }
 
 
@@ -488,7 +492,7 @@ void dump_vfd_mem_stat_yaml(FILE* f, const h5_mem_stat_t* mem_stat) {
 
 void dump_vfd_file_stat_yaml(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t* info) {
 
-  std::cout << "File close and write to : " << helper->tkr_file_path << std::endl;
+  printf("File close and write to : %s\n", helper->tkr_file_path);
 
   // const char* file_name = strrchr(info->file_name, '/');
   // Keep complete file path name
@@ -722,6 +726,11 @@ void read_write_info_update(std::string func_name, char * file_name, hid_t fapl_
   size_t size, size_t page_size, unsigned long t_start, unsigned long t_end)
 {
 
+#ifdef DEBUG_LOG
+  printf("read_write_info_update() func_name = %s\n", func_name.c_str());
+  // std::cout << "read_write_info_update() file_name = " << file_name << std::endl;
+#endif
+
   H5FD_tracker_vfd_t *file = (H5FD_tracker_vfd_t *)_file;
   vfd_file_tkr_info_t * info = (vfd_file_tkr_info_t *)file->vfd_file_info;
 
@@ -753,6 +762,11 @@ void read_write_info_update(std::string func_name, char * file_name, hid_t fapl_
 
   TOTAL_TKR_VFD_OVERHEAD+=(get_time_usec() - t_end);
 
+#ifdef DEBUG_LOG
+  printf("read_write_info_update() done: info->file_name = %s\n", info->file_name);
+  // std::cout << "read_write_info_update() done: info->file_name = " << info->file_name << std::endl;
+#endif
+
 #ifdef VFD_LOGGING
   // print_read_write_info(func_name, file_name, fapl_id, _file,
   //   type, dxpl_id, addr, size, page_size, t_start, t_end);
@@ -763,11 +777,18 @@ void read_write_info_update(std::string func_name, char * file_name, hid_t fapl_
 void open_close_info_update(const char* func_name, H5FD_tracker_vfd_t *file, size_t eof, int flags, 
   unsigned long t_start, unsigned long t_end)
 {
+
+
   if (!TOTAL_TKR_VFD_OVERHEAD)
     TOTAL_TKR_VFD_OVERHEAD = 0;
 
   // H5FD_tracker_vfd_t *file = (H5FD_tracker_vfd_t *)_file;
   vfd_file_tkr_info_t * info = (vfd_file_tkr_info_t *)file->vfd_file_info;
+
+#ifdef DEBUG_LOG
+  printf("open_close_info_update() func_name = %s file_name = %s\n", func_name, info->file_name);
+  std::cout << "open_close_info_update() func_name = " << func_name << " file_name = " << info->file_name << std::endl;
+#endif
 
   if (!info->intent)
   {
@@ -785,7 +806,7 @@ void open_close_info_update(const char* func_name, H5FD_tracker_vfd_t *file, siz
   {
     std::string file_intent = getFileIntentFlagsStr(flags);
     size_t intent_length = file_intent.length();
-    if (intent_length < YOUR_MAX_INTENT_LENGTH) // Specify the maximum intent length
+    if (intent_length < MAX_FILE_INTENT_LENGTH) // Specify the maximum intent length
     {
       strncpy(info->intent, file_intent.c_str(), intent_length);
       info->intent[intent_length] = '\0';
@@ -799,6 +820,11 @@ void open_close_info_update(const char* func_name, H5FD_tracker_vfd_t *file, siz
     info->adaptor_page_size = file->page_size;
 
   TOTAL_TKR_VFD_OVERHEAD += (get_time_usec() - t_end);
+
+#ifdef DEBUG_LOG
+  printf("open_close_info_update() done: info->file_name = %s\n", info->file_name);
+  std::cout << "open_close_info_update() done: info->file_name = " << info->file_name << std::endl;
+#endif
 
 #ifdef VFD_LOGGING
   // print_open_close_info(func_name, file, file->name, eof, flags, t_start, t_end);
@@ -1000,7 +1026,7 @@ vfd_tkr_helper_t * vfd_tkr_helper_init( char* file_name, size_t page_size, hbool
     new_helper->tkr_file_path = (char*)malloc(prefix_len + 1);
     snprintf(new_helper->tkr_file_path, prefix_len + 1, "%d_%s", new_helper->pid, file_name);
 
-    std::cout << "vfd new_helper tkr_file_path: " << new_helper->tkr_file_path << std::endl;
+    printf("vfd new_helper tkr_file_path: %s\n", new_helper->tkr_file_path);
 
     /* VFD vars start */
     new_helper->vfd_opened_files = nullptr;
@@ -1010,7 +1036,7 @@ vfd_tkr_helper_t * vfd_tkr_helper_init( char* file_name, size_t page_size, hbool
 
     // Get the user's login name
     if (getlogin_r(new_helper->user_name, sizeof(new_helper->user_name)) != 0) {
-        std::cerr << "Failed to get user name." << std::endl;
+        printf("Failed to get user name.\n");
     }
 
     return new_helper;
@@ -1063,9 +1089,9 @@ vfd_file_tkr_info_t* new_vfd_file_info(const char* fname, unsigned long file_no)
     std::string task_name = getTaskName();
     if (!task_name.empty()) {
         info->task_name = strdup(task_name.c_str());
-        std::cout << "Current task is: " << task_name << std::endl;
+        printf("Current task is: %s\n", task_name.c_str());
     } else {
-        std::cerr << "Failed to get current task." << std::endl;
+        printf("Failed to get current task.\n");
     }
 
     // info->task_name = curr_task ? strdup(curr_task) : nullptr;
@@ -1076,18 +1102,14 @@ vfd_file_tkr_info_t* new_vfd_file_info(const char* fname, unsigned long file_no)
     // // int task_tid = new_helper->tid;
     // // Get the command line associated with the PID
     // if (getCommandLineByPID(task_pid, cmdline)) {
-    //     std::cout << "Command for PID " << task_pid << ": " << cmdline << std::endl;
     // } else {
-    //     std::cerr << "Failed to retrieve command for PID " << task_pid << std::endl;
     // }
 
     // int pipeHandle;
 
     // if (extractPipeHandle(cmdline, pipeHandle)) {
-    //     std::cout << "Extracted pipe_handle: " << pipeHandle << std::endl;
     //     // Now, you can use the 'pipeHandle' to interact with the file or perform other actions.
     // } else {
-    //     std::cerr << "Failed to extract pipe_handle from the command line." << std::endl;
     // }
 
     // // You might want to open the file descriptor, depending on your use case
@@ -1099,10 +1121,8 @@ vfd_file_tkr_info_t* new_vfd_file_info(const char* fname, unsigned long file_no)
     // ssize_t bytesRead = read(fd, buffer, sizeof(buffer));
 
     // if (bytesRead > 0) {
-    //     std::cout << "Read " << bytesRead << " bytes from the descriptor." << std::endl;
     //     // Process the data as needed
     // } else if (bytesRead == 0) {
-    //     std::cout << "End of file reached." << std::endl;
     // } else {
     //     perror("Error reading from descriptor");
     // }
@@ -1116,12 +1136,10 @@ vfd_file_tkr_info_t* new_vfd_file_info(const char* fname, unsigned long file_no)
 
 vfd_file_tkr_info_t* add_vfd_file_node(vfd_tkr_helper_t * helper, const char* file_name, void * obj)
 {
-  // std::cout << "add_vfd_file_node(): TKR_HELPER_VFD" << std::endl;
   unsigned long start = get_time_usec();
   vfd_file_tkr_info_t* cur;
   H5FD_t *_file = (H5FD_t *) obj;
   unsigned long file_no = _file->fileno;
-  std::cout << "add_vfd_file_node(): file_no:" << file_no << std::endl;
 
   assert(helper);
 
@@ -1137,7 +1155,7 @@ vfd_file_tkr_info_t* add_vfd_file_node(vfd_tkr_helper_t * helper, const char* fi
   // Search for file in list of currently opened ones
   cur = helper->vfd_opened_files;
   while (cur) {
-      assert(cur->file_no);
+      // assert(cur->file_no);
 
       if (cur->file_no == file_no)
         break;
@@ -1147,7 +1165,6 @@ vfd_file_tkr_info_t* add_vfd_file_node(vfd_tkr_helper_t * helper, const char* fi
 
   // Allocate and initialize new file node
   cur = new_vfd_file_info(file_name, file_no);
-  std::cout << "add_vfd_file_node(): cur->file_no :" << cur->file_no  << std::endl;
 
   // Add to linked list
   cur->next = helper->vfd_opened_files;
@@ -1167,7 +1184,6 @@ vfd_file_tkr_info_t* add_vfd_file_node(vfd_tkr_helper_t * helper, const char* fi
 int rm_vfd_file_node(vfd_tkr_helper_t* helper, H5FD_t *_file)
 {
 
-  // std::cout << "rm_vfd_file_node(): TKR_HELPER_VFD" << std::endl;
 
   unsigned long start = get_time_usec();
   vfd_file_tkr_info_t* cur;
@@ -1185,8 +1201,7 @@ int rm_vfd_file_node(vfd_tkr_helper_t* helper, H5FD_t *_file)
   while (cur) {
     assert(cur);
     assert(cur->ref_cnt);
-    std::cout << "rm_vfd_file_node(): cur->file_no :" << cur->file_no  << std::endl;
-    std::cout << "rm_vfd_file_node(): cur->ref_cnt :" << cur->ref_cnt  << std::endl;
+
     // Node found
     if (cur->file_no == file_no) {
         // Decrement file node's refcount

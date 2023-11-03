@@ -40,9 +40,9 @@
     }                                                                       \
   }
 
-// #ifdef __cplusplus
-// extern "C" {
-// #endif
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 hid_t H5FD_tracker_vfd_init();
 herr_t H5Pset_fapl_tracker_vfd(hid_t fapl_id, hbool_t persistence, size_t page_size);
@@ -53,8 +53,8 @@ const void* H5PLget_plugin_info(void);
 TRACKER_VFD_FORWARD_DECL(H5_init_library, herr_t, ());
 TRACKER_VFD_FORWARD_DECL(H5_term_library, herr_t, ());
 
-// #ifdef __cplusplus
-// }
-// #endif
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* end H5FDtracker_VFD */
