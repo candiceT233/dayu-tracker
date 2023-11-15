@@ -15,8 +15,8 @@
  * Programmer:  Meng Tang
  *              Sep 2022
  *
- * Purpose: The hermes file driver using only the HDF5 public API
- *          and buffer datasets in Hermes buffering systems with
+ * Purpose: The tracker_vfd file driver using only the HDF5 public API
+ *          and buffer datasets in Tracker VFD buffering systems with
  *          multiple storage tiers.
  */
 #ifndef _GNU_SOURCE
@@ -25,47 +25,46 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <cstring>
 #include <assert.h>
 #include <math.h>
+
 
 #include <unistd.h>
 #include <sys/file.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include <mpi.h>
+// #include <mpi.h>
 
 /* HDF5 header for dynamic plugin loading */
 // #include "H5PLextern.h"
-#include "H5FDhermes.h"     /* Hermes file driver     */
-// #include "H5FDhermes_err.h" /* TODO: error handling         */
+#include "H5FD_tracker_vfd.h"     /* Tracker VFD file driver     */
+// #include "H5FD_tracker_vfd_err.h" /* TODO: error handling         */
 
 
 // #ifdef ENABLE_TRACKER
-
-#include "/qfs/people/tang584/scripts/vol-tracker/src/tracker_vol_types.h" /* Connecting to vol */
-// #include "/home/candicet233/scripts/vol-tracker/src/tracker_vol_types.h" /* Connecting to vol */
+#include "../vol/tracker_vol_types.h" /* Connecting to vol */
 // #include "tracker_vol_types.h" /* only VFD */
 
 
 #include <time.h>       // for struct timespec, clock_gettime(CLOCK_MONOTONIC, &end);
 
 // For extracing runtime command
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <vector>
 #include <dirent.h>
 #include <fcntl.h> // For flags like O_RDONLY
 /* candice added functions for I/O traces end */
 
+#define YOUR_MAX_INTENT_LENGTH 512
+#define MAX_MEM_TYPE_LEN 32
+#define MAX_PATH_LENGTH 1024
+#define MAX_PID_LENGTH 20
+#define MAX_CMD_LENGTH 1024
 
 static
 unsigned long get_time_usec(void) {
     struct timeval tp;
 
-    gettimeofday(&tp, nullptr);
+    gettimeofday(&tp, NULL);
     return (unsigned long)((1000000 * tp.tv_sec) + tp.tv_usec);
 }
 
@@ -75,8 +74,9 @@ unsigned long get_time_usec(void) {
 /************/
 typedef struct H5FD_tkr_file_info_t vfd_file_tkr_info_t;
 unsigned long TOTAL_TKR_VFD_OVERHEAD;
-unsigned long TOTAL_TKR_IO_TIME;
 unsigned long TOTAL_POSIX_IO_TIME;
+const char* read_func = "H5FD__tracker_vfd_read";
+const char* write_func = "H5FD__tracker_vfd_write";
 
 
 typedef struct VFDTrackerHelper {
@@ -91,22 +91,22 @@ typedef struct VFDTrackerHelper {
     int ptr_cnt;
     int vfd_opened_files_cnt;
     vfd_file_tkr_info_t* vfd_opened_files;//linkedlist,
-    size_t hermes_page_size;
+    size_t tracker_vfd_page_size;
 
 } vfd_tkr_helper_t;
 
-static vfd_tkr_helper_t* TKR_HELPER_VFD = nullptr;
+static vfd_tkr_helper_t* TKR_HELPER_VFD = NULL;
 
 
-struct page_range_t {
+typedef struct page_range_t {
     size_t start_page;
     size_t end_page;
     int io_idx;
-    page_range_t* next;
-};
+    struct page_range_t* next;
+} page_range_t;
 
-struct h5_mem_stat_t {
-    std::string mem_type;
+typedef struct h5_mem_stat_t {
+    char mem_type[MAX_MEM_TYPE_LEN];
     size_t read_bytes;
     size_t write_bytes;
 
@@ -117,15 +117,16 @@ struct h5_mem_stat_t {
     int write_cnt;
     page_range_t* write_ranges; // linked-list head pointer
     page_range_t* write_ranges_tail; // linked-list tail pointer
-};
 
-struct H5FD_tkr_file_info_t { // used by VFD
+} h5_mem_stat_t;
+
+typedef struct H5FD_tkr_file_info_t { // used by VFD
     vfd_tkr_helper_t* vfd_tkr_helper;  //pointer shared among all layers, one per process.
 
     const char* file_name;
     unsigned long file_no;
     char* intent;
-    char * task_name;
+    char* task_name;
     unsigned long sorder_id; // need lock
     hid_t fapl_id;
     int file_read_cnt;
@@ -135,11 +136,11 @@ struct H5FD_tkr_file_info_t { // used by VFD
     size_t io_bytes;
 
     /* common metadata access type */
-    h5_mem_stat_t * h5_draw; // H5FD_MEM_DRAW
-    h5_mem_stat_t * h5_ohdr; // H5FD_MEM_OHDR
-    h5_mem_stat_t * h5_super; // H5FD_MEM_SUPER 
-    h5_mem_stat_t * h5_btree; // H5FD_MEM_BTREE
-    h5_mem_stat_t * h5_lheap; // H5FD_MEM_LHEAP
+    h5_mem_stat_t* h5_draw; // H5FD_MEM_DRAW
+    h5_mem_stat_t* h5_ohdr; // H5FD_MEM_OHDR
+    h5_mem_stat_t* h5_super; // H5FD_MEM_SUPER 
+    h5_mem_stat_t* h5_btree; // H5FD_MEM_BTREE
+    h5_mem_stat_t* h5_lheap; // H5FD_MEM_LHEAP
     
     int ref_cnt;
     unsigned long open_time;
@@ -152,12 +153,11 @@ struct H5FD_tkr_file_info_t { // used by VFD
     H5FD_MEM_NOLIST
     */
 
-    vfd_file_tkr_info_t *next;
-};
-
+    struct H5FD_tkr_file_info_t* next;
+} H5FD_tkr_file_info_t;
 
 /* The description of a file/bucket belonging to this driver. */
-typedef struct H5FD_hermes_t {
+typedef struct H5FD_tracker_vfd_t {
   H5FD_t         pub;         /* public stuff, must be first           */
   haddr_t        eoa;         /* end of allocated region               */
   haddr_t        eof;         /* end of file; current file size        */
@@ -173,31 +173,32 @@ typedef struct H5FD_hermes_t {
   hid_t          my_fapl_id;     /* file access property list ID */
   vfd_tkr_helper_t *vfd_tkr_helper; /* pointer shared among all layers, one per process. */
   vfd_file_tkr_info_t * vfd_file_info; /* file info */
+  // char *logFilePath; /* log file path */
 
   /* custom VFD code end */
 
-} H5FD_hermes_t;
+} H5FD_tracker_vfd_t;
 
 /* function prototypes*/
-std::string getFileIntentFlagsStr(unsigned int flags);
+char* getFileIntentFlagsStr(unsigned int flags);
 void update_mem_type_stat_helper(int rw, size_t start_page, 
   size_t end_page, size_t access_size, h5_mem_stat_t* mem_stat);
 void update_mem_type_stat(int rw, size_t start_page, 
   size_t end_page, size_t access_size, H5FD_mem_t type, vfd_file_tkr_info_t * info);
-void read_write_info_update(const char* func_name, char * file_name, hid_t fapl_id, H5FD_t *_file,
-  H5FD_mem_t type, hid_t dxpl_id, haddr_t addr,
-  size_t size, size_t page_size, unsigned long t_start, unsigned long t_end);
+void read_write_info_update(const char* func_name, const char* file_name, hid_t fapl_id, H5FD_t* _file,
+                            H5FD_mem_t type, hid_t dxpl_id, haddr_t addr,
+                            size_t size, size_t page_size, unsigned long t_start, unsigned long t_end);
 
-void open_close_info_update(const char* func_name, H5FD_hermes_t *file, size_t eof, int flags, 
+void open_close_info_update(const char* func_name, H5FD_tracker_vfd_t *file, size_t eof, int flags, 
   unsigned long t_start, unsigned long t_end);
 void print_open_close_info(const char* func_name, void * obj, const char * file_name, 
   size_t eof, int flags, unsigned long t_start, unsigned long t_end);
 
-// void dump_vfd_file_stat_yaml(FILE* f, const vfd_file_tkr_info_t* info);
+
 void dump_vfd_file_stat_yaml(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t* info);
 void dump_vfd_mem_stat_yaml(FILE* f, const h5_mem_stat_t* mem_stat);
 
-void parseEnvironmentVariable(char* file_path);
+void parseEnvironmentVariable(char* file_path, size_t max_length);
 vfd_tkr_helper_t * vfd_tkr_helper_init( char* file_path, size_t page_size, hbool_t logStat);
 void vfd_file_info_free(vfd_file_tkr_info_t* info);
 vfd_file_tkr_info_t* new_vfd_file_info(const char* fname, unsigned long file_no);
@@ -206,40 +207,29 @@ int rm_vfd_file_node(vfd_tkr_helper_t* helper, H5FD_t *_file);
 void vfd_tkr_helper_teardown(vfd_tkr_helper_t* helper);
 
 
-std::string get_ohdr_type(H5F_mem_t type);
-std::string get_mem_type(H5F_mem_t type);
+const char* get_ohdr_type(H5F_mem_t type);
+const char* get_mem_type(H5F_mem_t type);
 
-// Function to extract the pipe_handle number from the command line string
-bool extractPipeHandle(const std::string& commandLine, int& pipeHandle) {
-    size_t pipeHandlePos = commandLine.find("pipe_handle=");
-    if (pipeHandlePos != std::string::npos) {
-        // Extract the substring starting from 'pipe_handle=' to the next space or end of the string
-        std::string pipeHandleStr = commandLine.substr(pipeHandlePos + 11); // 11 is the length of "pipe_handle="
-        size_t spacePos = pipeHandleStr.find(' ');
-        if (spacePos != std::string::npos) {
-            pipeHandleStr = pipeHandleStr.substr(0, spacePos);
-        }
-        try {
-            pipeHandle = std::stoi(pipeHandleStr);
-            return true;
-        } catch (const std::exception& e) {
-            std::cerr << "Failed to convert pipe_handle to an integer: " << e.what() << std::endl;
-        }
+void getTaskName(char* task_name, size_t max_length) {
+    // Check if the environment variable CURR_TASK is set
+    const char* curr_task_env = getenv("CURR_TASK");
+
+    if (curr_task_env) {
+        snprintf(task_name, max_length, "%s-%d", curr_task_env, getpid());
+        return;
     }
-    return false;
-}
 
-bool getCurrentTask(std::string& curr_task) {
-    // Get environment variables
-    const char* path_for_task_files = std::getenv("PATH_FOR_TASK_FILES");
-    const char* workflow_name = std::getenv("WORKFLOW_NAME");
+    // If CURR_TASK is not set or empty, try reading it from a file
+    const char* path_for_task_files = getenv("PATH_FOR_TASK_FILES");
+    const char* workflow_name = getenv("WORKFLOW_NAME");
 
     if (path_for_task_files && workflow_name) {
         // Construct the full file path
-        std::string file_path = std::string(path_for_task_files) + "/" + std::string(workflow_name) + "_vfd.curr_task";
+        char file_path[MAX_PATH_LENGTH];
+        snprintf(file_path, sizeof(file_path), "%s/%s_vfd.curr_task", path_for_task_files, workflow_name);
 
         // Open the file with exclusive lock
-        int fd = open(file_path.c_str(), O_RDONLY);
+        int fd = open(file_path, O_RDONLY);
         if (fd != -1) {
             struct flock lock;
             lock.l_type = F_RDLCK;
@@ -249,205 +239,174 @@ bool getCurrentTask(std::string& curr_task) {
 
             // Attempt to obtain a shared lock on the file
             if (fcntl(fd, F_SETLK, &lock) != -1) {
-                // Read the file content into a string
-                std::ifstream file_stream(file_path);
-                if (file_stream) {
-                    std::stringstream buffer;
-                    buffer << file_stream.rdbuf();
-                    curr_task = buffer.str();
-
-                    // std::cout << "Content of " << file_path << ":\n" << curr_task << std::endl;
+                // Read the file content into the buffer
+                ssize_t read_count = read(fd, task_name, max_length);
+                if (read_count >= 0) {
+                    task_name[read_count] = '\0';
                     close(fd);  // Release the lock
-                    return true;
+                    return;     // Success
                 } else {
-                    std::cerr << "Failed to read file: " << file_path << std::endl;
+                    printf("Failed to read file: %s\n", file_path);
                 }
             } else {
-                std::cerr << "Failed to obtain lock on file: " << file_path << std::endl;
+                printf("Failed to obtain lock on file: %s\n", file_path);
             }
             close(fd);
         } else {
-            std::cerr << "Failed to open file: " << file_path << " - " << strerror(errno) << std::endl;
+            printf("Failed to open file: %s - %s\n", file_path, strerror(errno));
         }
     } else {
-        std::cerr << "Missing environment variables: PATH_FOR_TASK_FILES and/or WORKFLOW_NAME" << std::endl;
+        printf("Missing environment variables: PATH_FOR_TASK_FILES and/or WORKFLOW_NAME\n");
+    }
+
+    // If both methods fail or environment variables are missing, return an empty string
+    snprintf(task_name, max_length, "");
+}
+
+// Function to get the full command line for a given PID
+bool getCommandLineByPID(int pid, char* commandLine) {
+    char procDir[MAX_CMD_LENGTH];
+    snprintf(procDir, sizeof(procDir), "/proc/%d/cmdline", pid);
+    FILE* cmdlineFile = fopen(procDir, "r");
+
+    if (cmdlineFile) {
+        size_t bytesRead = fread(commandLine, 1, MAX_CMD_LENGTH, cmdlineFile);
+        fclose(cmdlineFile);
+
+        if (bytesRead > 0) {
+            // Replace null bytes with spaces in the command line
+            for (size_t i = 0; i < bytesRead; i++) {
+                if (commandLine[i] == '\0') {
+                    commandLine[i] = ' ';
+                }
+            }
+
+            return true;
+        } else {
+            printf("Failed to read cmdline file for PID %d\n", pid);
+        }
+    } else {
+        printf("Failed to open cmdline file for PID %d\n", pid);
     }
 
     return false;
 }
 
-// Function to get the full command line for a given PID
-bool getCommandLineByPID(int pid, std::string& commandLine) {
-    std::string procDir = "/proc/" + std::to_string(pid) + "/cmdline";
-    std::ifstream cmdlineFile(procDir);
-
-    if (cmdlineFile.is_open()) {
-        std::stringstream buffer;
-        buffer << cmdlineFile.rdbuf();
-        commandLine = buffer.str();
-
-        // Replace null bytes with spaces in the command line
-        size_t nullBytePos;
-        while ((nullBytePos = commandLine.find('\0')) != std::string::npos) {
-            commandLine.replace(nullBytePos, 1, " ");
-        }
-
-        return true;
-    } else {
-        std::cerr << "Failed to open cmdline file for PID " << pid << std::endl;
-        return false;
-    }
-}
-
-void parseEnvironmentVariable(char* file_path) {
-
-    const char* env_var = std::getenv("HDF5_VOL_CONNECTOR");
-    if (env_var) {
-        std::string env_string(env_var);
-
-        size_t path_pos = env_string.find("path=");
-        size_t level_pos = env_string.find("level=");
-        size_t format_pos = env_string.find("format=");
-
-        if (path_pos != std::string::npos) {
-            size_t path_start = path_pos + 5;
-            size_t path_end = level_pos != std::string::npos ? level_pos - 1 : format_pos - 1;
-            std::string path = env_string.substr(path_start, path_end - path_start + 1);
-            // std::strcpy(file_path, path.c_str());
-            // Remove the semicolon from the file path
-            path.erase(std::remove(path.begin(), path.end(), ';'), path.end());
-            std::strcpy(file_path, "vfd-"); // use a different file
-            std::strcat(file_path, path.c_str());
+void parseEnvironmentVariable(char* file_path, size_t max_length) {
+    const char* path_str = getenv("HDF5_LOG_FILE_PATH");
+    if (path_str) {
+        // Find the first occurrence of ';' or the end of the string
+        const char* delimiter = strchr(path_str, ';');
+        if (delimiter) {
+            // Calculate the length of the path
+            size_t path_length = delimiter - path_str;
+            
+            // Add "vfd-" as a prefix to the path and copy to file_path
+            snprintf(file_path, max_length, "vfd-%.*s", (int)path_length, path_str);
         } else {
-            std::strcpy(file_path, "");
+            // No delimiter found, so use the entire string and add "vfd-" prefix
+            snprintf(file_path, max_length, "vfd-%s", path_str);
         }
-
     } else {
-        // const char* env_var = std::getenv("HDF5_VOL_CONNECTOR");
-        std::strcpy(file_path, "vfd-data-stat.yaml");
-
+        // Set a default file path
+        snprintf(file_path, max_length, "vfd-data-stat.yaml");
     }
-
-  // Print the parsed values
-  // std::cout << "File Path: " << file_path << std::endl;
-  // std::cout << "DLife Level: " << vfd_tkr_level << std::endl;
-  // std::cout << "DLife Line Format: " << vfd_tkr_line_format << std::endl;
 }
-
 
 
 /* candice added, print H5FD_mem_t H5FD_MEM_OHDR type more info */
-std::string get_ohdr_type(H5F_mem_t type){
-// char * get_ohdr_type(H5F_mem_t type){
-
-  if (type == H5FD_MEM_FHEAP_HDR){
-    // printf("- Access_Region_Mem_Type : H5FD_MEM_FHEAP_HDR \n");
-    return "H5FD_MEM_FHEAP_HDR";
-
-  } else if( type == H5FD_MEM_FHEAP_IBLOCK ){
-    // printf("- Access_Region_Mem_Type : H5FD_MEM_FHEAP_IBLOCK \n");
-    return "H5FD_MEM_FHEAP_IBLOCK";
-
-  } else if( type == H5FD_MEM_FSPACE_HDR ){
-    // printf("- Access_Region_Mem_Type : H5FD_MEM_FSPACE_HDR \n");
-    return "H5FD_MEM_FSPACE_HDR";
-
-  } else if( type == H5FD_MEM_SOHM_TABLE  ){
-    // printf("- Access_Region_Mem_Type : H5FD_MEM_SOHM_TABLE  \n");
-    return "H5FD_MEM_SOHM_TABLE";
-
-  } else if( type == H5FD_MEM_EARRAY_HDR ){
-    // printf("- Access_Region_Mem_Type : H5FD_MEM_EARRAY_HDR \n");
-    return "H5FD_MEM_EARRAY_HDR";
-
-  } else if( type == H5FD_MEM_EARRAY_IBLOCK ){
-    // printf("- Access_Region_Mem_Type : H5FD_MEM_EARRAY_IBLOCK \n");
-    return "H5FD_MEM_EARRAY_IBLOCK";
-
-  } else if( type == H5FD_MEM_FARRAY_HDR  ){
-    // printf("- Access_Region_Mem_Type : H5FD_MEM_FARRAY_HDR  \n");
-    return "H5FD_MEM_FARRAY_HDR";
-
-  } else {
-    // printf("- Access_Region_Mem_Type : H5FD_MEM_OHDR \n");
-    return "H5FD_MEM_OHDR";
-  }
+const char* get_ohdr_type(H5F_mem_t type) {
+    if (type == H5FD_MEM_FHEAP_HDR) {
+        return "H5FD_MEM_FHEAP_HDR";
+    } else if (type == H5FD_MEM_FHEAP_IBLOCK) {
+        return "H5FD_MEM_FHEAP_IBLOCK";
+    } else if (type == H5FD_MEM_FSPACE_HDR) {
+        return "H5FD_MEM_FSPACE_HDR";
+    } else if (type == H5FD_MEM_SOHM_TABLE) {
+        return "H5FD_MEM_SOHM_TABLE";
+    } else if (type == H5FD_MEM_EARRAY_HDR) {
+        return "H5FD_MEM_EARRAY_HDR";
+    } else if (type == H5FD_MEM_EARRAY_IBLOCK) {
+        return "H5FD_MEM_EARRAY_IBLOCK";
+    } else if (type == H5FD_MEM_FARRAY_HDR) {
+        return "H5FD_MEM_FARRAY_HDR";
+    } else {
+        return "H5FD_MEM_OHDR";
+    }
 }
 
-std::string get_mem_type(H5F_mem_t type){
-// char * get_mem_type(H5F_mem_t type){
-  switch(type) {
-    case H5FD_MEM_DEFAULT:
-      return "H5FD_MEM_DEFAULT";
-    case H5FD_MEM_SUPER:
-      return "H5FD_MEM_SUPER";
-    case H5FD_MEM_BTREE:
-      return "H5FD_MEM_BTREE";
-    case H5FD_MEM_DRAW:
-      return "H5FD_MEM_DRAW";
-    case H5FD_MEM_GHEAP:
-      return "H5FD_MEM_GHEAP";
-    case H5FD_MEM_LHEAP:
-      return "H5FD_MEM_LHEAP";
-    case H5FD_MEM_NTYPES:
-      return "H5FD_MEM_NTYPES";
-    case H5FD_MEM_NOLIST:
-      return "H5FD_MEM_NOLIST";
-    case H5FD_MEM_OHDR:
-      return "H5FD_MEM_OHDR";
-    default:
-      return "H5FD_MEM_UNKNOWN";
-  }
+const char* get_mem_type(H5F_mem_t type) {
+    switch (type) {
+        case H5FD_MEM_DEFAULT:
+            return "H5FD_MEM_DEFAULT";
+        case H5FD_MEM_SUPER:
+            return "H5FD_MEM_SUPER";
+        case H5FD_MEM_BTREE:
+            return "H5FD_MEM_BTREE";
+        case H5FD_MEM_DRAW:
+            return "H5FD_MEM_DRAW";
+        case H5FD_MEM_GHEAP:
+            return "H5FD_MEM_GHEAP";
+        case H5FD_MEM_LHEAP:
+            return "H5FD_MEM_LHEAP";
+        case H5FD_MEM_NTYPES:
+            return "H5FD_MEM_NTYPES";
+        case H5FD_MEM_NOLIST:
+            return "H5FD_MEM_NOLIST";
+        case H5FD_MEM_OHDR:
+            return "H5FD_MEM_OHDR";
+        default:
+            return "H5FD_MEM_UNKNOWN";
+    }
 }
 
 // for debug
 void print_mem_stat(const h5_mem_stat_t* mem_stat)
 {
-    printf("  - %s:\n", mem_stat->mem_type.c_str());
+    printf("  - %s:\n", mem_stat->mem_type);
     printf("      read_bytes: %zu\n", mem_stat->read_bytes);
     printf("      read_cnt: %d\n", mem_stat->read_cnt);
     printf("      read_ranges: {");
-    
+
     page_range_t* read_range = mem_stat->read_ranges;
-    while (read_range != nullptr) {
+    while (read_range != NULL) {
         printf("%d:(%zu,%zu)", read_range->io_idx, read_range->start_page, read_range->end_page);
         read_range = read_range->next;
-        if (read_range != nullptr) {
+        if (read_range != NULL) {
             printf(",");
         }
     }
-    
+
     printf("}\n");
     printf("      write_bytes: %zu\n", mem_stat->write_bytes);
     printf("      write_cnt: %d\n", mem_stat->write_cnt);
     printf("      write_ranges: {");
-    
+
     page_range_t* write_range = mem_stat->write_ranges;
-    while (write_range != nullptr) {
+    while (write_range != NULL) {
         printf("%d:(%zu,%zu)", write_range->io_idx, write_range->start_page, write_range->end_page);
         write_range = write_range->next;
-        if (write_range != nullptr) {
+        if (write_range != NULL) {
             printf(",");
         }
     }
-    
+
     printf("}\n");
 }
 
 
-
 void dump_vfd_mem_stat_yaml(FILE* f, const h5_mem_stat_t* mem_stat) {
 
-    fprintf(f, "      %s:\n", mem_stat->mem_type.c_str());
+    fprintf(f, "      %s:\n", mem_stat->mem_type);
     fprintf(f, "        read_bytes: %zu\n", mem_stat->read_bytes);
     fprintf(f, "        read_cnt: %d\n", mem_stat->read_cnt);
     fprintf(f, "        read_ranges: {");
     
     page_range_t* read_range = mem_stat->read_ranges;
-    while (read_range != nullptr) {
+    while (read_range != NULL) {
         fprintf(f, "%d:[%zu,%zu]", read_range->io_idx, read_range->start_page, read_range->end_page);
         read_range = read_range->next;
-        if (read_range != nullptr) {
+        if (read_range != NULL) {
             fprintf(f, ",");
         }
     }
@@ -458,11 +417,11 @@ void dump_vfd_mem_stat_yaml(FILE* f, const h5_mem_stat_t* mem_stat) {
     fprintf(f, "        write_ranges: {");
     
     page_range_t* write_range = mem_stat->write_ranges;
-    while (write_range != nullptr) {
+    while (write_range != NULL) {
         // fprintf(f, "(%zu,%zu)", write_range->start_page, write_range->end_page);
         fprintf(f, "%d:[%zu,%zu]", write_range->io_idx, write_range->start_page, write_range->end_page);
         write_range = write_range->next;
-        if (write_range != nullptr) {
+        if (write_range != NULL) {
             fprintf(f, ",");
         }
     }
@@ -474,7 +433,7 @@ void dump_vfd_mem_stat_yaml(FILE* f, const h5_mem_stat_t* mem_stat) {
 
 void dump_vfd_file_stat_yaml(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t* info) {
 
-  std::cout << "File close and write to : " << helper->tkr_file_path << std::endl;
+  printf("File close and write to : %s\n", helper->tkr_file_path);
 
   // const char* file_name = strrchr(info->file_name, '/');
   // Keep complete file path name
@@ -488,34 +447,27 @@ void dump_vfd_file_stat_yaml(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t
   FILE * f = fopen(helper->tkr_file_path, "a");
 
   if (!info) {
-      fprintf(f, "dump_vfd_file_stat_yaml(): vfd_file_tkr_info_t is nullptr.\n");
+      fprintf(f, "dump_vfd_file_stat_yaml(): vfd_file_tkr_info_t is NULL.\n");
       return;
   }
+
 
   fprintf(f, "- file-%lu:\n", info->sorder_id);
   fprintf(f, "    file_name: \"/%s\"\n", file_name);
 
-  if (info->task_name != nullptr) {
+  if (info->task_name != NULL) {
       fprintf(f, "    task_name: \"%s\"\n", info->task_name);
   } else {
-    // add task name
-    // const char* curr_task = std::getenv("CURR_TASK");
-    // // info->task_name = curr_task ? strdup(curr_task) : nullptr;
-    std::string curr_task;
-    std::string task_name = curr_task + "-" + std::to_string(getpid());
-    fprintf(f, "    task_name: \"%s\"\n", task_name.c_str());
-
-    // if (!curr_task.empty())
-    //   fprintf(f, "    task_name: \"%s\"\n", task_name.c_str());
-    // else
-    //   fprintf(f, "    task_name: \"\"\n");
-
+      // add task name
+      char task_name[MAX_PID_LENGTH]; // Define MAX_PID_LENGTH as needed
+      snprintf(task_name, sizeof(task_name), "%d", getpid());
+      fprintf(f, "    task_name: \"%s\"\n", task_name);
   }
   
   fprintf(f, "    open_time: %lu\n", info->open_time);
   fprintf(f, "    close_time: %lu\n", get_time_usec());
   fprintf(f, "    file_intent: [");
-  if (info->intent != nullptr) {
+  if (info->intent != NULL) {
       fprintf(f, "%s", info->intent);
   }
   fprintf(f, "]\n");
@@ -543,83 +495,139 @@ void dump_vfd_file_stat_yaml(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t
   fprintf(f, "    file_size: %zu\n", info->file_size);
   fprintf(f, "    data:\n");
   // Check and print h5_mem_stat_t structs if they exist
-  if (info->h5_draw != nullptr) {
+  if (info->h5_draw != NULL) {
     dump_vfd_mem_stat_yaml(f, info->h5_draw);
   }
   fprintf(f, "    metadata:\n");
-  if (info->h5_ohdr != nullptr) {
+  if (info->h5_ohdr != NULL) {
     dump_vfd_mem_stat_yaml(f, info->h5_ohdr);
   }
-  if (info->h5_super != nullptr) {
+  if (info->h5_super != NULL) {
     dump_vfd_mem_stat_yaml(f, info->h5_super);
   }
-  if (info->h5_btree != nullptr) {
+  if (info->h5_btree != NULL) {
     dump_vfd_mem_stat_yaml(f, info->h5_btree);
   }
-  if (info->h5_lheap != nullptr) {
+  if (info->h5_lheap != NULL) {
     dump_vfd_mem_stat_yaml(f, info->h5_lheap);
   }
   // Print other h5_mem_stat_t structs if they exist in a similar way
 
   fprintf(f, "- Task:\n");
   fprintf(f, "  task_id: %d\n", getpid());
-  fprintf(f, "  hermes_page_size: %ld\n", info->adaptor_page_size);
+  fprintf(f, "  tracker_vfd_page_size: %ld\n", info->adaptor_page_size);
   fprintf(f, "  VFD-Total-Overhead(ms): %ld\n", TOTAL_TKR_VFD_OVERHEAD/1000);
-  fprintf(f, "  VFD-Total-IO-Time(ms): %ld\n", TOTAL_TKR_IO_TIME/1000);
   fprintf(f, "  POSIX-Total-IO-Time(ms): %ld\n", TOTAL_POSIX_IO_TIME/1000);
 
   fprintf(f, "\n");
+
+
   fflush(f);
   fclose(f);
-
 
 }
 
 
 
 
-std::string getFileIntentFlagsStr(unsigned int flags) {
-    std::string intentFlagsStr;
+char* getFileIntentFlagsStr(unsigned int flags) {
+    char* intentFlagsStr = NULL;
+    size_t maxLen = 0;
 
-    if (flags == 0)
-        intentFlagsStr += "\"NOT_SPECIFIED\",";
-    else{
-      if (flags & H5F_ACC_RDWR)
-          intentFlagsStr += "\"H5F_ACC_RDWR\",";
-      if (flags & H5F_ACC_RDONLY)
-          intentFlagsStr += "\"H5F_ACC_RDONLY\",";
-      if (flags & H5F_ACC_TRUNC)
-          intentFlagsStr += "\"H5F_ACC_TRUNC\",";
-      if (flags & H5F_ACC_CREAT)
-          intentFlagsStr += "\"H5F_ACC_CREAT\",";
-      if (flags & H5F_ACC_EXCL)
-          intentFlagsStr += "\"H5F_ACC_EXCL\",";
+    // Calculate the maximum length required for the string
+    if (flags == 0) {
+        maxLen = strlen("NOT_SPECIFIED") + 1;
+    } else {
+        if (flags & H5F_ACC_RDWR) {
+            maxLen += strlen("H5F_ACC_RDWR") + 1;
+        }
+        if (flags & H5F_ACC_RDONLY) {
+            maxLen += strlen("H5F_ACC_RDONLY") + 1;
+        }
+        if (flags & H5F_ACC_TRUNC) {
+            maxLen += strlen("H5F_ACC_TRUNC") + 1;
+        }
+        if (flags & H5F_ACC_CREAT) {
+            maxLen += strlen("H5F_ACC_CREAT") + 1;
+        }
+        if (flags & H5F_ACC_EXCL) {
+            maxLen += strlen("H5F_ACC_EXCL") + 1;
+        }
+    }
+
+    // Allocate memory for the string
+    intentFlagsStr = (char*)malloc(maxLen);
+    if (!intentFlagsStr) {
+        fprintf(stderr, "Memory allocation error\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // Build the string
+    intentFlagsStr[0] = '\0';
+
+    if (flags == 0) {
+        strcat(intentFlagsStr, "NOT_SPECIFIED");
+    } else {
+        if (flags & H5F_ACC_RDWR) {
+            strcat(intentFlagsStr, "H5F_ACC_RDWR,");
+        }
+        if (flags & H5F_ACC_RDONLY) {
+            strcat(intentFlagsStr, "H5F_ACC_RDONLY,");
+        }
+        if (flags & H5F_ACC_TRUNC) {
+            strcat(intentFlagsStr, "H5F_ACC_TRUNC,");
+        }
+        if (flags & H5F_ACC_CREAT) {
+            strcat(intentFlagsStr, "H5F_ACC_CREAT,");
+        }
+        if (flags & H5F_ACC_EXCL) {
+            strcat(intentFlagsStr, "H5F_ACC_EXCL,");
+        }
     }
 
     // Remove the trailing comma if there are any flags
-    if (!intentFlagsStr.empty())
-        intentFlagsStr.pop_back();
-    
+    size_t len = strlen(intentFlagsStr);
+    if (len > 0 && intentFlagsStr[len - 1] == ',') {
+        intentFlagsStr[len - 1] = '\0';
+    }
+
     return intentFlagsStr;
 }
 
 
-
-
-
-
+void init_mem_stat(h5_mem_stat_t** mem_stat_ptr, const char* mem_type) {
+    if (*mem_stat_ptr == NULL) {
+        *mem_stat_ptr = (h5_mem_stat_t*)malloc(sizeof(h5_mem_stat_t));
+        if (*mem_stat_ptr != NULL) {
+            strncpy((*mem_stat_ptr)->mem_type, mem_type, MAX_MEM_TYPE_LEN);
+            (*mem_stat_ptr)->read_bytes = 0;
+            (*mem_stat_ptr)->write_bytes = 0;
+            (*mem_stat_ptr)->read_cnt = 0;
+            (*mem_stat_ptr)->write_cnt = 0;
+            (*mem_stat_ptr)->read_ranges = NULL;
+            (*mem_stat_ptr)->read_ranges_tail = NULL;
+            (*mem_stat_ptr)->write_ranges = NULL;
+            (*mem_stat_ptr)->write_ranges_tail = NULL;
+        }
+    }
+}
 
 void update_mem_type_stat_helper(int rw, size_t start_page, 
   size_t end_page, size_t access_size, h5_mem_stat_t* mem_stat) 
 {
-    if (rw == 1) {
-        page_range_t* new_range = new page_range_t();
-        new_range->start_page = start_page;
-        new_range->end_page = end_page;
-        new_range->io_idx = VFD_ACCESS_IDX;
-        new_range->next = nullptr;
+    page_range_t* new_range = (page_range_t*)malloc(sizeof(page_range_t));
+    if (new_range == NULL) {
+        // Handle allocation failure
+        return;
+    }
+    
+    new_range->start_page = start_page;
+    new_range->end_page = end_page;
+    new_range->io_idx = VFD_ACCESS_IDX;
+    new_range->next = NULL;
 
-        if (mem_stat->read_ranges == nullptr) {
+    if (rw == 1) {
+        if (mem_stat->read_ranges == NULL) {
             mem_stat->read_ranges = new_range;
             mem_stat->read_ranges_tail = new_range;
         } else {
@@ -630,13 +638,7 @@ void update_mem_type_stat_helper(int rw, size_t start_page,
         mem_stat->read_cnt++;
         mem_stat->read_bytes += access_size;
     } else if (rw == 2) {
-        page_range_t* new_range = new page_range_t();
-        new_range->start_page = start_page;
-        new_range->end_page = end_page;
-        new_range->io_idx = VFD_ACCESS_IDX;
-        new_range->next = nullptr;
-
-        if (mem_stat->write_ranges == nullptr) {
+        if (mem_stat->write_ranges == NULL) {
             mem_stat->write_ranges = new_range;
             mem_stat->write_ranges_tail = new_range;
         } else {
@@ -649,153 +651,125 @@ void update_mem_type_stat_helper(int rw, size_t start_page,
     }
 }
 
-
 void update_mem_type_stat(int rw, size_t start_page, 
   size_t end_page, size_t access_size, H5FD_mem_t type, vfd_file_tkr_info_t * info)
 {
-  
-  switch(type) {
-    case H5FD_MEM_DRAW:
-      if (info->h5_draw == nullptr) {
-        info->h5_draw = new h5_mem_stat_t();
-        info->h5_draw->mem_type = "H5FD_MEM_DRAW";
-      }
-      update_mem_type_stat_helper(rw, start_page, end_page, access_size, info->h5_draw);
-      
-      break;
-    case H5FD_MEM_OHDR:
-      if (info->h5_ohdr == nullptr) {
-        info->h5_ohdr = new h5_mem_stat_t();
-        info->h5_ohdr->mem_type = "H5FD_MEM_OHDR";
-      }
-      update_mem_type_stat_helper(rw, start_page, end_page, access_size, info->h5_ohdr);
-      break;
-    case H5FD_MEM_SUPER:
-      if (info->h5_super == nullptr) {
-          info->h5_super = new h5_mem_stat_t();
-          info->h5_super->mem_type = "H5FD_MEM_SUPER";
-      }
-      update_mem_type_stat_helper(rw, start_page, end_page, access_size, info->h5_super);
-      break;
-    case H5FD_MEM_BTREE:
-      if (info->h5_btree == nullptr) {
-          info->h5_btree = new h5_mem_stat_t();
-          info->h5_btree->mem_type = "H5FD_MEM_BTREE";
-      }
-      update_mem_type_stat_helper(rw, start_page, end_page, access_size, info->h5_btree);
-      break;
-    case H5FD_MEM_LHEAP:
-      if (info->h5_lheap == nullptr) {
-          info->h5_lheap = new h5_mem_stat_t();
-          info->h5_lheap->mem_type = "H5FD_MEM_LHEAP";
-      }
-      update_mem_type_stat_helper(rw, start_page, end_page, access_size, info->h5_lheap);
-      break;
-    case H5FD_MEM_GHEAP:
-      break;
-    case H5FD_MEM_NTYPES:
-      break;
-    case H5FD_MEM_NOLIST:
-      break;
-    case H5FD_MEM_DEFAULT:
-      break;
-    default:
-      break;
-  }
+    switch(type) {
+        case H5FD_MEM_DRAW:
+            init_mem_stat(&(info->h5_draw), "H5FD_MEM_DRAW");
+            update_mem_type_stat_helper(rw, start_page, end_page, access_size, info->h5_draw);
+            break;
+        case H5FD_MEM_OHDR:
+            init_mem_stat(&(info->h5_ohdr), "H5FD_MEM_OHDR");
+            update_mem_type_stat_helper(rw, start_page, end_page, access_size, info->h5_ohdr);
+            break;
+        case H5FD_MEM_SUPER:
+            init_mem_stat(&(info->h5_super), "H5FD_MEM_SUPER");
+            update_mem_type_stat_helper(rw, start_page, end_page, access_size, info->h5_super);
+            break;
+        case H5FD_MEM_BTREE:
+            init_mem_stat(&(info->h5_btree), "H5FD_MEM_BTREE");
+            update_mem_type_stat_helper(rw, start_page, end_page, access_size, info->h5_btree);
+            break;
+        case H5FD_MEM_LHEAP:
+            init_mem_stat(&(info->h5_lheap), "H5FD_MEM_LHEAP");
+            update_mem_type_stat_helper(rw, start_page, end_page, access_size, info->h5_lheap);
+            break;
+        case H5FD_MEM_GHEAP:
+        case H5FD_MEM_NTYPES:
+        case H5FD_MEM_NOLIST:
+        case H5FD_MEM_DEFAULT:
+            // Handle other cases as needed
+            break;
+        default:
+            break;
+    }
 }
 
+void read_write_info_update(const char* func_name, const char* file_name, hid_t fapl_id, H5FD_t* _file,
+                            H5FD_mem_t type, hid_t dxpl_id, haddr_t addr,
+                            size_t size, size_t page_size, unsigned long t_start, unsigned long t_end) {
+    
+    H5FD_tracker_vfd_t* file = (H5FD_tracker_vfd_t*)_file;
+    vfd_file_tkr_info_t* info = (vfd_file_tkr_info_t*)file->vfd_file_info;
 
+    if (info->file_name == NULL) {
+        info->file_name = file_name;
+    }
 
+    if (!info->io_bytes || info->io_bytes == 0) {
+        info->io_bytes = size;
+    } else {
+        info->io_bytes += size;
+    }
 
-void read_write_info_update(const char* func_name, char * file_name, hid_t fapl_id, H5FD_t *_file,
-  H5FD_mem_t type, hid_t dxpl_id, haddr_t addr,
-  size_t size, size_t page_size, unsigned long t_start, unsigned long t_end)
-{
+    if (strcmp(func_name, read_func) == 0) {
+        TOTAL_VFD_READ += size;
+        info->file_read_cnt++;
+        update_mem_type_stat(1, addr / page_size, (addr + size - 1) / page_size, size, type, info);
+    }
 
-  H5FD_hermes_t *file = (H5FD_hermes_t *)_file;
-  vfd_file_tkr_info_t * info = (vfd_file_tkr_info_t *)file->vfd_file_info;
+    if (strcmp(func_name, write_func) == 0) {
+        TOTAL_VFD_WRITE += size;
+        info->file_write_cnt++;
+        update_mem_type_stat(2, addr / page_size, (addr + size - 1) / page_size, size, type, info);
+    }
 
+    VFD_ACCESS_IDX += 1;
 
-  if (info->file_name == nullptr){
-    info->file_name = file_name;
-  }
-
-
-  if (!info->io_bytes || info->io_bytes == 0){
-    info->io_bytes = size;
-  } else {
-    info->io_bytes += size;
-  }
-
-  if(strcmp(func_name, read_func) == 0){
-    TOTAL_VFD_READ += size;
-    info->file_read_cnt++;
-    update_mem_type_stat(1, addr/page_size, (addr+size-1)/page_size, size, type, info);
-  }
-  if(strcmp(func_name, write_func) == 0){
-    TOTAL_VFD_WRITE += size;
-    info->file_write_cnt++;
-    update_mem_type_stat(2, addr/page_size, (addr+size-1)/page_size, size, type, info);
-  }
-
-  VFD_ACCESS_IDX+=1;
-
-  TOTAL_TKR_VFD_OVERHEAD+=(get_time_usec() - t_end);
+    TOTAL_TKR_VFD_OVERHEAD += (get_time_usec() - t_end);
 
 #ifdef VFD_LOGGING
-  // print_read_write_info(func_name, file_name, fapl_id, _file,
-  //   type, dxpl_id, addr, size, page_size, t_start, t_end);
+    // print_read_write_info(func_name, file_name, fapl_id, _file,
+    //   type, dxpl_id, addr, size, page_size, t_start, t_end);
 #endif
-
 }
 
-void open_close_info_update(const char* func_name, H5FD_hermes_t *file, size_t eof, int flags, 
+void open_close_info_update(const char* func_name, H5FD_tracker_vfd_t *file, size_t eof, int flags, 
   unsigned long t_start, unsigned long t_end)
 {
-  if(!TOTAL_TKR_VFD_OVERHEAD)
+  if (!TOTAL_TKR_VFD_OVERHEAD)
     TOTAL_TKR_VFD_OVERHEAD = 0;
 
+  // H5FD_tracker_vfd_t *file = (H5FD_tracker_vfd_t *)_file;
+  vfd_file_tkr_info_t *info = (vfd_file_tkr_info_t *)file->vfd_file_info;
 
-  // H5FD_hermes_t *file = (H5FD_hermes_t *)_file;
-  vfd_file_tkr_info_t * info = (vfd_file_tkr_info_t *)file->vfd_file_info;
-
-
-  if(!info->intent){
-
-    std::string file_intent = getFileIntentFlagsStr(flags);
-    info->intent = (char*)malloc((file_intent.length() + 1) * sizeof(char));
-    strcpy(info->intent, file_intent.c_str());
-
-    // info->intent = file_intent.c_str() ? strdup(file_intent.c_str()) : nullptr;
-
-
-  } else if (info->intent[0] == '\0'){
-
-    std::string file_intent = getFileIntentFlagsStr(flags);
-    strcpy(info->intent, file_intent.c_str());
-  } 
-
-  // printf("intent: [%s]\n", info->intent);
-
+  if (!info->intent)
+  {
+    const char* file_intent = getFileIntentFlagsStr(flags);
+    size_t intent_length = strlen(file_intent);
+    info->intent = (char*)malloc((intent_length + 1) * sizeof(char));
+    if (info->intent)
+    {
+      strncpy(info->intent, file_intent, intent_length);
+      info->intent[intent_length] = '\0';
+    }
+  }
+  else if (info->intent[0] == '\0')
+  {
+    const char* file_intent = getFileIntentFlagsStr(flags);
+    size_t intent_length = strlen(file_intent);
+    if (intent_length < YOUR_MAX_INTENT_LENGTH) // Specify the maximum intent length
+    {
+      strncpy(info->intent, file_intent, intent_length);
+      info->intent[intent_length] = '\0';
+    }
+  }
 
   if (!info->file_size || info->file_size <= 0)
     info->file_size = eof;
 
-  if(!info->adaptor_page_size)
+  if (!info->adaptor_page_size)
     info->adaptor_page_size = file->page_size;
 
-
-  TOTAL_TKR_VFD_OVERHEAD+=(get_time_usec() - t_end );
-
+  TOTAL_TKR_VFD_OVERHEAD += (get_time_usec() - t_end);
 
 #ifdef VFD_LOGGING
   // print_open_close_info(func_name, file, file->name, eof, flags, t_start, t_end);
 #endif
-  
 }
 
-
-/* candice added, print/record info H5FD__hermes_open from */
+/* candice added, print/record info H5FD__tracker_vfd_open from */
 void print_read_write_info(const char* func_name, char * file_name, hid_t fapl_id, void * obj,
   H5FD_mem_t type, hid_t dxpl_id, haddr_t addr,
   size_t size, size_t page_size, unsigned long t_start, unsigned long t_end){
@@ -814,14 +788,14 @@ void print_read_write_info(const char* func_name, char * file_name, hid_t fapl_i
   END_ADDR = addr+size;
   ACC_SIZE = size;
 
-  // printf("{\"hermes_vfd\": ");
-  // printf("{hermes_vfd: ");
+  // printf("{\"tracker_vfd_vfd\": ");
+  // printf("{tracker_vfd_vfd: ");
 
   // Note:
   H5FD_t *_file = (H5FD_t *) obj;
   // const H5FD_class_t *f_cls = (H5FD_class_t *) _file->cls;
   // printf("\"f_cls->name\": \"%s\", ", f_cls->name); // "f_cls->fc_degree": "3",
-  // printf("\"f_cls->fc_degree\": \"%d\", ", f_cls->fc_degree); //  "f_cls->name": "hermes", 
+  // printf("\"f_cls->fc_degree\": \"%d\", ", f_cls->fc_degree); //  "f_cls->name": "tracker_vfd", 
   // printf("\"f_cls->value\": \"%p\", ", f_cls->value);
   // printf("\"f_cls->dxpl_size\": \"%d\", ", f_cls->dxpl_size);
   // printf("\"f_cls->fapl_size\": \"%d\", ", f_cls->fapl_size);
@@ -843,7 +817,7 @@ void print_read_write_info(const char* func_name, char * file_name, hid_t fapl_i
 
   // not used
   printf("\"file_pages\": [%ld, %ld], ", start_page_index,end_page_index);
-  printf("\"mem_type\": \"%s\", ", get_mem_type(type).c_str());
+  printf("\"mem_type\": \"%s\", ", get_mem_type(type));
 
 
 
@@ -883,7 +857,7 @@ void print_read_write_info(const char* func_name, char * file_name, hid_t fapl_i
   printf("}\n");
 
 
-  // printf("{hermes_vfd: ");
+  // printf("{tracker_vfd_vfd: ");
   // printf("{func_name: %s, ", func_name);
   // printf("obj: %p, ", obj);
   // printf("obj_addr: %p, ", (void *) &obj);
@@ -913,8 +887,8 @@ void print_open_close_info(const char* func_name, void * obj, const char * file_
 {
   H5FD_t *_file = (H5FD_t *) obj;
 
-  // printf("{\"hermes_vfd\": ");
-  // printf("{hermes_vfd: ");
+  // printf("{\"tracker_vfd_vfd\": ");
+  // printf("{tracker_vfd_vfd: ");
 
 
   printf("{\"func_name\": \"%s\", ", func_name);
@@ -930,7 +904,7 @@ void print_open_close_info(const char* func_name, void * obj, const char * file_
   printf("\"file_name\": \"%s\", ", file_name);
   printf("}\n");
 
-  // printf("{hermes_vfd: ");
+  // printf("{tracker_vfd_vfd: ");
   // printf("{func_name: %s, ", func_name);
   // // printf("start_time(us): %ld, ", t_start);
   // // printf("start_end(us): %ld, ", t_end);
@@ -951,8 +925,8 @@ void print_open_close_info(const char* func_name, void * obj, const char * file_
 
 void print_H5Pset_fapl_info(const char* func_name, hbool_t logStat, size_t page_size)
 {
-  // printf("{\"hermes_vfd\": ");
-  // printf("{hermes_vfd: ");
+  // printf("{\"tracker_vfd_vfd\": ");
+  // printf("{tracker_vfd_vfd: ");
   
   printf("{\"TASK_ID\": \"%d\", ", TASK_ID);
   printf("{\"func_name\": \"%s\", ", func_name);
@@ -966,45 +940,41 @@ void print_H5Pset_fapl_info(const char* func_name, hbool_t logStat, size_t page_
 }
 
 
-
-vfd_tkr_helper_t * vfd_tkr_helper_init( char* file_path, size_t page_size, hbool_t logStat)
+vfd_tkr_helper_t * vfd_tkr_helper_init( char* file_name, size_t page_size, hbool_t logStat)
 {
    
     
     vfd_tkr_helper_t* new_helper = (vfd_tkr_helper_t *)calloc(1, sizeof(tkr_helper_t));
 
     if(logStat) {//write to file
-        if(!file_path){
+        if(!file_name){
             printf("vfd_tkr_helper_init() failed, vfd-tracker file path is not set.\n");
-            return nullptr;
+            return NULL;
         }
     }
 
-    new_helper->tkr_file_path = strdup(file_path);
+    new_helper->tkr_file_path = strdup(file_name);
     new_helper->logStat = logStat;
     new_helper->pid = getpid();
     new_helper->tid = pthread_self(); // TODO: check if this is correct
 
-    // update file path with PID
-    int prefix_len = snprintf(nullptr, 0, "%d_%s", new_helper->pid, file_path);
-    new_helper->tkr_file_path = new char[prefix_len + 1];
-    snprintf(new_helper->tkr_file_path, prefix_len + 1, "%d_%s", new_helper->pid, file_path);
+    // Update file path with PID
+    int prefix_len = snprintf(NULL, 0, "%d_%s", new_helper->pid, file_name);
+    new_helper->tkr_file_path = (char*)malloc(prefix_len + 1);
+    snprintf(new_helper->tkr_file_path, prefix_len + 1, "%d_%s", new_helper->pid, file_name);
 
     printf("vfd new_helper tkr_file_path: %s\n", new_helper->tkr_file_path);
 
-    // new_helper->opened_files = nullptr;
-    // new_helper->opened_files_cnt = 0;
-
     /* VFD vars start */
-    new_helper->vfd_opened_files = nullptr;
+    new_helper->vfd_opened_files = NULL;
     new_helper->vfd_opened_files_cnt = 0;
-    new_helper->hermes_page_size = page_size;
+    new_helper->tracker_vfd_page_size = page_size;
     /* VFD vars end */
 
-    getlogin_r(new_helper->user_name, 32);
-
-    // if(logStat)
-    //     new_helper->tkr_file_handle = fopen(new_helper->tkr_file_path, "a");
+    // Get the user's login name
+    if (getlogin_r(new_helper->user_name, sizeof(new_helper->user_name)) != 0) {
+        printf("Failed to get user name.\n");
+    }
 
     return new_helper;
 }
@@ -1033,7 +1003,7 @@ vfd_file_tkr_info_t* new_vfd_file_info(const char* fname, unsigned long file_no)
 
     info = (vfd_file_tkr_info_t *)calloc(1, sizeof(vfd_file_tkr_info_t));
 
-    info->file_name = fname ? strdup(fname) : nullptr;
+    info->file_name = fname ? strdup(fname) : NULL;
     // info->file_name = malloc(sizeof(char) * (strlen(fname) + 1));
     // strcpy(info->file_name, fname);
     info->file_no = file_no;
@@ -1046,67 +1016,23 @@ vfd_file_tkr_info_t* new_vfd_file_info(const char* fname, unsigned long file_no)
     info->file_read_cnt = 0;
     info->file_write_cnt = 0;
 
-    info->h5_draw = nullptr;
-    info->h5_ohdr = nullptr;
-    info->h5_super = nullptr;
-    info->h5_btree = nullptr;
-    info->h5_lheap = nullptr;
+    info->h5_draw = NULL;
+    info->h5_ohdr = NULL;
+    info->h5_super = NULL;
+    info->h5_btree = NULL;
+    info->h5_lheap = NULL;
 
-    // add task name
-    // const char* curr_task = std::getenv("CURR_TASK");
-    std::string curr_task;
-    if (getCurrentTask(curr_task)) {
-        // std::cout << "Current task is: " << curr_task << std::endl;
-        // Convert curr_task to char* and assign to info->task_name
-        std::string task_name = curr_task + "-" + std::to_string(getpid());
-        char* task_name_cstr = strdup(task_name.c_str());
-        info->task_name = task_name_cstr;
+    // Usage example:
+    char task_name[MAX_PATH_LENGTH];
+    getTaskName(task_name, sizeof(task_name));
 
+    if (task_name[0] != '\0') {
+        info->task_name = strdup(task_name);
+        printf("Current task is: %s\n", task_name);
     } else {
-        std::cerr << "Failed to get current task." << std::endl;
+        printf("Failed to get current task.\n");
     }
 
-
-    // info->task_name = curr_task ? strdup(curr_task) : nullptr;
-
-
-    // std::string cmdline;
-    // int task_pid = getpid();
-    // // int task_tid = new_helper->tid;
-    // // Get the command line associated with the PID
-    // if (getCommandLineByPID(task_pid, cmdline)) {
-    //     std::cout << "Command for PID " << task_pid << ": " << cmdline << std::endl;
-    // } else {
-    //     std::cerr << "Failed to retrieve command for PID " << task_pid << std::endl;
-    // }
-
-    // int pipeHandle;
-
-    // if (extractPipeHandle(cmdline, pipeHandle)) {
-    //     std::cout << "Extracted pipe_handle: " << pipeHandle << std::endl;
-    //     // Now, you can use the 'pipeHandle' to interact with the file or perform other actions.
-    // } else {
-    //     std::cerr << "Failed to extract pipe_handle from the command line." << std::endl;
-    // }
-
-    // // You might want to open the file descriptor, depending on your use case
-    // // For example, open it for reading:
-    // int fd = pipeHandle; // Assigning the descriptor
-
-    // // Read from the file descriptor (assuming it's open for reading)
-    // char buffer[1024];
-    // ssize_t bytesRead = read(fd, buffer, sizeof(buffer));
-
-    // if (bytesRead > 0) {
-    //     std::cout << "Read " << bytesRead << " bytes from the descriptor." << std::endl;
-    //     // Process the data as needed
-    // } else if (bytesRead == 0) {
-    //     std::cout << "End of file reached." << std::endl;
-    // } else {
-    //     perror("Error reading from descriptor");
-    // }
-    // // Close the file descriptor when done (if it was opened)
-    // close(fd);
 
     return info;
 }
@@ -1115,7 +1041,6 @@ vfd_file_tkr_info_t* new_vfd_file_info(const char* fname, unsigned long file_no)
 
 vfd_file_tkr_info_t* add_vfd_file_node(vfd_tkr_helper_t * helper, const char* file_name, void * obj)
 {
-  // std::cout << "add_vfd_file_node(): TKR_HELPER_VFD" << std::endl;
   unsigned long start = get_time_usec();
   vfd_file_tkr_info_t* cur;
   H5FD_t *_file = (H5FD_t *) obj;
@@ -1123,10 +1048,10 @@ vfd_file_tkr_info_t* add_vfd_file_node(vfd_tkr_helper_t * helper, const char* fi
 
   assert(helper);
 
-  // if(!helper->vfd_opened_files){ //empty linked list, no opened file.
-  //   assert(helper->vfd_opened_files_cnt == 0);
-  //   return 0;
-  // } 
+  if(!helper->vfd_opened_files){ //empty linked list, no opened file.
+    assert(helper->vfd_opened_files_cnt == 0);
+    // return 0;
+  }
       
   if(!helper->vfd_opened_files) //empty linked list, no opened file.
     assert(helper->vfd_opened_files_cnt == 0);
@@ -1138,7 +1063,7 @@ vfd_file_tkr_info_t* add_vfd_file_node(vfd_tkr_helper_t * helper, const char* fi
       // assert(cur->file_no);
 
       if (cur->file_no == file_no)
-          break;
+        break;
 
       cur = cur->next;
   }
@@ -1163,7 +1088,8 @@ vfd_file_tkr_info_t* add_vfd_file_node(vfd_tkr_helper_t * helper, const char* fi
 //need a dumy node to make it simpler
 int rm_vfd_file_node(vfd_tkr_helper_t* helper, H5FD_t *_file)
 {
-  // printf("rm_vfd_file_node(): TKR_HELPER_VFD\n");
+
+
   unsigned long start = get_time_usec();
   vfd_file_tkr_info_t* cur;
   vfd_file_tkr_info_t* last;
@@ -1176,36 +1102,42 @@ int rm_vfd_file_node(vfd_tkr_helper_t* helper, H5FD_t *_file)
 
   cur = helper->vfd_opened_files;
   last = cur;
-  while(cur) {
-      // Node found
-      if(cur->file_no == file_no) {
-          // Decrement file node's refcount
-          cur->ref_cnt--;
 
-          // If refcount == 0, remove file node & maybe print file stats
-          if(cur->ref_cnt == 0) {
+  while (cur) {
+    assert(cur);
+    assert(cur->ref_cnt);
 
-              // Unlink from list of opened files
-              if(cur == helper->vfd_opened_files) //first node is the target
-                  helper->vfd_opened_files = helper->vfd_opened_files->next;
-              else
-                  last->next = cur->next;
+    // Node found
+    if (cur->file_no == file_no) {
+        // Decrement file node's refcount
+        cur->ref_cnt--;
 
-              // Free file info
-              vfd_file_info_free(cur);
+        // If refcount == 0, remove file node & maybe print file stats
+        if (cur->ref_cnt == 0) {
 
-              // Update connector info
-              helper->vfd_opened_files_cnt--;
-              if(helper->vfd_opened_files_cnt == 0)
-                  assert(helper->vfd_opened_files == nullptr);
-          }
+            // Unlink from list of opened files
+            if (cur == helper->vfd_opened_files) { // first node is the target
+                helper->vfd_opened_files = cur->next;
+                vfd_file_info_free(cur); // Free file info here
+                cur = helper->vfd_opened_files; // Move to the next node
+            } else {
+                last->next = cur->next;
+                vfd_file_info_free(cur); // Free file info here
+                cur = last->next; // Move to the next node
+            }
 
-          break;
-      }
-
-      // Advance to next file node
-      last = cur;
-      cur = cur->next;
+            // Update connector info
+            helper->vfd_opened_files_cnt--;
+            if (helper->vfd_opened_files_cnt == 0)
+                assert(helper->vfd_opened_files == NULL);
+        } else {
+            last = cur;
+            cur = cur->next;
+        }
+    } else {
+        last = cur;
+        cur = cur->next;
+    }
   }
 
   TOTAL_TKR_VFD_OVERHEAD += (get_time_usec() - start);
@@ -1214,7 +1146,7 @@ int rm_vfd_file_node(vfd_tkr_helper_t* helper, H5FD_t *_file)
 }
 
 void vfd_tkr_helper_teardown(vfd_tkr_helper_t* helper){
-  // printf("vfd_tkr_helper_teardown(): TKR_HELPER_VFD\n");
+  printf("vfd_tkr_helper_teardown(): TKR_HELPER_VFD\n");
   // frea down causes double free error in single process mode
 
   if(helper){// not null
