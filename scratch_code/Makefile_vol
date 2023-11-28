@@ -1,0 +1,43 @@
+#Your HDF5 install path
+
+# HDF5_DIR=$(HOME)/.conda/pkgs/hdf5-1.14.0-nompi_h5231ba7_103
+# HDF5_DIR=$(HOME)/.conda/pkgs/hdf5-1.14.0-nompi_hb72d44e_103
+# HDF5_DIR=$(HOME)/miniconda3/envs/flextrkr
+# HDF5_DIR=$(HOME)/.conda/envs/pyflextrkr_copy
+# CC=mpicc
+# CC=gcc
+
+# TRACKER_LOGGING TRACKER_PROV_LOGGING TRACKER_MORE_LOGGING TRACKER_PT_LOGGING TRACKER_TEST_LOGGING
+#-DTRACKER_TEST_LOGGING -gdwarf-2, -gdwarf-3 or -gdwarf-4 #-lcrypto
+
+HDF5_DIR=$(HOME)/install/hdf5
+CC=h5cc
+AR=ar
+DEBUG= -g -O0 -DDEBUG -gdwarf-4 -gdwarf-3 -gdwarf-2 
+INCLUDES=-I$(HDF5_DIR)/include 
+
+CFLAGS = $(DEBUG) -fPIC $(INCLUDES) -w -DTRACKER_SCHEMA -Wall 
+
+LIBS=-L$(HDF5_DIR)/lib -lhdf5 -lz 
+
+
+DYNLDFLAGS = $(DEBUG) -shared -fPIC $(LIBS)
+LDFLAGS = $(DEBUG) $(LIBS)
+ARFLAGS = rs
+
+# Shared library VOL connector
+DYNSRC = tracker_vol_new.c
+DYNOBJ = $(DYNSRC:.c=.o)
+DYNLIB = libh5tracker.so
+DYNDBG = libh5tracker.dylib.dSYM
+
+
+all: $(DYNLIB)
+
+$(DYNLIB): $(DYNSRC)
+	$(CC) $(CFLAGS) $(DYNLDFLAGS) $^ -o $@
+
+.PHONY: clean all
+clean:
+	rm -rf $(DYNOBJ) $(DYNLIB) $(DYNDBG) \
+            $(EXOBJ) $(EXEXE) $(EXDBG)

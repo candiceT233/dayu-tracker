@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-TRACKER_SRC_DIR=../src
+TRACKER_SRC_DIR=../build/src
 VOL_NAME="tracker"
 
 export HDF5_USE_FILE_LOCKING='FALSE' # TRUE FALSE BESTEFFORT
