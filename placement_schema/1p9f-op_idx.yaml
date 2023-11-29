@@ -1,4 +1,4 @@
-VFD Stat File: ../stat_to_sankey/example_stat/1p9f9s_run/168881_vfd-data-stat-dl.yaml
+VFD Stat File: ../flow_analysis/example_stat/1p9f9s_run/168881_vfd-data-stat-dl.yaml
     - file_name: "tracknumbers_20150506.0000_20150506.0800.nc"
       - file_op_range: [0, 72]
       - file_op_range: [133, 13473]
@@ -27,7 +27,7 @@ VFD Stat File: ../stat_to_sankey/example_stat/1p9f9s_run/168881_vfd-data-stat-dl
 168881 Max IO IDX: 14901
 
 
-VFD Stat File: ../stat_to_sankey/example_stat/1p9f9s_run/77100_vfd-data-stat-dl.yaml
+VFD Stat File: ../flow_analysis/example_stat/1p9f9s_run/77100_vfd-data-stat-dl.yaml
     - file_name: "track_20150506_010000.nc"
       - file_op_range: [0, 56]
       - file_op_range: [56, 117]
@@ -75,7 +75,7 @@ VFD Stat File: ../stat_to_sankey/example_stat/1p9f9s_run/77100_vfd-data-stat-dl.
 77100 Max IO IDX: 2952
 
 
-VFD Stat File: ../stat_to_sankey/example_stat/1p9f9s_run/167838_vfd-data-stat-dl.yaml
+VFD Stat File: ../flow_analysis/example_stat/1p9f9s_run/167838_vfd-data-stat-dl.yaml
     - file_name: "mcs_tracks_robust_20150506.0000_20150506.0800.nc"
       - file_op_range: [0, 442]
       - file_op_range: [11213, 11308]
@@ -109,11 +109,11 @@ VFD Stat File: ../stat_to_sankey/example_stat/1p9f9s_run/167838_vfd-data-stat-dl
 167838 Max IO IDX: 14287
 
 
-VFD Stat File: ../stat_to_sankey/example_stat/1p9f9s_run/5904_vfd-data-stat-dl.yaml
-Error in ../stat_to_sankey/example_stat/1p9f9s_run/5904_vfd-data-stat-dl.yaml stat {'file_name': 'cloudid_20150506_050000.nc', 'open_time': 1686711085339720, 'close_time': 0, 'file_intent': [], 'file_no': 0, 'file_read_cnt': 0, 'file_write_cnt': 0, 'file_size': 7118442, 'data': None, 'metadata': None}
-Error in ../stat_to_sankey/example_stat/1p9f9s_run/5904_vfd-data-stat-dl.yaml stat {'file_name': 'cloudid_20150506_040000.nc', 'open_time': 1686711085495597, 'close_time': 0, 'file_intent': [], 'file_no': 0, 'file_read_cnt': 0, 'file_write_cnt': 0, 'file_size': 7214109, 'data': None, 'metadata': None}
-Error in ../stat_to_sankey/example_stat/1p9f9s_run/5904_vfd-data-stat-dl.yaml stat {'file_name': 'cloudid_20150506_020000.nc', 'open_time': 1686711086021205, 'close_time': 0, 'file_intent': [], 'file_no': 0, 'file_read_cnt': 0, 'file_write_cnt': 0, 'file_size': 7419552, 'data': None, 'metadata': None}
-Error in ../stat_to_sankey/example_stat/1p9f9s_run/5904_vfd-data-stat-dl.yaml stat {'file_name': 'cloudid_20150506_070000.nc', 'open_time': 1686711097439446, 'close_time': 0, 'file_intent': [], 'file_no': 0, 'file_read_cnt': 0, 'file_write_cnt': 0, 'file_size': 6931018, 'data': None, 'metadata': None}
+VFD Stat File: ../flow_analysis/example_stat/1p9f9s_run/5904_vfd-data-stat-dl.yaml
+Error in ../flow_analysis/example_stat/1p9f9s_run/5904_vfd-data-stat-dl.yaml stat {'file_name': 'cloudid_20150506_050000.nc', 'open_time': 1686711085339720, 'close_time': 0, 'file_intent': [], 'file_no': 0, 'file_read_cnt': 0, 'file_write_cnt': 0, 'file_size': 7118442, 'data': None, 'metadata': None}
+Error in ../flow_analysis/example_stat/1p9f9s_run/5904_vfd-data-stat-dl.yaml stat {'file_name': 'cloudid_20150506_040000.nc', 'open_time': 1686711085495597, 'close_time': 0, 'file_intent': [], 'file_no': 0, 'file_read_cnt': 0, 'file_write_cnt': 0, 'file_size': 7214109, 'data': None, 'metadata': None}
+Error in ../flow_analysis/example_stat/1p9f9s_run/5904_vfd-data-stat-dl.yaml stat {'file_name': 'cloudid_20150506_020000.nc', 'open_time': 1686711086021205, 'close_time': 0, 'file_intent': [], 'file_no': 0, 'file_read_cnt': 0, 'file_write_cnt': 0, 'file_size': 7419552, 'data': None, 'metadata': None}
+Error in ../flow_analysis/example_stat/1p9f9s_run/5904_vfd-data-stat-dl.yaml stat {'file_name': 'cloudid_20150506_070000.nc', 'open_time': 1686711097439446, 'close_time': 0, 'file_intent': [], 'file_no': 0, 'file_read_cnt': 0, 'file_write_cnt': 0, 'file_size': 6931018, 'data': None, 'metadata': None}
     - file_name: "cloudid_20150506_050000.nc"
       - file_op_range: [0, 511]
       - file_op_range: [764, 1029]
@@ -173,7 +173,7 @@ Error in ../stat_to_sankey/example_stat/1p9f9s_run/5904_vfd-data-stat-dl.yaml st
 5904 Max IO IDX: 5481
 
 
-VFD Stat File: ../stat_to_sankey/example_stat/1p9f9s_run/11179_vfd-data-stat-dl.yaml
+VFD Stat File: ../flow_analysis/example_stat/1p9f9s_run/11179_vfd-data-stat-dl.yaml
     - file_name: "mcs_tracks_robust_20150506.0000_20150506.0800.nc"
       - file_op_range: [0, 3402]
     - file_name: "mcs_tracks_pf_20150506.0000_20150506.0800.nc"
@@ -181,7 +181,7 @@ VFD Stat File: ../stat_to_sankey/example_stat/1p9f9s_run/11179_vfd-data-stat-dl.
 11179 Max IO IDX: 3402
 
 
-VFD Stat File: ../stat_to_sankey/example_stat/1p9f9s_run/75190_vfd-data-stat-dl.yaml
+VFD Stat File: ../flow_analysis/example_stat/1p9f9s_run/75190_vfd-data-stat-dl.yaml
     - file_name: "cloudid_20150506_040000.nc"
       - file_op_range: [0, 800]
     - file_name: "wrfout_rainrate_tb_zh_mh_2015-05-06_04:00:00.nc"
@@ -221,7 +221,7 @@ VFD Stat File: ../stat_to_sankey/example_stat/1p9f9s_run/75190_vfd-data-stat-dl.
 75190 Max IO IDX: 7208
 
 
-VFD Stat File: ../stat_to_sankey/example_stat/1p9f9s_run/170958_vfd-data-stat-dl.yaml
+VFD Stat File: ../flow_analysis/example_stat/1p9f9s_run/170958_vfd-data-stat-dl.yaml
     - file_name: "cloudid_20150506_000000.nc"
       - file_op_range: [0, 360]
     - file_name: "wrf_landmask.nc"
@@ -257,7 +257,7 @@ VFD Stat File: ../stat_to_sankey/example_stat/1p9f9s_run/170958_vfd-data-stat-dl
 170958 Max IO IDX: 2800
 
 
-VFD Stat File: ../stat_to_sankey/example_stat/1p9f9s_run/157121_vfd-data-stat-dl.yaml
+VFD Stat File: ../flow_analysis/example_stat/1p9f9s_run/157121_vfd-data-stat-dl.yaml
     - file_name: "mcs_tracks_robust_20150506.0000_20150506.0800.nc"
       - file_op_range: [0, 555]
     - file_name: "mcstrack_20150506_000000.nc"
