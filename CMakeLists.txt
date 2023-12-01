@@ -1,13 +1,15 @@
 # CMakeLists.txt
 
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.12) # TODO: allow for older versions
 
 project(HDF5_Tracker)
 
 # Find HDF5 with a required version of 1.14
-find_package(HDF5 1.14 REQUIRED)
+find_package(HDF5 1.14 REQUIRED COMPONENTS C CXX HL)
+
 if (HDF5_FOUND)
     include_directories(${HDF5_INCLUDE_DIRS})
+    link_directories(${HDF5_LIBRARY_DIRS})
 endif()
 
 # Option for VOL_TRACKER
