@@ -579,7 +579,7 @@ void dump_vfd_file_stat_yaml(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t
   fprintf(f, "  task_id: %d\n", getpid());
   fprintf(f, "  tracker_vfd_page_size: %ld\n", info->adaptor_page_size);
   fprintf(f, "  VFD-Total-Overhead(ms): %ld\n", TOTAL_TKR_VFD_OVERHEAD/1000);
-  fprintf(f, "  POSIX-Total-IO-Time(ms): %ld\n", TOTAL_POSIX_IO_TIME/1000);
+  fprintf(f, "  POSIX-Total-IO-Time(ms): %d\n", TOTAL_POSIX_IO_TIME/1000);
 
   fprintf(f, "\n");
 

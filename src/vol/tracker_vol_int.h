@@ -2757,6 +2757,22 @@ char * H5S_select_type_to_str(H5S_sel_type type){
     }
 }
 
+// size_t token_to_size_t(const H5O_token_t* token) {
+//     // Assuming H5O_token_t contains objno and addr
+//     size_t result = (size_t)(token->objno);
+//     result ^= (size_t)(token->addr); // XOR with addr or some other field if needed
+    
+//     return result;
+// }
+
+// Function to convert an H5O_token_t to a size_t
+size_t token_to_size_t(const H5O_token_t* token) {
+    size_t result = 0;
+    memcpy(&result, token->__data, sizeof(size_t)); // Copy bytes into size_t
+    printf("token_to_size_t: %ld\n", result);
+    return result;
+}
+
 // TODO: update dataset_info to tracking object
 void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
     hid_t file_space_id, void * obj, hid_t dxpl_id)
@@ -2820,16 +2836,32 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
             size_t end_page;
             size_t access_size;
 
+            
+            //TODO: improve this to async method
             tkrLockAcquire(&myLock);
             dset_info->storage_size = dataset_get_storage_size(dset->under_object, dset->under_vol_id, dxpl_id);
-            
             start_addr = START_ADDR;
             end_addr = END_ADDR;
             access_size = ACC_SIZE;
+            // printf("dataset_get_storage_size START_ADDR[%ld] END_ADDR[%ld] ACC_SIZE[%ld]\n", START_ADDR, END_ADDR, ACC_SIZE);
             tkrLockRelease(&myLock);
+
+            // check if storage size is larger than zero and if token is larger than 0
+            if (dset_info->storage_size > 0 ){
+                // start_addr = token_to_size_t(&dset_info->obj_info.token);
+                memcpy(&start_addr, &dset_info->obj_info.token, sizeof(size_t));
+                end_addr = dset_info->storage_size;
+                // if start_addr > -1, add to off_set
+                if(start_addr > 0){
+                    dset_info->dset_offset = start_addr;
+                }
+            }
 
             start_page = start_addr/tracker_page_size;
             end_page = end_addr/tracker_page_size;
+
+            // printf("dataset_get_storage_size storage_size[%ld] start_addr[%ld] start_page[%ld]\n", 
+            //     dset_info->storage_size, start_addr, start_page);
 
             if(access_size == dset_info->storage_size){
                 dset_info->data_file_page_start = start_page;
@@ -2839,9 +2871,14 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
                 dset_info->data_file_page_end = (end_addr + dset_info->storage_size) / tracker_page_size;
             }
 
-            if(strcmp(dset_info->layout,"H5D_CONTIGUOUS") == 0)
-                dset_info->storage_size = dset_info->dset_n_elements * dset_info->dset_type_size;
 
+
+
+            // if storage size is zero
+            if (dset_info->storage_size == 0){
+                if(strcmp(dset_info->layout,"H5D_CONTIGUOUS") == 0)
+                    dset_info->storage_size = dset_info->dset_n_elements * dset_info->dset_type_size;
+            }
         }
 
     } //&& strcmp(func_name,"H5VLget_object") != 0

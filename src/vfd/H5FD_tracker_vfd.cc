@@ -516,7 +516,6 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
   /* Set return value */
   ret_value = (H5FD_t *)file;
 
-
 done:
   if (NULL == ret_value) {
     if (fd >= 0)
@@ -567,12 +566,13 @@ static herr_t H5FD__tracker_vfd_close(H5FD_t *_file) {
     //                             "unable to close file");
   t2 = get_time_usec();
   TOTAL_POSIX_IO_TIME += (t2 - t1);
+  
 
   // if (file->filename) {
   //   free(file->filename);
   // }
   free(file);
-
+  
 done:
   H5FD_TRACKER_VFD_FUNC_LEAVE_API;
 } /* end H5FD__tracker_vfd_close() */
@@ -924,6 +924,7 @@ static herr_t H5FD__tracker_vfd_write(H5FD_t *_file, H5FD_mem_t type,
         do {
           t1 = get_time_usec();
 #ifdef H5_HAVE_PREADWRITE
+            
             bytes_wrote = HDpwrite(file->fd, buf, bytes_in, offset);
             if (bytes_wrote > 0)
                 offset += bytes_wrote;
@@ -941,7 +942,7 @@ static herr_t H5FD__tracker_vfd_write(H5FD_t *_file, H5FD_mem_t type,
             t1 = get_time_usec();
             offset = HDlseek(file->fd, (HDoff_t)0, SEEK_CUR);
             t2 = get_time_usec();
-            TOTAL_POSIX_IO_TIME += (t2 - t1);
+            TOTAL_POSIX_IO_TIME += (t2 - t1);        
 
             H5FD_TRACKER_VFD_GOTO_ERROR(H5E_IO, H5E_WRITEERROR, FAIL,
                         "file write failed: time = %s, filename = '%s', file descriptor = %d, errno = %d, "
