@@ -115,15 +115,6 @@ def run_write(file_name,datasets):
     set_curr_task_env(task_name)
     print(f"Running Task : {task_name}")
     
-    # with h5py.File(file_name, mode='w', swmr=False) as hdf_file:
-    #     for i in range(len(datasets)):
-    #         data=datasets[i]
-    #         print(f"datatype is {data[0].dtype}")
-    #         hdf_file.create_dataset(
-    #             f'dataset{i}', 
-    #             data=data,
-    #             dtype=data[0].dtype)
-    
     hf = h5py.File(file_name, mode='w')
     for i in range(len(datasets)):
         data=datasets[i]
@@ -156,17 +147,9 @@ def run_read(file_name, num_datasets):
 def write_read_separate(file_name):
     dtype = np.uint16
     # Create some sample data
-    d1 = np.random.randn(3, 10).astype(dtype)
-    d2 = np.random.randn(3, 100).astype(dtype)
-    d3 = np.random.randn(3, 1000).astype(dtype)
-
-    # d1 = np.random.randint(0, 10, size=(64))
-    # d2 = np.random.randint(0, 10, size=(64, 128))
-    # d3 = np.random.randint(0, 10, size=(64, 128, 128))
-    
-    # d1 = d1.astype(int)
-    # d2 = d2.astype(int)
-    # d3 = d3.astype(int)
+    d1 = np.random.randn(30, 100).astype(dtype)
+    d2 = np.random.randn(300, 1000).astype(dtype)
+    d3 = np.random.randn(3000, 1000).astype(dtype)
     
     # check all shaoes
     print(f"d1 shape {d1.shape}")
