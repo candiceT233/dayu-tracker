@@ -879,11 +879,13 @@ H5VL_tracker_wrap_object(void *under_under_in, H5I_type_t obj_type, void *_wrap_
         fake_upper_o = _fake_obj_new(wrap_ctx->file_info, wrap_ctx->under_vol_id);
 
         new_obj = _obj_wrap_under(under, fake_upper_o, NULL, obj_type, H5P_DEFAULT, NULL);
-
+        
         _fake_obj_free(fake_upper_o);
     }
     else
         new_obj = NULL;
+
+
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return (void*)new_obj;
@@ -2351,15 +2353,24 @@ H5VL_tracker_file_create(const char *name, unsigned flags, hid_t fcpl_id,
     /* Get copy of our VOL info from FAPL */
     H5Pget_vol_info(fapl_id, (void **)&info);
 
+#ifdef TRACKER_PT_LOGGING
+    printf("TRACKER VOL FILE Create -3\n");
+#endif
+
     /* Copy the FAPL */
     under_fapl_id = H5Pcopy(fapl_id);
 
     /* Set the VOL ID and info for the underlying FAPL */
     H5Pset_vol(under_fapl_id, info->under_vol_id, info->under_vol_info);
 
+#ifdef TRACKER_PT_LOGGING
+    printf("TRACKER VOL FILE Create -2\n");
+#endif
+
 #ifdef H5_HAVE_PARALLEL
     // Determine if the file is accessed with the parallel VFD (MPI-IO)
     // and copy the MPI comm & info objects for our use
+    printf("TRACKER VOL FILE Create H5_HAVE_PARALLEL\n");
     if((driver_id = H5Pget_driver(under_fapl_id)) > 0 && driver_id == H5FD_MPIO) {
         // Retrieve the MPI comm & info objects
         H5Pget_fapl_mpio(under_fapl_id, &mpi_comm, &mpi_info);
@@ -2369,10 +2380,18 @@ H5VL_tracker_file_create(const char *name, unsigned flags, hid_t fcpl_id,
     }
 #endif /* H5_HAVE_PARALLEL */
 
+#ifdef TRACKER_PT_LOGGING
+    printf("TRACKER VOL FILE Create -4\n");
+#endif
+
     /* Open the file with the underlying VOL connector */
     m1 = get_time_usec();
     under = H5VLfile_create(name, flags, fcpl_id, under_fapl_id, dxpl_id, req);
     m2 = get_time_usec();
+
+#ifdef TRACKER_PT_LOGGING
+    printf("TRACKER VOL FILE Create -5\n");
+#endif
 
     if(under) {
         if(!TKR_HELPER)
@@ -2380,6 +2399,9 @@ H5VL_tracker_file_create(const char *name, unsigned flags, hid_t fcpl_id,
 
         file = _file_open_common(under, info->under_vol_id, name);
 
+#ifdef TRACKER_PT_LOGGING
+    printf("TRACKER VOL FILE Create -1\n");
+#endif
 
 #ifdef H5_HAVE_PARALLEL
         if(have_mpi_comm_info) {
@@ -2409,9 +2431,15 @@ H5VL_tracker_file_create(const char *name, unsigned flags, hid_t fcpl_id,
     if(under_fapl_id > 0)
         H5Pclose(under_fapl_id);
 
+#ifdef TRACKER_PT_LOGGING
+    printf("TRACKER VOL FILE Create 1\n");
+#endif
     /* Release copy of our VOL info */
     if(info)
         H5VL_tracker_info_free(info);
+#ifdef TRACKER_PT_LOGGING
+    printf("TRACKER VOL FILE Create 2\n");
+#endif
 
 #ifdef H5_HAVE_PARALLEL
     // Release MPI Comm & Info, if they weren't taken over

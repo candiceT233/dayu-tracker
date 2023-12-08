@@ -246,7 +246,36 @@ void file_dtypes_accessed(file_tkr_info_t* info);
 
 /* Helper routines implementation */
 
-int getCurrentTask(char **curr_task) {
+int getCurrentTask(char** curr_task) {
+    // Check if the environment variable CURR_TASK is set
+    const char* curr_task_env = getenv("CURR_TASK");
+
+    if (curr_task_env) {
+        // If CURR_TASK is set, return task name with curr_task_env + "-" + getpid()
+        // Allocate memory for the result string and store it in curr_task.
+        // Make sure to free this memory later when it's no longer needed.
+        int pid = getpid();
+        int len = snprintf(NULL, 0, "%s", curr_task_env);
+        *curr_task = (char*)malloc(len + 1);
+        snprintf(*curr_task, len + 1, "%s", curr_task_env);
+        return 1;
+    } else {
+        // If CURR_TASK is not set, try reading it from a file
+        if (getCurrentTaskFromFile(curr_task)) {
+            // Successfully read from the file.
+            // TODO: Handle any additional logic here if needed.
+            return 1;
+        } else {
+            // If both methods fail, return an empty string
+            // Allocate memory for an empty string and store it in curr_task.
+            *curr_task = (char*)malloc(1);
+            (*curr_task)[0] = '\0';
+            return 0;
+        }
+    }
+}
+
+int getCurrentTaskFromFile(char **curr_task) {
     // Get environment variables
     const char *path_for_task_files = getenv("PATH_FOR_TASK_FILES");
     const char *workflow_name = getenv("WORKFLOW_NAME");
@@ -381,6 +410,10 @@ void add_meta_page_to_list(size_t **list, size_t *list_size, size_t page) {
 static H5VL_tracker_t *
 H5VL_tracker_new_obj(void *under_obj, hid_t under_vol_id, tkr_helper_t* helper)
 {
+#ifdef TRACKER_PT_LOGGING
+    printf("TRACKER VOL INT : H5VL_tracker_new_obj\n");
+#endif
+
 //    unsigned long start = get_time_usec();
     H5VL_tracker_t *new_obj;
 
@@ -391,8 +424,11 @@ H5VL_tracker_new_obj(void *under_obj, hid_t under_vol_id, tkr_helper_t* helper)
     new_obj->under_object = under_obj;
     new_obj->under_vol_id = under_vol_id;
     new_obj->tkr_helper = helper;
+
     ptr_cnt_increment(new_obj->tkr_helper);
+
     H5Iinc_ref(new_obj->under_vol_id);
+
     //TOTAL_TKR_OVERHEAD += (get_time_usec() - start);
     return new_obj;
 } /* end H5VL__tracker_new_obj() */
@@ -852,16 +888,18 @@ dataset_tkr_info_t *new_dataset_info(file_tkr_info_t *root_file,
 group_tkr_info_t *new_group_info(file_tkr_info_t *root_file,
     const char *name, H5O_token_t token)
 {
-    group_tkr_info_t *info;
+#ifdef TRACKER_PT_LOGGING
+    printf("TRACKER VOL INT : new_group_info\n");
+#endif
 
+    group_tkr_info_t *info;
     info = (group_tkr_info_t *)calloc(1, sizeof(group_tkr_info_t));
     info->obj_info.tkr_helper = TKR_HELPER;
     info->obj_info.file_info = root_file;
-    // info->obj_info.name = name ? strdup(name) : NULL;
-    info->obj_info.name = (char*) malloc(sizeof(char) * (strlen(name) + 1));
-    strcpy(info->obj_info.name, name);
+    info->obj_info.name = name ? strdup(name) : NULL;
+    // info->obj_info.name = (char*) malloc(sizeof(char) * (strlen(name) + 1));
+    // strcpy(info->obj_info.name, name);
     info->obj_info.token = token;
-
     return info;
 }
 
@@ -873,9 +911,9 @@ attribute_tkr_info_t *new_attribute_info(file_tkr_info_t *root_file,
     info = (attribute_tkr_info_t *)calloc(1, sizeof(attribute_tkr_info_t));
     info->obj_info.tkr_helper = TKR_HELPER;
     info->obj_info.file_info = root_file;
-    // info->obj_info.name = name ? strdup(name) : NULL;
-    info->obj_info.name = (char*) malloc(sizeof(char) * (strlen(name) + 1));
-    strcpy(info->obj_info.name, name);
+    info->obj_info.name = name ? strdup(name) : NULL;
+    // info->obj_info.name = (char*) malloc(sizeof(char) * (strlen(name) + 1));
+    // strcpy(info->obj_info.name, name);
     info->obj_info.token = token;
 
     return info;
@@ -1055,6 +1093,10 @@ int rm_dtype_node(tkr_helper_t *helper, void *under, hid_t under_vol_id, datatyp
 group_tkr_info_t *add_grp_node(file_tkr_info_t *file_info,
     H5VL_tracker_t *upper_o, const char *obj_name, H5O_token_t token)
 {
+#ifdef TRACKER_PT_LOGGING
+    printf("TRACKER VOL INT : add_grp_node\n");
+#endif
+
     group_tkr_info_t *cur;
     unsigned long start = get_time_usec();
     assert(file_info);
@@ -1653,6 +1695,9 @@ herr_t tracker_file_setup(const char* str_in, char* file_path_out, Track_level* 
 //Use this in H5VL_tracker_wrap_object() ONLY!!!
 H5VL_tracker_t * _fake_obj_new(file_tkr_info_t *root_file, hid_t under_vol_id)
 {
+#ifdef TRACKER_PT_LOGGING
+    printf("TRACKER VOL INT : _fake_obj_new\n");
+#endif
     H5VL_tracker_t* obj;
 
     obj = H5VL_tracker_new_obj(NULL, under_vol_id, TKR_HELPER);
@@ -1681,6 +1726,10 @@ H5VL_tracker_t * _obj_wrap_under(void *under, H5VL_tracker_t *upper_o,
                                     H5I_type_t target_obj_type,
                                     hid_t dxpl_id, void **req)
 {
+#ifdef TRACKER_PT_LOGGING
+    printf("TRACKER VOL INT : _obj_wrap_under\n");
+#endif
+
     H5VL_tracker_t *obj;
     file_tkr_info_t *file_info = NULL;
 
@@ -1741,57 +1790,76 @@ H5VL_tracker_t * _obj_wrap_under(void *under, H5VL_tracker_t *upper_o,
 
         switch (target_obj_type) {
             case H5I_DATASET:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.1 H5I_DATASET\n");
                 obj->generic_tkr_info = add_dataset_node(file_no, obj, token, file_info, target_obj_name, dxpl_id, req);
                 obj->my_type = H5I_DATASET;
-
                 // file_ds_created(file_info); //candice added
                 file_ds_accessed(file_info);
                 break;
 
             case H5I_GROUP:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.2 H5I_GROUP\n");
                 obj->generic_tkr_info = add_grp_node(file_info, obj, target_obj_name, token);
                 obj->my_type = H5I_GROUP;
                 break;
 
             case H5I_FILE: //newly added. if target_obj_name == NULL: it's a fake upper_o
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.3 H5I_FILE\n");
                 obj->generic_tkr_info = add_file_node(TKR_HELPER, target_obj_name, file_no);
                 obj->my_type = H5I_FILE;
                 break;
 
             case H5I_DATATYPE:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.4 H5I_DATATYPE\n");
                 obj->generic_tkr_info = add_dtype_node(file_info, obj, target_obj_name, token);
                 obj->my_type = H5I_DATATYPE;
                 break;
 
             case H5I_ATTR:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_ATTR\n");
                 obj->generic_tkr_info = add_attr_node(file_info, obj, target_obj_name, token);
                 obj->my_type = H5I_ATTR;
                 break;
 
             case H5I_UNINIT:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_UNINIT\n");
             case H5I_BADID:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_BADID\n");
             case H5I_DATASPACE:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_DATASPACE\n");
             case H5I_VFL:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_VFL\n");
             case H5I_VOL:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_VOL\n");
                 /* TODO(candice): this is redundant */
                 // obj->generic_tkr_info = add_dataset_node(file_no, obj, token, file_info, target_obj_name, dxpl_id, req);
                 // obj->my_type = H5I_VOL;
 
                 // file_ds_created(file_info); //candice added
                 // file_ds_accessed(file_info);
-                break;
+                // break;
             case H5I_GENPROP_CLS:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_GENPROP_CLS\n");
             case H5I_GENPROP_LST:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_GENPROP_LST\n");
             case H5I_ERROR_CLASS:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_ERROR_CLASS\n");
             case H5I_ERROR_MSG:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_ERROR_MSG\n");
             case H5I_ERROR_STACK:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_ERROR_STACK\n");
             case H5I_NTYPES:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_NTYPES\n");
             default:
                 break;
         }
     } /* end if */
     else
         obj = NULL;
+
+#ifdef TRACKER_PT_LOGGING
+    printf("TRACKER VOL INT : _obj_wrap_under END\n");
+#endif
 
     return obj;
 }
