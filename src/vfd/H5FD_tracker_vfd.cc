@@ -253,8 +253,8 @@ H5FD__tracker_vfd_term(void) {
 #endif
   herr_t ret_value = SUCCEED;
 
-  if(TKR_HELPER_VFD != nullptr)
-    vfd_tkr_helper_teardown(TKR_HELPER_VFD);
+  // if(TKR_HELPER_VFD != nullptr)
+  //   vfd_tkr_helper_teardown(TKR_HELPER_VFD); // TODO: this segfault
 
   /* Unregister from HDF5 error API */
   if (H5FDtracker_vfd_err_class_g >= 0) {
@@ -273,15 +273,13 @@ H5FD__tracker_vfd_term(void) {
       PRINT_ERROR_STACK;
     } /* end if */
 
+
     H5FDtracker_vfd_err_stack_g = H5I_INVALID_HID;
     H5FDtracker_vfd_err_class_g = H5I_INVALID_HID;
   }
+
   /* Reset VFL ID */
   H5FD_TRACKER_VFD_g = H5I_INVALID_HID;
-
-#ifdef DEBUG_LOG
-  std::cout << "H5FD__tracker_vfd_term() finished" << std::endl;
-#endif
 
 done:
   H5FD_TRACKER_VFD_FUNC_LEAVE_API;
