@@ -7,7 +7,7 @@ set(CMAKE_C_COMPILER h5cc)
 set(CMAKE_AR ar)
 set(DEBUG -g -O0 -DDEBUG -gdwarf-4 -gdwarf-3 -gdwarf-2)
 set(INCLUDES -I${HDF5_DIR}/include)
-set(CFLAGS ${DEBUG} -fPIC ${INCLUDES} -w -DTRACKER_SCHEMA -Wall ) #-DTRACKER_PT_LOGGING
+set(CFLAGS ${DEBUG} -fPIC ${INCLUDES} -w -DTRACKER_SCHEMA -Wall -DTRACKER_PT_LOGGING) #-DTRACKER_PT_LOGGING
 set(LIBS -L${HDF5_DIR}/lib -lhdf5 -lz)
 set(DYNLDFLAGS ${DEBUG} -shared -fPIC ${LIBS})
 

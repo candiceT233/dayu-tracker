@@ -18,6 +18,7 @@ set(POSIX_FLAGS
     -DH5_HAVE_FLOCK
     -DH5_HAVE_SYS_FILE_H
     -DH5_HAVE_PREADWRITE
+    -DDEBUG_LOG
 )
 set(DEBUG -g -O0 -DDEBUG -gdwarf-4 -gdwarf-3 -gdwarf-2)
 set(INCLUDES -I${HDF5_DIR}/include)

@@ -1184,7 +1184,6 @@ vfd_file_tkr_info_t* add_vfd_file_node(vfd_tkr_helper_t * helper, const char* fi
 int rm_vfd_file_node(vfd_tkr_helper_t* helper, H5FD_t *_file)
 {
 
-
   unsigned long start = get_time_usec();
   vfd_file_tkr_info_t* cur;
   vfd_file_tkr_info_t* last;
@@ -1241,20 +1240,20 @@ int rm_vfd_file_node(vfd_tkr_helper_t* helper, H5FD_t *_file)
 }
 
 void vfd_tkr_helper_teardown(vfd_tkr_helper_t* helper){
-  printf("vfd_tkr_helper_teardown(): TKR_HELPER_VFD\n");
+  printf("vfd_tkr_helper_teardown()\n");
   // frea down causes double free error in single process mode
 
   if(helper){// not null
 
-      // if(helper->logStat){//no file
-      //   fflush(helper->tkr_file_handle);
-      //   fclose(helper->tkr_file_handle);
-      // }
+      if(helper->logStat){//no file
+        fflush(helper->tkr_file_handle);
+        fclose(helper->tkr_file_handle);
+      }
 
-      // if(helper->tkr_file_path)
-      //     free(helper->tkr_file_path);
+      if(helper->tkr_file_path)
+          free(helper->tkr_file_path);
 
-      free(helper);
+      // free(helper);
   }
 
 }

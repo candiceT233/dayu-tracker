@@ -248,10 +248,13 @@ done:
  */
 static herr_t
 H5FD__tracker_vfd_term(void) {
+#ifdef DEBUG_LOG
+  std::cout << "H5FD__tracker_vfd_term()" << std::endl;
+#endif
   herr_t ret_value = SUCCEED;
 
-  // if(TKR_HELPER_VFD != nullptr)
-  //   vfd_tkr_helper_teardown(TKR_HELPER_VFD);
+  if(TKR_HELPER_VFD != nullptr)
+    vfd_tkr_helper_teardown(TKR_HELPER_VFD);
 
   /* Unregister from HDF5 error API */
   if (H5FDtracker_vfd_err_class_g >= 0) {
@@ -276,6 +279,9 @@ H5FD__tracker_vfd_term(void) {
   /* Reset VFL ID */
   H5FD_TRACKER_VFD_g = H5I_INVALID_HID;
 
+#ifdef DEBUG_LOG
+  std::cout << "H5FD__tracker_vfd_term() finished" << std::endl;
+#endif
 
 done:
   H5FD_TRACKER_VFD_FUNC_LEAVE_API;
@@ -562,8 +568,8 @@ static herr_t H5FD__tracker_vfd_close(H5FD_t *_file) {
   t1 = get_time_usec();
   // close(file->fd);
   if (close(file->fd) < 0)
-    // H5FD_TRACKER_VFD_SYS_GOTO_ERROR(H5E_IO, H5E_CANTCLOSEFILE, FAIL,
-    //                             "unable to close file");
+    H5FD_TRACKER_VFD_SYS_GOTO_ERROR(H5E_IO, H5E_CANTCLOSEFILE, FAIL,
+                                "unable to close file");
   t2 = get_time_usec();
   TOTAL_POSIX_IO_TIME += (t2 - t1);
   

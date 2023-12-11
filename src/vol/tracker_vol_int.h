@@ -1036,6 +1036,9 @@ datatype_tkr_info_t * add_dtype_node(file_tkr_info_t *file_info,
 
 int rm_dtype_node(tkr_helper_t *helper, void *under, hid_t under_vol_id, datatype_tkr_info_t *dtype_info)
 {
+#ifdef TRACKER_PT_LOGGING
+    printf("TRACKER VOL INT : rm_dtype_node\n");
+#endif
     unsigned long start = get_time_usec();
     file_tkr_info_t *file_info;
     datatype_tkr_info_t *cur;
@@ -1333,6 +1336,9 @@ file_tkr_info_t* add_file_node(tkr_helper_t* helper, const char* file_name,
 //need a dumy node to make it simpler
 int rm_file_node(tkr_helper_t* helper, unsigned long file_no)
 {
+#ifdef TRACKER_PT_LOGGING
+    printf("TRACKER VOL INT : rm_file_node\n");
+#endif
     unsigned long start = get_time_usec();
     file_tkr_info_t* cur;
     file_tkr_info_t* last;
@@ -2160,10 +2166,8 @@ void tkr_helper_teardown(tkr_helper_t* helper){
     if(helper){// not null
 
 #ifdef TRACKER_PROV_LOGGING
-        char pline[512];
-        FILE * file_handle = fopen(helper->tkr_file_path, "a");
 
-        sprintf(pline,
+        printf(pline,
                 "TOTAL_TKR_OVERHEAD %llu\n"
                 "TOTAL_NATIVE_H5_TIME %llu\n"
                 "TKR_WRITE_TOTAL_TIME %llu\n"
@@ -2181,33 +2185,59 @@ void tkr_helper_teardown(tkr_helper_t* helper){
                 DT_LL_TOTAL_TIME,
                 ATTR_LL_TOTAL_TIME);
 
-        switch(helper->tkr_level){
-            case File_only:
-                fputs(pline, file_handle);
-                break;
+        char pline[512];
+        FILE * file_handle = fopen(helper->tkr_file_path, "a");
 
-            case File_and_print:
-                fputs(pline, file_handle);
-                printf("%s", pline);
-                break;
 
-            case Print_only:
-                printf("%s", pline);
-                break;
+        // sprintf(pline,
+        //         "TOTAL_TKR_OVERHEAD %llu\n"
+        //         "TOTAL_NATIVE_H5_TIME %llu\n"
+        //         "TKR_WRITE_TOTAL_TIME %llu\n"
+        //         "FILE_LL_TOTAL_TIME %llu\n"
+        //         "DS_LL_TOTAL_TIME %llu\n"
+        //         "GRP_LL_TOTAL_TIME %llu\n"
+        //         "DT_LL_TOTAL_TIME %llu\n"
+        //         "ATTR_LL_TOTAL_TIME %llu\n",
+        //         TOTAL_TKR_OVERHEAD,
+        //         TOTAL_NATIVE_H5_TIME,
+        //         TKR_WRITE_TOTAL_TIME,
+        //         FILE_LL_TOTAL_TIME,
+        //         DS_LL_TOTAL_TIME,
+        //         GRP_LL_TOTAL_TIME,
+        //         DT_LL_TOTAL_TIME,
+        //         ATTR_LL_TOTAL_TIME);
 
-            case Level4:
-            case Level5:
-            case Disabled:
-            case Default:
-            default:
-                break;
-        }
+        // switch(helper->tkr_level){
+        //     case File_only:
+        //         fputs(pline, file_handle);
+        //         break;
+
+        //     case File_and_print:
+        //         fputs(pline, file_handle);
+        //         printf("%s", pline);
+        //         break;
+
+        //     case Print_only:
+        //         printf("%s", pline);
+        //         break;
+
+        //     case Level4:
+        //     case Level5:
+        //     case Disabled:
+        //     case Default:
+        //     default:
+        //         break;
+        // }
 
         fflush(file_handle);
         fclose(file_handle);
 #endif
         tkrLockDestroy(&myLock);
         destroy_hash_lock();
+
+#ifdef TRACKER_PT_LOGGING
+    printf("TRACKER VOL INT: tkr_helper_teardown\n");
+#endif
 
         // if(helper->tkr_level == File_only 
         //     || helper->tkr_level ==File_and_print){//no file
@@ -2757,13 +2787,6 @@ char * H5S_select_type_to_str(H5S_sel_type type){
     }
 }
 
-// size_t token_to_size_t(const H5O_token_t* token) {
-//     // Assuming H5O_token_t contains objno and addr
-//     size_t result = (size_t)(token->objno);
-//     result ^= (size_t)(token->addr); // XOR with addr or some other field if needed
-    
-//     return result;
-// }
 
 // Function to convert an H5O_token_t to a size_t
 size_t token_to_size_t(const H5O_token_t* token) {
@@ -2823,6 +2846,9 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
         strcpy(dset_info->layout, layout);
     }
 
+    // if(strcmp(dset_info->layout,"H5D_CONTIGUOUS") == 0)
+    if ((dset_info->dset_offset == NULL) || (dset_info->dset_offset < 0) && dxpl_id != NULL)
+        dset_info->dset_offset = dataset_get_offset(dset->under_object, dset->under_vol_id, dxpl_id);
 
     if(strcmp(func_name,"H5VLdataset_create") != 0 
         && strcmp(func_name,"H5VLget_object") != 0 ){
@@ -2860,8 +2886,8 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
             start_page = start_addr/tracker_page_size;
             end_page = end_addr/tracker_page_size;
 
-            // printf("dataset_get_storage_size storage_size[%ld] start_addr[%ld] start_page[%ld]\n", 
-            //     dset_info->storage_size, start_addr, start_page);
+            printf("dataset_get_storage_size storage_size[%ld] start_addr[%ld] start_page[%ld]\n", 
+                dset_info->storage_size, start_addr, start_page);
 
             if(access_size == dset_info->storage_size){
                 dset_info->data_file_page_start = start_page;
@@ -2870,9 +2896,6 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
                 dset_info->data_file_page_start = end_page;
                 dset_info->data_file_page_end = (end_addr + dset_info->storage_size) / tracker_page_size;
             }
-
-
-
 
             // if storage size is zero
             if (dset_info->storage_size == 0){
@@ -2883,9 +2906,7 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
 
     } //&& strcmp(func_name,"H5VLget_object") != 0
 
-    // if(strcmp(dset_info->layout,"H5D_CONTIGUOUS") == 0)
-    if ((dset_info->dset_offset == NULL) || (dset_info->dset_offset < 0) && dxpl_id != NULL)
-        dset_info->dset_offset = dataset_get_offset(dset->under_object, dset->under_vol_id, dxpl_id);
+
 
 #ifdef TRACKER_LOGGING
     dataset_info_print(func_name, mem_type_id, mem_space_id, file_space_id, obj, dxpl_id);

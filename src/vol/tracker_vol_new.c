@@ -998,12 +998,13 @@ H5VL_tracker_free_wrap_ctx(void *_wrap_ctx)
     /* Release underlying VOL ID and wrap context */
     if(wrap_ctx->under_wrap_ctx)
         H5VLfree_wrap_ctx(wrap_ctx->under_wrap_ctx, wrap_ctx->under_vol_id);
+
     H5Idec_ref(wrap_ctx->under_vol_id);
 
     H5Eset_current_stack(err_id);
 
-    /* Free TRACKER wrap context object itself */
-    free(wrap_ctx);
+    // /* Free TRACKER wrap context object itself */
+    // free(wrap_ctx); // This segfaults
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start);
     return 0;
