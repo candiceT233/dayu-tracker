@@ -196,6 +196,9 @@ void update_mem_type_stat(int rw, size_t start_page,
 void read_write_info_update(std::string func_name, char * file_name, hid_t fapl_id, H5FD_t *_file,
   H5FD_mem_t type, hid_t dxpl_id, haddr_t addr,
   size_t size, size_t page_size, unsigned long t_start, unsigned long t_end);
+void read_write_info_print(std::string func_name, char * file_name, hid_t fapl_id, void * obj,
+  H5FD_mem_t type, hid_t dxpl_id, haddr_t addr,
+  size_t size, size_t page_size, unsigned long t_start, unsigned long t_end);
 
 void open_close_info_update(const char* func_name, H5FD_tracker_vfd_t *file, size_t eof, int flags, 
   unsigned long t_start, unsigned long t_end);
@@ -768,8 +771,8 @@ void read_write_info_update(std::string func_name, char * file_name, hid_t fapl_
 #endif
 
 #ifdef VFD_LOGGING
-  // print_read_write_info(func_name, file_name, fapl_id, _file,
-  //   type, dxpl_id, addr, size, page_size, t_start, t_end);
+  read_write_info_print(func_name, file_name, fapl_id, _file,
+    type, dxpl_id, addr, size, page_size, t_start, t_end);
 #endif
 
 }
@@ -833,7 +836,7 @@ void open_close_info_update(const char* func_name, H5FD_tracker_vfd_t *file, siz
 
 
 /* candice added, print/record info H5FD__tracker_vfd_open from */
-void print_read_write_info(const char* func_name, char * file_name, hid_t fapl_id, void * obj,
+void read_write_info_print(std::string func_name, char * file_name, hid_t fapl_id, void * obj,
   H5FD_mem_t type, hid_t dxpl_id, haddr_t addr,
   size_t size, size_t page_size, unsigned long t_start, unsigned long t_end){
 
@@ -864,9 +867,8 @@ void print_read_write_info(const char* func_name, char * file_name, hid_t fapl_i
   // printf("\"f_cls->fapl_size\": \"%d\", ", f_cls->fapl_size);
   
 
-  printf("{\"func_name\": %s, ", func_name);
+  printf("{\"func_name\": %s, ", func_name.c_str());
   printf("\"io_access_idx\": %ld, ", VFD_ACCESS_IDX);
-  printf("\"time(us)\": %ld, ", t_end);
   printf("\"file_no\": %ld, ", _file->fileno); // matches dset_name ?
 
   // unsigned hash_id = KernighanHash(buf);
@@ -874,15 +876,12 @@ void print_read_write_info(const char* func_name, char * file_name, hid_t fapl_i
   // printf("\"dxpl_id\": \"%p\", ", dxpl_id);
   // printf("\"hash_id\": %ld, ", KernighanHash(buf));
 
-  
+  printf("\"mem_type\": \"%s\", ", get_mem_type(type).c_str());
   printf("\"addr\": [%ld, %ld], ", addr, (addr+size));
   printf("\"access_size\": %ld, ", size);
-
   // not used
   printf("\"file_pages\": [%ld, %ld], ", start_page_index,end_page_index);
-  printf("\"mem_type\": \"%s\", ", get_mem_type(type).c_str());
-
-
+  printf("\"time(us)\": %ld, ", t_end);
 
   printf("\"TOTAL_VFD_READ\": %ld, ", TOTAL_VFD_READ);
   printf("\"TOTAL_VFD_WRITE\": %ld, ", TOTAL_VFD_WRITE);
@@ -915,7 +914,7 @@ void print_read_write_info(const char* func_name, char * file_name, hid_t fapl_i
   }
 
   printf("\"file_name\": \"%s\", ", strdup(file_name));
-  printf("\"vfd_obj\": %p, ", obj);
+  printf("\n\"vfd_obj\": %ld, ", obj);
 
   printf("}\n");
 

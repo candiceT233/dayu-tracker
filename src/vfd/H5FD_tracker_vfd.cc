@@ -752,9 +752,9 @@ done:
 static herr_t H5FD__tracker_vfd_read(H5FD_t *_file, H5FD_mem_t type,
                                 hid_t dxpl_id, haddr_t addr,
                                 size_t size, void *buf) {
-// #ifdef DEBUG_LOG
-//   std::cout << "H5FD__read()" << std::endl;
-// #endif
+#ifdef DEBUG_LOG
+  std::cout << "H5FD__read() size:" << size << std::endl;
+#endif
 
 
   unsigned long t_start = get_time_usec();
@@ -764,6 +764,7 @@ static herr_t H5FD__tracker_vfd_read(H5FD_t *_file, H5FD_mem_t type,
   HDoff_t      offset    = (HDoff_t)addr;
   herr_t ret_value = SUCCEED; /* Return value */
   ssize_t count = -1;
+  size_t read_size = size;
   char file_name_copy[H5FD_MAX_FILENAME_LEN];
 
   assert(file && file->pub.cls);
@@ -858,10 +859,7 @@ static herr_t H5FD__tracker_vfd_read(H5FD_t *_file, H5FD_mem_t type,
   // strcat(file_name_copy, file->filename);
 
   read_write_info_update("H5FD__tracker_vfd_read", file->filename, file->my_fapl_id ,_file,
-    type, dxpl_id, addr, size, file->page_size, t_start, t_end);
-
-  // print_read_write_info("H5FD__tracker_vfd_read", file->filename, file->my_fapl_id ,_file,
-  //   type, dxpl_id, addr, size, file->page_size, t_start, t_end);
+    type, dxpl_id, addr, read_size, file->page_size, t_start, t_end);
 
   /* custom VFD code end */
 
@@ -892,11 +890,12 @@ static herr_t H5FD__tracker_vfd_write(H5FD_t *_file, H5FD_mem_t type,
                                  hid_t dxpl_id, haddr_t addr,
                                  size_t size, const void *buf) {
 #ifdef DEBUG_LOG
-  std::cout << "H5FD__write()" << std::endl;
+  std::cout << "H5FD__write() size:" << size << std::endl;
 #endif
 
   unsigned long t_start = get_time_usec();
   unsigned long t1, t2, t_end;
+  size_t write_size = size;
   (void) dxpl_id; (void) type;
   H5FD_tracker_vfd_t *file = (H5FD_tracker_vfd_t *)_file;
   HDoff_t      offset    = (HDoff_t)addr;
@@ -975,12 +974,9 @@ static herr_t H5FD__tracker_vfd_write(H5FD_t *_file, H5FD_mem_t type,
   /* custom VFD code start */
   t_end = get_time_usec();
   read_write_info_update("H5FD__tracker_vfd_write", file->filename, file->my_fapl_id ,_file,
-    type, dxpl_id, addr, size, file->page_size, t_start, t_end);
+    type, dxpl_id, addr, write_size, file->page_size, t_start, t_end);
 
 
-  // print_read_write_info("H5FD__tracker_vfd_write", file->filename, file->my_fapl_id ,_file,
-  //   type, dxpl_id, addr, size, file->page_size, t_start, t_end);
-  
   /* custom VFD code end */
 
 done:
