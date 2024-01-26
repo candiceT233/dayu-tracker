@@ -7,7 +7,7 @@ build/
 *.err
 *.log
 *.out
-example_stat
+example_stat/
 
 # others
 *.so
