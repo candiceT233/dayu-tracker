@@ -1,29 +1,60 @@
-# CMakeLists.txt in src/vol directory
+#------------------------------------------------------------------------------
+# External dependencies
+#------------------------------------------------------------------------------
+# None for now
 
-add_library(h5tracker SHARED tracker_vol_new.c)
+#------------------------------------------------------------------------------
+# Build VOL_Tracker Library
+#------------------------------------------------------------------------------
+add_library(h5vol_tracker SHARED tracker_vol_new.c)
 
-# Define the variables
+#-----------------------------------------------------------------------------
+# Define Compiler Variables
+#-----------------------------------------------------------------------------
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_COMPILER h5c++)
 set(CMAKE_C_COMPILER h5cc)
-set(CMAKE_AR ar)
-set(DEBUG -g -O0 -DDEBUG -gdwarf-4 -gdwarf-3 -gdwarf-2)
-set(INCLUDES -I${HDF5_DIR}/include)
-set(CFLAGS ${DEBUG} -fPIC ${INCLUDES} -w -DTRACKER_SCHEMA -Wall -DTRACKER_PT_LOGGING) #-DTRACKER_PT_LOGGING
-set(LIBS -L${HDF5_DIR}/lib -lhdf5 -lz)
-set(DYNLDFLAGS ${DEBUG} -shared -fPIC ${LIBS})
 
+
+#-----------------------------------------------------------------------------
+# Compiler Optimization
+#-----------------------------------------------------------------------------
 # Set compiler options
-target_compile_options(h5tracker PRIVATE ${CFLAGS})
+add_compile_options(TRACKER_SCHEMA) # TODO: make this adjustable through cmake
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    message("h5vfd_tracker IN DEBUG MODE")
+    add_compile_options(-g -O0 ) #-DDEBUG -gdwarf-4 -gdwarf-3 -gdwarf-2
+    add_compile_definitions(TRACKER_PT_LOGGING TRACKER_BLOB_LOGGING DEBUG) #-DTRACKER_PT_LOGGING # -DTRACKER_BLOB_LOGGING
+else()
+    message("h5vfd_tracker IN RELEASE MODE")
+    add_compile_options(-g -O3)
+endif()
 
-# Set linker options
-target_link_libraries(h5tracker PRIVATE ${DYNLDFLAGS})
+#-----------------------------------------------------------------------------
+# Compile VOL_Tracker Dynamic Library
+#-----------------------------------------------------------------------------
+target_compile_options(h5vol_tracker PRIVATE
+    -fPIC        # Generate Position-Independent Code
+    -w           # Suppress All Warning Messages
+    -Wall        # Enable Most Warning Messages
+    -I${HDF5_DIR}/include  # Include Directory for HDF5
+)
 
-# Install the library
-install(TARGETS h5tracker LIBRARY DESTINATION lib)
+target_link_libraries(h5vol_tracker PRIVATE
+    -shared      # Generate a Shared Library
+    -fPIC        # Generate Position-Independent Code
+    -L${HDF5_DIR}/lib     # Library Directory for HDF5
+    -lhdf5       # Link HDF5 Library
+    -lz          # Link zlib Library
+)
 
 
-# add_library(h5tracker SHARED tracker_vol_new.c)
-
-# target_compile_options(h5tracker PRIVATE -g -O0 -DDEBUG -gdwarf-4 -gdwarf-3 -gdwarf-2 -fPIC -I${HDF5_DIR}/include -w -DTRACKER_SCHEMA -Wall)
-# target_link_libraries(h5tracker PRIVATE ${DYNLDFLAGS})
-
-# install(TARGETS h5tracker LIBRARY DESTINATION lib)
+#-----------------------------------------------------------------------------
+# Add file(s) to CMake Install
+#-----------------------------------------------------------------------------
+install(
+    TARGETS 
+    h5vol_tracker 
+    LIBRARY 
+    DESTINATION 
+        lib)
