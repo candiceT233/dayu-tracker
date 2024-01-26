@@ -22,11 +22,11 @@ set(CMAKE_C_COMPILER h5cc)
 # Set compiler options
 add_compile_options(TRACKER_SCHEMA) # TODO: make this adjustable through cmake
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    message("h5vfd_tracker IN DEBUG MODE")
+    message("h5vol_tracker IN DEBUG MODE")
     add_compile_options(-g -O0 ) #-DDEBUG -gdwarf-4 -gdwarf-3 -gdwarf-2
     add_compile_definitions(TRACKER_PT_LOGGING TRACKER_BLOB_LOGGING DEBUG) #-DTRACKER_PT_LOGGING # -DTRACKER_BLOB_LOGGING
 else()
-    message("h5vfd_tracker IN RELEASE MODE")
+    message("h5vol_tracker IN RELEASE MODE")
     add_compile_options(-g -O3)
 endif()
 
