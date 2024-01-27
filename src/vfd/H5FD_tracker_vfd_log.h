@@ -35,6 +35,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#include <sys/mman.h>
+#include <fcntl.h>
+
 // #include <mpi.h>
 
 /* HDF5 header for dynamic plugin loading */
@@ -45,6 +48,7 @@
 
 // #ifdef ENABLE_TRACKER
 #include "../vol/tracker_vol_types.h" /* Connecting to vol */
+
 // #include "tracker_vol_types.h" /* only VFD */
 
 
@@ -84,6 +88,9 @@ unsigned long TOTAL_POSIX_IO_TIME;
 std::string read_func = "H5FD__tracker_vfd_read";
 std::string write_func = "H5FD__tracker_vfd_write";
 
+// // Declare the shared memory region
+// #define SHM_NAME "/tracker_shm"
+// #define SHM_SIZE 256
 
 typedef struct VFDTrackerHelper {
     /* VFDTrackerHelper properties */
@@ -770,7 +777,7 @@ void read_write_info_update(std::string func_name, char * file_name, hid_t fapl_
   // std::cout << "read_write_info_update() done: info->file_name = " << info->file_name << std::endl;
 #endif
 
-#ifdef VFD_LOGGING
+#ifdef VFD_LOG
   read_write_info_print(func_name, file_name, fapl_id, _file,
     type, dxpl_id, addr, size, page_size, t_start, t_end);
 #endif
@@ -829,7 +836,7 @@ void open_close_info_update(const char* func_name, H5FD_tracker_vfd_t *file, siz
   std::cout << "open_close_info_update() done: info->file_name = " << info->file_name << std::endl;
 #endif
 
-#ifdef VFD_LOGGING
+#ifdef VFD_LOG
   // print_open_close_info(func_name, file, file->name, eof, flags, t_start, t_end);
 #endif
 }
@@ -845,6 +852,8 @@ void read_write_info_print(std::string func_name, char * file_name, hid_t fapl_i
   size_t         num_pages; /* Number of pages of transfer buffer */
   haddr_t        addr_end = addr + size - 1;
   
+
+
   // VFD_ADDR = addr;
   start_page_index = addr/page_size;
   end_page_index = addr_end/page_size;
@@ -870,7 +879,7 @@ void read_write_info_print(std::string func_name, char * file_name, hid_t fapl_i
   printf("{\"func_name\": %s, ", func_name.c_str());
   printf("\"io_access_idx\": %ld, ", VFD_ACCESS_IDX);
   printf("\"file_no\": %ld, ", _file->fileno); // matches dset_name ?
-
+  
   // unsigned hash_id = KernighanHash(buf);
   // printf("\"obj(decode)\": \"%p\", ", H5Pdecode(obj));
   // printf("\"dxpl_id\": \"%p\", ", dxpl_id);
@@ -914,10 +923,25 @@ void read_write_info_print(std::string func_name, char * file_name, hid_t fapl_i
   }
 
   printf("\"file_name\": \"%s\", ", strdup(file_name));
-  printf("\n\"vfd_obj\": %ld, ", obj);
+
+#ifdef VOL_VFD
+  pid_t pid = getpid();
+  size_t len = strlen(SHM_NAME) + 1 + sizeof(pid) * 3; // +1 for null terminator
+  char *task_shm_name = (char *)malloc(len);
+  snprintf(task_shm_name, len, "%s_%d", SHM_NAME, pid);
+  printf("READ Shared Memory Name: %s\n", task_shm_name);
+
+  // Open the shared memory
+  int shm_fd = shm_open(task_shm_name, O_RDONLY, 0666);
+  char* CURR_DSET = (char*)mmap(0, SHM_SIZE, PROT_READ, MAP_SHARED, shm_fd, 0);
+
+  printf("\n\"dataset_name\": \"%s\", ", CURR_DSET);
+  close(shm_fd);
+#endif
+
+  printf("\"vfd_obj\": %ld, ", obj);
 
   printf("}\n");
-
 
   // printf("{tracker_vfd_vfd: ");
   // printf("{func_name: %s, ", func_name);
