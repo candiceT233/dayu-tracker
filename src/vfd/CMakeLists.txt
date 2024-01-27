@@ -33,12 +33,22 @@ set(POSIX_FLAGS
 )
 
 #-----------------------------------------------------------------------------
+# Define VFD Specific Options
+#-----------------------------------------------------------------------------
+option(VFD_LOG "Enable VFD Logging" ON)
+
+#-----------------------------------------------------------------------------
 # Compiler Optimization
 #-----------------------------------------------------------------------------
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     message("h5vfd_tracker IN DEBUG MODE")
     add_compile_options(-g -O0) #-DDEBUG -gdwarf-4 -gdwarf-3 -gdwarf-2
-    add_compile_definitions(DEBUG_LOG VFD_LOGGING DEBUG) #-DTRACKER_PT_LOGGING # -DTRACKER_BLOB_LOGGING
+    add_compile_definitions(DEBUG DEBUG_LOG)
+    # Check to set Logging
+    if(VFD_LOG)
+        add_compile_definitions(VFD_LOG)
+    endif()
+        
 else()
     message("h5vfd_tracker IN RELEASE MODE")
     add_compile_options(-g -O3)
