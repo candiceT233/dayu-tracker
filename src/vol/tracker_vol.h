@@ -33,6 +33,7 @@
 #define H5_REQUEST_NULL NULL
 #define DEFAULT_PAGE_SIZE 8192
 
+
 typedef enum TrackLevel {
     Default, //no file write, only screen print
     Print_only,
@@ -62,6 +63,7 @@ H5_DLL hid_t H5VL_tracker_register(void);
 #ifdef __cplusplus
 }
 #endif
+
 
 #endif /* _tracker_vol_H */
 

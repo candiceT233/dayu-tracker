@@ -12,6 +12,10 @@
 // #include <openssl/md5.h>
 #include "../utils/uthash/src/uthash.h"
 
+// Declare the shared memory region
+#define SHM_NAME "/tracker_shm"
+#define SHM_SIZE 256
+char* CURR_DSET;
 
 /************/
 /* Typedefs */
@@ -51,6 +55,7 @@ unsigned long START_PAGE;
 unsigned long END_PAGE;
 
 int TASK_ID = 0;
+
 
 
 
