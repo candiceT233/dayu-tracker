@@ -40,37 +40,8 @@ def set_curr_task_env(task):
     subprocess.run(command, shell=True)
     subprocess.run(command2, shell=True)
 
-def check_equals(datasets_1, datasets_2):
-    print("Checking if datasets are equal")
-    for i in range(len(datasets_1)):
-        if not np.array_equal(datasets_1[i], datasets_2[i]):
-            print(f"Dataset {i}: Not Equal")
-        else:
-            print(f"Dataset {i}: Equal")
-
-def run_write(file_name, datasets):
-    task_name = "h5_write"
-    print(f"Running Task : {task_name}")
-    set_curr_task(task_name)
-
-    hf = h5py.File(file_name, mode='w')
-    # Create a group for each dataset
-    group = hf.create_group('data')
-        
-    for i, data in enumerate(datasets):
-        print(f"datatype is {data[0].dtype}")
-        # Create a dataset for variable-length data
-        vlen_dtype = h5py.vlen_dtype(data[0].dtype)
-        ds = group.create_dataset(f'dataset{i}', (len(data),), dtype=vlen_dtype)
-        
-        # Populate the dataset with variable-length data
-        ds[:] = data
-    
-    # flush hf
-    hf.close()
-
 def run_read(file_name):
-    task_name = "h5_read"
+    task_name = "h5_read2"
     print(f"Running Task: {task_name}")
     set_curr_task(task_name)
 
@@ -84,39 +55,23 @@ def run_read(file_name):
         if ds.dtype.kind == 'O' and ds.shape[1:] == ():
             # If yes, convert to a list of NumPy arrays
             data = [np.array(item, dtype=np.float32) for item in ds[:]]
+            
         else:
             # Otherwise, convert the whole dataset to a NumPy array
             data = np.array(ds[:], dtype=np.float32)
         
-        datasets.append(data)
+        # add 1 to each element
+        data = [item + 1 for item in data]
+        # print each item in data
+        print(f"Data [{key}]:")
+        for item in data:
+            print(item)
 
         print(f"Read dataset {key} with datatype {ds.dtype}")
     
     hf.close()    
-    return datasets
 
 
-def write_read_separate(file_name):
-    dtype = np.float32
-    # Create some sample data
-    d1 = [np.random.randn(1000).astype(dtype)]
-    d2 = [np.random.randn(10000).astype(dtype)]
-    d3 = [np.random.randn(100000).astype(dtype)]
-
-    # check all shapes
-    print(f"d1 shape {d1[0].shape}")
-    print(f"d2 shape {d2[0].shape}")
-    print(f"d3 shape {d3[0].shape}")
-
-    write_datasets = [d1, d2, d3]
-
-    run_write(file_name, write_datasets)
-    read_datasets = run_read(file_name)
-    # read_datasets = run_read(file_name, len(write_datasets))
-    
-
-    if read_datasets:
-        check_equals(write_datasets, read_datasets)
 
 if __name__ == "__main__":
     # get user argument with file name
@@ -127,6 +82,6 @@ if __name__ == "__main__":
     file_name = sys.argv[1]
     
     print(f"Running test for file {file_name}")
-    write_read_separate(file_name)
+    run_read(file_name)
 
 
