@@ -17,7 +17,7 @@
 
 /* Whether to display log messge when callback is invoked */
 /* (Uncomment to enable) */
-/* #define TRACKER_PT_LOG */
+/* #define TRACKER_PT_DEBUG */
 /* Hack for missing va_copy() in old Visual Studio editions
  * (from H5win2_defs.h - used on VS2012 and earlier)
  */
@@ -410,11 +410,11 @@ void add_meta_page_to_list(size_t **list, size_t *list_size, size_t page) {
 static H5VL_tracker_t *
 H5VL_tracker_new_obj(void *under_obj, hid_t under_vol_id, tkr_helper_t* helper)
 {
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL INT : H5VL_tracker_new_obj\n");
 #endif
 
-//    unsigned long start = get_time_usec();
+   unsigned long start = get_time_usec();
     H5VL_tracker_t *new_obj;
 
     assert(under_vol_id);
@@ -429,7 +429,8 @@ H5VL_tracker_new_obj(void *under_obj, hid_t under_vol_id, tkr_helper_t* helper)
 
     H5Iinc_ref(new_obj->under_vol_id);
 
-    //TOTAL_TKR_OVERHEAD += (get_time_usec() - start);
+    TOTAL_TKR_OVERHEAD += (get_time_usec() - start);
+
     return new_obj;
 } /* end H5VL__tracker_new_obj() */
 
@@ -792,7 +793,10 @@ static hsize_t dataset_get_vlen_buf_size(void *under_dset, hid_t under_vol_id, h
 
 tkr_helper_t * tkr_helper_init( char* file_path, Track_level tkr_level, char* tkr_line_format)
 {
-   
+
+#ifdef VOLTRK_PT_DEBUG
+    printf("TRACKER VOL INT : tkr_helper_init\n");
+#endif
     
     tkr_helper_t* new_helper = (tkr_helper_t *)calloc(1, sizeof(tkr_helper_t));
 
@@ -803,36 +807,38 @@ tkr_helper_t * tkr_helper_init( char* file_path, Track_level tkr_level, char* tk
         }
     }
 
-    new_helper->tkr_file_path = strdup(file_path);
+
+
     new_helper->tkr_line_format = strdup(tkr_line_format);
     new_helper->tkr_level = tkr_level;
     new_helper->pid = getpid();
     new_helper->tid = pthread_self();
-
-    // new_helper->pid = 123; // TODO: set tmp PID the same for testing
-    
-    // update file path with PID
-    int prefix_len = snprintf(NULL, 0, "%d_vol-%s", new_helper->pid, file_path);
-    new_helper->tkr_file_path = (char*)malloc((prefix_len + 1) * sizeof(char));
-    snprintf(new_helper->tkr_file_path, prefix_len + 1, "%d_vol-%s", new_helper->pid, file_path);
-
-    printf("vol new_helper tkr_file_path: %s\n", new_helper->tkr_file_path);
-
     new_helper->opened_files = NULL;
     new_helper->opened_files_cnt = 0;
+    // new_helper->tkr_file_path = strdup(file_path);
 
     /* VFD vars start */
-    // new_helper->vfd_opened_files = NULL;
-    // new_helper->vfd_opened_files_cnt = 0;
     new_helper->tracker_page_size = get_tracker_page_size();
-    /* VFD vars end */
-
+    
     getlogin_r(new_helper->user_name, 32);
 
     // if(new_helper->tkr_level == File_only || new_helper->tkr_level == File_and_print)
     //     new_helper->tkr_file_handle = fopen(new_helper->tkr_file_path, "a");
-
     // _dic_init();
+
+    // new_helper->pid = 123; // TODO: set tmp PID the same for testing
+    // Update the file_name with PID in front
+    int prefix_len = snprintf(NULL, 0, "%d-%s", new_helper->pid, VOL_STAT_FILE_NAME);
+    // Allocate memory for the concatenated path
+    new_helper->tkr_file_path = (char*)malloc(strlen(file_path) + prefix_len + 2); // +2 for '/' and null terminator
+    // Join file_path, pid, and file_name
+    snprintf(new_helper->tkr_file_path, strlen(file_path) + prefix_len + 2, 
+      "%s/%d-%s",file_path, new_helper->pid, VOL_STAT_FILE_NAME);
+
+    
+    printf("vol new_helper tkr_file_path: %s\n", new_helper->tkr_file_path);
+    /* VFD vars end */
+
     return new_helper;
 }
 
@@ -891,7 +897,7 @@ dataset_tkr_info_t *new_dataset_info(file_tkr_info_t *root_file,
 group_tkr_info_t *new_group_info(file_tkr_info_t *root_file,
     const char *name, H5O_token_t token)
 {
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL INT : new_group_info\n");
 #endif
 
@@ -906,7 +912,7 @@ group_tkr_info_t *new_group_info(file_tkr_info_t *root_file,
     // info->obj_info.name = name ? strdup(name) : NULL;
     info->obj_info.token = token;
 
-// #ifdef VOLTRK_PT_LOG
+// #ifdef VOLTRK_PT_DEBUG
 //     printf("TRACKER VOL INT : new_group_info END\n");
 // #endif
 
@@ -1046,7 +1052,7 @@ datatype_tkr_info_t * add_dtype_node(file_tkr_info_t *file_info,
 
 int rm_dtype_node(tkr_helper_t *helper, void *under, hid_t under_vol_id, datatype_tkr_info_t *dtype_info)
 {
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL INT : rm_dtype_node\n");
 #endif
     unsigned long start = get_time_usec();
@@ -1106,7 +1112,7 @@ int rm_dtype_node(tkr_helper_t *helper, void *under, hid_t under_vol_id, datatyp
 group_tkr_info_t *add_grp_node(file_tkr_info_t *file_info,
     H5VL_tracker_t *upper_o, const char *obj_name, H5O_token_t token)
 {
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL INT : add_grp_node\n");
 #endif
 
@@ -1348,7 +1354,7 @@ file_tkr_info_t* add_file_node(tkr_helper_t* helper, const char* file_name,
 //need a dumy node to make it simpler
 int rm_file_node(tkr_helper_t* helper, unsigned long file_no)
 {
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL INT : rm_file_node\n");
 #endif
     unsigned long start = get_time_usec();
@@ -1382,7 +1388,6 @@ int rm_file_node(tkr_helper_t* helper, unsigned long file_no)
                 else
                     last->next = cur->next;
 
-
                 // // Free file info
                 // file_info_free(cur);
 
@@ -1401,6 +1406,11 @@ int rm_file_node(tkr_helper_t* helper, unsigned long file_no)
     }
 
     FILE_LL_TOTAL_TIME += (get_time_usec() - start);
+
+#ifdef VOLTRK_PT_DEBUG
+    printf("TRACKER VOL INT : rm_file_node END\n");
+#endif
+
     return helper->opened_files_cnt;
 }
 
@@ -1683,6 +1693,12 @@ H5VL_tracker_t *_file_open_common(void *under, hid_t vol_id,
 }
 
 herr_t tracker_file_setup(const char* str_in, char* file_path_out, Track_level* level_out, char* format_out){
+
+#ifdef VOLTRK_PT_DEBUG
+    printf("TRACKER VOL INT : tracker_file_setup\n");
+#endif
+
+
     //acceptable format: path=$path_str;level=$level_int;format=$format_str
     char tmp_str[100] = {'\0'};
     char* toklist[4] = {NULL};
@@ -1714,7 +1730,7 @@ herr_t tracker_file_setup(const char* str_in, char* file_path_out, Track_level* 
 //Use this in H5VL_tracker_wrap_object() ONLY!!!
 H5VL_tracker_t * _fake_obj_new(file_tkr_info_t *root_file, hid_t under_vol_id)
 {
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL INT : _fake_obj_new\n");
 #endif
     H5VL_tracker_t* obj;
@@ -1745,7 +1761,7 @@ H5VL_tracker_t * _obj_wrap_under(void *under, H5VL_tracker_t *upper_o,
                                     H5I_type_t target_obj_type,
                                     hid_t dxpl_id, void **req)
 {
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL INT : _obj_wrap_under\n");
 #endif
 
@@ -1876,7 +1892,7 @@ H5VL_tracker_t * _obj_wrap_under(void *under, H5VL_tracker_t *upper_o,
     else
         obj = NULL;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL INT : _obj_wrap_under END\n");
 #endif
 
@@ -2178,7 +2194,7 @@ void attribute_stats_tkr_write(const attribute_tkr_info_t *attr_info) {
 void tkr_helper_teardown(tkr_helper_t* helper){
     if(helper){// not null
 
-#ifdef VOLTRK_PROV_LOG
+#ifdef VOLTRK_PROV_DEBUG
 
         printf(pline,
                 "TOTAL_TKR_OVERHEAD %llu\n"
@@ -2248,7 +2264,7 @@ void tkr_helper_teardown(tkr_helper_t* helper){
         tkrLockDestroy(&myLock);
         destroy_hash_lock();
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL INT: tkr_helper_teardown\n");
 #endif
 
@@ -2292,7 +2308,7 @@ int tkr_write(tkr_helper_t* helper_in, const char* msg, unsigned long duration){
             if(base[i] != msg[i])
                 break;
     }
-#ifdef VOLTRK_PROV_LOG
+#ifdef VOLTRK_PROV_DEBUG
     FILE * file_handle = fopen(helper_in->tkr_file_path, "a");
 
     sprintf(pline, "%s %llu(us)\n",  msg, duration);//assume less than 64 functions
@@ -2628,7 +2644,7 @@ void file_info_update(char * func_name, void * obj, hid_t fapl_id, hid_t fcpl_id
         }
     }
 
-#ifdef VOLTRK_LOG
+#ifdef VOLTRK_DEBUG
     file_info_print(func_name, obj, fapl_id, fcpl_id, dxpl_id);
 #endif
 }
@@ -2809,16 +2825,23 @@ size_t token_to_size_t(const H5O_token_t* token) {
     return result;
 }
 
-// TODO: update dataset_info to tracking object
+/**
+* This function updates the below parameters of dset_info.
+* All common updates: dspace_id, dimension_cnt, dimensions, dset_select_type, 
+*                     dset_select_npoints, dset_n_elements, layout
+* When dtype is vlen: storage_size, dset_offset, data_file_page_start, data_file_page_end
+*/
 void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
     hid_t file_space_id, void * obj, hid_t dxpl_id)
 {
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL INT : dataset_info_update: %s\n", func_name);
 #endif
 
     H5VL_tracker_t *dset = (H5VL_tracker_t *)obj;
-    dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)dset->generic_tkr_info; 
+    dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)dset->generic_tkr_info;
+
+    // When dtype is vlen
     if(!dset_info->dspace_id)
         dset_info->dspace_id = dataset_get_space(dset->under_object, dset->under_vol_id, dxpl_id);
 
@@ -2893,59 +2916,26 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
             dset_info->data_file_page_start = start_page;
             dset_info->data_file_page_end = end_page;
             dset_info->storage_size = -1;
-            printf("\nUpdated offset for dset_name %s\n", dset_info->obj_info.name);
 
-            // //TODO: this same as token!! (TODO: improve this to async method)
-            // tkrLockAcquire(&myLock);
-            // dset_info->storage_size = dataset_get_storage_size(dset->under_object, dset->under_vol_id, dxpl_id);
-            // start_addr = START_ADDR;
-            // end_addr = END_ADDR;
-            // access_size = ACC_SIZE;
-            // // printf("dataset_get_storage_size START_ADDR[%ld] END_ADDR[%ld] ACC_SIZE[%ld]\n", START_ADDR, END_ADDR, ACC_SIZE);
-            // tkrLockRelease(&myLock);
+#ifdef VOLTRK_PT_DEBUG
+    printf("TRACKER VOL INT : dataset_info_update:%s dset_name:%s\n", func_name, dset_info->obj_info.name);
+#endif
 
-            // // check if storage size is larger than zero and if token is larger than 0
-            // if (dset_info->storage_size > 0 ){
-            //     // start_addr = token_to_size_t(&dset_info->obj_info.token);
-            //     memcpy(&start_addr, &dset_info->obj_info.token, sizeof(size_t));
-            //     end_addr = dset_info->storage_size;
-            //     // if start_addr > -1, add to off_set
-            //     if(start_addr > 0){
-            //         dset_info->dset_offset = start_addr;
-            //     }
-            // }
-
-            // start_page = start_addr/tracker_page_size;
-            // end_page = end_addr/tracker_page_size;
-
-            // printf("dataset_get_storage_size storage_size[%ld] start_addr[%ld] start_page[%ld]\n", 
-            //     dset_info->storage_size, start_addr, start_page);
-
-            // if(access_size == dset_info->storage_size){
-            //     dset_info->data_file_page_start = start_page;
-            //     dset_info->data_file_page_end = end_page;
-            // } else {
-            //     dset_info->data_file_page_start = end_page;
-            //     dset_info->data_file_page_end = (end_addr + dset_info->storage_size) / tracker_page_size;
-            // }
-
-            // // if storage size is zero
-            // if (dset_info->storage_size == 0){
-            //     if(strcmp(dset_info->layout,"H5D_CONTIGUOUS") == 0)
-            //         dset_info->storage_size = dset_info->dset_n_elements * dset_info->dset_type_size;
-            // }
+            // TODO: get storage size with update from VFD
         }
 
     } //&& strcmp(func_name,"H5VLget_object") != 0
 
+
     // if(strcmp(dset_info->layout,"H5D_CONTIGUOUS") == 0)
-    if ((dset_info->dset_offset == NULL) || (dset_info->dset_offset < 0) && dxpl_id != NULL)
-        dset_info->dset_offset = dataset_get_offset(dset->under_object, dset->under_vol_id, dxpl_id);
+    if(dxpl_id != NULL)
+        if ((dset_info->dset_offset == NULL) || (dset_info->dset_offset < 0))
+            dset_info->dset_offset = dataset_get_offset(dset->under_object, dset->under_vol_id, dxpl_id);
 
 
-
-#ifdef VOLTRK_LOG
-    dataset_info_print(func_name, mem_type_id, mem_space_id, file_space_id, obj, dxpl_id);
+#ifdef VOLTRK_DEBUG
+    // dataset_info_print(func_name, mem_type_id, mem_space_id, file_space_id, obj, dxpl_id);
+    printf("TRACKER VOL INT : dataset_info_update: %s END\n", func_name);
 #endif
 
 }
@@ -2958,43 +2948,25 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
     H5VL_tracker_t *dset = (H5VL_tracker_t *)obj;
     dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)dset->generic_tkr_info;    
 
-    // if(mem_type_id != NULL)
-    //     H5VL_arrow_get_selected_sub_region(dset_info->dspace_id, H5Tget_size(dset_info->dtype_id));
+    // printf("\"vol_under_obj\": %ld, ", dset->under_object);
+    // if(!dxpl_id)
+    //     printf("\"dxpl_id_vol\": -1, ");
+    // else
+    //     printf("\"dxpl_id_vol\": %ld, ", dxpl_id);
+    // printf("\"blob_idx\": %d, ", -1);
+    // printf("\"offset\": %ld, ", dataset_get_offset(dset->under_object, dset->under_vol_id, dxpl_id));
 
 
-    // assert(dset_info);
 
     printf("{\"func_name\": \"%s\", ", func_name);
 
     printf("\"vol_obj\": %ld, ", obj);
-    printf("\"vol_under_obj\": %ld, ", dset->under_object);
-
-    if(!dxpl_id)
-        printf("\"dxpl_id_vol\": %d, ", -1);
-    else
-        printf("\"dxpl_id_vol\": %ld, ", dxpl_id);
-    
-    printf("\"time(us)\": %ld, ", get_time_usec());
-
-
+    printf("\"time(usec)\": %ld, ", get_time_usec());
     printf("\"dset_name\": \"%s\", ", dset_info->obj_info.name);
-
     printf("\"dset_token\": %ld, ", dset_info->obj_info.token);
-
-    // printf("\"dset_token.__data\": [");
-    // for (size_t i = 0; i < 16; i++)
-    // {
-    //     printf("%ld, ", dset_info->obj_info.token.__data[i]);
-
-    // }
-    // printf("], ");
-
-    printf("\"layout\": \"%s\", ", dset_info->layout); //TODO
+    // printf("\"layout\": \"%s\", ", dset_info->layout); //TODO
     printf("\"dt_class\": \"%s\", ", get_datatype_class_str(dset_info->dt_class));
-
-    // printf("\"offset\": %ld, ", dataset_get_offset(dset->under_object, dset->under_vol_id, dxpl_id));
     printf("\"offset\": %ld, ", dset_info->dset_offset);
-
     printf("\"type_size\": %ld, ", dset_info->dset_type_size);
     printf("\"storage_size\": %ld, ", dset_info->storage_size);
     printf("\"n_elements\": %ld, ", dset_info->dset_n_elements);
@@ -3005,14 +2977,15 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
         for(int i=0; i<dset_info->dimension_cnt; i++)
             printf("%ld,",dset_info->dimensions[i]);
     }
-
     printf("], ");
-
     printf("\"file_name\": \"%s\", ", dset_info->pfile_name);
-    // printf("\"blob_idx\": %d, ", -1);
     printf("\"dxpl_id\": %d, ", dxpl_id);
-
     printf("}\n");
+
+#ifdef VOLTRK_PT_DEBUG
+    printf("TRACKER VOL INT : dataset_info_print: %s END\n", func_name);
+#endif
+
 }
 
 uint32_t decode_uint32(uint32_t value, const uint8_t *p) {
@@ -3415,6 +3388,9 @@ void decode_two_strings(const char* encoded_str, char** file_name, char** dset_n
 void file_ds_created(file_tkr_info_t *info)
 {
     assert(info);
+#ifdef VOLTRK_DEBUG
+    printf("TRACKER VOL INT : file_ds_created\n");
+#endif
     if(info)
         info->ds_created++;
 }

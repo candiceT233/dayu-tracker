@@ -68,7 +68,7 @@
 
 #define MAX_FILE_INTENT_LENGTH 128
 #define MAX_CONF_STR_LENGTH 128
-#define H5FD_MAX_PATH_LEN 1024 // same as H5FD_MAX_FILENAME_LEN
+#define H5FD_MAX_FILENAME_LEN 1024 // same as H5FD_MAX_FILENAME_LEN
 #define VFD_STAT_FILE_NAME "vfd_data_stat.yaml"
 
 static
@@ -179,7 +179,7 @@ typedef struct H5FD_tracker_vfd_t {
     haddr_t        pos; /* current file I/O position        */
     int op;  /* last operation                   */
     bool           ignore_disabled_file_locks;
-    char           filename[H5FD_MAX_PATH_LEN]; /* Copy of file name from open operation */
+    char           filename[H5FD_MAX_FILENAME_LEN]; /* Copy of file name from open operation */
     bool fam_to_single;
     unsigned       flags;       /* The flags passed from H5Fcreate/H5Fopen */
 
@@ -927,14 +927,15 @@ void read_write_info_print(std::string func_name, char * file_name, hid_t fapl_i
   size_t len = strlen(SHM_NAME) + 1 + sizeof(pid) * 3; // +1 for null terminator
   char *task_shm_name = (char *)malloc(len);
   snprintf(task_shm_name, len, "%s_%d", SHM_NAME, pid);
-  printf("READ Shared Memory Name: %s\n", task_shm_name);
-
   // Open the shared memory
   int shm_fd = shm_open(task_shm_name, O_RDONLY, 0666);
   char* CURR_DSET = (char*)mmap(0, SHM_SIZE, PROT_READ, MAP_SHARED, shm_fd, 0);
-
-  printf("\n\"dataset_name\": \"%s\", ", CURR_DSET);
   close(shm_fd);
+
+#ifdef DEBUG_LOG
+  printf("READ Shared Memory Name: %s\n", task_shm_name);
+  printf("\n\"dataset_name\": \"%s\", ", CURR_DSET);
+#endif
 #endif
 
   printf("\"vfd_obj\": %ld, ", obj);

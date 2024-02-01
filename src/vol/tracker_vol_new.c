@@ -189,7 +189,7 @@ void dset_shm_write(const char *obj_name) {
     size_t len = strlen(SHM_NAME) + 1 + sizeof(pid) * 3; // +1 for null terminator
     char *task_shm_name = (char *)malloc(len);
     snprintf(task_shm_name, len, "%s_%d", SHM_NAME, pid);
-    printf("Shared Memory Name: %s\n", task_shm_name);
+    
 
     // Allocate shared memory
     int shm_fd = shm_open(task_shm_name, O_CREAT | O_RDWR, 0666);
@@ -198,7 +198,10 @@ void dset_shm_write(const char *obj_name) {
 
     strcpy(CURR_DSET, obj_name);
 
+#ifdef VOLTRK_DEBUG
+    printf("Shared Memory Name: %s\n", task_shm_name);
     printf("Object Name: %s\n", CURR_DSET);
+#endif
 
     // Clean up
     close(shm_fd);
@@ -383,7 +386,7 @@ H5VL_tracker_init(hid_t vipl_id)
     tkrLockInit(&myLock);
     init_hasn_lock();
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL INIT\n");
 #endif
     TOTAL_TKR_OVERHEAD = 0;
@@ -424,7 +427,7 @@ static herr_t
 H5VL_tracker_term(void)
 {
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL TERM\n");
 #endif
     // Release resources, etc.
@@ -461,7 +464,7 @@ H5VL_tracker_info_copy(const void *_info)
     const H5VL_tracker_info_t *info = (const H5VL_tracker_info_t *)_info;
     H5VL_tracker_info_t *new_info;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL INFO Copy\n");
 #endif
 
@@ -504,7 +507,7 @@ H5VL_tracker_info_cmp(int *cmp_value, const void *_info1, const void *_info2)
     const H5VL_tracker_info_t *info1 = (const H5VL_tracker_info_t *)_info1;
     const H5VL_tracker_info_t *info2 = (const H5VL_tracker_info_t *)_info2;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL INFO Compare\n");
 #endif
 
@@ -571,7 +574,7 @@ H5VL_tracker_info_free(void *_info)
     H5VL_tracker_info_t *info = (H5VL_tracker_info_t *)_info;
     hid_t err_id;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL INFO Free\n");
 #endif
 
@@ -615,7 +618,7 @@ H5VL_tracker_info_to_str(const void *_info, char **str)
     size_t path_len = 0;
     size_t format_len = 0;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL INFO To String\n");
 #endif
 
@@ -674,7 +677,7 @@ H5VL_tracker_str_to_info(const char *str, void **_info)
     void *under_vol_info = NULL;
     char *under_vol_info_str = NULL;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL INFO String To Info\n");
     printf("str: %s\n", str);
 #endif
@@ -702,7 +705,7 @@ H5VL_tracker_str_to_info(const char *str, void **_info)
     info->under_vol_id = under_vol_id;
     info->under_vol_info = under_vol_info;
 
-    info->tkr_file_path = (char *)calloc(64, sizeof(char));
+    info->tkr_file_path = (char *)calloc(H5FD_MAX_FILENAME_LEN, sizeof(char));
     info->tkr_line_format = (char *)calloc(64, sizeof(char));
 
     if(tracker_file_setup(under_vol_info_end, info->tkr_file_path, &(info->tkr_level), info->tkr_line_format) != 0){
@@ -722,7 +725,7 @@ H5VL_tracker_str_to_info(const char *str, void **_info)
     if(under_vol_info_str)
         free(under_vol_info_str);
 
-#ifdef VOLTRK_LOG
+#ifdef VOLTRK_DEBUG
     
     printf("{\"func_name\": \"H5VLconnector_str_to_info\", ");
     printf("\"time\": %ld, ",get_time_usec());
@@ -752,7 +755,7 @@ H5VL_tracker_get_object(const void *obj)
     const H5VL_tracker_t *o = (const H5VL_tracker_t *)obj;
     void* ret;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL Get Object\n");
 #endif
 
@@ -763,7 +766,7 @@ H5VL_tracker_get_object(const void *obj)
 
     tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
 
-#ifdef VOLTRK_MORE_LOG
+#ifdef VOLTRK_MORE_DEBUG
     // WARNING: below causes memory leak
 
     if (o->my_type == H5I_FILE){
@@ -814,7 +817,7 @@ H5VL_tracker_get_wrap_ctx(const void *obj, void **wrap_ctx)
     const H5VL_tracker_t *o = (const H5VL_tracker_t *)obj;
     H5VL_tracker_wrap_ctx_t *new_wrap_ctx;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL WRAP CTX Get\n");
 #endif
 
@@ -890,7 +893,7 @@ H5VL_tracker_wrap_object(void *under_under_in, H5I_type_t obj_type, void *_wrap_
     void *under;
     H5VL_tracker_t* new_obj;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL WRAP Object\n");
 #endif
 
@@ -912,7 +915,7 @@ H5VL_tracker_wrap_object(void *under_under_in, H5I_type_t obj_type, void *_wrap_
     else
         new_obj = NULL;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL WRAP Object END\n");
 #endif
 
@@ -942,7 +945,7 @@ H5VL_tracker_unwrap_object(void *obj)
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     void *under;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL UNWRAP Object\n");
 #endif
 
@@ -1016,7 +1019,7 @@ H5VL_tracker_free_wrap_ctx(void *_wrap_ctx)
     H5VL_tracker_wrap_ctx_t *wrap_ctx = (H5VL_tracker_wrap_ctx_t *)_wrap_ctx;
     hid_t err_id;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL WRAP CTX Free\n");
 #endif
 
@@ -1036,7 +1039,7 @@ H5VL_tracker_free_wrap_ctx(void *_wrap_ctx)
     // /* Free TRACKER wrap context object itself */
     // free(wrap_ctx); // This segfaults
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL WRAP CTX Free END\n");
 #endif
 
@@ -1068,7 +1071,7 @@ H5VL_tracker_attr_create(void *obj, const H5VL_loc_params_t *loc_params,
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     void *under;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL ATTRIBUTE Create\n");
 #endif
 
@@ -1110,7 +1113,7 @@ H5VL_tracker_attr_open(void *obj, const H5VL_loc_params_t *loc_params,
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     void *under;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL ATTRIBUTE Open\n");
 #endif
 
@@ -1146,7 +1149,7 @@ H5VL_tracker_attr_open(void *obj, const H5VL_loc_params_t *loc_params,
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
 
-#ifdef VOLTRK_MORE_LOG
+#ifdef VOLTRK_MORE_DEBUG
     attribute_info_print("H5VLattr_open", obj, loc_params, NULL, dxpl_id, req);
 #endif
 
@@ -1175,7 +1178,7 @@ H5VL_tracker_attr_read(void *attr, hid_t mem_type_id, void *buf,
     H5VL_tracker_t *o = (H5VL_tracker_t *)attr;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL ATTRIBUTE Read\n");
 #endif
 
@@ -1190,7 +1193,7 @@ H5VL_tracker_attr_read(void *attr, hid_t mem_type_id, void *buf,
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
 
-#ifdef VOLTRK_LOG
+#ifdef VOLTRK_DEBUG
     attribute_info_print("H5VLattr_read", attr, NULL, NULL, dxpl_id, req);
 #endif
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
@@ -1218,7 +1221,7 @@ H5VL_tracker_attr_write(void *attr, hid_t mem_type_id, const void *buf,
     H5VL_tracker_t *o = (H5VL_tracker_t *)attr;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL ATTRIBUTE Write\n");
 #endif
 
@@ -1233,7 +1236,7 @@ H5VL_tracker_attr_write(void *attr, hid_t mem_type_id, const void *buf,
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
 
-#ifdef VOLTRK_LOG
+#ifdef VOLTRK_DEBUG
     // printf("H5VL_tracker_attr_write-buf \"%s\"\n");
     // object.token connects to the dataset
     // printf("H5VLattr_write(): buf_size : %d\n", sizeof(buf));
@@ -1266,7 +1269,7 @@ H5VL_tracker_attr_get(void *obj, H5VL_attr_get_args_t *args, hid_t dxpl_id,
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL ATTRIBUTE Get\n");
 #endif
 
@@ -1306,7 +1309,7 @@ H5VL_tracker_attr_specific(void *obj, const H5VL_loc_params_t *loc_params,
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL ATTRIBUTE Specific\n");
 #endif
 
@@ -1321,7 +1324,7 @@ H5VL_tracker_attr_specific(void *obj, const H5VL_loc_params_t *loc_params,
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
 
-#ifdef VOLTRK_MORE_LOG
+#ifdef VOLTRK_MORE_DEBUG
     // get the dataset name, not the attr name
     attribute_info_print("H5VLattr_specific", obj, loc_params, args, dxpl_id, req);
 #endif
@@ -1350,7 +1353,7 @@ H5VL_tracker_attr_optional(void *obj, H5VL_optional_args_t *args, hid_t dxpl_id,
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL ATTRIBUTE Optional\n");
 #endif
 
@@ -1389,10 +1392,10 @@ H5VL_tracker_attr_close(void *attr, hid_t dxpl_id, void **req)
     H5VL_tracker_t *o = (H5VL_tracker_t *)attr;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL ATTRIBUTE Close\n");
 #endif
-#ifdef VOLTRK_MORE_LOG
+#ifdef VOLTRK_MORE_DEBUG
     // get the dataset name, not the attr name
     attribute_info_print("H5VLattr_close", attr, NULL, NULL, dxpl_id, req);
 #endif
@@ -1448,7 +1451,7 @@ H5VL_tracker_dataset_create(void *obj, const H5VL_loc_params_t *loc_params,
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     void *under;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL DATASET Create [%s]\n", ds_name);
 #endif
 
@@ -1466,8 +1469,8 @@ H5VL_tracker_dataset_create(void *obj, const H5VL_loc_params_t *loc_params,
     if(dset != NULL){
 
         file_tkr_info_t * file_info = (file_tkr_info_t*)o->generic_tkr_info;
-        file_ds_created(file_info);
-
+        // file_ds_created(file_info); // This causes segmenation fault
+        
         dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)dset->generic_tkr_info;
         
         dset_info->pfile_sorder_id = file_info->sorder_id;
@@ -1477,12 +1480,18 @@ H5VL_tracker_dataset_create(void *obj, const H5VL_loc_params_t *loc_params,
 
         // get dataset offset and storage size not available yet
         dataset_info_update("H5VLdataset_create", NULL, NULL, NULL, dset, dxpl_id); // This must exist
+        
+        
     }
     
 #endif
 
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+
+#ifdef VOLTRK_PT_DEBUG
+    printf("TRACKER VOL DATASET Create [%s] END\n", ds_name);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return (void *)dset;
@@ -1510,7 +1519,7 @@ H5VL_tracker_dataset_open(void *obj, const H5VL_loc_params_t *loc_params,
     H5VL_tracker_t *dset;
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL DATASET Open\n");
 #endif
 
@@ -1572,7 +1581,7 @@ static herr_t H5VL_tracker_dataset_read(size_t count, void *dset[],
 #endif /* H5_HAVE_PARALLEL */
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL DATASET Read\n");
 #endif
 
@@ -1636,7 +1645,7 @@ static herr_t H5VL_tracker_dataset_read(size_t count, void *dset[],
 
             dataset_info_update("H5VLdataset_read", mem_type_id[obj_idx], mem_space_id[obj_idx], file_space_id[obj_idx], dset[obj_idx], NULL); //H5P_DATASET_XFER
 
-#ifdef VOLTRK_MORE_LOG
+#ifdef VOLTRK_MORE_DEBUG
             tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
 #endif
             
@@ -1679,7 +1688,7 @@ static herr_t H5VL_tracker_dataset_write(size_t count, void *dset[],
 
     assert(dset);
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL DATASET Write\n");
 #endif
 #ifdef VOLTRK_SCHEMA
@@ -1766,7 +1775,7 @@ static herr_t H5VL_tracker_dataset_write(size_t count, void *dset[],
             
             // dataset_info_update("H5VLdataset_write", mem_type_id[obj_idx], mem_space_id[obj_idx], file_space_id[obj_idx], dset[obj_idx], NULL); //H5P_DATASET_XFER
 
-#ifdef VOLTRK_OVERHEAD_LOG
+#ifdef VOLTRK_OVERHEAD_DEBUG
             tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
 #endif
         }
@@ -1800,7 +1809,7 @@ H5VL_tracker_dataset_get(void *dset, H5VL_dataset_get_args_t *args,
     H5VL_tracker_t *o = (H5VL_tracker_t *)dset;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL DATASET Get\n");
 #endif
 
@@ -1812,7 +1821,7 @@ H5VL_tracker_dataset_get(void *dset, H5VL_dataset_get_args_t *args,
 
 
 
-#ifdef VOLTRK_MORE_LOG
+#ifdef VOLTRK_MORE_DEBUG
     dataset_tkr_info_t* dset_info = (dataset_tkr_info_t*)o->generic_tkr_info;
     assert(dset_info);
 
@@ -1825,7 +1834,7 @@ H5VL_tracker_dataset_get(void *dset, H5VL_dataset_get_args_t *args,
     //     dset_info->dtype_id = dataset_get_type(o->under_object, o->under_vol_id, dxpl_id);
     //dset->shared->layout.storage.u.contig.addr
     // dataset_info_update("H5VLdataset_get", NULL, dspace_id, NULL, dset, dxpl_id);
-    dataset_info_print("H5VLdataset_get", NULL, dspace_id, NULL, dset, dxpl_id, NULL, NULL);
+    dataset_info_print("H5VLdataset_get", NULL, NULL, NULL, dset, dxpl_id);
 #endif
 
 
@@ -1867,7 +1876,7 @@ H5VL_tracker_dataset_specific(void *obj, H5VL_dataset_specific_args_t *args,
     dataset_tkr_info_t *my_dataset_info;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL H5Dspecific\n");
 #endif
 
@@ -1979,7 +1988,7 @@ H5VL_tracker_dataset_optional(void *obj, H5VL_optional_args_t *args,
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL DATASET Optional\n");
 #endif
 
@@ -2018,7 +2027,7 @@ H5VL_tracker_dataset_close(void *dset, hid_t dxpl_id, void **req)
     H5VL_tracker_t *o = (H5VL_tracker_t *)dset;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL DATASET Close\n");
 #endif
 
@@ -2047,7 +2056,7 @@ H5VL_tracker_dataset_close(void *dset, hid_t dxpl_id, void **req)
 
     /* Release our wrapper, if underlying dataset was closed */
     if(ret_value >= 0){
-#ifdef VOLTRK_OVERHEAD_LOG
+#ifdef VOLTRK_OVERHEAD_DEBUG
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
 #endif
 #ifdef VOLTRK_SCHEMA
@@ -2086,7 +2095,7 @@ H5VL_tracker_datatype_commit(void *obj, const H5VL_loc_params_t *loc_params,
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     void *under;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL DATATYPE Commit\n");
 #endif
 
@@ -2128,7 +2137,7 @@ H5VL_tracker_datatype_open(void *obj, const H5VL_loc_params_t *loc_params,
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     void *under;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL DATATYPE Open\n");
 #endif
 
@@ -2169,7 +2178,7 @@ H5VL_tracker_datatype_get(void *dt, H5VL_datatype_get_args_t *args,
     H5VL_tracker_t *o = (H5VL_tracker_t *)dt;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL DATATYPE Get\n");
 #endif
 
@@ -2213,7 +2222,7 @@ H5VL_tracker_datatype_specific(void *obj, H5VL_datatype_specific_args_t *args,
     datatype_tkr_info_t *my_dtype_info = NULL;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL DATATYPE Specific\n");
 #endif
 
@@ -2289,7 +2298,7 @@ H5VL_tracker_datatype_optional(void *obj, H5VL_optional_args_t *args,
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL DATATYPE Optional\n");
 #endif
 
@@ -2328,7 +2337,7 @@ H5VL_tracker_datatype_close(void *dt, hid_t dxpl_id, void **req)
     H5VL_tracker_t *o = (H5VL_tracker_t *)dt;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL DATATYPE Close\n");
 #endif
 
@@ -2387,14 +2396,14 @@ H5VL_tracker_file_create(const char *name, unsigned flags, hid_t fcpl_id,
     hbool_t have_mpi_comm_info = false;     // Whether the MPI Comm & Info are retrieved
 #endif /* H5_HAVE_PARALLEL */
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL FILE Create\n");
 #endif
 
     /* Get copy of our VOL info from FAPL */
     H5Pget_vol_info(fapl_id, (void **)&info);
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL FILE Create -3\n");
 #endif
 
@@ -2404,7 +2413,7 @@ H5VL_tracker_file_create(const char *name, unsigned flags, hid_t fcpl_id,
     /* Set the VOL ID and info for the underlying FAPL */
     H5Pset_vol(under_fapl_id, info->under_vol_id, info->under_vol_info);
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL FILE Create -2\n");
 #endif
 
@@ -2421,7 +2430,7 @@ H5VL_tracker_file_create(const char *name, unsigned flags, hid_t fcpl_id,
     }
 #endif /* H5_HAVE_PARALLEL */
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL FILE Create -4\n");
 #endif
 
@@ -2430,7 +2439,7 @@ H5VL_tracker_file_create(const char *name, unsigned flags, hid_t fcpl_id,
     under = H5VLfile_create(name, flags, fcpl_id, under_fapl_id, dxpl_id, req);
     m2 = get_time_usec();
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL FILE Create -5\n");
 #endif
 
@@ -2440,7 +2449,7 @@ H5VL_tracker_file_create(const char *name, unsigned flags, hid_t fcpl_id,
 
         file = _file_open_common(under, info->under_vol_id, name);
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL FILE Create -1\n");
 #endif
 
@@ -2472,13 +2481,13 @@ H5VL_tracker_file_create(const char *name, unsigned flags, hid_t fcpl_id,
     if(under_fapl_id > 0)
         H5Pclose(under_fapl_id);
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL FILE Create 1\n");
 #endif
     /* Release copy of our VOL info */
     if(info)
         H5VL_tracker_info_free(info);
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL FILE Create 2\n");
 #endif
 
@@ -2536,7 +2545,7 @@ H5VL_tracker_file_open(const char *name, unsigned flags, hid_t fapl_id,
     hbool_t have_mpi_comm_info = false;     // Whether the MPI Comm & Info are retrieved
 #endif /* H5_HAVE_PARALLEL */
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL FILE Open\n");
 #endif
 
@@ -2652,10 +2661,10 @@ H5VL_tracker_file_get(void *file, H5VL_file_get_args_t *args, hid_t dxpl_id,
     H5VL_tracker_t *o = (H5VL_tracker_t *)file;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL FILE Get\n");
 #endif
-#ifdef VOLTRK_MORE_LOG
+#ifdef VOLTRK_MORE_DEBUG
     file_tkr_info_t* file_info = (file_tkr_info_t*)o->generic_tkr_info;
     assert(file_info);
     // printf("H5VLfile_get Time[%ld] Filename[%s]\n", get_time_usec(), file_info->file_name);
@@ -2673,11 +2682,15 @@ H5VL_tracker_file_get(void *file, H5VL_file_get_args_t *args, hid_t dxpl_id,
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
 
-#ifdef VOLTRK_MORE_LOG
+#ifdef VOLTRK_MORE_DEBUG
     file_info_update("H5VLfile_get", file, NULL, NULL, dxpl_id);
 #endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
+
+#ifdef VOLTRK_PT_DEBUG
+    printf("TRACKER VOL FILE Get END\n");
+#endif
     return ret_value;
 } /* end H5VL_tracker_file_get() */
 
@@ -2707,7 +2720,7 @@ H5VL_tracker_file_specific(void *file, H5VL_file_specific_args_t *args,
     hid_t under_vol_id = -1;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL FILE Specific\n");
 #endif
 
@@ -2843,10 +2856,10 @@ H5VL_tracker_file_optional(void *file, H5VL_optional_args_t *args,
     H5VL_tracker_t *o = (H5VL_tracker_t *)file;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL File Optional\n");
 #endif
-#ifdef VOLTRK_MORE_LOG
+#ifdef VOLTRK_MORE_DEBUG
 
     file_info_print("H5VLfile_optional", file, NULL, NULL, dxpl_id);
 #endif
@@ -2885,23 +2898,22 @@ H5VL_tracker_file_close(void *file, hid_t dxpl_id, void **req)
     H5VL_tracker_t *o = (H5VL_tracker_t *)file;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL FILE Close\n");
 #endif
 
     file_tkr_info_t* file_info = (file_tkr_info_t*)o->generic_tkr_info;
     
 #ifdef VOLTRK_SCHEMA
-    tkrLockAcquire(&myLock);
+    // tkrLockAcquire(&myLock);
     file_info->file_size = file_get_size(o->under_object,o->under_vol_id, dxpl_id);
     file_info_update("H5VLfile_close", file, NULL, NULL, dxpl_id);
-    // print_ht_token_numbers();
     log_file_stat_yaml(TKR_HELPER,file_info);
-    tkrLockRelease(&myLock);
+    // tkrLockRelease(&myLock);
 #endif
 
 
-#ifdef VOLTRK_OVERHEAD_LOG
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o){
         assert(o->generic_tkr_info);
         // file_stats_tkr_write((file_tkr_info_t*)(o->generic_tkr_info));
@@ -2950,7 +2962,7 @@ H5VL_tracker_group_create(void *obj, const H5VL_loc_params_t *loc_params,
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     void *under;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL GROUP Create\n");
 #endif
 
@@ -2973,7 +2985,7 @@ H5VL_tracker_group_create(void *obj, const H5VL_loc_params_t *loc_params,
     // group_info_update("H5VLgroup_create", obj, loc_params, name, gapl_id, dxpl_id);
 #endif
 
-#ifdef VOLTRK_LOG
+#ifdef VOLTRK_DEBUG
     group_info_print("H5VLgroup_create", obj, loc_params, name, gapl_id, dxpl_id, req);
 #endif
 
@@ -3003,7 +3015,7 @@ H5VL_tracker_group_open(void *obj, const H5VL_loc_params_t *loc_params,
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     void *under;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL GROUP Open\n");
 #endif
 
@@ -3016,7 +3028,7 @@ H5VL_tracker_group_open(void *obj, const H5VL_loc_params_t *loc_params,
     else
         group = NULL;
 
-#ifdef VOLTRK_OVERHEAD_LOG
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
 #endif
@@ -3028,7 +3040,7 @@ H5VL_tracker_group_open(void *obj, const H5VL_loc_params_t *loc_params,
     // group_info_update("H5VLgroup_create", obj, loc_params, name, gapl_id, dxpl_id);
 #endif
 
-#ifdef VOLTRK_LOG
+#ifdef VOLTRK_DEBUG
     group_info_print("H5VLgroup_open", obj, loc_params, name, gapl_id, dxpl_id, req);
 #endif
 
@@ -3057,7 +3069,7 @@ H5VL_tracker_group_get(void *obj, H5VL_group_get_args_t *args, hid_t dxpl_id,
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL GROUP Get\n");
 #endif
 
@@ -3069,7 +3081,7 @@ H5VL_tracker_group_get(void *obj, H5VL_group_get_args_t *args, hid_t dxpl_id,
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, o->under_vol_id, o->tkr_helper);
 
-#ifdef VOLTRK_OVERHEAD_LOG
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
 #endif
@@ -3082,7 +3094,7 @@ H5VL_tracker_group_get(void *obj, H5VL_group_get_args_t *args, hid_t dxpl_id,
     // group_info_update("H5VLgroup_create", obj, loc_params, name, gapl_id, dxpl_id);
 #endif
 
-#ifdef VOLTRK_LOG
+#ifdef VOLTRK_DEBUG
     group_info_print("H5VLgroup_get",obj, args, NULL, NULL, dxpl_id, req);
 #endif
 
@@ -3116,7 +3128,7 @@ H5VL_tracker_group_specific(void *obj, H5VL_group_specific_args_t *args,
     group_tkr_info_t *my_group_info;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL GROUP Specific\n");
 #endif
 
@@ -3206,7 +3218,7 @@ H5VL_tracker_group_optional(void *obj, H5VL_optional_args_t *args,
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL GROUP Optional\n");
 #endif
 
@@ -3245,7 +3257,7 @@ H5VL_tracker_group_close(void *grp, hid_t dxpl_id, void **req)
     H5VL_tracker_t *o = (H5VL_tracker_t *)grp;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL H5Gclose\n");
 #endif
 
@@ -3300,7 +3312,7 @@ H5VL_tracker_link_create(H5VL_link_create_args_t *args, void *obj,
     hid_t under_vol_id = -1;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL LINK Create\n");
 #endif
 
@@ -3376,7 +3388,7 @@ H5VL_tracker_link_copy(void *src_obj, const H5VL_loc_params_t *loc_params1,
     hid_t under_vol_id = -1;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL LINK Copy\n");
 #endif
 
@@ -3431,7 +3443,7 @@ H5VL_tracker_link_move(void *src_obj, const H5VL_loc_params_t *loc_params1,
     hid_t under_vol_id = -1;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL LINK Move\n");
 #endif
 
@@ -3478,7 +3490,7 @@ H5VL_tracker_link_get(void *obj, const H5VL_loc_params_t *loc_params,
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL LINK Get\n");
 #endif
 
@@ -3518,7 +3530,7 @@ H5VL_tracker_link_specific(void *obj, const H5VL_loc_params_t *loc_params,
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL LINK Specific\n");
 #endif
 
@@ -3558,7 +3570,7 @@ H5VL_tracker_link_optional(void *obj, const H5VL_loc_params_t *loc_params,
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL LINK Optional\n");
 #endif
 
@@ -3599,7 +3611,7 @@ H5VL_tracker_object_open(void *obj, const H5VL_loc_params_t *loc_params,
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     void *under;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL OBJECT Open\n");
 #endif
 
@@ -3640,7 +3652,7 @@ H5VL_tracker_object_open(void *obj, const H5VL_loc_params_t *loc_params,
     }
 #endif
 
-#ifdef VOLTRK_OVERHEAD_LOG
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
 #endif
@@ -3673,7 +3685,7 @@ H5VL_tracker_object_copy(void *src_obj, const H5VL_loc_params_t *src_loc_params,
     H5VL_tracker_t *o_dst = (H5VL_tracker_t *)dst_obj;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL OBJECT Copy\n");
 #endif
 
@@ -3712,7 +3724,7 @@ H5VL_tracker_object_get(void *obj, const H5VL_loc_params_t *loc_params, H5VL_obj
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL OBJECT Get\n");
 #endif
 
@@ -3728,7 +3740,7 @@ H5VL_tracker_object_get(void *obj, const H5VL_loc_params_t *loc_params, H5VL_obj
 
     if (o->my_type == H5I_FILE){
         // file must already opened before calling object_get, no increment in order
-#ifdef VOLTRK_MORE_LOG
+#ifdef VOLTRK_MORE_DEBUG
         file_info_update("H5VLobject_get", o, NULL, NULL, dxpl_id);
 #endif
     }
@@ -3744,7 +3756,7 @@ H5VL_tracker_object_get(void *obj, const H5VL_loc_params_t *loc_params, H5VL_obj
         dset_info->pfile_sorder_id = file_info->sorder_id;        
 
 
-#ifdef VOLTRK_MORE_LOG
+#ifdef VOLTRK_MORE_DEBUG
         dataset_info_update("H5VLobject_get", NULL, NULL, NULL, o, dxpl_id);
 #endif
     }
@@ -3783,7 +3795,7 @@ H5VL_tracker_object_specific(void *obj, const H5VL_loc_params_t *loc_params,
     H5I_type_t my_type;         //obj type, dataset, datatype, etc.,
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL OBJECT Specific\n");
 #endif
 
@@ -3887,7 +3899,7 @@ H5VL_tracker_object_optional(void *obj, const H5VL_loc_params_t *loc_params,
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL OBJECT Optional\n");
 #endif
 
@@ -3923,7 +3935,7 @@ H5VL_tracker_introspect_get_conn_cls(void *obj, H5VL_get_conn_lvl_t lvl,
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL INTROSPECT GetConnCls\n");
 #endif
 
@@ -3956,7 +3968,7 @@ H5VL_tracker_introspect_get_cap_flags(const void *_info, uint64_t *cap_flags)
     const H5VL_tracker_info_t *info = (const H5VL_tracker_info_t *)_info;
     herr_t                          ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL INTROSPECT GetCapFlags\n");
 #endif
 
@@ -3987,7 +3999,7 @@ H5VL_tracker_introspect_opt_query(void *obj, H5VL_subclass_t cls,
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL INTROSPECT OptQuery\n");
 #endif
 
@@ -4021,7 +4033,7 @@ H5VL_tracker_request_wait(void *obj, uint64_t timeout,
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL REQUEST Wait\n");
 #endif
 
@@ -4063,7 +4075,7 @@ H5VL_tracker_request_notify(void *obj, H5VL_request_notify_t cb, void *ctx)
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL REQUEST Wait\n");
 #endif
 
@@ -4103,7 +4115,7 @@ H5VL_tracker_request_cancel(void *obj, H5VL_request_status_t *status)
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL REQUEST Cancel\n");
 #endif
 
@@ -4141,7 +4153,7 @@ H5VL_tracker_request_specific(void *obj, H5VL_request_specific_args_t *args)
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value = -1;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL REQUEST Specific\n");
 #endif
 
@@ -4176,7 +4188,7 @@ H5VL_tracker_request_optional(void *obj, H5VL_optional_args_t *args)
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL REQUEST Optional\n");
 #endif
 
@@ -4212,7 +4224,7 @@ H5VL_tracker_request_free(void *obj)
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL REQUEST Free\n");
 #endif
 
@@ -4249,7 +4261,7 @@ H5VL_tracker_blob_put(void *obj, const void *buf, size_t size,
     unsigned long m1, m2;
 
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL BLOB Put\n");
     
 #endif
@@ -4259,7 +4271,7 @@ H5VL_tracker_blob_put(void *obj, const void *buf, size_t size,
         blob_id, ctx);
     m2 = get_time_usec();
 
-#ifdef VOLTRK_BLOB_LOG
+#ifdef VOLTRK_BLOB_DEBUG
     // printf("H5VLblob_put() size: %zu\n", size);
     //     printf("H5VLblob_get() Content at buf: [");
     //     for (int i=0; i<size; i++) {
@@ -4300,7 +4312,7 @@ H5VL_tracker_blob_get(void *obj, const void *blob_id, void *buf,
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL BLOB Get\n");
 #endif
 
@@ -4308,7 +4320,7 @@ H5VL_tracker_blob_get(void *obj, const void *blob_id, void *buf,
     ret_value = H5VLblob_get(o->under_object, o->under_vol_id, blob_id, buf,size, ctx);
     m2 = get_time_usec();
 
-#ifdef VOLTRK_BLOB_LOG
+#ifdef VOLTRK_BLOB_DEBUG
     file_tkr_info_t* file_info = (file_tkr_info_t*)o->generic_tkr_info;
     dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)file_info->opened_datasets;
 
@@ -4353,10 +4365,10 @@ H5VL_tracker_blob_specific(void *obj, void *blob_id,
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL BLOB Specific\n");
 #endif
-// #ifdef VOLTRK_BLOB_LOG
+// #ifdef VOLTRK_BLOB_DEBUG
 //     blob_info_print("H5VLblob_specific", obj, NULL, NULL, blob_id, NULL, NULL);
 // #endif
     ret_value = H5VLblob_specific(o->under_object, o->under_vol_id, blob_id, args);
@@ -4380,7 +4392,7 @@ H5VL_tracker_blob_optional(void *obj, void *blob_id, H5VL_optional_args_t *args)
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL BLOB Optional\n");
 #endif
 
@@ -4407,7 +4419,7 @@ H5VL_tracker_token_cmp(void *obj, const H5O_token_t *token1,
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL TOKEN Compare\n");
 #endif
 
@@ -4440,7 +4452,7 @@ H5VL_tracker_token_to_str(void *obj, H5I_type_t obj_type,
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL TOKEN To string\n");
 #endif
 
@@ -4472,7 +4484,7 @@ H5VL_tracker_token_from_str(void *obj, H5I_type_t obj_type,
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL TOKEN From string\n");
 #endif
 
@@ -4502,7 +4514,7 @@ H5VL_tracker_optional(void *obj, H5VL_optional_args_t *args, hid_t dxpl_id, void
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
-#ifdef VOLTRK_PT_LOG
+#ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL generic Optional\n");
 #endif
 
