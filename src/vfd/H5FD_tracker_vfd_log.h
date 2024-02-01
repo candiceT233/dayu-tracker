@@ -68,7 +68,8 @@
 
 #define MAX_FILE_INTENT_LENGTH 128
 #define MAX_CONF_STR_LENGTH 128
-#define H5FD_MAX_FILENAME_LEN 1024 // same as H5FD_MAX_FILENAME_LEN
+#define H5FD_MAX_PATH_LEN 1024 // same as H5FD_MAX_FILENAME_LEN
+#define VFD_STAT_FILE_NAME "vfd_data_stat.yaml"
 
 static
 unsigned long get_time_usec(void) {
@@ -178,7 +179,7 @@ typedef struct H5FD_tracker_vfd_t {
     haddr_t        pos; /* current file I/O position        */
     int op;  /* last operation                   */
     bool           ignore_disabled_file_locks;
-    char           filename[H5FD_MAX_FILENAME_LEN]; /* Copy of file name from open operation */
+    char           filename[H5FD_MAX_PATH_LEN]; /* Copy of file name from open operation */
     bool fam_to_single;
     unsigned       flags;       /* The flags passed from H5Fcreate/H5Fopen */
 
@@ -337,28 +338,24 @@ bool getCommandLineByPID(int pid, std::string& commandLine) {
 
 
 void parseEnvironmentVariable(char* file_path) {
-    const char* path_str = std::getenv("HDF5_LOG_FILE_PATH");
-    if (path_str) {
+  // get path to save yaml file
+  const char* path_str = std::getenv("HDF5_LOG_FILE_PATH");
+  if (path_str) {
         // Find the first occurrence of ';' or the end of the string
         const char* delimiter = strchr(path_str, ';');
         if (delimiter) {
             // Calculate the length of the path
             size_t path_length = delimiter - path_str;
             
-            // Add "vfd-" as a prefix to the path and copy to file_path
-            strncpy(file_path, "vfd-", sizeof("vfd-") - 1);
-            strncat(file_path, path_str, path_length);
-            
             // Null-terminate the file_path
-            file_path[sizeof("vfd-") - 1 + path_length] = '\0';
+            file_path[path_length] = '\0';
         } else {
-            // No delimiter found, so use the entire string and add "vfd-" prefix
-            strcpy(file_path, "vfd-");
-            strcat(file_path, path_str);
+            // No delimiter found
+            strcpy(file_path, path_str);
         }
     } else {
         // Set a default file path
-        strcpy(file_path, "vfd-data-stat.yaml");
+        strcpy(file_path, ".");
     }
 }
 
@@ -499,10 +496,11 @@ void dump_vfd_mem_stat_yaml(FILE* f, const h5_mem_stat_t* mem_stat) {
 }
 
 
-
 void dump_vfd_file_stat_yaml(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t* info) {
 
-  printf("File close and write to : %s\n", helper->tkr_file_path);
+#ifdef DEBUG_LOG
+  std::cout << "File close and write to : " << helper->tkr_file_path << std::endl;
+#endif
 
   // const char* file_name = strrchr(info->file_name, '/');
   // Keep complete file path name
@@ -837,7 +835,7 @@ void open_close_info_update(const char* func_name, H5FD_tracker_vfd_t *file, siz
 #endif
 
 #ifdef VFD_LOG
-  // print_open_close_info(func_name, file, file->name, eof, flags, t_start, t_end);
+  print_open_close_info(func_name, file, info->file_name, eof, flags, t_start, t_end);
 #endif
 }
 
@@ -1026,30 +1024,38 @@ void print_H5Pset_fapl_info(const char* func_name, hbool_t logStat, size_t page_
 }
 
 
-vfd_tkr_helper_t * vfd_tkr_helper_init( char* file_name, size_t page_size, hbool_t logStat)
+vfd_tkr_helper_t * vfd_tkr_helper_init( char* file_path, size_t page_size, hbool_t logStat)
 {
-   
-    
     vfd_tkr_helper_t* new_helper = (vfd_tkr_helper_t *)calloc(1, sizeof(tkr_helper_t));
 
     if(logStat) {//write to file
-        if(!file_name){
-            printf("vfd_tkr_helper_init() failed, vfd-tracker file path is not set.\n");
+        if(!file_path){
+            printf("vfd_tkr_helper_init() failed, vfd-tracker file path is not provided.\n");
             return nullptr;
         }
     }
 
-    new_helper->tkr_file_path = strdup(file_name);
+    // get environment variable 
+
+    // new_helper->tkr_file_path = strdup(file_name);
     new_helper->logStat = logStat;
     new_helper->pid = getpid();
     new_helper->tid = pthread_self(); // TODO: check if this is correct
 
-    // Update file path with PID
-    int prefix_len = snprintf(nullptr, 0, "%d_%s", new_helper->pid, file_name);
-    new_helper->tkr_file_path = (char*)malloc(prefix_len + 1);
-    snprintf(new_helper->tkr_file_path, prefix_len + 1, "%d_%s", new_helper->pid, file_name);
+#ifdef DEBUG_LOG
+    printf("vfd_tkr_helper_init() pid = %d\n", new_helper->pid);
+#endif
 
-    printf("vfd new_helper tkr_file_path: %s\n", new_helper->tkr_file_path);
+    // Update the file_name with PID in front
+    int prefix_len = snprintf(nullptr, 0, "%d-%s", new_helper->pid, VFD_STAT_FILE_NAME);
+    // Allocate memory for the concatenated path
+    new_helper->tkr_file_path = (char*)malloc(strlen(file_path) + prefix_len + 2); // +2 for '/' and null terminator
+    // Join file_path, pid, and file_name
+    snprintf(new_helper->tkr_file_path, strlen(file_path) + prefix_len + 2, "%s/%d-%s", file_path, new_helper->pid, VFD_STAT_FILE_NAME);
+
+#ifdef DEBUG_LOG
+    printf("vfd_tkr_helper_init() tkr_file_path = %s\n", new_helper->tkr_file_path);
+#endif
 
     /* VFD vars start */
     new_helper->vfd_opened_files = nullptr;

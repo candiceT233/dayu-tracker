@@ -386,7 +386,7 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
   char config_str_buf[MAX_CONF_STR_LENGTH];
   char *saveptr = NULL;
   char* token = NULL;
-  char file_path[H5FD_MAX_FILENAME_LEN];
+  char file_path[H5FD_MAX_PATH_LEN];
 
   /* Sanity check on file offsets */
   assert(sizeof(off_t) >= sizeof(size_t));
@@ -765,7 +765,7 @@ static herr_t H5FD__tracker_vfd_read(H5FD_t *_file, H5FD_mem_t type,
   herr_t ret_value = SUCCEED; /* Return value */
   ssize_t count = -1;
   size_t read_size = size;
-  char file_name_copy[H5FD_MAX_FILENAME_LEN];
+  char file_name_copy[H5FD_MAX_PATH_LEN];
 
   assert(file && file->pub.cls);
   assert(buf);
