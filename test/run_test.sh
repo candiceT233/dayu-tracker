@@ -18,23 +18,24 @@ rm -rf $IO_FILE $(pwd)/*.h5
 export TRACKER_VFD_PAGE_SIZE=65536
 
 SIMPLE_VOL_IO (){
-    schema_file=data-stat-vol.yaml
-    rm -rf ./*$schema_file
+    schema_file_path="`pwd`"
+    rm -rf $schema_file_path/*vol_data_stat.yaml
     
-    export HDF5_VOL_CONNECTOR="${VOL_NAME} under_vol=0;under_info={};path=${schema_file};level=2;format="
-    export HDF5_PLUGIN_PATH=$TRACKER_SRC_DIR/vol:$HDF5_PLUGIN_PATH
-    python vlen_h5_write_read.py $IO_FILE # h5_write_read.py example_test.py
-    python vlen_h5_read2.py $IO_FILE # h5_write_read.py example_test.py
+    export HDF5_VOL_CONNECTOR="$VOL_NAME under_vol=0;under_info={};path=$schema_file_path;level=2;format="
+    export HDF5_PLUGIN_PATH=$TRACKER_SRC_DIR/vol
+    python vlen_h5_write_read.py $IO_FILE
+    python vlen_h5_read2.py $IO_FILE
+    
 }
 
 SIMPLE_VFD_IO (){
-    schema_file=data-stat-dl.yaml
-    rm -rf ./*vfd-${schema_file}*
+    schema_file_path="`pwd`"
+    rm -rf $schema_file_path/*vfd_data_stat.yaml
     
 
     echo "TRACKER_VFD_DIR = $TRACKER_SRC_DIR/vfd"
     
-    # HDF5_VOL_CONNECTOR="under_vol=0;under_info={};path=${schema_file}" \
+    # HDF5_VOL_CONNECTOR="under_vol=0;under_info={};path=`pwd`" \
 
     # Only VFD
     set -x
@@ -43,7 +44,7 @@ SIMPLE_VFD_IO (){
 
     export HDF5_DRIVER_CONFIG="true ${TRACKER_VFD_PAGE_SIZE}"
     export HDF5_DRIVER=hdf5_tracker_vfd
-    export HDF5_LOG_FILE_PATH="${schema_file}"
+    export HDF5_LOG_FILE_PATH="$schema_file_path"
     export HDF5_PLUGIN_PATH=$TRACKER_SRC_DIR/vfd
     
     python vlen_h5_write_read.py $IO_FILE
@@ -52,35 +53,35 @@ SIMPLE_VFD_IO (){
 
 SIMPLE_VFD_VOL_IO () {
 
-    schema_file=data-stat-dl.yaml
-    rm -rf ./*vfd-${schema_file}*
-    rm -rf ./*vol-${schema_file}*
+    schema_file_path="`pwd`"
+    rm -rf $schema_file_path/*vfd_data_stat.yaml
+    rm -rf $schema_file_path/*vol_data_stat.yaml
     TRACKER_VFD_PAGE_SIZE=65536 #65536
 
     echo "TRACKER_VFD_DIR : `ls -l $TRACKER_SRC_DIR/*`"
     
-    # HDF5_VOL_CONNECTOR="under_vol=0;under_info={};path=${schema_file}" \
+    # HDF5_VOL_CONNECTOR="under_vol=0;under_info={};path=`pwd`" \
 
     # Only VFD
     set -x
     # LD_LIBRARY_PATH=$TRACKER_SRC_DIR/vfd:$LD_LIBRARY_PATH \
     # export CURR_TASK="example_test"
 
-    export HDF5_VOL_CONNECTOR="${VOL_NAME} under_vol=0;under_info={};path=${schema_file};level=2;format="
+    export HDF5_VOL_CONNECTOR="$VOL_NAME under_vol=0;under_info={};path=$schema_file_path;level=2;format="
     export HDF5_PLUGIN_PATH=$TRACKER_SRC_DIR/vol:$TRACKER_SRC_DIR/vfd:$HDF5_PLUGIN_PATH
     export HDF5_DRIVER=hdf5_tracker_vfd
     export HDF5_DRIVER_CONFIG="true ${TRACKER_VFD_PAGE_SIZE}"
-    export HDF5_LOG_FILE_PATH="${schema_file}"
+    export HDF5_LOG_FILE_PATH="$schema_file_path"
 
     python vlen_h5_write_read.py $IO_FILE
-    python vlen_h5_read2.py $IO_FILE
+    # python vlen_h5_read2.py $IO_FILE
 
 }
 
 # get execution time in ms
 start_time=$(date +%s%3N)
-# SIMPLE_VFD_IO | tee VFD_run.log
-# SIMPLE_VOL_IO | tee VOL_run.log
-SIMPLE_VFD_VOL_IO | tee DL_run.log
+# SIMPLE_VFD_IO 2>&1 | tee VFD_run.log
+# SIMPLE_VOL_IO 2>&1 | tee VOL_run.log
+SIMPLE_VFD_VOL_IO 2>&1 | tee DL_run.log
 end_time=$(date +%s%3N)
 echo "Execution time: $((end_time-start_time)) ms"
