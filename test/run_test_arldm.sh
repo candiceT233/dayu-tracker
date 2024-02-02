@@ -30,6 +30,9 @@ PREP_TASK_NAME () {
 
 
 ENV_VAR_VOL_IO (){
+    local arldm_saveh5="arldm_saveh5"
+    local arldm_train="arldm_train"
+
     schema_file_path="`pwd`"
     rm -rf $schema_file_path/*vol_data_stat.yaml
     
@@ -48,7 +51,7 @@ ENV_VAR_VOL_IO (){
 
     python $PROJECT_PATH/data_script/flintstones_hdf5.py \
         --data_dir $DATA_PATH/input_data/flintstones \
-        --save_path $DATA_PATH/output_data/save_hdf5_file
+        --save_path $DATA_PATH/output_data/flintstones_out.h5
 
     cd $PROJECT_PATH
     PREP_TASK_NAME "$arldm_train"
@@ -57,6 +60,9 @@ ENV_VAR_VOL_IO (){
 }
 
 ENV_VAR_VFD_IO (){
+    local arldm_saveh5="arldm_saveh5"
+    local arldm_train="arldm_train"
+
     schema_file_path="`pwd`"
     rm -rf $schema_file_path/*vfd_data_stat.yaml
     
@@ -80,7 +86,7 @@ ENV_VAR_VFD_IO (){
 
     python $PROJECT_PATH/data_script/flintstones_hdf5.py \
         --data_dir $DATA_PATH/input_data/flintstones \
-        --save_path $DATA_PATH/output_data/save_hdf5_file
+        --save_path $DATA_PATH/output_data/flintstones_out.h5
 
     cd $PROJECT_PATH
     PREP_TASK_NAME "$arldm_train"
@@ -117,7 +123,7 @@ ENV_VAR_VFD_VOL_IO () {
 
     python $PROJECT_PATH/data_script/flintstones_hdf5.py \
         --data_dir $DATA_PATH/input_data/flintstones \
-        --save_path $DATA_PATH/output_data/save_hdf5_file
+        --save_path $DATA_PATH/output_data/flintstones_out.h5
 
     cd $PROJECT_PATH
     PREP_TASK_NAME "$arldm_train"
@@ -126,12 +132,25 @@ ENV_VAR_VFD_VOL_IO () {
 
 }
 
-PREP_TASK_NAME "arldm_saveh5"
+test_type="$1"
 
 # get execution time in ms
 start_time=$(date +%s%3N)
-ENV_VAR_VFD_IO 2>&1 | tee arldm_VFD_run.log
-# ENV_VAR_VOL_IO 2>&1 | tee arldm_VOL_run.log
-# ENV_VAR_VFD_VOL_IO 2>&1 | tee arldm_DL_run.log
+
+if [ $test_type == "VFD" ]; then
+    echo "Running VFD Tracker test"
+    LOGFILE=arldm_VFD_run.log
+    ENV_VAR_VFD_IO 2>&1 | tee $LOGFILE
+elif [ $test_type == "VOL" ]; then
+    echo "Running VOL Tracker test"
+    LOGFILE=arldm_VOL_run.log
+    ENV_VAR_VOL_IO 2>&1 | tee $LOGFILE 
+else
+    echo "Running VFD and VOL Tracker test"
+    LOGFILE=arldm_DL_run.log
+    ENV_VAR_VFD_VOL_IO 2>&1 | tee $LOGFILE
+fi
+
+
 end_time=$(date +%s%3N)
-echo "Execution time: $((end_time-start_time)) ms"
+echo "Execution time: $((end_time-start_time)) ms" | tee -a $LOGFILE
