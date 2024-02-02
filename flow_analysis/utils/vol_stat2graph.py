@@ -2,19 +2,19 @@
 import os
 import networkx as nx
 
-def set_task_position(G, tfe_dic):
+def shift_task_order(G, task_order):
+    pass
+
+def set_task_position(G, tfe_dic, stage_start):
     skip_pos = 3
-    task_start_pos = 2
+    
     task_order_cnt = {}
     prev_task_order = 0
     # task_file_edges dictionay
     for task_name,v in tfe_dic.items():
         task_order = v['order']
+        task_start_pos = task_order * skip_pos
         print(f"task_name: {task_name}, task_order: {task_order}")
-
-        # Account for parallel tasks
-        if task_order > prev_task_order:
-            task_start_pos += skip_pos
 
         if task_order in task_order_cnt:
             task_order_cnt[task_order] += 1
@@ -36,7 +36,7 @@ def set_task_position(G, tfe_dic):
             position = (task_order,task_order_cnt[task_order])
             G.add_node(task_name, pos=position)
             nx.set_node_attributes(G, node_attrs)
-            print(f"node {task_name} : {node_attrs}, pos: {position}")
+            print(f"new node {task_name} : {node_attrs}, pos: {position}")
         
         prev_task_order = task_order
     return G
@@ -188,7 +188,7 @@ def set_task_file_dset_pos(G, map_dic):
         for i, file_path in enumerate(input_files):
             file_name = os.path.basename(file_path)
             
-            #TODO: add dset edges as file -> dset -> task
+            #NOTE: add dset edges as file -> dset -> task
             
             # get file edges that are going to datasets
             edges_out_file = [(u, v) for u, v in G.out_edges(file_name) if G.nodes[v]['type'] == 'dataset']
@@ -240,9 +240,9 @@ def set_task_file_dset_pos(G, map_dic):
                 print(f"Error: file :{file_name}, task:{task_name}")
             
         output_files = rw_info['output']
-        for i, file_path in enumerate(input_files):
+        for i, file_path in enumerate(output_files):
             file_name = os.path.basename(file_path)
-            #TODO: add dset edges as task -> dset -> file
+            #NOTE: add dset edges as task -> dset -> file
             edges_in_file = G.in_edges(file_name)
             # print(f"edges_in_file: {edges_in_file}")
             for edge in edges_in_file:
