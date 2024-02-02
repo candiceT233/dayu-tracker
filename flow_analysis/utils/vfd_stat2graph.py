@@ -55,21 +55,19 @@ def add_task_file_nodes(G, stat_dict, task_list):
                         print(f"Unknown access_type: {access_type}")
     G.add_edges_from(edge_stats.keys())
     nx.set_edge_attributes(G, edge_stats)
+    return G
 
         
 def set_task_position(G, tfe_dic):
     skip_pos = 2
     task_start_pos = 1
     task_order_cnt = {}
-    prev_task_order = 0
     # task_file_edges dictionay
     for task_name,v in tfe_dic.items():
         task_order = v['order']
         print(f"task_name: {task_name}, task_order: {task_order}")
-
-        # Account for parallel tasks
-        if task_order > prev_task_order:
-            task_start_pos += skip_pos
+        
+        task_start_pos = task_order * skip_pos
 
         if task_order in task_order_cnt:
             task_order_cnt[task_order] += 1
@@ -93,7 +91,7 @@ def set_task_position(G, tfe_dic):
             nx.set_node_attributes(G, node_attrs)
             print(f"node {task_name} : {node_attrs}, pos: {position}")
         
-        prev_task_order = task_order
+    return G
         
 
 def set_file_position(G, map_dic):
