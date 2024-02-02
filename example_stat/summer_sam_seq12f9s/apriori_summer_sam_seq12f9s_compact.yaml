@@ -1,0 +1,167 @@
+0:
+  - bucket: /rcfs/projects/chess/tang584/flextrkr_runs/input_data/olr_pcp/pr_rlut_mean_sam_2016080100.nc
+    prefetch:
+    - op_count_range: [1,30]
+      promote_blobs: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33]
+  - bucket: /rcfs/projects/chess/tang584/flextrkr_runs/input_data/olr_pcp/pr_rlut_mean_sam_2016080101.nc
+    prefetch:
+    - op_count_range: [1,30]
+      promote_blobs: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33]
+  - bucket: /rcfs/projects/chess/tang584/flextrkr_runs/input_data/olr_pcp/pr_rlut_mean_sam_2016080102.nc
+    prefetch:
+    - op_count_range: [1,30]
+      promote_blobs: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33]
+  - bucket: /rcfs/projects/chess/tang584/flextrkr_runs/input_data/olr_pcp/pr_rlut_mean_sam_2016080103.nc
+    prefetch:
+    - op_count_range: [1,30]
+      promote_blobs: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33]
+  - bucket: /rcfs/projects/chess/tang584/flextrkr_runs/input_data/olr_pcp/pr_rlut_mean_sam_2016080104.nc
+    prefetch:
+    - op_count_range: [1,30]
+      promote_blobs: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33]
+  - bucket: /rcfs/projects/chess/tang584/flextrkr_runs/input_data/olr_pcp/pr_rlut_mean_sam_2016080105.nc
+    prefetch:
+    - op_count_range: [1,30]
+      promote_blobs: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33]
+  - bucket: /rcfs/projects/chess/tang584/flextrkr_runs/input_data/olr_pcp/pr_rlut_mean_sam_2016080106.nc
+    prefetch:
+    - op_count_range: [1,30]
+      promote_blobs: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33]
+  - bucket: /rcfs/projects/chess/tang584/flextrkr_runs/input_data/olr_pcp/pr_rlut_mean_sam_2016080107.nc
+    prefetch:
+    - op_count_range: [1,30]
+      promote_blobs: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33]
+  - bucket: /rcfs/projects/chess/tang584/flextrkr_runs/input_data/olr_pcp/pr_rlut_mean_sam_2016080108.nc
+    prefetch:
+    - op_count_range: [1,30]
+      promote_blobs: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33]
+  - bucket: /rcfs/projects/chess/tang584/flextrkr_runs/input_data/olr_pcp/pr_rlut_mean_sam_2016080109.nc
+    prefetch:
+    - op_count_range: [1,30]
+      promote_blobs: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33]
+  - bucket: /rcfs/projects/chess/tang584/flextrkr_runs/input_data/olr_pcp/pr_rlut_mean_sam_2016080110.nc
+    prefetch:
+    - op_count_range: [1,30]
+      promote_blobs: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33]
+  - bucket: /rcfs/projects/chess/tang584/flextrkr_runs/input_data/olr_pcp/pr_rlut_mean_sam_2016080111.nc
+    prefetch:
+    - op_count_range: [1,30]
+      promote_blobs: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33]
+  - bucket: /rcfs/projects/chess/tang584/flextrkr_runs/olr_pcp/tracking/cloudid_20160801_003000.nc
+    prefetch:
+    - op_count_range: [68058,68088]
+      promote_blobs: [0,9,2,10]
+    - op_count_range: [70138,70168]
+      promote_blobs: [0,2,4,7,9,10]
+    - op_count_range: [117446,117476]
+      promote_blobs: [0,9,10,2]
+    - op_count_range: [130136,130166]
+      promote_blobs: [0,2,4,7,9,10]
+  - bucket: /rcfs/projects/chess/tang584/flextrkr_runs/olr_pcp/tracking/cloudid_20160801_011500.nc
+    prefetch:
+    - op_count_range: [68058,68088]
+      promote_blobs: [0,2,9,10,11]
+    - op_count_range: [70138,70168]
+      promote_blobs: [0,2,5,7,9,10,11]
+    - op_count_range: [117446,117476]
+      promote_blobs: [0,2,9,10,11]
+    - op_count_range: [130136,130166]
+      promote_blobs: [0,2,5,7,9,10,11]
+  - bucket: /rcfs/projects/chess/tang584/flextrkr_runs/olr_pcp/tracking/cloudid_20160801_021500.nc
+    prefetch:
+    - op_count_range: [68058,68088]
+      promote_blobs: [0,2,9,10,11,13]
+    - op_count_range: [70138,70168]
+      promote_blobs: [0,2,5,7,9,10,11,13,14]
+    - op_count_range: [117446,117476]
+      promote_blobs: [0,2,9,10,11,12,13,14]
+    - op_count_range: [130136,130166]
+      promote_blobs: [0,2,5,7,9,10,11,12,13,14]
+  - bucket: /rcfs/projects/chess/tang584/flextrkr_runs/olr_pcp/tracking/cloudid_20160801_031500.nc
+    prefetch:
+    - op_count_range: [68058,68088]
+      promote_blobs: [0,2,10,11,15,16]
+    - op_count_range: [70138,70168]
+      promote_blobs: [0,2,5,7,10,11,15,16]
+    - op_count_range: [117446,117476]
+      promote_blobs: [0,2,10,11,13,14,15,16]
+    - op_count_range: [130136,130166]
+      promote_blobs: [0,2,5,7,10,11,13,14,15,16]
+  - bucket: /rcfs/projects/chess/tang584/flextrkr_runs/olr_pcp/tracking/cloudid_20160801_041500.nc
+    prefetch:
+    - op_count_range: [68058,68088]
+      promote_blobs: [0,2,10,12,17]
+    - op_count_range: [70138,70168]
+      promote_blobs: [0,2,5,7,10,12,17]
+    - op_count_range: [117446,117476]
+      promote_blobs: [0,2,10,12,14,15,17]
+    - op_count_range: [130136,130166]
+      promote_blobs: [0,2,5,7,10,12,14,15,17]
+  - bucket: /rcfs/projects/chess/tang584/flextrkr_runs/olr_pcp/tracking/cloudid_20160801_051500.nc
+    prefetch:
+    - op_count_range: [68058,68088]
+      promote_blobs: [0,2,10,12,18]
+    - op_count_range: [70138,70168]
+      promote_blobs: [0,2,5,7,10,12,18,19]
+    - op_count_range: [117446,117476]
+      promote_blobs: [0,2,10,12,14,16,18,19]
+    - op_count_range: [130136,130166]
+      promote_blobs: [0,2,5,7,10,12,14,16,18,19]
+  - bucket: /rcfs/projects/chess/tang584/flextrkr_runs/olr_pcp/tracking/cloudid_20160801_061500.nc
+    prefetch:
+    - op_count_range: [68058,68088]
+      promote_blobs: [0,2,10,13,19]
+    - op_count_range: [70138,70168]
+      promote_blobs: [0,2,5,7,10,13,19]
+    - op_count_range: [117446,117476]
+      promote_blobs: [0,2,10,13,15,17,19]
+    - op_count_range: [130136,130166]
+      promote_blobs: [0,2,5,7,10,13,15,17,19]
+  - bucket: /rcfs/projects/chess/tang584/flextrkr_runs/olr_pcp/tracking/cloudid_20160801_071500.nc
+    prefetch:
+    - op_count_range: [68058,68088]
+      promote_blobs: [0,2,10,13,20]
+    - op_count_range: [70138,70168]
+      promote_blobs: [0,2,5,7,10,13,20]
+    - op_count_range: [117446,117476]
+      promote_blobs: [0,2,10,13,15,18,20]
+    - op_count_range: [130136,130166]
+      promote_blobs: [0,2,5,7,10,13,15,18,20]
+  - bucket: /rcfs/projects/chess/tang584/flextrkr_runs/olr_pcp/tracking/cloudid_20160801_081500.nc
+    prefetch:
+    - op_count_range: [68058,68088]
+      promote_blobs: [0,2,10,13,20,21]
+    - op_count_range: [70138,70168]
+      promote_blobs: [0,2,5,7,10,13,20,21]
+    - op_count_range: [117446,117476]
+      promote_blobs: [0,2,10,13,16,18,20,21]
+    - op_count_range: [130136,130166]
+      promote_blobs: [0,2,5,7,10,13,16,18,20,21]
+  - bucket: /rcfs/projects/chess/tang584/flextrkr_runs/olr_pcp/tracking/cloudid_20160801_091500.nc
+    prefetch:
+    - op_count_range: [68058,68088]
+      promote_blobs: [0,2,10,11,13,21]
+    - op_count_range: [70138,70168]
+      promote_blobs: [0,2,5,7,10,11,13,21]
+    - op_count_range: [117446,117476]
+      promote_blobs: [0,2,10,11,13,16,18,21]
+    - op_count_range: [130136,130166]
+      promote_blobs: [0,2,5,7,10,11,13,16,18,21]
+  - bucket: /rcfs/projects/chess/tang584/flextrkr_runs/olr_pcp/tracking/cloudid_20160801_101500.nc
+    prefetch:
+    - op_count_range: [68058,68088]
+      promote_blobs: [0,2,10,11,13,21,22]
+    - op_count_range: [70138,70168]
+      promote_blobs: [0,2,5,7,10,11,13,21,22]
+    - op_count_range: [117446,117476]
+      promote_blobs: [0,2,10,11,13,16,19,21,22]
+    - op_count_range: [130136,130166]
+      promote_blobs: [0,2,5,7,10,11,13,16,19,21,22]
+  - bucket: /rcfs/projects/chess/tang584/flextrkr_runs/input_data/olr_pcp/IMERG_landmask_180W-180E_60S-60N.nc
+    prefetch:
+    - op_count_range: [117446,117476]
+      promote_blobs: [0,1,3]
+  - bucket: /rcfs/projects/chess/tang584/flextrkr_runs/olr_pcp/stats/mcs_tracks_robust_20160801.0000_20160801.1100.nc
+    prefetch:
+    - op_count_range: [271736,271766]
+      promote_blobs: [0]

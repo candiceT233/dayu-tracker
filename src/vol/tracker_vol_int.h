@@ -17,7 +17,7 @@
 
 /* Whether to display log messge when callback is invoked */
 /* (Uncomment to enable) */
-/* #define TRACKER_PT_LOGGING */
+/* #define TRACKER_PT_DEBUG */
 /* Hack for missing va_copy() in old Visual Studio editions
  * (from H5win2_defs.h - used on VS2012 and earlier)
  */
@@ -246,7 +246,36 @@ void file_dtypes_accessed(file_tkr_info_t* info);
 
 /* Helper routines implementation */
 
-int getCurrentTask(char **curr_task) {
+int getCurrentTask(char** curr_task) {
+    // Check if the environment variable CURR_TASK is set
+    const char* curr_task_env = getenv("CURR_TASK");
+
+    if (curr_task_env) {
+        // If CURR_TASK is set, return task name with curr_task_env + "-" + getpid()
+        // Allocate memory for the result string and store it in curr_task.
+        // Make sure to free this memory later when it's no longer needed.
+        int pid = getpid();
+        int len = snprintf(NULL, 0, "%s", curr_task_env);
+        *curr_task = (char*)malloc(len + 1);
+        snprintf(*curr_task, len + 1, "%s", curr_task_env);
+        return 1;
+    } else {
+        // If CURR_TASK is not set, try reading it from a file
+        if (getCurrentTaskFromFile(curr_task)) {
+            // Successfully read from the file.
+            // TODO: Handle any additional logic here if needed.
+            return 1;
+        } else {
+            // If both methods fail, return an empty string
+            // Allocate memory for an empty string and store it in curr_task.
+            *curr_task = (char*)malloc(1);
+            (*curr_task)[0] = '\0';
+            return 0;
+        }
+    }
+}
+
+int getCurrentTaskFromFile(char **curr_task) {
     // Get environment variables
     const char *path_for_task_files = getenv("PATH_FOR_TASK_FILES");
     const char *workflow_name = getenv("WORKFLOW_NAME");
@@ -312,6 +341,7 @@ size_t get_tracker_page_size() {
     return DEFAULT_PAGE_SIZE; // Default page size of 8192 bytes
 }
 
+// TODO: use the H5VL_tracker_token_to_str function from tracker_vol_new.c
 size_t token_to_num(H5O_token_t token){
     size_t token_number;
     char token_buffer[20]; // Assuming a maximum of 20 characters for the string representation
@@ -381,7 +411,11 @@ void add_meta_page_to_list(size_t **list, size_t *list_size, size_t page) {
 static H5VL_tracker_t *
 H5VL_tracker_new_obj(void *under_obj, hid_t under_vol_id, tkr_helper_t* helper)
 {
-//    unsigned long start = get_time_usec();
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL INT : H5VL_tracker_new_obj\n");
+#endif
+
+   unsigned long start = get_time_usec();
     H5VL_tracker_t *new_obj;
 
     assert(under_vol_id);
@@ -391,9 +425,13 @@ H5VL_tracker_new_obj(void *under_obj, hid_t under_vol_id, tkr_helper_t* helper)
     new_obj->under_object = under_obj;
     new_obj->under_vol_id = under_vol_id;
     new_obj->tkr_helper = helper;
+
     ptr_cnt_increment(new_obj->tkr_helper);
+
     H5Iinc_ref(new_obj->under_vol_id);
-    //TOTAL_TKR_OVERHEAD += (get_time_usec() - start);
+
+    TOTAL_TKR_OVERHEAD += (get_time_usec() - start);
+
     return new_obj;
 } /* end H5VL__tracker_new_obj() */
 
@@ -413,7 +451,7 @@ H5VL_tracker_new_obj(void *under_obj, hid_t under_vol_id, tkr_helper_t* helper)
 static herr_t
 H5VL_tracker_free_obj(H5VL_tracker_t *obj)
 {
-    //unsigned long start = get_time_usec();
+    unsigned long start = get_time_usec();
     hid_t err_id;
 
     assert(obj);
@@ -427,7 +465,7 @@ H5VL_tracker_free_obj(H5VL_tracker_t *obj)
     H5Eset_current_stack(err_id);
 
     free(obj);
-    //TOTAL_TKR_OVERHEAD += (get_time_usec() - start);
+    TOTAL_TKR_OVERHEAD += (get_time_usec() - start);
     return 0;
 } /* end H5VL__tracker_free_obj() */
 
@@ -756,7 +794,10 @@ static hsize_t dataset_get_vlen_buf_size(void *under_dset, hid_t under_vol_id, h
 
 tkr_helper_t * tkr_helper_init( char* file_path, Track_level tkr_level, char* tkr_line_format)
 {
-   
+
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL INT : tkr_helper_init\n");
+#endif
     
     tkr_helper_t* new_helper = (tkr_helper_t *)calloc(1, sizeof(tkr_helper_t));
 
@@ -767,34 +808,38 @@ tkr_helper_t * tkr_helper_init( char* file_path, Track_level tkr_level, char* tk
         }
     }
 
-    new_helper->tkr_file_path = strdup(file_path);
+
+
     new_helper->tkr_line_format = strdup(tkr_line_format);
     new_helper->tkr_level = tkr_level;
     new_helper->pid = getpid();
     new_helper->tid = pthread_self();
-
-    // update file path with PID
-    int prefix_len = snprintf(NULL, 0, "%d_vol-%s", getpid(), file_path);
-    new_helper->tkr_file_path = (char*)malloc((prefix_len + 1) * sizeof(char));
-    snprintf(new_helper->tkr_file_path, prefix_len + 1, "%d_vol-%s", getpid(), file_path);
-
-    printf("vol new_helper tkr_file_path: %s\n", new_helper->tkr_file_path);
-
     new_helper->opened_files = NULL;
     new_helper->opened_files_cnt = 0;
+    // new_helper->tkr_file_path = strdup(file_path);
 
     /* VFD vars start */
-    // new_helper->vfd_opened_files = NULL;
-    // new_helper->vfd_opened_files_cnt = 0;
     new_helper->tracker_page_size = get_tracker_page_size();
-    /* VFD vars end */
-
+    
     getlogin_r(new_helper->user_name, 32);
 
     // if(new_helper->tkr_level == File_only || new_helper->tkr_level == File_and_print)
     //     new_helper->tkr_file_handle = fopen(new_helper->tkr_file_path, "a");
-
     // _dic_init();
+
+    // new_helper->pid = 123; // TODO: set tmp PID the same for testing
+    // Update the file_name with PID in front
+    int prefix_len = snprintf(NULL, 0, "%d-%s", new_helper->pid, VOL_STAT_FILE_NAME);
+    // Allocate memory for the concatenated path
+    new_helper->tkr_file_path = (char*)malloc(strlen(file_path) + prefix_len + 2); // +2 for '/' and null terminator
+    // Join file_path, pid, and file_name
+    snprintf(new_helper->tkr_file_path, strlen(file_path) + prefix_len + 2, 
+      "%s/%d-%s",file_path, new_helper->pid, VOL_STAT_FILE_NAME);
+
+    
+    printf("vol new_helper tkr_file_path: %s\n", new_helper->tkr_file_path);
+    /* VFD vars end */
+
     return new_helper;
 }
 
@@ -849,18 +894,28 @@ dataset_tkr_info_t *new_dataset_info(file_tkr_info_t *root_file,
     return info;
 }
 
+
 group_tkr_info_t *new_group_info(file_tkr_info_t *root_file,
     const char *name, H5O_token_t token)
 {
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL INT : new_group_info\n");
+#endif
+
     group_tkr_info_t *info;
 
     info = (group_tkr_info_t *)calloc(1, sizeof(group_tkr_info_t));
     info->obj_info.tkr_helper = TKR_HELPER;
     info->obj_info.file_info = root_file;
-    // info->obj_info.name = name ? strdup(name) : NULL;
     info->obj_info.name = (char*) malloc(sizeof(char) * (strlen(name) + 1));
     strcpy(info->obj_info.name, name);
+    // info->obj_info.name = (char*) name;
+    // info->obj_info.name = name ? strdup(name) : NULL;
     info->obj_info.token = token;
+
+// #ifdef DEBUG_PT_TKR_VOL
+//     printf("TRACKER VOL INT : new_group_info END\n");
+// #endif
 
     return info;
 }
@@ -873,9 +928,9 @@ attribute_tkr_info_t *new_attribute_info(file_tkr_info_t *root_file,
     info = (attribute_tkr_info_t *)calloc(1, sizeof(attribute_tkr_info_t));
     info->obj_info.tkr_helper = TKR_HELPER;
     info->obj_info.file_info = root_file;
-    // info->obj_info.name = name ? strdup(name) : NULL;
-    info->obj_info.name = (char*) malloc(sizeof(char) * (strlen(name) + 1));
-    strcpy(info->obj_info.name, name);
+    info->obj_info.name = name ? strdup(name) : NULL;
+    // info->obj_info.name = (char*) malloc(sizeof(char) * (strlen(name) + 1));
+    // strcpy(info->obj_info.name, name);
     info->obj_info.token = token;
 
     return info;
@@ -998,6 +1053,9 @@ datatype_tkr_info_t * add_dtype_node(file_tkr_info_t *file_info,
 
 int rm_dtype_node(tkr_helper_t *helper, void *under, hid_t under_vol_id, datatype_tkr_info_t *dtype_info)
 {
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL INT : rm_dtype_node\n");
+#endif
     unsigned long start = get_time_usec();
     file_tkr_info_t *file_info;
     datatype_tkr_info_t *cur;
@@ -1055,10 +1113,15 @@ int rm_dtype_node(tkr_helper_t *helper, void *under, hid_t under_vol_id, datatyp
 group_tkr_info_t *add_grp_node(file_tkr_info_t *file_info,
     H5VL_tracker_t *upper_o, const char *obj_name, H5O_token_t token)
 {
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL INT : add_grp_node\n");
+#endif
+
     group_tkr_info_t *cur;
     unsigned long start = get_time_usec();
     assert(file_info);
     int cmp_value;
+
 
     // Find group in linked list of opened groups
     cur = file_info->opened_grps;
@@ -1070,6 +1133,7 @@ group_tkr_info_t *add_grp_node(file_tkr_info_t *file_info,
             break;
         cur = cur->next;
     }
+
 
     if(!cur) {
         // Allocate and initialize new group node
@@ -1291,6 +1355,9 @@ file_tkr_info_t* add_file_node(tkr_helper_t* helper, const char* file_name,
 //need a dumy node to make it simpler
 int rm_file_node(tkr_helper_t* helper, unsigned long file_no)
 {
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL INT : rm_file_node\n");
+#endif
     unsigned long start = get_time_usec();
     file_tkr_info_t* cur;
     file_tkr_info_t* last;
@@ -1322,8 +1389,8 @@ int rm_file_node(tkr_helper_t* helper, unsigned long file_no)
                 else
                     last->next = cur->next;
 
-                // Free file info
-                file_info_free(cur);
+                // // Free file info
+                // file_info_free(cur);
 
                 // Update connector info
                 helper->opened_files_cnt--;
@@ -1340,6 +1407,11 @@ int rm_file_node(tkr_helper_t* helper, unsigned long file_no)
     }
 
     FILE_LL_TOTAL_TIME += (get_time_usec() - start);
+
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL INT : rm_file_node END\n");
+#endif
+
     return helper->opened_files_cnt;
 }
 
@@ -1622,6 +1694,12 @@ H5VL_tracker_t *_file_open_common(void *under, hid_t vol_id,
 }
 
 herr_t tracker_file_setup(const char* str_in, char* file_path_out, Track_level* level_out, char* format_out){
+
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL INT : tracker_file_setup\n");
+#endif
+
+
     //acceptable format: path=$path_str;level=$level_int;format=$format_str
     char tmp_str[100] = {'\0'};
     char* toklist[4] = {NULL};
@@ -1653,6 +1731,9 @@ herr_t tracker_file_setup(const char* str_in, char* file_path_out, Track_level* 
 //Use this in H5VL_tracker_wrap_object() ONLY!!!
 H5VL_tracker_t * _fake_obj_new(file_tkr_info_t *root_file, hid_t under_vol_id)
 {
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL INT : _fake_obj_new\n");
+#endif
     H5VL_tracker_t* obj;
 
     obj = H5VL_tracker_new_obj(NULL, under_vol_id, TKR_HELPER);
@@ -1681,6 +1762,10 @@ H5VL_tracker_t * _obj_wrap_under(void *under, H5VL_tracker_t *upper_o,
                                     H5I_type_t target_obj_type,
                                     hid_t dxpl_id, void **req)
 {
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL INT : _obj_wrap_under\n");
+#endif
+
     H5VL_tracker_t *obj;
     file_tkr_info_t *file_info = NULL;
 
@@ -1741,57 +1826,76 @@ H5VL_tracker_t * _obj_wrap_under(void *under, H5VL_tracker_t *upper_o,
 
         switch (target_obj_type) {
             case H5I_DATASET:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.1 H5I_DATASET\n");
                 obj->generic_tkr_info = add_dataset_node(file_no, obj, token, file_info, target_obj_name, dxpl_id, req);
                 obj->my_type = H5I_DATASET;
-
                 // file_ds_created(file_info); //candice added
                 file_ds_accessed(file_info);
                 break;
 
             case H5I_GROUP:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.2 H5I_GROUP\n");
                 obj->generic_tkr_info = add_grp_node(file_info, obj, target_obj_name, token);
                 obj->my_type = H5I_GROUP;
                 break;
 
             case H5I_FILE: //newly added. if target_obj_name == NULL: it's a fake upper_o
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.3 H5I_FILE\n");
                 obj->generic_tkr_info = add_file_node(TKR_HELPER, target_obj_name, file_no);
                 obj->my_type = H5I_FILE;
                 break;
 
             case H5I_DATATYPE:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.4 H5I_DATATYPE\n");
                 obj->generic_tkr_info = add_dtype_node(file_info, obj, target_obj_name, token);
                 obj->my_type = H5I_DATATYPE;
                 break;
 
             case H5I_ATTR:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_ATTR\n");
                 obj->generic_tkr_info = add_attr_node(file_info, obj, target_obj_name, token);
                 obj->my_type = H5I_ATTR;
                 break;
 
             case H5I_UNINIT:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_UNINIT\n");
             case H5I_BADID:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_BADID\n");
             case H5I_DATASPACE:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_DATASPACE\n");
             case H5I_VFL:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_VFL\n");
             case H5I_VOL:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_VOL\n");
                 /* TODO(candice): this is redundant */
                 // obj->generic_tkr_info = add_dataset_node(file_no, obj, token, file_info, target_obj_name, dxpl_id, req);
                 // obj->my_type = H5I_VOL;
 
                 // file_ds_created(file_info); //candice added
                 // file_ds_accessed(file_info);
-                break;
+                // break;
             case H5I_GENPROP_CLS:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_GENPROP_CLS\n");
             case H5I_GENPROP_LST:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_GENPROP_LST\n");
             case H5I_ERROR_CLASS:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_ERROR_CLASS\n");
             case H5I_ERROR_MSG:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_ERROR_MSG\n");
             case H5I_ERROR_STACK:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_ERROR_STACK\n");
             case H5I_NTYPES:
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_NTYPES\n");
             default:
                 break;
         }
     } /* end if */
     else
         obj = NULL;
+
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL INT : _obj_wrap_under END\n");
+#endif
 
     return obj;
 }
@@ -2091,11 +2195,9 @@ void attribute_stats_tkr_write(const attribute_tkr_info_t *attr_info) {
 void tkr_helper_teardown(tkr_helper_t* helper){
     if(helper){// not null
 
-#ifdef TRACKER_PROV_LOGGING
-        char pline[512];
-        FILE * file_handle = fopen(helper->tkr_file_path, "a");
+#ifdef VOLTRK_PROV_DEBUG
 
-        sprintf(pline,
+        printf(pline,
                 "TOTAL_TKR_OVERHEAD %llu\n"
                 "TOTAL_NATIVE_H5_TIME %llu\n"
                 "TKR_WRITE_TOTAL_TIME %llu\n"
@@ -2113,33 +2215,59 @@ void tkr_helper_teardown(tkr_helper_t* helper){
                 DT_LL_TOTAL_TIME,
                 ATTR_LL_TOTAL_TIME);
 
-        switch(helper->tkr_level){
-            case File_only:
-                fputs(pline, file_handle);
-                break;
+        char pline[512];
+        FILE * file_handle = fopen(helper->tkr_file_path, "a");
 
-            case File_and_print:
-                fputs(pline, file_handle);
-                printf("%s", pline);
-                break;
 
-            case Print_only:
-                printf("%s", pline);
-                break;
+        // sprintf(pline,
+        //         "TOTAL_TKR_OVERHEAD %llu\n"
+        //         "TOTAL_NATIVE_H5_TIME %llu\n"
+        //         "TKR_WRITE_TOTAL_TIME %llu\n"
+        //         "FILE_LL_TOTAL_TIME %llu\n"
+        //         "DS_LL_TOTAL_TIME %llu\n"
+        //         "GRP_LL_TOTAL_TIME %llu\n"
+        //         "DT_LL_TOTAL_TIME %llu\n"
+        //         "ATTR_LL_TOTAL_TIME %llu\n",
+        //         TOTAL_TKR_OVERHEAD,
+        //         TOTAL_NATIVE_H5_TIME,
+        //         TKR_WRITE_TOTAL_TIME,
+        //         FILE_LL_TOTAL_TIME,
+        //         DS_LL_TOTAL_TIME,
+        //         GRP_LL_TOTAL_TIME,
+        //         DT_LL_TOTAL_TIME,
+        //         ATTR_LL_TOTAL_TIME);
 
-            case Level4:
-            case Level5:
-            case Disabled:
-            case Default:
-            default:
-                break;
-        }
+        // switch(helper->tkr_level){
+        //     case File_only:
+        //         fputs(pline, file_handle);
+        //         break;
+
+        //     case File_and_print:
+        //         fputs(pline, file_handle);
+        //         printf("%s", pline);
+        //         break;
+
+        //     case Print_only:
+        //         printf("%s", pline);
+        //         break;
+
+        //     case Level4:
+        //     case Level5:
+        //     case Disabled:
+        //     case Default:
+        //     default:
+        //         break;
+        // }
 
         fflush(file_handle);
         fclose(file_handle);
 #endif
         tkrLockDestroy(&myLock);
         destroy_hash_lock();
+
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL INT: tkr_helper_teardown\n");
+#endif
 
         // if(helper->tkr_level == File_only 
         //     || helper->tkr_level ==File_and_print){//no file
@@ -2181,7 +2309,7 @@ int tkr_write(tkr_helper_t* helper_in, const char* msg, unsigned long duration){
             if(base[i] != msg[i])
                 break;
     }
-#ifdef TRACKER_PROV_LOGGING
+#ifdef VOLTRK_PROV_DEBUG
     FILE * file_handle = fopen(helper_in->tkr_file_path, "a");
 
     sprintf(pline, "%s %llu(us)\n",  msg, duration);//assume less than 64 functions
@@ -2517,7 +2645,7 @@ void file_info_update(char * func_name, void * obj, hid_t fapl_id, hid_t fcpl_id
         }
     }
 
-#ifdef TRACKER_LOGGING
+#ifdef DEBUG_TKR_VOL
     file_info_print(func_name, obj, fapl_id, fcpl_id, dxpl_id);
 #endif
 }
@@ -2689,12 +2817,32 @@ char * H5S_select_type_to_str(H5S_sel_type type){
     }
 }
 
-// TODO: update dataset_info to tracking object
+
+// Function to convert an H5O_token_t to a size_t
+size_t token_to_size_t(const H5O_token_t* token) {
+    size_t result = 0;
+    memcpy(&result, token->__data, sizeof(size_t)); // Copy bytes into size_t
+    printf("token_to_size_t: %ld\n", result);
+    return result;
+}
+
+/**
+* This function updates the below parameters of dset_info.
+* All common updates: dspace_id, dimension_cnt, dimensions, dset_select_type, 
+*                     dset_select_npoints, dset_n_elements, layout
+* When dtype is vlen: storage_size, dset_offset, data_file_page_start, data_file_page_end
+*/
 void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
     hid_t file_space_id, void * obj, hid_t dxpl_id)
 {
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL INT : dataset_info_update: %s\n", func_name);
+#endif
+
     H5VL_tracker_t *dset = (H5VL_tracker_t *)obj;
-    dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)dset->generic_tkr_info; 
+    dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)dset->generic_tkr_info;
+
+    // When dtype is vlen
     if(!dset_info->dspace_id)
         dset_info->dspace_id = dataset_get_space(dset->under_object, dset->under_vol_id, dxpl_id);
 
@@ -2740,6 +2888,8 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
     }
 
 
+
+    // When dtype is vlen
     if(strcmp(func_name,"H5VLdataset_create") != 0 
         && strcmp(func_name,"H5VLget_object") != 0 ){
         if((dset_info->storage_size == NULL) || (dset_info->storage_size < 1))
@@ -2752,38 +2902,41 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
             size_t end_page;
             size_t access_size;
 
-            tkrLockAcquire(&myLock);
-            dset_info->storage_size = dataset_get_storage_size(dset->under_object, dset->under_vol_id, dxpl_id);
-            
-            start_addr = START_ADDR;
-            end_addr = END_ADDR;
-            access_size = ACC_SIZE;
-            tkrLockRelease(&myLock);
+            memcpy(&start_addr, &dset_info->obj_info.token, sizeof(size_t));
 
+            end_addr = -1;
             start_page = start_addr/tracker_page_size;
-            end_page = end_addr/tracker_page_size;
-
-            if(access_size == dset_info->storage_size){
-                dset_info->data_file_page_start = start_page;
-                dset_info->data_file_page_end = end_page;
+            if (end_addr == -1){
+                end_page = -1;
             } else {
-                dset_info->data_file_page_start = end_page;
-                dset_info->data_file_page_end = (end_addr + dset_info->storage_size) / tracker_page_size;
+                end_page = end_addr/tracker_page_size;
             }
+            access_size = -1;
 
-            if(strcmp(dset_info->layout,"H5D_CONTIGUOUS") == 0)
-                dset_info->storage_size = dset_info->dset_n_elements * dset_info->dset_type_size;
+            dset_info->dset_offset = start_addr;
+            dset_info->data_file_page_start = start_page;
+            dset_info->data_file_page_end = end_page;
+            dset_info->storage_size = -1;
 
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL INT : dataset_info_update:%s dset_name:%s\n", func_name, dset_info->obj_info.name);
+#endif
+
+            // TODO: get storage size with update from VFD
         }
 
     } //&& strcmp(func_name,"H5VLget_object") != 0
 
-    // if(strcmp(dset_info->layout,"H5D_CONTIGUOUS") == 0)
-    if ((dset_info->dset_offset == NULL) || (dset_info->dset_offset < 0) && dxpl_id != NULL)
-        dset_info->dset_offset = dataset_get_offset(dset->under_object, dset->under_vol_id, dxpl_id);
 
-#ifdef TRACKER_LOGGING
-    dataset_info_print(func_name, mem_type_id, mem_space_id, file_space_id, obj, dxpl_id);
+    // if(strcmp(dset_info->layout,"H5D_CONTIGUOUS") == 0)
+    if(dxpl_id != NULL)
+        if ((dset_info->dset_offset == NULL) || (dset_info->dset_offset < 0))
+            dset_info->dset_offset = dataset_get_offset(dset->under_object, dset->under_vol_id, dxpl_id);
+
+
+#ifdef DEBUG_TKR_VOL
+    // dataset_info_print(func_name, mem_type_id, mem_space_id, file_space_id, obj, dxpl_id);
+    printf("TRACKER VOL INT : dataset_info_update: %s END\n", func_name);
 #endif
 
 }
@@ -2796,43 +2949,25 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
     H5VL_tracker_t *dset = (H5VL_tracker_t *)obj;
     dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)dset->generic_tkr_info;    
 
-    // if(mem_type_id != NULL)
-    //     H5VL_arrow_get_selected_sub_region(dset_info->dspace_id, H5Tget_size(dset_info->dtype_id));
+    // printf("\"vol_under_obj\": %ld, ", dset->under_object);
+    // if(!dxpl_id)
+    //     printf("\"dxpl_id_vol\": -1, ");
+    // else
+    //     printf("\"dxpl_id_vol\": %ld, ", dxpl_id);
+    // printf("\"blob_idx\": %d, ", -1);
+    // printf("\"offset\": %ld, ", dataset_get_offset(dset->under_object, dset->under_vol_id, dxpl_id));
 
 
-    // assert(dset_info);
 
     printf("{\"func_name\": \"%s\", ", func_name);
 
     printf("\"vol_obj\": %ld, ", obj);
-    printf("\"vol_under_obj\": %ld, ", dset->under_object);
-
-    if(!dxpl_id)
-        printf("\"dxpl_id_vol\": %d, ", -1);
-    else
-        printf("\"dxpl_id_vol\": %ld, ", dxpl_id);
-    
-    printf("\"time(us)\": %ld, ", get_time_usec());
-
-
+    printf("\"time(usec)\": %ld, ", get_time_usec());
     printf("\"dset_name\": \"%s\", ", dset_info->obj_info.name);
-
     printf("\"dset_token\": %ld, ", dset_info->obj_info.token);
-
-    // printf("\"dset_token.__data\": [");
-    // for (size_t i = 0; i < 16; i++)
-    // {
-    //     printf("%ld, ", dset_info->obj_info.token.__data[i]);
-
-    // }
-    // printf("], ");
-
-    printf("\"layout\": \"%s\", ", dset_info->layout); //TODO
+    // printf("\"layout\": \"%s\", ", dset_info->layout); //TODO
     printf("\"dt_class\": \"%s\", ", get_datatype_class_str(dset_info->dt_class));
-
-    // printf("\"offset\": %ld, ", dataset_get_offset(dset->under_object, dset->under_vol_id, dxpl_id));
     printf("\"offset\": %ld, ", dset_info->dset_offset);
-
     printf("\"type_size\": %ld, ", dset_info->dset_type_size);
     printf("\"storage_size\": %ld, ", dset_info->storage_size);
     printf("\"n_elements\": %ld, ", dset_info->dset_n_elements);
@@ -2843,14 +2978,15 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
         for(int i=0; i<dset_info->dimension_cnt; i++)
             printf("%ld,",dset_info->dimensions[i]);
     }
-
     printf("], ");
-
     printf("\"file_name\": \"%s\", ", dset_info->pfile_name);
-    // printf("\"blob_idx\": %d, ", -1);
     printf("\"dxpl_id\": %d, ", dxpl_id);
-
     printf("}\n");
+
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL INT : dataset_info_print: %s END\n", func_name);
+#endif
+
 }
 
 uint32_t decode_uint32(uint32_t value, const uint8_t *p) {
@@ -2912,184 +3048,286 @@ haddr_t * decode_to_addr(void ** p){
     return addr_p;
 }
 
-// void blob_info_print(char * func_name, void * obj, hid_t dxpl_id, 
-//     size_t size, void * blob_id, const void * buf,void *ctx)
-// {
-//     H5VL_tracker_t *dset = (H5VL_tracker_t *)obj;
-//     dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)dset->generic_tkr_info;
-//     assert(dset_info);
-//     // printf("\"dset_name\": \"%s\", ", dset_info->obj_info.name); //TODO
-//     // char *token_str = NULL;
-//     // printf("\"dset_token_str\": \"%s\", ", H5Otoken_to_str(space_id, &dset_info->obj_info.token, &token_str));
-//     printf("\"dset_token\": %ld, ", dset_info->obj_info.token);
-//     printf("\"storage_size\": %ld, ", dset_info->storage_size);
-//     printf("\n");
-// }
+
 
 void blob_info_print(char * func_name, void * obj, hid_t dxpl_id, 
     size_t size, void * blob_id, const void * buf,void *ctx)
 {
     H5VL_tracker_t *file = (H5VL_tracker_t *)obj;
     file_tkr_info_t * file_info = (file_tkr_info_t*)file->generic_tkr_info;
-
-    printf("{\"func_name\": \"%s\", ", func_name);
-
-
-    if(!obj)
-        obj = (void*) -1;
-    if(!size)
-        size = (size_t)-1;
-    if(!blob_id)
-        blob_id = (void*)-1;
-    if(!ctx)
-        ctx = (void*)-1;
-
     assert(file_info);
 
-    // H5Pget_elink_file_cache_size(file_info->fapl_id, &efc_size);
-    // H5Pget_fapl_direct(file_info->fapl_id, &boundary, &block_size, &cbuf_siz);
-    // H5Pget_family_offset(file_info->fapl_id, &curr_offset);
-    // void * under_driver = H5Pget_driver_info(file_info->fapl_id);
-    // H5Pget_small_data_block_size(file_info->fapl_id, &sm_db_size);
+    // printf("\"dset_name\": \"%s\", ", dset_info->obj_info.name); //TODO
+    // char *token_str = NULL;
+    // printf("\"dset_token_str\": \"%s\", ", H5Otoken_to_str(space_id, &dset_info->obj_info.token, &token_str));
 
-    hsize_t dummy01 = 0;
+    printf("{\"func_name\": \"%s\", ", func_name);
+    // print all passed in values in order obj, dxpl_id, size, blob_id, buf, ctx
+    printf("\"vol_obj\": %ld, \n", obj);
+    printf("\"dxpl_id_vol\": %ld, \n", dxpl_id);
+    printf("\"blob_access_size\": %ld, \n", size);
+    printf("\"blob_id\": %ld, \n", blob_id);
+    printf("\"buf\": %ld, \n", buf);
+    printf("\"ctx\": %ld, ", ctx);
 
-	int mdc_nelmts;
-    size_t rdcc_nslots;
-    size_t rdcc_nbytes;
-    double rdcc_w0;
-    // if(H5Pget_cache(file_info->fapl_id, &mdc_nelmts, &rdcc_nslots, &rdcc_nbytes, &rdcc_w0) > 0){
-    //     printf("\"H5Pget_cache-mdc_nelmts\": %d, ", mdc_nelmts); // TODO: ? 0
-    //     printf("\"H5Pget_cache-rdcc_nslots\": %ld, ", rdcc_nslots);
-    //     printf("\"H5Pget_cache-rdcc_nbytes\": %ld, ", rdcc_nbytes);
-    //     printf("\"H5Pget_cache-rdcc_w0\": %f, ", rdcc_w0); // TODO: ? 0.000000
-    // }
-    H5Pget_cache(file_info->fapl_id, &mdc_nelmts, &rdcc_nslots, &rdcc_nbytes, &rdcc_w0);
-    printf("\"H5Pget_cache-rdcc_nslots\": %ld, ", rdcc_nslots);
-    printf("\"H5Pget_cache-rdcc_nbytes\": %ld, ", rdcc_nbytes);
+    group_tkr_info_t* group_info = file_info->opened_grps;
 
-
-    hsize_t threshold;
-    hsize_t alignment;
-    H5Pget_alignment(file_info->fapl_id, &threshold, &alignment);
-    void * buf_ptr_ptr;
-    size_t buf_len_ptr;
-    H5Pget_file_image(file_info->fapl_id, &buf_ptr_ptr, &buf_len_ptr);
-
-    size_t buf_size;
-    unsigned min_meta_perc;
-    unsigned min_raw_perc;
-    // if(H5Pget_page_buffer_size(file_info->fapl_id, &buf_size, &min_meta_perc, &min_raw_perc) > 0){
-    //     printf("\"H5Pget_page_buffer_size-buf_size\": %ld, ", buf_size);
-    //     printf("\"H5Pget_page_buffer_size-min_meta_perc\": %d, ", min_meta_perc); // TODO: ?
-    //     printf("\"H5Pget_page_buffer_size-min_raw_perc\": %ld, ", min_raw_perc);
-    // }
-    H5Pget_page_buffer_size(file_info->fapl_id, &buf_size, &min_meta_perc, &min_raw_perc);
-    printf("\"H5Pget_page_buffer_size-buf_size\": %ld, ", buf_size);
-    
-
-    printf("\"blob_id\": %ld, ", blob_id);
-
-    haddr_t * addr_p = decode_to_addr(&blob_id);
-    printf("\"addr_p\": %ld, ", addr_p);
-    printf("Content at addr_p : %zu, ", *(unsigned char*) (long long) addr_p);
-    
-    if(!size)
-        printf("\"access_size\": %d, ", 0);
-    else
-        printf("\"access_size\": %ld, ", size);
-
-    // int ndset = file_info->opened_datasets_cnt;
-    printf("\"opened_datasets_cnt\": %d, ", file_info->opened_datasets_cnt);
-    size_t num_datasets = sizeof(&file_info->opened_datasets) / sizeof(&file_info->opened_datasets[0]);
-    printf("\"num_datasets\": %d, ", num_datasets);
-    printf("\"opened_datasets\": \n\t");
-
-    dataset_tkr_info_t* dset_info = file_info->opened_datasets;
-
-    if(file_info->opened_datasets_cnt > 0){
+    if(file_info->opened_grps_cnt > 0){
         // only 1 dset opened at a time
         // dataset_tkr_info_t * dset_info = malloc(sizeof(dataset_tkr_info_t));
-        while (dset_info) {
-            // dset_info = (dataset_tkr_info_t*) &file_info->opened_datasets[ndset];
-            assert(dset_info);
-            hid_t space_id = dset_info->dspace_id;
-            // hid_t type_id = dset_info->dtype_id;
-            // printf("\"space_id_addr\": %p, ", space_id);
-            
-            // hsize_t * dimensions = dset_info->dimensions;
-            size_t io_access_idx = dset_info->blob_put_cnt + dset_info->blob_get_cnt 
-            + dset_info->dataset_read_cnt + dset_info->dataset_write_cnt -1;
+        while (group_info) {
 
-            printf("{\"io_access_idx\": %ld, ", io_access_idx );
+            printf("\"group_token\": %ld, ", group_info->obj_info.token);
+            printf("\"group_name\": \"%s\", ", group_info->obj_info.name);
 
-            printf("\"time(us)\": %ld, ", get_time_usec());
-
-            printf("\"dset_name\": \"%s\", ", dset_info->obj_info.name); //TODO
-        
-            // char *token_str = NULL;
-            // printf("\"dset_token_str\": \"%s\", ", H5Otoken_to_str(space_id, &dset_info->obj_info.token, &token_str));
-            printf("\"dset_token\": %ld, ", dset_info->obj_info.token);
-
-            size_t  token_idx = (size_t) malloc(sizeof(size_t));
-            decode_uint32((size_t) &dset_info->obj_info.token, (const uint8_t*)token_idx);
-            // printf("\"token_idx\": %zu, ", token_idx);
-            long long token_idx_addr = (long long) token_idx;
-            unsigned char* tptr = (unsigned char*)token_idx_addr;
-            // printf("Content at token_idx : %u, ", *tptr);
-
-            // printf("\"obj_token\": %ld, ", dset_info->obj_info.token); // a fixed number 800
-            printf("\"file_no\": %ld, ", file_info->file_no); // matches dset_name
-            printf("\"offset\": %ld, ", dset_info->dset_offset); //TODO: get blob offset
-            printf("\"layout\": \"%s\", ", dset_info->layout); //TODO: blob layout?
-            printf("\"dt_class\": \"%s\", ", get_datatype_class_str(dset_info->dt_class));
-            printf("\"storage_size\": %ld, ", dset_info->storage_size);
-            printf("\"n_elements\": %ld, ", dset_info->dset_n_elements);
-            printf("\"dimension_cnt\": %d, ", dset_info->dimension_cnt); //H5Sget_simple_extent_ndims gets negative
-
-            printf("\"dimensions\": [");
-            if(dset_info->dimensions){
-                for(int i=0; i<dset_info->dimension_cnt; i++)
-                    printf("%ld,", dset_info->dimensions[i]);
-            }
-            printf("], ");
-
-            printf("\"dset_addr\": %p, ", obj);
-            printf("}\n");
-            dset_info = dset_info->next; // Move to the next node
+            group_info = group_info->next; // Move to the next node
         }
-
-
     }
 
+    attribute_tkr_info_t* attr_info = file_info->opened_attrs;
+    if(file_info->opened_attrs_cnt > 0){
+        // only 1 dset opened at a time
+        // dataset_tkr_info_t * dset_info = malloc(sizeof(dataset_tkr_info_t));
+        while (attr_info) {
 
-    int *dm1, *dm2, *dm3, *dm4, *dm5, *dm6, *dm7, *dm8, *dm9, *dm10, *dm11, *dm12, *dm13, *dm14, *dm15;// *dm16;// *dm17, *dm18;// *dm19;
-    dm1 = dm2 = dm3 = dm4 = dm5 = dm6 = dm7 = dm8 = dm9 = dm10 = dm11 = dm12 = dm13 = dm14 = dm15 =0;// dm16 =0;// dm17 =0;// dm18 = 0;
+            printf("\"attr_token\": %ld, ", attr_info->obj_info.token);
+            printf("\"attr_name\": \"%s\", ", attr_info->obj_info.name);
 
-    // if (dummy0 == 0)
-    // {
-    //     size_t first_put_addr = dset_info->total_bytes_written + dset_info->dset_offset;
-    //     // printf("\"logical_addr\": %ld, ", dm9);
-    //     // printf("\"dset_info->storage_size\": %ld, ", dset_info->storage_size);    
-    //     if(first_put_addr < (dset_info->dset_type_size * dset_info->dset_n_elements))
-    //         printf("\"logical_addr\": %ld, ", (&dummy0-1));
-    //     else
-    //         printf("\"logical_addr\": %ld, ", 0); // first_put_addr incorrect
-    // } else
-    //     printf("\"logical_addr\": %ld, ", dummy0);
+            attr_info = attr_info->next; // Move to the next node
+        }
+    }
 
-    // printf("\"logical_addr\": %ld, ", dummy0);
-    if(!dxpl_id)
-        printf("\"dxpl_id_vol\": %d, ", -1);
-    else
-        printf("\"dxpl_id_vol\": %ld, ", dxpl_id);
+    // dataset_tkr_info_t* dset_info = file_info->opened_datasets;
 
-    printf("\"file_name\": \"%s\", ", file_info->file_name);
-    // printf("\"blob_idx\": %ld, ", * (&dummy0-14)); // either -13/-14
+    // // assumption, there is alwasy only 1 opened datasets when using a blob for a file
+    // if(file_info->opened_datasets_cnt > 0){
+    //     // only 1 dset opened at a time
+    //     // dataset_tkr_info_t * dset_info = malloc(sizeof(dataset_tkr_info_t));
+    //     while (dset_info) {
+    //         // dset_info = (dataset_tkr_info_t*) &file_info->opened_datasets[ndset];
+    //         assert(dset_info);
+    //         hid_t space_id = dset_info->dspace_id;
+    //         // hid_t type_id = dset_info->dtype_id;
+    //         // printf("\"space_id_addr\": %p, ", space_id);
+            
+    //         // hsize_t * dimensions = dset_info->dimensions;
+    //         size_t io_access_idx = dset_info->blob_put_cnt + dset_info->blob_get_cnt 
+    //         + dset_info->dataset_read_cnt + dset_info->dataset_write_cnt -1;
+
+    //         printf("{\"io_access_idx\": %ld, ", io_access_idx );
+
+    //         printf("\"time(us)\": %ld, ", get_time_usec());
+
+    //         printf("\"dset_name\": \"%s\", ", dset_info->obj_info.name); //TODO
+        
+    //         // char *token_str = NULL;
+    //         // printf("\"dset_token_str\": \"%s\", ", H5Otoken_to_str(space_id, &dset_info->obj_info.token, &token_str));
+    //         printf("\"dset_token\": %ld, ", dset_info->obj_info.token);
+
+    //         size_t  token_idx = (size_t) malloc(sizeof(size_t));
+    //         decode_uint32((size_t) &dset_info->obj_info.token, (const uint8_t*)token_idx);
+    //         // printf("\"token_idx\": %zu, ", token_idx);
+    //         long long token_idx_addr = (long long) token_idx;
+    //         unsigned char* tptr = (unsigned char*)token_idx_addr;
+    //         // printf("Content at token_idx : %u, ", *tptr);
+
+    //         // printf("\"obj_token\": %ld, ", dset_info->obj_info.token); // a fixed number 800
+    //         printf("\"file_no\": %ld, ", file_info->file_no); // matches dset_name
+    //         printf("\"offset\": %ld, ", dset_info->dset_offset); //TODO: get blob offset
+    //         printf("\"layout\": \"%s\", ", dset_info->layout); //TODO: blob layout?
+    //         printf("\"dt_class\": \"%s\", ", get_datatype_class_str(dset_info->dt_class));
+    //         printf("\"storage_size\": %ld, ", dset_info->storage_size);
+    //         printf("\"n_elements\": %ld, ", dset_info->dset_n_elements);
+    //         printf("\"dimension_cnt\": %d, ", dset_info->dimension_cnt); //H5Sget_simple_extent_ndims gets negative
+
+    //         printf("\"dimensions\": [");
+    //         if(dset_info->dimensions){
+    //             for(int i=0; i<dset_info->dimension_cnt; i++)
+    //                 printf("%ld,", dset_info->dimensions[i]);
+    //         }
+    //         printf("], ");
+
+    //         printf("\n\"dset_info-mem_addr\": %ld, ", dset_info);
+    //         printf("}\n");
+    //         dset_info = dset_info->next; // Move to the next node
+    //     }
+    // }
+
+    // hsize_t dummy01;
+    // printf("\"logical_addr\": %d, ", dummy01);
+    // printf("\"logical_addr\": %d, ", &dummy01-14);
+
     printf("}\n");
-    
-    // BLOB_SORDER+=1; // increment blob order
+
 }
+
+// void blob_info_print(char * func_name, void * obj, hid_t dxpl_id, 
+//     size_t size, void * blob_id, const void * buf,void *ctx)
+// {
+//     H5VL_tracker_t *file = (H5VL_tracker_t *)obj;
+//     file_tkr_info_t * file_info = (file_tkr_info_t*)file->generic_tkr_info;
+
+//     printf("{\"func_name\": \"%s\", ", func_name);
+
+
+//     if(!obj)
+//         obj = (void*) -1;
+//     if(!size)
+//         size = (size_t)-1;
+//     if(!blob_id)
+//         blob_id = (void*)-1;
+//     if(!ctx)
+//         ctx = (void*)-1;
+
+//     assert(file_info);
+
+//     // H5Pget_elink_file_cache_size(file_info->fapl_id, &efc_size);
+//     // H5Pget_fapl_direct(file_info->fapl_id, &boundary, &block_size, &cbuf_siz);
+//     // H5Pget_family_offset(file_info->fapl_id, &curr_offset);
+//     // void * under_driver = H5Pget_driver_info(file_info->fapl_id);
+//     // H5Pget_small_data_block_size(file_info->fapl_id, &sm_db_size);
+
+//     hsize_t dummy01;
+
+// 	int mdc_nelmts;
+//     size_t rdcc_nslots;
+//     size_t rdcc_nbytes;
+//     double rdcc_w0;
+//     // if(H5Pget_cache(file_info->fapl_id, &mdc_nelmts, &rdcc_nslots, &rdcc_nbytes, &rdcc_w0) > 0){
+//     //     printf("\"H5Pget_cache-mdc_nelmts\": %d, ", mdc_nelmts); // TODO: ? 0
+//     //     printf("\"H5Pget_cache-rdcc_nslots\": %ld, ", rdcc_nslots);
+//     //     printf("\"H5Pget_cache-rdcc_nbytes\": %ld, ", rdcc_nbytes);
+//     //     printf("\"H5Pget_cache-rdcc_w0\": %f, ", rdcc_w0); // TODO: ? 0.000000
+//     // }
+
+//     // H5Pget_cache(file_info->fapl_id, &mdc_nelmts, &rdcc_nslots, &rdcc_nbytes, &rdcc_w0);
+//     // printf("\"H5Pget_cache-rdcc_nslots\": %ld, ", rdcc_nslots);
+//     // printf("\"H5Pget_cache-rdcc_nbytes\": %ld, ", rdcc_nbytes);
+
+
+//     hsize_t threshold;
+//     hsize_t alignment;
+//     H5Pget_alignment(file_info->fapl_id, &threshold, &alignment);
+//     void * buf_ptr_ptr;
+//     size_t buf_len_ptr;
+//     H5Pget_file_image(file_info->fapl_id, &buf_ptr_ptr, &buf_len_ptr);
+
+//     size_t buf_size;
+//     unsigned min_meta_perc;
+//     unsigned min_raw_perc;
+//     // if(H5Pget_page_buffer_size(file_info->fapl_id, &buf_size, &min_meta_perc, &min_raw_perc) > 0){
+//     //     printf("\"H5Pget_page_buffer_size-buf_size\": %ld, ", buf_size);
+//     //     printf("\"H5Pget_page_buffer_size-min_meta_perc\": %d, ", min_meta_perc); // TODO: ?
+//     //     printf("\"H5Pget_page_buffer_size-min_raw_perc\": %ld, ", min_raw_perc);
+//     // }
+
+//     // H5Pget_page_buffer_size(file_info->fapl_id, &buf_size, &min_meta_perc, &min_raw_perc);
+//     // printf("\"H5Pget_page_buffer_size-buf_size\": %ld, ", buf_size);
+    
+
+//     printf("\"blob_id\": %ld, ", blob_id);
+
+//     haddr_t * addr_p = decode_to_addr(&blob_id);
+//     printf("\"addr_p\": %ld, ", addr_p);
+//     printf("Content at addr_p : %zu, ", *(unsigned char*) (long long) addr_p);
+    
+//     if(!size)
+//         printf("\"access_size\": %d, ", 0);
+//     else
+//         printf("\"access_size\": %ld, ", size);
+
+//     // int ndset = file_info->opened_datasets_cnt;
+//     printf("\"opened_datasets_cnt\": %d, ", file_info->opened_datasets_cnt);
+//     size_t num_datasets = sizeof(&file_info->opened_datasets) / sizeof(&file_info->opened_datasets[0]);
+//     printf("\"num_datasets\": %d, ", num_datasets);
+//     printf("\"opened_datasets\": \n\t");
+
+//     dataset_tkr_info_t* dset_info = file_info->opened_datasets;
+
+//     if(file_info->opened_datasets_cnt > 0){
+//         // only 1 dset opened at a time
+//         // dataset_tkr_info_t * dset_info = malloc(sizeof(dataset_tkr_info_t));
+//         while (dset_info) {
+//             // dset_info = (dataset_tkr_info_t*) &file_info->opened_datasets[ndset];
+//             assert(dset_info);
+//             hid_t space_id = dset_info->dspace_id;
+//             // hid_t type_id = dset_info->dtype_id;
+//             // printf("\"space_id_addr\": %p, ", space_id);
+            
+//             // hsize_t * dimensions = dset_info->dimensions;
+//             size_t io_access_idx = dset_info->blob_put_cnt + dset_info->blob_get_cnt 
+//             + dset_info->dataset_read_cnt + dset_info->dataset_write_cnt -1;
+
+//             printf("{\"io_access_idx\": %ld, ", io_access_idx );
+
+//             printf("\"time(us)\": %ld, ", get_time_usec());
+
+//             printf("\"dset_name\": \"%s\", ", dset_info->obj_info.name); //TODO
+        
+//             // char *token_str = NULL;
+//             // printf("\"dset_token_str\": \"%s\", ", H5Otoken_to_str(space_id, &dset_info->obj_info.token, &token_str));
+//             printf("\"dset_token\": %ld, ", dset_info->obj_info.token);
+
+//             size_t  token_idx = (size_t) malloc(sizeof(size_t));
+//             decode_uint32((size_t) &dset_info->obj_info.token, (const uint8_t*)token_idx);
+//             // printf("\"token_idx\": %zu, ", token_idx);
+//             long long token_idx_addr = (long long) token_idx;
+//             unsigned char* tptr = (unsigned char*)token_idx_addr;
+//             // printf("Content at token_idx : %u, ", *tptr);
+
+//             // printf("\"obj_token\": %ld, ", dset_info->obj_info.token); // a fixed number 800
+//             printf("\"file_no\": %ld, ", file_info->file_no); // matches dset_name
+//             printf("\"offset\": %ld, ", dset_info->dset_offset); //TODO: get blob offset
+//             printf("\"layout\": \"%s\", ", dset_info->layout); //TODO: blob layout?
+//             printf("\"dt_class\": \"%s\", ", get_datatype_class_str(dset_info->dt_class));
+//             printf("\"storage_size\": %ld, ", dset_info->storage_size);
+//             printf("\"n_elements\": %ld, ", dset_info->dset_n_elements);
+//             printf("\"dimension_cnt\": %d, ", dset_info->dimension_cnt); //H5Sget_simple_extent_ndims gets negative
+
+//             printf("\"dimensions\": [");
+//             if(dset_info->dimensions){
+//                 for(int i=0; i<dset_info->dimension_cnt; i++)
+//                     printf("%ld,", dset_info->dimensions[i]);
+//             }
+//             printf("], ");
+
+//             printf("\"\ndset_mem_addr\": %ld, ", obj);
+//             printf("}\n");
+//             dset_info = dset_info->next; // Move to the next node
+//         }
+
+
+//     }
+
+
+//     int *dm1, *dm2, *dm3, *dm4, *dm5, *dm6, *dm7, *dm8, *dm9, *dm10, *dm11, *dm12, *dm13, *dm14, *dm15;// *dm16;// *dm17, *dm18;// *dm19;
+//     dm1 = dm2 = dm3 = dm4 = dm5 = dm6 = dm7 = dm8 = dm9 = dm10 = dm11 = dm12 = dm13 = dm14 = dm15 =0;// dm16 =0;// dm17 =0;// dm18 = 0;
+
+//     // if (dummy01 == 0)
+//     // {
+//     //     size_t first_put_addr = dset_info->total_bytes_blob_put + dset_info->dset_offset;
+//     //     printf("\"logical_addr\": %ld, ", dm9);
+//     //     printf("\"dset_info->storage_size\": %ld, ", dset_info->storage_size);    
+//     //     if(first_put_addr < (dset_info->dset_type_size * dset_info->dset_n_elements))
+//     //         printf("\"logical_addr\": %ld, ", (dummy01-1));
+//     //     else
+//     //         printf("\"logical_addr\": %ld, ", 0); // first_put_addr incorrect
+//     // } else
+//     //     printf("\"logical_addr\": %ld, ", dummy01);
+
+//     // printf("\"logical_addr\": %d, ", dummy01);
+
+//     if(!dxpl_id)
+//         printf("\"dxpl_id_vol\": %d, ", -1);
+//     else
+//         printf("\"dxpl_id_vol\": %ld, ", dxpl_id);
+
+//     printf("\"file_name\": \"%s\", ", file_info->file_name);
+//     // printf("\"blob_idx\": %ld, ", * (dummy01-14)); // either -13/-14
+//     printf("}\n");
+    
+//     // BLOB_SORDER+=1; // increment blob order
+// }
 
 
     /* candice added routine implementation end*/
@@ -3151,6 +3389,9 @@ void decode_two_strings(const char* encoded_str, char** file_name, char** dset_n
 void file_ds_created(file_tkr_info_t *info)
 {
     assert(info);
+#ifdef DEBUG_TKR_VOL
+    printf("TRACKER VOL INT : file_ds_created\n");
+#endif
     if(info)
         info->ds_created++;
 }
@@ -3359,17 +3600,6 @@ void log_dset_ht_yaml(FILE* f) {
 
             fprintf(f, "- file-%ld:\n", dset_track_info->pfile_sorder_id);
             fprintf(f, "    file_name: \"/%s\"\n", file_name);
-            // if(dset_track_info->task_name != NULL){
-            //     fprintf(f, "    task_name: \"%s\"\n", dset_track_info->task_name);
-            // }else{
-            //     const char* curr_task = getenv("CURR_TASK");
-            //     if (curr_task)
-            //         fprintf(f, "    task_name: \"%s\"\n", curr_task);
-            //     else
-            //         fprintf(f, "    task_name: \"\"\n");
-            // }
-
-            // fprintf(f, "    task_name: \"%s\"\n", dset_track_info->task_name);
 
             if (dset_track_info->task_name != NULL) {
                 fprintf(f, "    task_name: \"%s\"\n", dset_track_info->task_name);
@@ -3400,7 +3630,10 @@ void log_dset_ht_yaml(FILE* f) {
             fprintf(f, "        dataset_read_cnt: %d\n", dset_track_info->dataset_read_cnt);
             fprintf(f, "        total_bytes_read: %d\n", (dset_track_info->dataset_read_cnt * dset_track_info->storage_size));
             fprintf(f, "        dataset_write_cnt: %d\n", dset_track_info->dataset_write_cnt);
-            fprintf(f, "        total_bytes_written: %d\n", (dset_track_info->dataset_write_cnt * dset_track_info->storage_size));
+            
+            // TODO: VLen data dset_select_npoints=1, needs to calculate blob size
+            fprintf(f, "        total_bytes_written: %d\n", (dset_track_info->dset_select_npoints * dset_track_info->dset_type_size));
+
             if(dset_track_info->dataset_read_cnt > 0 && dset_track_info->dataset_write_cnt == 0) {
                 fprintf(f, "        access_type: read_only\n");
             }
