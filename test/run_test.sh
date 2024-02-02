@@ -4,6 +4,7 @@
 TRACKER_SRC_DIR=/mnt/common/mtang11/scripts/vol-tracker/build/src
 export VOL_NAME="tracker"
 export HDF5_USE_FILE_LOCKING='FALSE' # TRUE FALSE BESTEFFORT
+export TRACKER_VFD_PAGE_SIZE=65536 #65536
 
 IO_FILE="$(pwd)/vlen_sample.h5"
 
@@ -23,12 +24,15 @@ PREP_TASK_NAME () {
 
 
 SIMPLE_VOL_IO (){
+    local task1="write_read"
+    local task2="read2"
+
     schema_file_path="`pwd`"
     rm -rf $schema_file_path/*vol_data_stat.yaml
     
     export HDF5_VOL_CONNECTOR="$VOL_NAME under_vol=0;under_info={};path=$schema_file_path;level=2;format="
     export HDF5_PLUGIN_PATH=$TRACKER_SRC_DIR/vol
-    
+
     PREP_TASK_NAME "$task1"
     python vlen_h5_write_read.py $IO_FILE
 
@@ -38,6 +42,9 @@ SIMPLE_VOL_IO (){
 }
 
 SIMPLE_VFD_IO (){
+    local task1="write_read"
+    local task2="read2"
+
     schema_file_path="`pwd`"
     rm -rf $schema_file_path/*vfd_data_stat.yaml
     
@@ -71,7 +78,6 @@ SIMPLE_VFD_VOL_IO () {
     schema_file_path="`pwd`"
     rm -rf $schema_file_path/*vfd_data_stat.yaml
     rm -rf $schema_file_path/*vol_data_stat.yaml
-    TRACKER_VFD_PAGE_SIZE=65536 #65536
 
     echo "TRACKER_VFD_DIR : `ls -l $TRACKER_SRC_DIR/*`"
     
