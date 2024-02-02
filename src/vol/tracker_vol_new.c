@@ -326,15 +326,6 @@ static hid_t tkr_connector_id_global = H5I_INVALID_HID;
 
 
 
-/* Local routine prototypes */
-
-
-
-
-
-
-
-
 
 /*-------------------------------------------------------------------------
  * Function:    H5VL_tracker_register
@@ -382,6 +373,7 @@ H5VL_tracker_register(void)
 static herr_t
 H5VL_tracker_init(hid_t vipl_id)
 {
+    unsigned long start = get_time_usec();
     /* initialize all locks */
     tkrLockInit(&myLock);
     init_hasn_lock();
@@ -406,6 +398,7 @@ H5VL_tracker_init(hid_t vipl_id)
     /* Shut compiler up about unused parameter */
     (void)vipl_id;
 
+    TOTAL_TKR_OVERHEAD += (get_time_usec() - start);
     return 0;
 } /* end H5VL_tracker_init() */
 
@@ -426,15 +419,12 @@ H5VL_tracker_init(hid_t vipl_id)
 static herr_t
 H5VL_tracker_term(void)
 {
-
+    unsigned long start = get_time_usec();
 #ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL TERM\n");
 #endif
     // Release resources, etc.
 #ifdef VOLTRK_SCHEMA
-    
-    // printf("Total number of dataset entries: %d\n", HASH_COUNT(lock.hash_table));
-
     tkr_helper_teardown(TKR_HELPER);
 #endif
     TKR_HELPER = NULL;
@@ -442,6 +432,7 @@ H5VL_tracker_term(void)
     /* Reset VOL ID */
     tkr_connector_id_global = H5I_INVALID_HID;
 
+    TOTAL_TKR_OVERHEAD += (get_time_usec() - start);
     return 0;
 } /* end H5VL_tracker_term() */
 
@@ -459,8 +450,8 @@ H5VL_tracker_term(void)
 static void *
 H5VL_tracker_info_copy(const void *_info)
 {
-    unsigned long start = get_time_usec();
-
+    
+    unsigned long start = get_time_usec(); // TODO: is it accurate?
     const H5VL_tracker_info_t *info = (const H5VL_tracker_info_t *)_info;
     H5VL_tracker_info_t *new_info;
 
@@ -484,6 +475,7 @@ H5VL_tracker_info_copy(const void *_info)
     new_info->tkr_level = info->tkr_level;
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start);
+
     return new_info;
 } /* end H5VL_tracker_info_copy() */
 
@@ -502,7 +494,7 @@ H5VL_tracker_info_copy(const void *_info)
 static herr_t
 H5VL_tracker_info_cmp(int *cmp_value, const void *_info1, const void *_info2)
 {
-    unsigned long start = get_time_usec();
+    unsigned long start, m1, m2;
 
     const H5VL_tracker_info_t *info1 = (const H5VL_tracker_info_t *)_info1;
     const H5VL_tracker_info_t *info2 = (const H5VL_tracker_info_t *)_info2;
@@ -518,6 +510,7 @@ H5VL_tracker_info_cmp(int *cmp_value, const void *_info1, const void *_info2)
     /* Initialize comparison value */
     *cmp_value = 0;
 
+    m1 = get_time_usec();
     /* Compare under VOL connector classes */
     H5VLcmp_connector_cls(cmp_value, info1->under_vol_id, info2->under_vol_id);
     if(*cmp_value != 0){
@@ -531,14 +524,9 @@ H5VL_tracker_info_cmp(int *cmp_value, const void *_info1, const void *_info2)
         TOTAL_TKR_OVERHEAD += (get_time_usec() - start);
         return 0;
     }
+    m2 = get_time_usec();
 
     *cmp_value = strcmp(info1->tkr_file_path, info2->tkr_file_path);
-    if(*cmp_value != 0){
-        TOTAL_TKR_OVERHEAD += (get_time_usec() - start);
-        return 0;
-    }
-
-    *cmp_value = strcmp(info1->tkr_line_format, info2->tkr_line_format);
     if(*cmp_value != 0){
         TOTAL_TKR_OVERHEAD += (get_time_usec() - start);
         return 0;
@@ -550,8 +538,13 @@ H5VL_tracker_info_cmp(int *cmp_value, const void *_info1, const void *_info2)
         return 0;
     }
 
-    TOTAL_TKR_OVERHEAD += (get_time_usec() - start);
+    *cmp_value = strcmp(info1->tkr_line_format, info2->tkr_line_format);
+    if(*cmp_value != 0){
+        TOTAL_TKR_OVERHEAD += (get_time_usec() - start);
+        return 0;
+    }
 
+    TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return 0;
 } /* end H5VL_tracker_info_cmp() */
 
@@ -611,6 +604,8 @@ H5VL_tracker_info_free(void *_info)
 static herr_t
 H5VL_tracker_info_to_str(const void *_info, char **str)
 {
+    unsigned long start = get_time_usec();
+
     const H5VL_tracker_info_t *info = (const H5VL_tracker_info_t *)_info;
     H5VL_class_value_t under_value = (H5VL_class_value_t)-1;
     char *under_vol_string = NULL;
@@ -651,7 +646,8 @@ H5VL_tracker_info_to_str(const void *_info, char **str)
     /* Release under VOL info string, if there is one */
     if(under_vol_string)
         H5free_memory(under_vol_string);
-
+    
+    TOTAL_TKR_OVERHEAD += (get_time_usec() - start);
     return 0;
 } /* end H5VL_tracker_info_to_str() */
 
@@ -669,6 +665,8 @@ H5VL_tracker_info_to_str(const void *_info, char **str)
 static herr_t
 H5VL_tracker_str_to_info(const char *str, void **_info)
 {
+    unsigned long start = get_time_usec();
+
     H5VL_tracker_info_t *info;
     unsigned under_vol_value;
     const char *under_vol_info_start, *under_vol_info_end;
@@ -726,13 +724,13 @@ H5VL_tracker_str_to_info(const char *str, void **_info)
         free(under_vol_info_str);
 
 #ifdef VOLTRK_DEBUG
-    
     printf("{\"func_name\": \"H5VLconnector_str_to_info\", ");
     printf("\"time\": %ld, ",get_time_usec());
     printf("\"input\": \"%s\", ",str);
     printf("}\n");
 #endif
 
+    TOTAL_TKR_OVERHEAD += (get_time_usec() - start);
     return 0;
 } /* end H5VL_tracker_str_to_info() */
 
@@ -764,7 +762,9 @@ H5VL_tracker_get_object(const void *obj)
     ret = H5VLget_object(o->under_object, o->under_vol_id);
     m2 = get_time_usec();
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
 #ifdef VOLTRK_MORE_DEBUG
     // WARNING: below causes memory leak
@@ -784,11 +784,8 @@ H5VL_tracker_get_object(const void *obj)
     }
 #endif
 
-#ifdef VOLTRK_SCHEMA
-
+#ifdef VOLTRK_MORE_DEBUG
     // printf("H5VLget_object(): %ld, \n", obj);
-
-
 #endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
@@ -1084,8 +1081,10 @@ H5VL_tracker_attr_create(void *obj, const H5VL_loc_params_t *loc_params,
     else
         attr = NULL;
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return (void*)attr;
@@ -1146,8 +1145,10 @@ H5VL_tracker_attr_open(void *obj, const H5VL_loc_params_t *loc_params,
     else
         attr = NULL;
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
 #ifdef VOLTRK_MORE_DEBUG
     attribute_info_print("H5VLattr_open", obj, loc_params, NULL, dxpl_id, req);
@@ -1190,8 +1191,10 @@ H5VL_tracker_attr_read(void *attr, hid_t mem_type_id, void *buf,
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, o->under_vol_id, o->tkr_helper);
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
 #ifdef VOLTRK_DEBUG
     attribute_info_print("H5VLattr_read", attr, NULL, NULL, dxpl_id, req);
@@ -1233,8 +1236,10 @@ H5VL_tracker_attr_write(void *attr, hid_t mem_type_id, const void *buf,
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, o->under_vol_id, o->tkr_helper);
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
 #ifdef VOLTRK_DEBUG
     // printf("H5VL_tracker_attr_write-buf \"%s\"\n");
@@ -1281,8 +1286,10 @@ H5VL_tracker_attr_get(void *obj, H5VL_attr_get_args_t *args, hid_t dxpl_id,
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, o->under_vol_id, o->tkr_helper);
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -1321,8 +1328,10 @@ H5VL_tracker_attr_specific(void *obj, const H5VL_loc_params_t *loc_params,
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, o->under_vol_id, o->tkr_helper);
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
 #ifdef VOLTRK_MORE_DEBUG
     // get the dataset name, not the attr name
@@ -1365,8 +1374,10 @@ H5VL_tracker_attr_optional(void *obj, H5VL_optional_args_t *args, hid_t dxpl_id,
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, o->under_vol_id, o->tkr_helper);
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -1408,8 +1419,10 @@ H5VL_tracker_attr_close(void *attr, hid_t dxpl_id, void **req)
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, o->under_vol_id, o->tkr_helper);
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     /* Release our wrapper, if underlying attribute was closed */
     if(ret_value >= 0) {
@@ -1417,7 +1430,9 @@ H5VL_tracker_attr_close(void *attr, hid_t dxpl_id, void **req)
 
         attr_info = (attribute_tkr_info_t *)o->generic_tkr_info;
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
         attribute_stats_tkr_write(attr_info);
 
         rm_attr_node(o->tkr_helper, o->under_object, o->under_vol_id, attr_info);
@@ -1465,34 +1480,22 @@ H5VL_tracker_dataset_create(void *obj, const H5VL_loc_params_t *loc_params,
         dset = NULL;
     
 #ifdef VOLTRK_SCHEMA
-    
     if(dset != NULL){
-
         file_tkr_info_t * file_info = (file_tkr_info_t*)o->generic_tkr_info;
         // file_ds_created(file_info); // This causes segmenation fault
-        
         dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)dset->generic_tkr_info;
-        
         dset_info->pfile_sorder_id = file_info->sorder_id;
-
         if(!dset_info->dspace_id)
             dset_info->dspace_id = space_id;
-
         // get dataset offset and storage size not available yet
         dataset_info_update("H5VLdataset_create", NULL, NULL, NULL, dset, dxpl_id); // This must exist
-        
-        
     }
-    
 #endif
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
-
-#ifdef VOLTRK_PT_DEBUG
-    printf("TRACKER VOL DATASET Create [%s] END\n", ds_name);
 #endif
-
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return (void *)dset;
 } /* end H5VL_tracker_dataset_create() */
@@ -1546,9 +1549,11 @@ H5VL_tracker_dataset_open(void *obj, const H5VL_loc_params_t *loc_params,
     dataset_info_update("H5VLdataset_open", NULL, NULL, NULL, dset, dxpl_id);
 
 #endif
-    
+
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(dset)
         tkr_write(dset->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return (void *)dset;
@@ -1630,8 +1635,6 @@ static herr_t H5VL_tracker_dataset_read(size_t count, void *dset[],
             if(!actual_io_mode)
                 dset_info->broken_coll_dataset_read_cnt++;
         } /* end else */
-
-
 #endif /* H5_HAVE_PARALLEL */
 
             dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)o->generic_tkr_info;
@@ -1642,17 +1645,16 @@ static herr_t H5VL_tracker_dataset_read(size_t count, void *dset[],
             if(!dset_info->dtype_id)
                 dset_info->dtype_id = mem_type_id[obj_idx];
 
-
             dataset_info_update("H5VLdataset_read", mem_type_id[obj_idx], mem_space_id[obj_idx], file_space_id[obj_idx], dset[obj_idx], NULL); //H5P_DATASET_XFER
 
-#ifdef VOLTRK_MORE_DEBUG
+#ifdef VOLTRK_OVERHEAD_DEBUG
             tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
 #endif
-            
         }
     }
-
 #endif
+
+
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -1685,18 +1687,17 @@ static herr_t H5VL_tracker_dataset_write(size_t count, void *dset[],
     H5FD_mpio_xfer_t xfer_mode = H5FD_MPIO_INDEPENDENT;
 #endif /* H5_HAVE_PARALLEL */
     herr_t ret_value;
-
     assert(dset);
 
 #ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL DATASET Write\n");
 #endif
 #ifdef VOLTRK_SCHEMA
-    for (int obj_idx=0; obj_idx<count; obj_idx++){
-        H5VL_tracker_t *o = (H5VL_tracker_t *)(dset[0]);
-        dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)o->generic_tkr_info;
-        dset_shm_write(dset_info->obj_info.name);
-    }
+    // for (int obj_idx=0; obj_idx<count; obj_idx++)
+    // Assume only 1 dataset being open at a time from the same process
+    H5VL_tracker_t *o = (H5VL_tracker_t *)(dset[0]);
+    dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)o->generic_tkr_info;
+    dset_shm_write(dset_info->obj_info.name);
 #endif
 
 #ifdef H5_HAVE_PARALLEL
@@ -1704,8 +1705,8 @@ static herr_t H5VL_tracker_dataset_write(size_t count, void *dset[],
     H5Pget_dxpl_mpio(plist_id, &xfer_mode);
 #endif /* H5_HAVE_PARALLEL */
 
-//H5VLdataset_write: framework
-// VOL B do IO, so A ask B to write.    o->under_object is a B envelop.
+    //H5VLdataset_write: framework
+    // VOL B do IO, so A ask B to write.    o->under_object is a B envelop.
 
     /* Populate the array of under objects */
     under_vol_id = ((H5VL_tracker_t *)(dset[0]))->under_vol_id;
@@ -1720,19 +1721,6 @@ static herr_t H5VL_tracker_dataset_write(size_t count, void *dset[],
     ret_value = H5VLdataset_write(count, o_arr, under_vol_id, mem_type_id, mem_space_id, file_space_id, plist_id, buf, req);
 
     m2 = get_time_usec();
-
-    // if(ret_value >= 0) {
-    //     dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)o->generic_tkr_info;
-        
-
-        // if(H5S_ALL == mem_space_id)
-        //     w_size = dset_info->dset_type_size * dset_info->dset_n_elements;
-        // else
-        //     w_size = dset_info->dset_type_size * (hsize_t)H5Sget_select_npoints(mem_space_id);
-
-        // dset_info->total_bytes_written += w_size;
-        // dset_info->dataset_write_cnt++;
-        // dset_info->total_write_time += (m2 - m1);
     
 #ifdef VOLTRK_SCHEMA
     if(ret_value >= 0){
@@ -1743,7 +1731,6 @@ static herr_t H5VL_tracker_dataset_write(size_t count, void *dset[],
             /* Check for async request */
             if(req && *req)
                 *req = H5VL_tracker_new_obj(*req, under_vol_id, o->tkr_helper);
-
 #ifdef H5_HAVE_PARALLEL
         // Increment appropriate parallel I/O counters
         if(xfer_mode == H5FD_MPIO_INDEPENDENT)
@@ -1751,17 +1738,13 @@ static herr_t H5VL_tracker_dataset_write(size_t count, void *dset[],
             dset_info->ind_dataset_write_cnt++;
         else {
             H5D_mpio_actual_io_mode_t actual_io_mode;
-
             // Increment counter for collective writes
             dset_info->coll_dataset_write_cnt++;
-
             // Check for actually completing a collective I/O
             H5Pget_mpio_actual_io_mode(plist_id, &actual_io_mode);
             if(!actual_io_mode)
                 dset_info->broken_coll_dataset_write_cnt++;
         } /* end else */
-
-
 #endif /* H5_HAVE_PARALLEL */
 
             dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)o->generic_tkr_info;
@@ -1772,8 +1755,6 @@ static herr_t H5VL_tracker_dataset_write(size_t count, void *dset[],
                 dset_info->dtype_id = mem_type_id[obj_idx];
             
             dset_info->dataset_write_cnt++;
-            
-            // dataset_info_update("H5VLdataset_write", mem_type_id[obj_idx], mem_space_id[obj_idx], file_space_id[obj_idx], dset[obj_idx], NULL); //H5P_DATASET_XFER
 
 #ifdef VOLTRK_OVERHEAD_DEBUG
             tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
@@ -1826,25 +1807,18 @@ H5VL_tracker_dataset_get(void *dset, H5VL_dataset_get_args_t *args,
     assert(dset_info);
 
     // Cannot get dataset ID from arg list!! ‘union <anonymous>’ has no member named ‘refresh’
-    // hid_t dataset_id = args->args.refresh.obj_id;
-    // printf("dset_id: %ld, \n", dataset_id);
-    // printf("H5Dget_offset: %ld, \n", H5Dget_offset(dataset_id));
-    
-    // if(!dset_info->dtype_id)
-    //     dset_info->dtype_id = dataset_get_type(o->under_object, o->under_vol_id, dxpl_id);
-    //dset->shared->layout.storage.u.contig.addr
     // dataset_info_update("H5VLdataset_get", NULL, dspace_id, NULL, dset, dxpl_id);
     dataset_info_print("H5VLdataset_get", NULL, NULL, NULL, dset, dxpl_id);
 #endif
-
-
 
     /* Check for async request */
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, o->under_vol_id, o->tkr_helper);
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
 
@@ -1947,7 +1921,6 @@ H5VL_tracker_dataset_specific(void *obj, H5VL_dataset_specific_args_t *args,
             space_id = H5Dget_space(dataset_id);
             H5Sget_simple_extent_dims(space_id, my_dataset_info->dimensions, NULL);
             my_dataset_info->dset_n_elements = (hsize_t)H5Sget_simple_extent_npoints(space_id);
-            // my_dataset_info->dset_id = dataset_id; // not used
             H5Sclose(space_id);
 
             // Don't close dataset ID, it's owned by the application
@@ -1961,7 +1934,9 @@ H5VL_tracker_dataset_specific(void *obj, H5VL_dataset_specific_args_t *args,
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, under_vol_id, helper);
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     tkr_write(helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -2000,8 +1975,10 @@ H5VL_tracker_dataset_optional(void *obj, H5VL_optional_args_t *args,
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, o->under_vol_id, o->tkr_helper);
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -2053,20 +2030,18 @@ H5VL_tracker_dataset_close(void *dset, hid_t dxpl_id, void **req)
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, o->under_vol_id, o->tkr_helper);
 
-
+#ifdef VOLTRK_SCHEMA
     /* Release our wrapper, if underlying dataset was closed */
     if(ret_value >= 0){
+        rm_dataset_node(o->tkr_helper, o->under_object, o->under_vol_id, dset_info);
+        H5VL_tracker_free_obj(o);
+    }
+#endif
+
+
 #ifdef VOLTRK_OVERHEAD_DEBUG
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
 #endif
-#ifdef VOLTRK_SCHEMA
-        rm_dataset_node(o->tkr_helper, o->under_object, o->under_vol_id, dset_info);
-        H5VL_tracker_free_obj(o);
-#endif
-    }
-
-
-
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -2108,8 +2083,10 @@ H5VL_tracker_datatype_commit(void *obj, const H5VL_loc_params_t *loc_params,
     else
         dt = NULL;
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(dt)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return (void *)dt;
@@ -2150,8 +2127,10 @@ H5VL_tracker_datatype_open(void *obj, const H5VL_loc_params_t *loc_params,
     else
         dt = NULL;
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(dt)
         tkr_write(dt->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return (void *)dt;
@@ -2190,8 +2169,10 @@ H5VL_tracker_datatype_get(void *dt, H5VL_datatype_get_args_t *args,
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, o->under_vol_id, o->tkr_helper);
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -2257,12 +2238,9 @@ H5VL_tracker_datatype_specific(void *obj, H5VL_datatype_specific_args_t *args,
             // Set object pointers to NULL, to avoid programming errors
             o = NULL;
             obj = NULL;
-
             // Update datatype info (nothing to update, currently)
-
             // Don't close datatype ID, it's owned by the application
         }
-
         // Decrement refcount on datatype info
         rm_dtype_node(helper, o->under_object, under_vol_id, my_dtype_info);
     }
@@ -2271,7 +2249,9 @@ H5VL_tracker_datatype_specific(void *obj, H5VL_datatype_specific_args_t *args,
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, under_vol_id, helper);
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     tkr_write(helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -2310,8 +2290,10 @@ H5VL_tracker_datatype_optional(void *obj, H5VL_optional_args_t *args,
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, o->under_vol_id, o->tkr_helper);
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -2356,12 +2338,14 @@ H5VL_tracker_datatype_close(void *dt, hid_t dxpl_id, void **req)
         info = (datatype_tkr_info_t*)(o->generic_tkr_info);
 
         datatype_stats_tkr_write(info);
-        tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
-
         rm_dtype_node(TKR_HELPER, o->under_object, o->under_vol_id , info);
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
+        tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
         H5VL_tracker_free_obj(o);
     }
+
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -2424,7 +2408,6 @@ H5VL_tracker_file_create(const char *name, unsigned flags, hid_t fcpl_id,
     if((driver_id = H5Pget_driver(under_fapl_id)) > 0 && driver_id == H5FD_MPIO) {
         // Retrieve the MPI comm & info objects
         H5Pget_fapl_mpio(under_fapl_id, &mpi_comm, &mpi_info);
-
         // Indicate that the Comm & Info are available
         have_mpi_comm_info = true;
     }
@@ -2456,12 +2439,10 @@ H5VL_tracker_file_create(const char *name, unsigned flags, hid_t fcpl_id,
 #ifdef H5_HAVE_PARALLEL
         if(have_mpi_comm_info) {
             file_tkr_info_t *file_info = file->generic_tkr_info;
-
             // Take ownership of MPI Comm & Info
             file_info->mpi_comm = mpi_comm;
             file_info->mpi_info = mpi_info;
             file_info->mpi_comm_info_valid = true;
-
             // Reset flag, so Comm & Info aren't freed
             have_mpi_comm_info = false;
         }
@@ -2474,8 +2455,10 @@ H5VL_tracker_file_create(const char *name, unsigned flags, hid_t fcpl_id,
     else
         file = NULL;
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(file)
         tkr_write(file->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     /* Close underlying FAPL */
     if(under_fapl_id > 0)
@@ -2501,15 +2484,11 @@ H5VL_tracker_file_create(const char *name, unsigned flags, hid_t fcpl_id,
     }
 #endif /* H5_HAVE_PARALLEL */
 
-#ifdef VOLTRK_SCHEMA
-    // printf(" H5VLfile_create_name : %s \n",name);
+#ifdef VOLTRK_MORE_DEBUG
     file_tkr_info_t *file_info = file->generic_tkr_info;
-
     if(!file_info->fapl_id)
         file_info->fapl_id = fapl_id;
-    
     file_info_update("H5VLfile_create", file, fapl_id, fcpl_id, dxpl_id);
-
 #endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
@@ -2604,8 +2583,10 @@ H5VL_tracker_file_open(const char *name, unsigned flags, hid_t fapl_id,
     else
         file = NULL;
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(file)
         tkr_write(file->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     /* Close underlying FAPL */
     if(under_fapl_id > 0)
@@ -2625,7 +2606,7 @@ H5VL_tracker_file_open(const char *name, unsigned flags, hid_t fapl_id,
     }
 #endif /* H5_HAVE_PARALLEL */
 
-#ifdef VOLTRK_SCHEMA
+#ifdef VOLTRK_MORE_DEBUG
     // printf(" H5VLfile_open_name : %s \n",name);
     file_tkr_info_t *file_info = file->generic_tkr_info;
 
@@ -2633,7 +2614,6 @@ H5VL_tracker_file_open(const char *name, unsigned flags, hid_t fapl_id,
         file_info->fapl_id = fapl_id;
     file_info_update("H5VLfile_open", file, fapl_id, NULL, dxpl_id);
     // Add File node to Tracker
-
 #endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
@@ -2679,8 +2659,11 @@ H5VL_tracker_file_get(void *file, H5VL_file_get_args_t *args, hid_t dxpl_id,
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, o->under_vol_id, o->tkr_helper);
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
+
 
 #ifdef VOLTRK_MORE_DEBUG
     file_info_update("H5VLfile_get", file, NULL, NULL, dxpl_id);
@@ -2828,8 +2811,10 @@ H5VL_tracker_file_specific(void *file, H5VL_file_specific_args_t *args,
         } /* end if */
     } /* end else */
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -2871,8 +2856,10 @@ H5VL_tracker_file_optional(void *file, H5VL_optional_args_t *args,
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, o->under_vol_id, o->tkr_helper);
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -2975,8 +2962,11 @@ H5VL_tracker_group_create(void *obj, const H5VL_loc_params_t *loc_params,
     else
         group = NULL;
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
+
 
 #ifdef VOLTRK_SCHEMA
     H5VL_tracker_t *file = (H5VL_tracker_t *)obj;
@@ -3191,7 +3181,9 @@ H5VL_tracker_group_specific(void *obj, H5VL_group_specific_args_t *args,
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, under_vol_id, helper);
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     tkr_write(helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -3230,8 +3222,10 @@ H5VL_tracker_group_optional(void *obj, H5VL_optional_args_t *args,
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, o->under_vol_id, o->tkr_helper);
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -3275,7 +3269,9 @@ H5VL_tracker_group_close(void *grp, hid_t dxpl_id, void **req)
 
         grp_info = (group_tkr_info_t*)o->generic_tkr_info;
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
         group_stats_tkr_write(grp_info);
 
         rm_grp_node(o->tkr_helper, o->under_object, o->under_vol_id, grp_info);
@@ -3352,8 +3348,10 @@ H5VL_tracker_link_create(H5VL_link_create_args_t *args, void *obj,
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, under_vol_id, o->tkr_helper);
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -3407,8 +3405,10 @@ H5VL_tracker_link_copy(void *src_obj, const H5VL_loc_params_t *loc_params1,
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, under_vol_id, o_dst->tkr_helper);
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o_dst)
         tkr_write(o_dst->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -3462,8 +3462,10 @@ H5VL_tracker_link_move(void *src_obj, const H5VL_loc_params_t *loc_params1,
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, under_vol_id, o_dst->tkr_helper);
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o_dst)
         tkr_write(o_dst->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -3502,8 +3504,10 @@ H5VL_tracker_link_get(void *obj, const H5VL_loc_params_t *loc_params,
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, o->under_vol_id, o->tkr_helper);
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -3542,8 +3546,10 @@ H5VL_tracker_link_specific(void *obj, const H5VL_loc_params_t *loc_params,
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, o->under_vol_id, o->tkr_helper);
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -3582,8 +3588,10 @@ H5VL_tracker_link_optional(void *obj, const H5VL_loc_params_t *loc_params,
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, o->under_vol_id, o->tkr_helper);
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -3697,8 +3705,10 @@ H5VL_tracker_object_copy(void *src_obj, const H5VL_loc_params_t *src_loc_params,
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, o_src->under_vol_id, o_dst->tkr_helper);
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o_dst)
         tkr_write(o_dst->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -3761,9 +3771,10 @@ H5VL_tracker_object_get(void *obj, const H5VL_loc_params_t *loc_params, H5VL_obj
 #endif
     }
 
-
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -3872,7 +3883,9 @@ H5VL_tracker_object_specific(void *obj, const H5VL_loc_params_t *loc_params,
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, under_vol_id, helper);
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     tkr_write(helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -3911,8 +3924,10 @@ H5VL_tracker_object_optional(void *obj, const H5VL_loc_params_t *loc_params,
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, o->under_vol_id, o->tkr_helper);
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
 
@@ -3931,7 +3946,9 @@ H5VL_tracker_object_optional(void *obj, const H5VL_loc_params_t *loc_params,
 herr_t
 H5VL_tracker_introspect_get_conn_cls(void *obj, H5VL_get_conn_lvl_t lvl,
     const H5VL_class_t **conn_cls)
-{
+{   
+    // Overhead not recorded here
+
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
@@ -3947,6 +3964,7 @@ H5VL_tracker_introspect_get_conn_cls(void *obj, H5VL_get_conn_lvl_t lvl,
     else
         ret_value = H5VLintrospect_get_conn_cls(o->under_object, o->under_vol_id,
             lvl, conn_cls);
+    
 
     return ret_value;
 } /* end H5VL_tracker_introspect_get_conn_cls() */
@@ -3965,6 +3983,8 @@ H5VL_tracker_introspect_get_conn_cls(void *obj, H5VL_get_conn_lvl_t lvl,
 herr_t
 H5VL_tracker_introspect_get_cap_flags(const void *_info, uint64_t *cap_flags)
 {
+    // Overhead not recorded here
+
     const H5VL_tracker_info_t *info = (const H5VL_tracker_info_t *)_info;
     herr_t                          ret_value;
 
@@ -3996,6 +4016,8 @@ herr_t
 H5VL_tracker_introspect_opt_query(void *obj, H5VL_subclass_t cls,
                                      int opt_type, uint64_t *flags)
 {
+    // Overhead not recorded here
+
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
@@ -4041,8 +4063,10 @@ H5VL_tracker_request_wait(void *obj, uint64_t timeout,
     ret_value = H5VLrequest_wait(o->under_object, o->under_vol_id, timeout, status);
     m2 = get_time_usec();
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     if(ret_value >= 0 && *status != H5ES_STATUS_IN_PROGRESS)
         H5VL_tracker_free_obj(o);
@@ -4083,8 +4107,10 @@ H5VL_tracker_request_notify(void *obj, H5VL_request_notify_t cb, void *ctx)
     ret_value = H5VLrequest_notify(o->under_object, o->under_vol_id, cb, ctx);
     m2 = get_time_usec();
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     if(ret_value >= 0)
         H5VL_tracker_free_obj(o);
@@ -4123,8 +4149,10 @@ H5VL_tracker_request_cancel(void *obj, H5VL_request_status_t *status)
     ret_value = H5VLrequest_cancel(o->under_object, o->under_vol_id, status);
     m2 = get_time_usec();
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     if(ret_value >= 0)
         H5VL_tracker_free_obj(o);
@@ -4161,8 +4189,10 @@ H5VL_tracker_request_specific(void *obj, H5VL_request_specific_args_t *args)
     ret_value = H5VLrequest_specific(o->under_object, o->under_vol_id, args);
     m2 = get_time_usec();
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -4196,8 +4226,10 @@ H5VL_tracker_request_optional(void *obj, H5VL_optional_args_t *args)
     ret_value = H5VLrequest_optional(o->under_object, o->under_vol_id, args);
     m2 = get_time_usec();
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -4232,8 +4264,10 @@ H5VL_tracker_request_free(void *obj)
     ret_value = H5VLrequest_free(o->under_object, o->under_vol_id);
     m2 = get_time_usec();
 
+#ifdef VOLTRK_OVERHEAD_DEBUG
     if(o)
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
+#endif
 
     if(ret_value >= 0)
         H5VL_tracker_free_obj(o);
@@ -4256,9 +4290,10 @@ H5VL_tracker_blob_put(void *obj, const void *buf, size_t size,
     void *blob_id, void *ctx)
 {
     unsigned long start = get_time_usec();
+    unsigned long m1, m2;
+
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
-    unsigned long m1, m2;
 
 
 #ifdef VOLTRK_PT_DEBUG
@@ -4272,21 +4307,13 @@ H5VL_tracker_blob_put(void *obj, const void *buf, size_t size,
     m2 = get_time_usec();
 
 #ifdef VOLTRK_BLOB_DEBUG
-    // printf("H5VLblob_put() size: %zu\n", size);
-    //     printf("H5VLblob_get() Content at buf: [");
-    //     for (int i=0; i<size; i++) {
-    //         printf("%ld, ", *(unsigned char*) (long long)&buf[i]);
-    //     }
-    //     printf("]\n");
-    // printf("H5VLblob_put() buf_size: %zu\n", sizeof(buf));
-    // printf("H5VLblob_put() blob_id_size: %p\n", H5Tget_size(blob_id));
     blob_info_print("H5VLblob_put", obj, NULL, size, blob_id, buf, ctx);
-
 #endif
 
-// #ifdef VOLTRK_SCHEMA
-//     blob_info_update("H5VLblob_put", obj, NULL, size, blob_id, buf, ctx);
-// #endif
+#ifdef VOLTRK_SCHEMA
+    // blob_info_update("H5VLblob_put", obj, NULL, size, blob_id, buf, ctx);
+    // TODO: use shm to store blob_info to dset_info
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
 
@@ -4328,19 +4355,8 @@ H5VL_tracker_blob_get(void *obj, const void *blob_id, void *buf,
         dset_info->total_bytes_blob_get += size;
         dset_info->blob_get_cnt++;
         dset_info->total_blob_get_time += (m2 - m1);
-
-        /* candice added blob obj and info */
-        // printf("H5VLblob_get() size: %zu\n", size);
-        // printf("H5VLblob_get() Content at buf: [");
-        // for (int i=0; i<size; i++) {
-        //     printf("%ld, ", *(unsigned char*) (long long)&buf[i]);
-        // }
-        // printf("]\n");
-        // printf("H5VLblob_get() buf_size: %zu\n", sizeof(buf));
-        // printf("H5VLblob_get() blob_id_size: %p\n", H5Tget_size(blob_id));
         blob_info_print("H5VLblob_get", obj, NULL, size, blob_id, buf, ctx);
     }
-    
 #endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
@@ -4362,15 +4378,15 @@ herr_t
 H5VL_tracker_blob_specific(void *obj, void *blob_id,
     H5VL_blob_specific_args_t *args)
 {
+    // Overhead not recorded here
+
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
 #ifdef VOLTRK_PT_DEBUG
     printf("TRACKER VOL BLOB Specific\n");
 #endif
-// #ifdef VOLTRK_BLOB_DEBUG
-//     blob_info_print("H5VLblob_specific", obj, NULL, NULL, blob_id, NULL, NULL);
-// #endif
+
     ret_value = H5VLblob_specific(o->under_object, o->under_vol_id, blob_id, args);
 
     return ret_value;
@@ -4389,6 +4405,8 @@ H5VL_tracker_blob_specific(void *obj, void *blob_id,
 herr_t
 H5VL_tracker_blob_optional(void *obj, void *blob_id, H5VL_optional_args_t *args)
 {
+    // Overhead not recorded here
+
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
@@ -4416,6 +4434,8 @@ static herr_t
 H5VL_tracker_token_cmp(void *obj, const H5O_token_t *token1,
     const H5O_token_t *token2, int *cmp_value)
 {
+    // Overhead not recorded here
+
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
@@ -4449,6 +4469,7 @@ static herr_t
 H5VL_tracker_token_to_str(void *obj, H5I_type_t obj_type,
     const H5O_token_t *token, char **token_str)
 {
+    // Overhead not recorded here
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
@@ -4481,6 +4502,7 @@ static herr_t
 H5VL_tracker_token_from_str(void *obj, H5I_type_t obj_type,
     const char *token_str, H5O_token_t *token)
 {
+    // Overhead not recorded here
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 
@@ -4511,6 +4533,7 @@ H5VL_tracker_token_from_str(void *obj, H5I_type_t obj_type,
 static herr_t
 H5VL_tracker_optional(void *obj, H5VL_optional_args_t *args, hid_t dxpl_id, void **req)
 {
+    // Overhead not recorded here
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     herr_t ret_value;
 

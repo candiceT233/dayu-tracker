@@ -341,6 +341,7 @@ size_t get_tracker_page_size() {
     return DEFAULT_PAGE_SIZE; // Default page size of 8192 bytes
 }
 
+// TODO: use the H5VL_tracker_token_to_str function from tracker_vol_new.c
 size_t token_to_num(H5O_token_t token){
     size_t token_number;
     char token_buffer[20]; // Assuming a maximum of 20 characters for the string representation
@@ -450,7 +451,7 @@ H5VL_tracker_new_obj(void *under_obj, hid_t under_vol_id, tkr_helper_t* helper)
 static herr_t
 H5VL_tracker_free_obj(H5VL_tracker_t *obj)
 {
-    //unsigned long start = get_time_usec();
+    unsigned long start = get_time_usec();
     hid_t err_id;
 
     assert(obj);
@@ -464,7 +465,7 @@ H5VL_tracker_free_obj(H5VL_tracker_t *obj)
     H5Eset_current_stack(err_id);
 
     free(obj);
-    //TOTAL_TKR_OVERHEAD += (get_time_usec() - start);
+    TOTAL_TKR_OVERHEAD += (get_time_usec() - start);
     return 0;
 } /* end H5VL__tracker_free_obj() */
 
@@ -3629,10 +3630,10 @@ void log_dset_ht_yaml(FILE* f) {
             fprintf(f, "        dataset_read_cnt: %d\n", dset_track_info->dataset_read_cnt);
             fprintf(f, "        total_bytes_read: %d\n", (dset_track_info->dataset_read_cnt * dset_track_info->storage_size));
             fprintf(f, "        dataset_write_cnt: %d\n", dset_track_info->dataset_write_cnt);
-            if (dset_track_info->storage_size > 0)
-                fprintf(f, "        total_bytes_written: %d\n", (dset_track_info->dataset_write_cnt * dset_track_info->storage_size));
-            else
-                fprintf(f, "        total_bytes_written: %d\n", -1);
+            
+            // TODO: VLen data dset_select_npoints=1, needs to calculate blob size
+            fprintf(f, "        total_bytes_written: %d\n", (dset_track_info->dset_select_npoints * dset_track_info->dset_type_size));
+
             if(dset_track_info->dataset_read_cnt > 0 && dset_track_info->dataset_write_cnt == 0) {
                 fprintf(f, "        access_type: read_only\n");
             }
