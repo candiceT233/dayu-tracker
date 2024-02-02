@@ -38,13 +38,22 @@ ENV_VAR_VOL_IO (){
     export HDF5_VOL_CONNECTOR="$VOL_NAME under_vol=0;under_info={};path=$schema_file_path;level=2;format="
     export HDF5_PLUGIN_PATH=$TRACKER_SRC_DIR/vol
 
-    # conda run -n arldm mpirun -n 1 -env HDF5_VOL_CONNECTOR "${VOL_NAME} under_vol=0;under_info={};path=${schema_file};level=2;format=" \
-    #     -env HDF5_PLUGIN_PATH $TRACKER_SRC_DIR/vol \
-    python $PROJECT_PATH/data_script/vist_hdf5.py \
-        --sis_json_dir $PROJECT_PATH/input_data/sis \
-        --dii_json_dir $PROJECT_PATH/input_data/dii \
-        --img_dir $PROJECT_PATH/input_data/visit_img \
-        --save_path $DATA_PATH/output_data/vistsis_out.h5
+    PREP_TASK_NAME "$arldm_saveh5"
+
+    # python $PROJECT_PATH/data_script/vist_hdf5.py \
+    #     --sis_json_dir $PROJECT_PATH/input_data/sis \
+    #     --dii_json_dir $PROJECT_PATH/input_data/dii \
+    #     --img_dir $PROJECT_PATH/input_data/visit_img \
+    #     --save_path $DATA_PATH/output_data/vistsis_out.h5
+
+    python $PROJECT_PATH/data_script/flintstones_hdf5.py \
+        --data_dir $DATA_PATH/input_data/flintstones \
+        --save_path $DATA_PATH/output_data/save_hdf5_file
+
+    cd $PROJECT_PATH
+    PREP_TASK_NAME "$arldm_train"
+    python $PROJECT_PATH/main.py
+    cd -
 }
 
 ENV_VAR_VFD_IO (){
@@ -61,11 +70,22 @@ ENV_VAR_VFD_IO (){
     export HDF5_LOG_FILE_PATH="$schema_file_path"
     export HDF5_PLUGIN_PATH=$TRACKER_SRC_DIR/vfd
     
-    python $PROJECT_PATH/data_script/vist_hdf5.py \
-        --sis_json_dir $PROJECT_PATH/input_data/sis \
-        --dii_json_dir $PROJECT_PATH/input_data/dii \
-        --img_dir $PROJECT_PATH/input_data/visit_img \
-        --save_path $DATA_PATH/output_data/vistsis_out.h5
+    PREP_TASK_NAME "$arldm_saveh5"
+
+    # python $PROJECT_PATH/data_script/vist_hdf5.py \
+    #     --sis_json_dir $PROJECT_PATH/input_data/sis \
+    #     --dii_json_dir $PROJECT_PATH/input_data/dii \
+    #     --img_dir $PROJECT_PATH/input_data/visit_img \
+    #     --save_path $DATA_PATH/output_data/vistsis_out.h5
+
+    python $PROJECT_PATH/data_script/flintstones_hdf5.py \
+        --data_dir $DATA_PATH/input_data/flintstones \
+        --save_path $DATA_PATH/output_data/save_hdf5_file
+
+    cd $PROJECT_PATH
+    PREP_TASK_NAME "$arldm_train"
+    python $PROJECT_PATH/main.py
+    cd -
 }
 
 ENV_VAR_VFD_VOL_IO () {
@@ -89,15 +109,15 @@ ENV_VAR_VFD_VOL_IO () {
 
     PREP_TASK_NAME "$arldm_saveh5"
 
-    python $PROJECT_PATH/data_script/vist_hdf5.py \
-        --sis_json_dir $PROJECT_PATH/input_data/sis \
-        --dii_json_dir $PROJECT_PATH/input_data/dii \
-        --img_dir $PROJECT_PATH/input_data/visit_img \
-        --save_path $DATA_PATH/output_data/vistsis_out.h5
+    # python $PROJECT_PATH/data_script/vist_hdf5.py \
+    #     --sis_json_dir $PROJECT_PATH/input_data/sis \
+    #     --dii_json_dir $PROJECT_PATH/input_data/dii \
+    #     --img_dir $PROJECT_PATH/input_data/visit_img \
+    #     --save_path $DATA_PATH/output_data/vistsis_out.h5
 
-    # python $PROJECT_PATH/data_script/flintstones_hdf5.py \
-    #     --data_dir $DATA_PATH/input_data/flintstones \
-    #     --save_path $DATA_PATH/output_data/save_hdf5_file
+    python $PROJECT_PATH/data_script/flintstones_hdf5.py \
+        --data_dir $DATA_PATH/input_data/flintstones \
+        --save_path $DATA_PATH/output_data/save_hdf5_file
 
     cd $PROJECT_PATH
     PREP_TASK_NAME "$arldm_train"
@@ -110,8 +130,8 @@ PREP_TASK_NAME "arldm_saveh5"
 
 # get execution time in ms
 start_time=$(date +%s%3N)
-# ENV_VAR_VFD_IO 2>&1 | tee arldm_VFD_run.log
+ENV_VAR_VFD_IO 2>&1 | tee arldm_VFD_run.log
 # ENV_VAR_VOL_IO 2>&1 | tee arldm_VOL_run.log
-ENV_VAR_VFD_VOL_IO 2>&1 | tee arldm_DL_run.log
+# ENV_VAR_VFD_VOL_IO 2>&1 | tee arldm_DL_run.log
 end_time=$(date +%s%3N)
 echo "Execution time: $((end_time-start_time)) ms"
