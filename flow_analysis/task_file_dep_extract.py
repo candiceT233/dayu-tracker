@@ -7,6 +7,7 @@ import argparse
 
 # My utility functions
 import utils.stat_loader as sload
+import utils.stat_print as sp
 
 TRACE_PARALLEL=False
 
@@ -506,11 +507,19 @@ def main(args):
         save_hermes_prefetch(task_file_dict, test_name)
         pf_dict = extract_hermes_prefetch(task_file_dict)
         save_prefetch_to_file(pf_dict, test_name)
+    
+    if args.showstat:
+        sp.show_all_overhead("VFD",vfd_file_dict)
+        # load VOL stats
+        vol_files = sload.find_files_with_pattern(stat_path, "vol")
+        vol_file_dict = sload.load_stat_yaml(vol_files)
+        sp.show_all_overhead("VOL",vol_file_dict)
 
 if __name__ == '__main__':    
     parser = argparse.ArgumentParser(description='arguments for extracting task-file dependency')
     parser.add_argument('-path', type=str, required=True, help='Directory path for the stats')
     parser.add_argument('-wf', type=str, required=True, help='The subfolder name in the stats directory')
     parser.add_argument('-schema', type=bool, required=False, default=False, help='Whether to extract prefetch schema or not')
+    parser.add_argument('-showstat', type=bool, required=False, default=True, help='Whether to show I/O stats')
     args = parser.parse_args()
     main(args)
