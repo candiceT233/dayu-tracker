@@ -35,7 +35,7 @@ set(POSIX_FLAGS
 #-----------------------------------------------------------------------------
 # Define VFD Specific Options
 #-----------------------------------------------------------------------------
-option(VFD_LOG "Enable VFD Logging" ON)
+option(DEBUG_TRK_VFD "Enable VFD Logging" ON)
 
 #-----------------------------------------------------------------------------
 # Compiler Optimization
@@ -45,8 +45,8 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_options(-g -O0) #-DDEBUG -gdwarf-4 -gdwarf-3 -gdwarf-2
     add_compile_definitions(DEBUG DEBUG_LOG)
     # Check to set Logging
-    if(VFD_LOG)
-        add_compile_definitions(VFD_LOG)
+    if(DEBUG_TRK_VFD)
+        add_compile_definitions(DEBUG_TRK_VFD)
     endif()
         
 else()

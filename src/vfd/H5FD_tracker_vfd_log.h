@@ -773,7 +773,7 @@ void read_write_info_update(std::string func_name, char * file_name, hid_t fapl_
   // std::cout << "read_write_info_update() done: info->file_name = " << info->file_name << std::endl;
 #endif
 
-#ifdef VFD_LOG
+#ifdef DEBUG_TRK_VFD
   read_write_info_print(func_name, file_name, fapl_id, _file,
     type, dxpl_id, addr, size, page_size, t_start);
 #endif
@@ -826,7 +826,7 @@ void open_close_info_update(const char* func_name, H5FD_tracker_vfd_t *file, siz
   std::cout << "open_close_info_update() done: info->file_name = " << info->file_name << std::endl;
 #endif
 
-#ifdef VFD_LOG
+#ifdef DEBUG_TRK_VFD
   print_open_close_info(func_name, file, info->file_name, eof, flags, t_start);
 #endif
 }

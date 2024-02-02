@@ -20,11 +20,11 @@ set(CMAKE_C_COMPILER h5cc)
 #-----------------------------------------------------------------------------
 option(VOLTRK_SCHEMA "Enable Tracker Schema Log to YAML Files" ON)
 
-option(VOLTRK_DEBUG "Enable Tracker Logging (on groups and dataset objects)" ON)
-option(VOLTRK_MORE_DEBUG "Enable More Tracker Logging (on all memory object all oprations)" OFF) # TODO: Not optimized for memory
-option(VOLTRK_OVERHEAD_DEBUG "Enable Tracker Overhead Logging" OFF) # TODO: Log function use time, may segfault
-option(VOLTRK_PT_DEBUG "Enable VOL Passthrough Logging" ON)
-option(VOLTRK_BLOB_DEBUG "Enable Blob Information Logging" ON) # TODO: Not optimized for memory
+option(DEBUG_TKR_VOL "Enable Tracker Logging (on groups and dataset objects)" ON)
+option(DEBUG_MORE_TKR_VOL "Enable More Tracker Logging (on all memory object all oprations)" OFF) # TODO: Not optimized for memory
+option(DEBUG_OVERHEAD_TKR_VOL "Enable Tracker Overhead Logging" OFF) # TODO: Log function use time, may segfault
+option(DEBUG_PT_TKR_VOL "Enable VOL Passthrough Logging" ON)
+option(DEBUG_BLOB_TKR_VOL "Enable Blob Information Logging" ON) # TODO: Not optimized for memory
 
 #-----------------------------------------------------------------------------
 # Compiler Optimization
@@ -37,11 +37,11 @@ else()
     message("h5vol_tracker IN RELEASE MODE")
     add_compile_options(-g -O3)
     # Set all Logging to OFF
-    set(VOLTRK_DEBUG OFF)
-    set(VOLTRK_MORE_DEBUG OFF)
-    set(VOLTRK_OVERHEAD_DEBUG OFF)
-    set(VOLTRK_PT_DEBUG OFF)
-    set(VOLTRK_BLOB_DEBUG OFF)
+    set(DEBUG_TKR_VOL OFF)
+    set(DEBUG_MORE_TKR_VOL OFF)
+    set(DEBUG_OVERHEAD_TKR_VOL OFF)
+    set(DEBUG_PT_TKR_VOL OFF)
+    set(DEBUG_BLOB_TKR_VOL OFF)
 endif()
 
 #-----------------------------------------------------------------------------
@@ -52,20 +52,20 @@ add_compile_definitions(TRACKER_SCHEMA)
 if(VOLTRK_SCHEMA)
     add_compile_definitions(VOLTRK_SCHEMA)
 endif()
-if(VOLTRK_DEBUG)
-    add_compile_definitions(VOLTRK_DEBUG)
+if(DEBUG_TKR_VOL)
+    add_compile_definitions(DEBUG_TKR_VOL)
 endif()
-if(VOLTRK_MORE_DEBUG)
-    add_compile_definitions(VOLTRK_MORE_DEBUG)
+if(DEBUG_MORE_TKR_VOL)
+    add_compile_definitions(DEBUG_MORE_TKR_VOL)
 endif()
-if(VOLTRK_OVERHEAD_DEBUG)
-    add_compile_definitions(VOLTRK_OVERHEAD_DEBUG)
+if(DEBUG_OVERHEAD_TKR_VOL)
+    add_compile_definitions(DEBUG_OVERHEAD_TKR_VOL)
 endif()
-if(VOLTRK_PT_DEBUG)
-    add_compile_definitions(VOLTRK_PT_DEBUG)
+if(DEBUG_PT_TKR_VOL)
+    add_compile_definitions(DEBUG_PT_TKR_VOL)
 endif()
-if(VOLTRK_BLOB_DEBUG)
-    add_compile_definitions(VOLTRK_BLOB_DEBUG)
+if(DEBUG_BLOB_TKR_VOL)
+    add_compile_definitions(DEBUG_BLOB_TKR_VOL)
 endif()
 
 #-----------------------------------------------------------------------------

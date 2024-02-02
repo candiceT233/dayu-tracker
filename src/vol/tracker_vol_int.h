@@ -411,7 +411,7 @@ void add_meta_page_to_list(size_t **list, size_t *list_size, size_t page) {
 static H5VL_tracker_t *
 H5VL_tracker_new_obj(void *under_obj, hid_t under_vol_id, tkr_helper_t* helper)
 {
-#ifdef VOLTRK_PT_DEBUG
+#ifdef DEBUG_PT_TKR_VOL
     printf("TRACKER VOL INT : H5VL_tracker_new_obj\n");
 #endif
 
@@ -795,7 +795,7 @@ static hsize_t dataset_get_vlen_buf_size(void *under_dset, hid_t under_vol_id, h
 tkr_helper_t * tkr_helper_init( char* file_path, Track_level tkr_level, char* tkr_line_format)
 {
 
-#ifdef VOLTRK_PT_DEBUG
+#ifdef DEBUG_PT_TKR_VOL
     printf("TRACKER VOL INT : tkr_helper_init\n");
 #endif
     
@@ -898,7 +898,7 @@ dataset_tkr_info_t *new_dataset_info(file_tkr_info_t *root_file,
 group_tkr_info_t *new_group_info(file_tkr_info_t *root_file,
     const char *name, H5O_token_t token)
 {
-#ifdef VOLTRK_PT_DEBUG
+#ifdef DEBUG_PT_TKR_VOL
     printf("TRACKER VOL INT : new_group_info\n");
 #endif
 
@@ -913,7 +913,7 @@ group_tkr_info_t *new_group_info(file_tkr_info_t *root_file,
     // info->obj_info.name = name ? strdup(name) : NULL;
     info->obj_info.token = token;
 
-// #ifdef VOLTRK_PT_DEBUG
+// #ifdef DEBUG_PT_TKR_VOL
 //     printf("TRACKER VOL INT : new_group_info END\n");
 // #endif
 
@@ -1053,7 +1053,7 @@ datatype_tkr_info_t * add_dtype_node(file_tkr_info_t *file_info,
 
 int rm_dtype_node(tkr_helper_t *helper, void *under, hid_t under_vol_id, datatype_tkr_info_t *dtype_info)
 {
-#ifdef VOLTRK_PT_DEBUG
+#ifdef DEBUG_PT_TKR_VOL
     printf("TRACKER VOL INT : rm_dtype_node\n");
 #endif
     unsigned long start = get_time_usec();
@@ -1113,7 +1113,7 @@ int rm_dtype_node(tkr_helper_t *helper, void *under, hid_t under_vol_id, datatyp
 group_tkr_info_t *add_grp_node(file_tkr_info_t *file_info,
     H5VL_tracker_t *upper_o, const char *obj_name, H5O_token_t token)
 {
-#ifdef VOLTRK_PT_DEBUG
+#ifdef DEBUG_PT_TKR_VOL
     printf("TRACKER VOL INT : add_grp_node\n");
 #endif
 
@@ -1355,7 +1355,7 @@ file_tkr_info_t* add_file_node(tkr_helper_t* helper, const char* file_name,
 //need a dumy node to make it simpler
 int rm_file_node(tkr_helper_t* helper, unsigned long file_no)
 {
-#ifdef VOLTRK_PT_DEBUG
+#ifdef DEBUG_PT_TKR_VOL
     printf("TRACKER VOL INT : rm_file_node\n");
 #endif
     unsigned long start = get_time_usec();
@@ -1408,7 +1408,7 @@ int rm_file_node(tkr_helper_t* helper, unsigned long file_no)
 
     FILE_LL_TOTAL_TIME += (get_time_usec() - start);
 
-#ifdef VOLTRK_PT_DEBUG
+#ifdef DEBUG_PT_TKR_VOL
     printf("TRACKER VOL INT : rm_file_node END\n");
 #endif
 
@@ -1695,7 +1695,7 @@ H5VL_tracker_t *_file_open_common(void *under, hid_t vol_id,
 
 herr_t tracker_file_setup(const char* str_in, char* file_path_out, Track_level* level_out, char* format_out){
 
-#ifdef VOLTRK_PT_DEBUG
+#ifdef DEBUG_PT_TKR_VOL
     printf("TRACKER VOL INT : tracker_file_setup\n");
 #endif
 
@@ -1731,7 +1731,7 @@ herr_t tracker_file_setup(const char* str_in, char* file_path_out, Track_level* 
 //Use this in H5VL_tracker_wrap_object() ONLY!!!
 H5VL_tracker_t * _fake_obj_new(file_tkr_info_t *root_file, hid_t under_vol_id)
 {
-#ifdef VOLTRK_PT_DEBUG
+#ifdef DEBUG_PT_TKR_VOL
     printf("TRACKER VOL INT : _fake_obj_new\n");
 #endif
     H5VL_tracker_t* obj;
@@ -1762,7 +1762,7 @@ H5VL_tracker_t * _obj_wrap_under(void *under, H5VL_tracker_t *upper_o,
                                     H5I_type_t target_obj_type,
                                     hid_t dxpl_id, void **req)
 {
-#ifdef VOLTRK_PT_DEBUG
+#ifdef DEBUG_PT_TKR_VOL
     printf("TRACKER VOL INT : _obj_wrap_under\n");
 #endif
 
@@ -1893,7 +1893,7 @@ H5VL_tracker_t * _obj_wrap_under(void *under, H5VL_tracker_t *upper_o,
     else
         obj = NULL;
 
-#ifdef VOLTRK_PT_DEBUG
+#ifdef DEBUG_PT_TKR_VOL
     printf("TRACKER VOL INT : _obj_wrap_under END\n");
 #endif
 
@@ -2265,7 +2265,7 @@ void tkr_helper_teardown(tkr_helper_t* helper){
         tkrLockDestroy(&myLock);
         destroy_hash_lock();
 
-#ifdef VOLTRK_PT_DEBUG
+#ifdef DEBUG_PT_TKR_VOL
     printf("TRACKER VOL INT: tkr_helper_teardown\n");
 #endif
 
@@ -2645,7 +2645,7 @@ void file_info_update(char * func_name, void * obj, hid_t fapl_id, hid_t fcpl_id
         }
     }
 
-#ifdef VOLTRK_DEBUG
+#ifdef DEBUG_TKR_VOL
     file_info_print(func_name, obj, fapl_id, fcpl_id, dxpl_id);
 #endif
 }
@@ -2835,7 +2835,7 @@ size_t token_to_size_t(const H5O_token_t* token) {
 void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
     hid_t file_space_id, void * obj, hid_t dxpl_id)
 {
-#ifdef VOLTRK_PT_DEBUG
+#ifdef DEBUG_PT_TKR_VOL
     printf("TRACKER VOL INT : dataset_info_update: %s\n", func_name);
 #endif
 
@@ -2918,7 +2918,7 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
             dset_info->data_file_page_end = end_page;
             dset_info->storage_size = -1;
 
-#ifdef VOLTRK_PT_DEBUG
+#ifdef DEBUG_PT_TKR_VOL
     printf("TRACKER VOL INT : dataset_info_update:%s dset_name:%s\n", func_name, dset_info->obj_info.name);
 #endif
 
@@ -2934,7 +2934,7 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
             dset_info->dset_offset = dataset_get_offset(dset->under_object, dset->under_vol_id, dxpl_id);
 
 
-#ifdef VOLTRK_DEBUG
+#ifdef DEBUG_TKR_VOL
     // dataset_info_print(func_name, mem_type_id, mem_space_id, file_space_id, obj, dxpl_id);
     printf("TRACKER VOL INT : dataset_info_update: %s END\n", func_name);
 #endif
@@ -2983,7 +2983,7 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
     printf("\"dxpl_id\": %d, ", dxpl_id);
     printf("}\n");
 
-#ifdef VOLTRK_PT_DEBUG
+#ifdef DEBUG_PT_TKR_VOL
     printf("TRACKER VOL INT : dataset_info_print: %s END\n", func_name);
 #endif
 
@@ -3389,7 +3389,7 @@ void decode_two_strings(const char* encoded_str, char** file_name, char** dset_n
 void file_ds_created(file_tkr_info_t *info)
 {
     assert(info);
-#ifdef VOLTRK_DEBUG
+#ifdef DEBUG_TKR_VOL
     printf("TRACKER VOL INT : file_ds_created\n");
 #endif
     if(info)
