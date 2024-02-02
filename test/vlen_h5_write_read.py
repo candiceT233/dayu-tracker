@@ -56,8 +56,9 @@ def run_write(file_name, datasets):
     hf = h5py.File(file_name, mode='w')
     # Create a group for each dataset
     group = hf.create_group('data')
-        
-    for i, data in enumerate(datasets):
+    
+    # iterate except the last one
+    for i, data in enumerate(datasets[:-1]):
         print(f"datatype is {data[0].dtype}")
         # Create a dataset for variable-length data
         vlen_dtype = h5py.vlen_dtype(data[0].dtype)
@@ -65,6 +66,9 @@ def run_write(file_name, datasets):
         
         # Populate the dataset with variable-length data
         ds[:] = data
+    
+    # Write dataset with fixed length
+    ds = group.create_dataset(f'dataset{len(datasets)-1}', data=datasets[-1])
     
     # flush hf
     hf.close()
@@ -99,16 +103,17 @@ def run_read(file_name):
 def write_read_separate(file_name):
     dtype = np.float32
     # Create some sample data
-    d1 = [np.random.randn(1000).astype(dtype)]
-    d2 = [np.random.randn(10000).astype(dtype)]
-    d3 = [np.random.randn(100000).astype(dtype)]
+    d1 = [np.random.randn(10000).astype(dtype)]
+    d2 = [np.random.randn(100000).astype(dtype)]
+    d3 = [np.random.randn(1000000).astype(dtype)]
+    d4 = np.random.randn(3000, 1000).astype(dtype)
 
     # check all shapes
     print(f"d1 shape {d1[0].shape}")
     print(f"d2 shape {d2[0].shape}")
     print(f"d3 shape {d3[0].shape}")
 
-    write_datasets = [d1, d2, d3]
+    write_datasets = [d1, d2, d3, d4]
 
     run_write(file_name, write_datasets)
     read_datasets = run_read(file_name)

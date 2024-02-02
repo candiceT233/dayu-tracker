@@ -62,10 +62,11 @@ def run_read(file_name):
         
         # add 1 to each element
         data = [item + 1 for item in data]
-        # print each item in data
-        print(f"Data [{key}]:")
-        for item in data:
-            print(item)
+        
+        # # print each item in data
+        # print(f"Data [{key}]:")
+        # for item in data:
+        #     print(item)
 
         print(f"Read dataset {key} with datatype {ds.dtype}")
     
