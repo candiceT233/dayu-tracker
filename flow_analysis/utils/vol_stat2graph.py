@@ -9,7 +9,6 @@ def set_task_position(G, tfe_dic, stage_start):
     skip_pos = 3
     
     task_order_cnt = {}
-    prev_task_order = 0
     # task_file_edges dictionay
     for task_name,v in tfe_dic.items():
         task_order = v['order']
@@ -38,7 +37,6 @@ def set_task_position(G, tfe_dic, stage_start):
             nx.set_node_attributes(G, node_attrs)
             print(f"new node {task_name} : {node_attrs}, pos: {position}")
         
-        prev_task_order = task_order
     return G
 
 
