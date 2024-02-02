@@ -203,15 +203,15 @@ void update_mem_type_stat(int rw, size_t start_page,
   size_t end_page, size_t access_size, H5FD_mem_t type, vfd_file_tkr_info_t * info);
 void read_write_info_update(std::string func_name, char * file_name, hid_t fapl_id, H5FD_t *_file,
   H5FD_mem_t type, hid_t dxpl_id, haddr_t addr,
-  size_t size, size_t page_size, unsigned long t_start, unsigned long t_end);
+  size_t size, size_t page_size, unsigned long t_start);
 void read_write_info_print(std::string func_name, char * file_name, hid_t fapl_id, void * obj,
   H5FD_mem_t type, hid_t dxpl_id, haddr_t addr,
-  size_t size, size_t page_size, unsigned long t_start, unsigned long t_end);
+  size_t size, size_t page_size, unsigned long t_start);
 
 void open_close_info_update(const char* func_name, H5FD_tracker_vfd_t *file, size_t eof, int flags, 
-  unsigned long t_start, unsigned long t_end);
+  unsigned long t_start);
 void print_open_close_info(const char* func_name, void * obj, const char * file_name, 
-  size_t eof, int flags, unsigned long t_start, unsigned long t_end);
+  size_t eof, int flags, unsigned long t_start);
 
 
 void dump_vfd_file_stat_yaml(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t* info);
@@ -731,7 +731,7 @@ void update_mem_type_stat(int rw, size_t start_page,
 
 void read_write_info_update(std::string func_name, char * file_name, hid_t fapl_id, H5FD_t *_file,
   H5FD_mem_t type, hid_t dxpl_id, haddr_t addr,
-  size_t size, size_t page_size, unsigned long t_start, unsigned long t_end)
+  size_t size, size_t page_size, unsigned long t_start)
 {
 
 #ifdef DEBUG_LOG
@@ -768,8 +768,6 @@ void read_write_info_update(std::string func_name, char * file_name, hid_t fapl_
 
   VFD_ACCESS_IDX+=1;
 
-  TOTAL_TKR_VFD_OVERHEAD+=(get_time_usec() - t_end);
-
 #ifdef DEBUG_LOG
   printf("read_write_info_update() done: info->file_name = %s\n", info->file_name);
   // std::cout << "read_write_info_update() done: info->file_name = " << info->file_name << std::endl;
@@ -777,18 +775,14 @@ void read_write_info_update(std::string func_name, char * file_name, hid_t fapl_
 
 #ifdef VFD_LOG
   read_write_info_print(func_name, file_name, fapl_id, _file,
-    type, dxpl_id, addr, size, page_size, t_start, t_end);
+    type, dxpl_id, addr, size, page_size, t_start);
 #endif
 
 }
 
 void open_close_info_update(const char* func_name, H5FD_tracker_vfd_t *file, size_t eof, int flags, 
-  unsigned long t_start, unsigned long t_end)
+  unsigned long t_start)
 {
-
-
-  if (!TOTAL_TKR_VFD_OVERHEAD)
-    TOTAL_TKR_VFD_OVERHEAD = 0;
 
   // H5FD_tracker_vfd_t *file = (H5FD_tracker_vfd_t *)_file;
   vfd_file_tkr_info_t * info = (vfd_file_tkr_info_t *)file->vfd_file_info;
@@ -827,15 +821,13 @@ void open_close_info_update(const char* func_name, H5FD_tracker_vfd_t *file, siz
   if (!info->adaptor_page_size)
     info->adaptor_page_size = file->page_size;
 
-  TOTAL_TKR_VFD_OVERHEAD += (get_time_usec() - t_end);
-
 #ifdef DEBUG_LOG
   printf("open_close_info_update() done: info->file_name = %s\n", info->file_name);
   std::cout << "open_close_info_update() done: info->file_name = " << info->file_name << std::endl;
 #endif
 
 #ifdef VFD_LOG
-  print_open_close_info(func_name, file, info->file_name, eof, flags, t_start, t_end);
+  print_open_close_info(func_name, file, info->file_name, eof, flags, t_start);
 #endif
 }
 
@@ -843,7 +835,7 @@ void open_close_info_update(const char* func_name, H5FD_tracker_vfd_t *file, siz
 /* candice added, print/record info H5FD__tracker_vfd_open from */
 void read_write_info_print(std::string func_name, char * file_name, hid_t fapl_id, void * obj,
   H5FD_mem_t type, hid_t dxpl_id, haddr_t addr,
-  size_t size, size_t page_size, unsigned long t_start, unsigned long t_end){
+  size_t size, size_t page_size, unsigned long t_start){
 
   size_t         start_page_index; /* First page index of tranfer buffer */
   size_t         end_page_index; /* End page index of tranfer buffer */
@@ -888,7 +880,7 @@ void read_write_info_print(std::string func_name, char * file_name, hid_t fapl_i
   printf("\"access_size\": %ld, ", size);
   // not used
   printf("\"file_pages\": [%ld, %ld], ", start_page_index,end_page_index);
-  printf("\"time(us)\": %ld, ", t_end);
+  printf("\"time(us)\": %ld, ", get_time_usec());
 
   printf("\"TOTAL_VFD_READ\": %ld, ", TOTAL_VFD_READ);
   printf("\"TOTAL_VFD_WRITE\": %ld, ", TOTAL_VFD_WRITE);
@@ -951,7 +943,7 @@ void read_write_info_print(std::string func_name, char * file_name, hid_t fapl_i
   // printf("buf_addr: %p, ", (void*)&buf);
 
   // printf("access_size: %ld, ", size);
-  // printf("time(us): %ld, ", t_end);
+  // printf("time(us): %ld, ", get_time_usec());
   // printf("file_name: %p, ", file_name);
   
   // printf("start_address: %ld, ", addr);
@@ -968,19 +960,13 @@ void read_write_info_print(std::string func_name, char * file_name, hid_t fapl_i
 
 
 void print_open_close_info(const char* func_name, void * obj, const char * file_name, 
-  size_t eof, int flags, unsigned long t_start, unsigned long t_end)
+  size_t eof, int flags, unsigned long t_start)
 {
   H5FD_t *_file = (H5FD_t *) obj;
 
-  // printf("{\"tracker_vfd_vfd\": ");
-  // printf("{tracker_vfd_vfd: ");
-
 
   printf("{\"func_name\": \"%s\", ", func_name);
-  printf("\"time(us)\": \"%ld\", ", t_end);
-  // printf("start_time(us): %ld, ", t_start);
-  // printf("start_end(us): %ld, ", t_end);
-  // printf("start_elapsed(us): %ld, ", (t_end - t_start));
+  printf("\"time(us)\": \"%ld\", ", get_time_usec());
   // printf("\"obj\": \"%p\", ", obj);
   // printf("\"obj_addr\": \"%p\", ", (void *) &obj);
   
@@ -989,22 +975,10 @@ void print_open_close_info(const char* func_name, void * obj, const char * file_
   printf("\"file_name\": \"%s\", ", file_name);
   printf("}\n");
 
-  // printf("{tracker_vfd_vfd: ");
-  // printf("{func_name: %s, ", func_name);
-  // // printf("start_time(us): %ld, ", t_start);
-  // // printf("start_end(us): %ld, ", t_end);
-  // // printf("start_elapsed(us): %ld, ", (t_end - t_start));
-  // printf("obj: %p, ", obj);
-  // printf("obj_addr: %p, ", (void *) &obj);
-  // printf("time(us): %ld, ", t_end);
-  // printf("file_name: %s, ", file_name);
-  // printf("file_name_hex: %p", file_name);
-  // printf("}}\n");
-
   // initialize & reset
   TOTAL_VFD_READ = 0;
   TOTAL_VFD_WRITE = 0;
-  // VFD_ACCESS_IDX = 0; 
+  // VFD_ACCESS_IDX = 0;
 
 }
 
@@ -1119,7 +1093,9 @@ vfd_file_tkr_info_t* new_vfd_file_info(const char* fname, unsigned long file_no)
     std::string task_name = getTaskName();
     if (!task_name.empty()) {
         info->task_name = strdup(task_name.c_str());
+  #ifdef DEBUG_LOG
         printf("Current task is: %s\n", task_name.c_str());
+  #endif
     } else {
         printf("Failed to get current task.\n");
     }
@@ -1214,7 +1190,6 @@ vfd_file_tkr_info_t* add_vfd_file_node(vfd_tkr_helper_t * helper, const char* fi
 int rm_vfd_file_node(vfd_tkr_helper_t* helper, H5FD_t *_file)
 {
 
-  unsigned long start = get_time_usec();
   vfd_file_tkr_info_t* cur;
   vfd_file_tkr_info_t* last;
   unsigned long file_no = _file->fileno;
@@ -1264,15 +1239,12 @@ int rm_vfd_file_node(vfd_tkr_helper_t* helper, H5FD_t *_file)
     }
   }
 
-  TOTAL_TKR_VFD_OVERHEAD += (get_time_usec() - start);
-
   return helper->vfd_opened_files_cnt;
 }
 
 void vfd_tkr_helper_teardown(vfd_tkr_helper_t* helper){
   printf("vfd_tkr_helper_teardown()\n");
   // frea down causes double free error in single process mode
-
   if(helper){// not null
 
       if(helper->logStat){//no file
@@ -1285,5 +1257,4 @@ void vfd_tkr_helper_teardown(vfd_tkr_helper_t* helper){
 
       // free(helper);
   }
-
 }
