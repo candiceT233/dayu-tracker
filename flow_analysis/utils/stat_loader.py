@@ -1,6 +1,7 @@
 import os
 import re
 import yaml
+# from yaml import CSafeLoader as Loader
 
 def remove_unwanted_tasks(map_dict, task_list):
     """Remove unwanted tasks from dictionary"""
