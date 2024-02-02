@@ -83,9 +83,9 @@ unsigned long get_time_usec(void) {
 /************/
 /* Typedefs */
 /************/
-typedef struct H5FD_tkr_file_info_t vfd_file_tkr_info_t;
-unsigned long TOTAL_TKR_VFD_OVERHEAD;
+unsigned long TOTAL_TKR_VFD_TIME;
 unsigned long TOTAL_POSIX_IO_TIME;
+typedef struct H5FD_tkr_file_info_t vfd_file_tkr_info_t;
 std::string read_func = "H5FD__tracker_vfd_read";
 std::string write_func = "H5FD__tracker_vfd_write";
 
@@ -586,8 +586,11 @@ void dump_vfd_file_stat_yaml(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t
   fprintf(f, "- Task:\n");
   fprintf(f, "  task_id: %d\n", getpid());
   fprintf(f, "  tracker_vfd_page_size: %ld\n", info->adaptor_page_size);
-  fprintf(f, "  VFD-Total-Overhead(ms): %ld\n", TOTAL_TKR_VFD_OVERHEAD/1000);
-  fprintf(f, "  POSIX-Total-IO-Time(ms): %d\n", TOTAL_POSIX_IO_TIME/1000);
+  fprintf(f, "  VFD-Overhead(ms): %llu\n", TOTAL_TKR_VFD_TIME/1000 - TOTAL_POSIX_IO_TIME/1000);
+  fprintf(f, "  POSIX-IO-Time(ms): %llu\n", TOTAL_POSIX_IO_TIME/1000);
+  // reset the total overhead and posix io time once recorded
+  TOTAL_TKR_VFD_TIME = 0;
+  TOTAL_POSIX_IO_TIME = 0;
 
   fprintf(f, "\n");
 
@@ -1016,6 +1019,8 @@ vfd_tkr_helper_t * vfd_tkr_helper_init( char* file_path, size_t page_size, hbool
     new_helper->logStat = logStat;
     new_helper->pid = getpid();
     new_helper->tid = pthread_self(); // TODO: check if this is correct
+    TOTAL_TKR_VFD_TIME = 0;
+    TOTAL_POSIX_IO_TIME = 0;
 
 #ifdef DEBUG_LOG
     printf("vfd_tkr_helper_init() pid = %d\n", new_helper->pid);
