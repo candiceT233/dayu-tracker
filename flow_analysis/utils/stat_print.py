@@ -37,12 +37,17 @@ def display_all_nodes_attr(G):
         # print(f"- Statistics: {G.nodes[node]['stat']}")
 
 # vol_file_dict
-def show_vol_overhead(vol_file_dict):
+def show_all_overhead(type, file_dict):
+    # check type must be either "VOL" or "VFD"
+    if type not in ["VOL", "VFD"]:
+        print("Invalid type")
+        return
+    
     overhead = 0
-    for pid_file, pid_stat in vol_file_dict.items():
+    for pid_file, pid_stat in file_dict.items():
         for item in pid_stat:
             if "Task" in item.keys():
-                overhead += float(item['VOL-Total-Overhead(ms)'])
+                overhead += float(item[f'{type}-Total-Overhead(ms)'])
     print(f"Total overhead: {overhead} ms")
 
 # vfd_links
