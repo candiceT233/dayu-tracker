@@ -40,7 +40,7 @@ def display_all_nodes_attr(G):
 def show_all_overhead(type, file_dict):
     # check type must be either "VOL" or "VFD"
     if type not in ["VOL", "VFD"]:
-        print("Invalid type")
+        print("Invalid type, must be either 'VOL' or 'VFD'")
         return
     
     overhead = 0
@@ -49,6 +49,16 @@ def show_all_overhead(type, file_dict):
             if "Task" in item.keys():
                 overhead += float(item[f'{type}-Total-Overhead(ms)'])
     print(f"Total overhead: {overhead} ms")
+    
+    # Also output posix IO time for VFD
+    if type == "VFD":
+        io_time = 0
+        for pid_file, pid_stat in file_dict.items():
+            for item in pid_stat:
+                if "Task" in item.keys():
+                    io_time += float(item['POSIX-Total-IO-Time(ms)'])
+        print(f"Total POSIX IO time: {io_time} ms")
+        
 
 # vfd_links
 def show_vfd_stats(G):
