@@ -1473,15 +1473,24 @@ H5VL_tracker_dataset_create(void *obj, const H5VL_loc_params_t *loc_params,
     m1 = get_time_usec();
     under = H5VLdataset_create(o->under_object, loc_params, o->under_vol_id, ds_name, lcpl_id, type_id, space_id, dcpl_id,  dapl_id, dxpl_id, req);
     m2 = get_time_usec();
+    
+#ifdef VOLTRK_SCHEMA
+    file_tkr_info_t * file_info = (file_tkr_info_t*)o->generic_tkr_info;
+    
+    // Check if dset ds_name already exists in hash table
+    char * key = encode_two_strings(file_info->file_name, ds_name);
+    if (key_exists(key) == 1)
+        printf("key[%s] exists\n", key);
+    else
+        printf("key[%s] does not exist\n", key);
 
     if(under)
         dset = _obj_wrap_under(under, o, ds_name, H5I_DATASET, dxpl_id, req);
     else
         dset = NULL;
-    
-#ifdef VOLTRK_SCHEMA
+
     if(dset != NULL){
-        file_tkr_info_t * file_info = (file_tkr_info_t*)o->generic_tkr_info;
+        
         // file_ds_created(file_info); // This causes segmenation fault
         dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)dset->generic_tkr_info;
         dset_info->pfile_sorder_id = file_info->sorder_id;
@@ -1489,6 +1498,8 @@ H5VL_tracker_dataset_create(void *obj, const H5VL_loc_params_t *loc_params,
             dset_info->dspace_id = space_id;
         // get dataset offset and storage size not available yet
         dataset_info_update("H5VLdataset_create", NULL, NULL, NULL, dset, dxpl_id); // This must exist
+        printf("dataset[%s] is opened from H5VLdataset_create\n", ds_name);
+        // add_to_dset_ht(dset_info);
     }
 #endif
 
@@ -1531,13 +1542,22 @@ H5VL_tracker_dataset_open(void *obj, const H5VL_loc_params_t *loc_params,
     m2 = get_time_usec();
 
 
+#ifdef VOLTRK_SCHEMA
+
+    file_tkr_info_t * file_info = (file_tkr_info_t*)o->generic_tkr_info;
+    // Check if dset ds_name already exists in hash table
+    char * key = encode_two_strings(file_info->file_name, ds_name);
+    if (key_exists(key) == 1)
+        printf("key[%s] exists\n", key);
+    else
+        printf("key[%s] does not exist\n", key);
+
     if(under)
         dset = _obj_wrap_under(under, o, ds_name, H5I_DATASET, dxpl_id, req);
     else
         dset = NULL;
 
-#ifdef VOLTRK_SCHEMA
-    file_tkr_info_t * file_info = (file_tkr_info_t*)o->generic_tkr_info;
+    
     // printf("FileName[%s]\n", file_info->file_name);
     dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)dset->generic_tkr_info;
 
@@ -1547,6 +1567,8 @@ H5VL_tracker_dataset_open(void *obj, const H5VL_loc_params_t *loc_params,
     //     dset_info->obj_info.name = ds_name ? strdup(ds_name) : NULL;
 
     dataset_info_update("H5VLdataset_open", NULL, NULL, NULL, dset, dxpl_id);
+    printf("dataset[%s] is opened from H5VLdataset_open\n", ds_name);
+    // add_to_dset_ht(dset_info);
 
 #endif
 
@@ -1644,8 +1666,9 @@ static herr_t H5VL_tracker_dataset_read(size_t count, void *dset[],
                 dset_info->dspace_id = mem_space_id[obj_idx];
             if(!dset_info->dtype_id)
                 dset_info->dtype_id = mem_type_id[obj_idx];
+            dset_info->total_bytes_read = dset_info->dset_select_npoints * dset_info->dset_type_size;
 
-            dataset_info_update("H5VLdataset_read", mem_type_id[obj_idx], mem_space_id[obj_idx], file_space_id[obj_idx], dset[obj_idx], NULL); //H5P_DATASET_XFER
+            // dataset_info_update("H5VLdataset_read", mem_type_id[obj_idx], mem_space_id[obj_idx], file_space_id[obj_idx], dset[obj_idx], NULL); //H5P_DATASET_XFER
 
 #ifdef DEBUG_OVERHEAD_TKR_VOL
             tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
@@ -1755,6 +1778,7 @@ static herr_t H5VL_tracker_dataset_write(size_t count, void *dset[],
                 dset_info->dtype_id = mem_type_id[obj_idx];
             
             dset_info->dataset_write_cnt++;
+            dset_info->total_bytes_written = dset_info->dset_select_npoints * dset_info->dset_type_size;
 
 #ifdef DEBUG_OVERHEAD_TKR_VOL
             tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
@@ -2013,11 +2037,11 @@ H5VL_tracker_dataset_close(void *dset, hid_t dxpl_id, void **req)
     dataset_tkr_info_t* dset_info = (dataset_tkr_info_t*)o->generic_tkr_info;
     assert(dset_info);
     
-    // dataset_info_update("H5VLdataset_close", NULL, NULL, NULL, dset, dxpl_id);
+    dataset_info_update("H5VLdataset_close", NULL, NULL, NULL, dset, dxpl_id);
     BLOB_SORDER=0;
 
 
-    // add to dset hashtable at dset close time
+    // update to dset hashtable at dset close time
     add_to_dset_ht(dset_info);
 
 #endif
@@ -3628,36 +3652,69 @@ H5VL_tracker_object_open(void *obj, const H5VL_loc_params_t *loc_params,
             obj_to_open_type, dxpl_id, req);
     m2 = get_time_usec();
 
+
+
+#ifdef VOLTRK_SCHEMA
+
     if(under) {
+
+
         const char* obj_name = NULL;
 
         if(loc_params->type == H5VL_OBJECT_BY_NAME)
             obj_name = loc_params->loc_data.loc_by_name.name;
+        
+        group_tkr_info_t *group_obj = (group_tkr_info_t*)o->generic_tkr_info;
+        // file_tkr_info_t * file_info = (file_tkr_info_t*)group_obj->obj_info.file_info;
+        // TODO (candice): add pfile_name to group object to connect with the hash table
+        printf("Opening object [%s] groupname:[%s] filename[%s]\n", obj_name, group_obj->obj_info.name, group_obj->pfile_name);
 
+        /* This part still segfault */
+        // Copy the two strings
+        char * dset_name = malloc(strlen(obj_name) + 1);
+        strncpy(dset_name, obj_name, strlen(obj_name) + 1);
+        char * file_name = malloc(strlen(group_obj->pfile_name) + 1);
+        strncpy(file_name, group_obj->pfile_name, strlen(group_obj->pfile_name) + 1);
+        // printf("Opening object [%s] groupname:[%s] filename[%s]\n", dset_name, group_obj->obj_info.name, file_name);
+    
+        // // Check if key exits in the hash table
+        // char * key = encode_two_strings((const char *)group_obj->pfile_name , (const char *)obj_name);
+        // int ret = key_exists(key);
+        // if (ret == 1){
+        //     printf("Key [%s] exists\n", key);
+        // }
+        // else{
+        //     printf("Key [%s] does not exist\n", key);
+        // }
+
+        /* This part still setfault */
+
+        // This set connects current object to upper object in the file object hierarchy
         new_obj = _obj_wrap_under(under, o, obj_name, *obj_to_open_type, dxpl_id, req);
+
+        if(new_obj->my_type == H5I_FILE){
+
+            file_info_update("H5VLobject_open", new_obj, NULL, NULL, dxpl_id);
+            file_tkr_info_t * file_info = (file_tkr_info_t*)new_obj->generic_tkr_info;
+        }
+        if(new_obj->my_type == H5I_DATASET){
+
+            dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)new_obj->generic_tkr_info;
+            file_tkr_info_t * file_info = dset_info->obj_info.file_info;
+            
+            /* Copy name to file_name */
+            dset_info->pfile_sorder_id = file_info->sorder_id;
+            dset_info->dataset_read_cnt+=1;
+
+            // dtype_id and dset_id cannot be accessed here
+            dataset_info_update("H5VLobject_open", NULL, NULL, NULL, new_obj, dxpl_id);
+        }
+
     } /* end if */
     else
         new_obj = NULL;
 
-#ifdef VOLTRK_SCHEMA
 
-    if(new_obj->my_type == H5I_FILE){
-
-        file_info_update("H5VLobject_open", new_obj, NULL, NULL, dxpl_id);
-    }
-    if(new_obj->my_type == H5I_DATASET){
-
-        dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)new_obj->generic_tkr_info;
-        file_tkr_info_t * file_info = dset_info->obj_info.file_info;
-        
-        /* Copy name to file_name */
-        dset_info->pfile_sorder_id = file_info->sorder_id;
-        dset_info->dataset_read_cnt+=1;
-
-        // dtype_id and dset_id cannot be accessed here
-        dataset_info_update("H5VLobject_open", NULL, NULL, NULL, new_obj, dxpl_id);
-
-    }
 #endif
 
 #ifdef DEBUG_OVERHEAD_TKR_VOL

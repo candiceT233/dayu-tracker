@@ -204,6 +204,8 @@ struct H5VL_tkr_dataset_info_t {
     // hsize_t dset_space_size;            //same as nelements!
     int dataset_read_cnt;
     int dataset_write_cnt;
+    size_t total_bytes_read;
+    size_t total_bytes_written;
 
     /* candice added for more dset stats start */
     // hid_t dset_id;                   // this should own by application
@@ -261,6 +263,7 @@ struct H5VL_tkr_group_info_t {
                                         // generic upcasts to work
 
     int func_cnt;//stats
+    char * pfile_name;                  // parent file name
 //    int group_get_cnt;
 //    int group_specific_cnt;
 
