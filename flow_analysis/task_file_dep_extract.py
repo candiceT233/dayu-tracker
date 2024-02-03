@@ -290,8 +290,8 @@ def sort_task_in_order(task_file_dict, task_order_list):
 
 
 # Save the task to input/output file mapping
-def save_task_file_dict(task_file_dict, test_name):
-    tf_file_path = f"../example_stat/{test_name}/{test_name}-task_to_file.yaml"
+def save_task_file_dict(task_file_dict, stat_path, test_name):
+    tf_file_path = f"{stat_path}/{test_name}-task_to_file.yaml"
     
     # if os.path.exists(tf_file_path):
     #     # Remove the file
@@ -314,9 +314,9 @@ def save_task_file_dict(task_file_dict, test_name):
 
 
 # Convert dictionary to prefetcher format
-def save_hermes_prefetch(task_file_dict, test_name):
+def save_hermes_prefetch(task_file_dict, stat_path, test_name):
 
-    prefetch_file_path = f"../example_stat/{test_name}/apriori_{test_name}.yaml"
+    prefetch_file_path = f"{stat_path}/apriori_{test_name}.yaml"
 
     with open(prefetch_file_path, 'w') as file:
         file.write("0:\n")
@@ -431,9 +431,9 @@ def extract_hermes_prefetch(task_file_dict):
                 pf_dict[input_file_path]['prefetch'].append(prefetch_entry)
     return pf_dict
 
-def save_prefetch_to_file(pf_dict, test_name):
+def save_prefetch_to_file(pf_dict, stat_path, test_name):
     
-    prefetch_file_path = f"../example_stat/{test_name}/apriori_{test_name}_compact.yaml"
+    prefetch_file_path = f"{stat_path}/apriori_{test_name}_compact.yaml"
     
     with open(prefetch_file_path, 'w') as file:
         file.write("0:\n")
@@ -501,12 +501,12 @@ def main(args):
     
     task_file_dict = stat_to_task_file_dic(vfd_file_dict, prefetch_schema)
     ordered_task_file_dict = sort_task_in_order(task_file_dict, task_order_list)
-    save_task_file_dict(ordered_task_file_dict, test_name)
+    save_task_file_dict(ordered_task_file_dict, stat_path, test_name)
     
     if prefetch_schema:
-        save_hermes_prefetch(task_file_dict, test_name)
+        save_hermes_prefetch(task_file_dict, stat_path, test_name)
         pf_dict = extract_hermes_prefetch(task_file_dict)
-        save_prefetch_to_file(pf_dict, test_name)
+        save_prefetch_to_file(pf_dict, stat_path, test_name)
     
     if args.showstat:
         sp.show_all_overhead("VFD",vfd_file_dict)
