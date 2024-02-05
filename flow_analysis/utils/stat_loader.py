@@ -70,12 +70,7 @@ def load_task_file_map(stat_path, test_name,task_list):
     return task_file_map
 
 def load_task_order_list(stat_path):
-    given_order_list = f"{stat_path}/task_order_list.yaml"
-    # check if path exists
-    if not os.path.exists(given_order_list):
-        raise ValueError(f"task_order_list.yaml not found in {stat_path}")
-    
-    with open(given_order_list, 'r') as stream:
+    with open(f"{stat_path}/task_order_list.yaml", 'r') as stream:
         try:
             task_order_list = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
