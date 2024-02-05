@@ -70,7 +70,12 @@ def load_task_file_map(stat_path, test_name,task_list):
     return task_file_map
 
 def load_task_order_list(stat_path):
-    with open(f"{stat_path}/task_order_list.yaml", 'r') as stream:
+    given_order_list = f"{stat_path}/task_order_list.yaml"
+    # check if path exists
+    if not os.path.exists(given_order_list):
+        raise ValueError(f"task_order_list.yaml not found in {stat_path}")
+
+    with open(given_order_list, 'r') as stream:
         try:
             task_order_list = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
@@ -79,7 +84,6 @@ def load_task_order_list(stat_path):
     # switch dict key and value
     task_order_list = {v: k for k, v in task_order_list.items()}
     return task_order_list
-
 
 def correct_end_stage(TOL,select_end):
     # check if SELECT_STAGE_END is in TASK_ORDER_LIST
