@@ -3954,3 +3954,23 @@ void add_to_dset_ht(dataset_tkr_info_t* dset_info){
     // free_dset_track_info(dset_track_info);
 
 }
+
+// Function to check object's loc_params type and get some info
+void check_obj_loc_params_type(char* func, H5VL_loc_params_t *loc_params){
+    switch(loc_params->type){
+        case H5VL_OBJECT_BY_NAME:
+            printf("[%s]() obj_name[%s]\n", func, loc_params->loc_data.loc_by_name.name);
+            break;
+        case H5VL_OBJECT_BY_IDX:
+            printf("[%s]() obj_size[%ld]\n", func, loc_params->loc_data.loc_by_idx.n);
+            break;
+        case H5VL_OBJECT_BY_TOKEN:
+            printf("[%s]() obj_token[%ld]\n", func, loc_params->loc_data.loc_by_token.token);
+            break;
+        case H5VL_OBJECT_BY_SELF:
+            printf("[%s]() obj_self\n", func);
+            break;
+        default:
+            printf("H5VL_OBJECT UNKNOWN\n");
+    }
+}
