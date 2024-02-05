@@ -2401,7 +2401,8 @@ void log_file_stat_yaml(tkr_helper_t* helper_in, const file_tkr_info_t* file_inf
 
     fprintf(f, "- Task:\n");
     fprintf(f, "  task_id: %d\n", getpid());
-    fprintf(f, "  VOL-Total-Overhead(ms): %ld\n", TOTAL_TKR_OVERHEAD/1000);
+    fprintf(f, "  VOL-Overhead(ms): %ld\n", TOTAL_TKR_OVERHEAD/1000);
+    TOTAL_TKR_OVERHEAD = 0; // reset the total overhead once recorded
 
     fflush(f);
     fclose(f);
@@ -2934,7 +2935,7 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
             dset_info->dset_offset = dataset_get_offset(dset->under_object, dset->under_vol_id, dxpl_id);
 
 
-#ifdef DEBUG_TKR_VOL
+#ifdef DEBUG_PT_TKR_VOL
     // dataset_info_print(func_name, mem_type_id, mem_space_id, file_space_id, obj, dxpl_id);
     printf("TRACKER VOL INT : dataset_info_update: %s END\n", func_name);
 #endif
@@ -3389,7 +3390,7 @@ void decode_two_strings(const char* encoded_str, char** file_name, char** dset_n
 void file_ds_created(file_tkr_info_t *info)
 {
     assert(info);
-#ifdef DEBUG_TKR_VOL
+#ifdef DEBUG_PT_TKR_VOL
     printf("TRACKER VOL INT : file_ds_created\n");
 #endif
     if(info)

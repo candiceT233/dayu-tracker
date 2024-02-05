@@ -106,11 +106,6 @@ hid_t H5FDtracker_vfd_err_class_g = H5I_INVALID_HID;
 
 
 
-// #ifdef __cplusplus
-// extern "C" {
-// #endif
-
-
 
 
 /* Driver-specific file access properties */
@@ -326,7 +321,7 @@ H5Pset_fapl_tracker_vfd(hid_t fapl_id, hbool_t logStat, size_t page_size, std::s
   /* custom VFD code start */
   print_H5Pset_fapl_info("H5Pset_fapl_tracker_vfd", logStat, page_size);
   /* custom VFD code end */
-  TOTAL_TKR_VFD_OVERHEAD += (get_time_usec() - t_start);
+  TOTAL_TKR_VFD_TIME += (get_time_usec() - t_start);
 
 done:
   H5FD_TRACKER_VFD_FUNC_LEAVE_API;
@@ -518,7 +513,8 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
   open_close_info_update("H5FD__tracker_vfd_open", file, file->eof, flags, t_start);
   /* custom VFD code end */
 
-  TOTAL_TKR_VFD_OVERHEAD += (get_time_usec() - t_start - (t2 - t1));
+  // TOTAL_TKR_VFD_TIME += (get_time_usec() - t_start - (t2 - t1));
+  TOTAL_TKR_VFD_TIME += (get_time_usec() - t_start);
   /* Set return value */
   ret_value = (H5FD_t *)file;
 
@@ -575,7 +571,8 @@ static herr_t H5FD__tracker_vfd_close(H5FD_t *_file) {
   t2 = get_time_usec();
   TOTAL_POSIX_IO_TIME += (t2 - t1);
   
-  TOTAL_TKR_VFD_OVERHEAD += (get_time_usec() - t_start - (t2 - t1));
+  // TOTAL_TKR_VFD_TIME += (get_time_usec() - t_start - (t2 - t1));
+  TOTAL_TKR_VFD_TIME += (get_time_usec() - t_start);
 
   // if (file->filename)
   //   free(file->filename); // this segfaults
@@ -869,7 +866,8 @@ static herr_t H5FD__tracker_vfd_read(H5FD_t *_file, H5FD_mem_t type,
   read_write_info_update("H5FD__tracker_vfd_read", file->filename, file->my_fapl_id ,_file,
     type, dxpl_id, addr, read_size, file->page_size, t_start);
   
-  TOTAL_TKR_VFD_OVERHEAD += (get_time_usec() - t_start -(t2 -t1) - (t4 - t3));
+  // TOTAL_TKR_VFD_TIME += (get_time_usec() - t_start -(t2 -t1) - (t4 - t3));
+  TOTAL_TKR_VFD_TIME += (get_time_usec() - t_start);
   /* custom VFD code end */
 
 done:
@@ -978,13 +976,13 @@ static herr_t H5FD__tracker_vfd_write(H5FD_t *_file, H5FD_mem_t type,
     file->op  = OP_WRITE;
     if (file->pos > file->eof)
         file->eof = file->pos;
-  
 
   /* custom VFD code start */
   read_write_info_update("H5FD__tracker_vfd_write", file->filename, file->my_fapl_id ,_file,
     type, dxpl_id, addr, write_size, file->page_size, t_start);
 
-  TOTAL_TKR_VFD_OVERHEAD += (get_time_usec() - t_start -(t2 -t1) - (t4 - t3));
+  // TOTAL_TKR_VFD_TIME += (get_time_usec() - t_start -(t2 -t1) - (t4 - t3));
+  TOTAL_TKR_VFD_TIME += (get_time_usec() - t_start);
   /* custom VFD code end */
 
 done:
