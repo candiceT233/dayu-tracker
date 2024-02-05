@@ -943,6 +943,14 @@ file_tkr_info_t* new_file_info(const char* fname, unsigned long file_no)
     info = (file_tkr_info_t *)calloc(1, sizeof(file_tkr_info_t));
 
     info->file_name = fname ? strdup(fname) : NULL;
+
+    // Find and replace double slashes with a single slash (move left)
+    char* pch = strstr(info->file_name, "//");
+    while (pch != NULL) {
+        memmove(pch, pch + 1, strlen(pch));
+        pch = strstr(info->file_name, "//");
+    }
+
     // info->file_name = malloc(sizeof(char) * (strlen(fname) + 1));
     // strcpy(info->file_name, fname);
     info->tkr_helper = TKR_HELPER;

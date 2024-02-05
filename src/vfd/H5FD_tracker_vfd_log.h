@@ -1072,12 +1072,21 @@ void vfd_file_info_free(vfd_file_tkr_info_t* info)
 vfd_file_tkr_info_t* new_vfd_file_info(const char* fname, unsigned long file_no)
 {
     vfd_file_tkr_info_t *info;
+    char * fname_tmp;
 
     info = (vfd_file_tkr_info_t *)calloc(1, sizeof(vfd_file_tkr_info_t));
+    fname_tmp = fname ? strdup(fname) : nullptr;
 
-    info->file_name = fname ? strdup(fname) : nullptr;
-    // info->file_name = malloc(sizeof(char) * (strlen(fname) + 1));
-    // strcpy(info->file_name, fname);
+    // Find and replace double slashes with a single slash (move left)
+    char* pch = strstr(fname_tmp, "//");
+    while (pch != NULL) {
+        memmove(pch, pch + 1, strlen(pch));
+        pch = strstr(fname_tmp, "//");
+    }
+  
+    info->file_name = fname_tmp ? strdup(fname_tmp) : nullptr;
+    // info->file_name = malloc(sizeof(char) * (strlen(fname_tmp) + 1));
+    // strcpy(info->file_name, fname_tmp);
     info->file_no = file_no;
 
     // dlLockAcquire(&myLock);
