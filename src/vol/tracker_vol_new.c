@@ -2896,7 +2896,10 @@ H5VL_tracker_file_close(void *file, hid_t dxpl_id, void **req)
     file_info->file_size = file_get_size(o->under_object,o->under_vol_id, dxpl_id);
     file_info_update("H5VLfile_close", file, NULL, NULL, dxpl_id);
     log_file_stat_yaml(TKR_HELPER,file_info);
+    // TOTAL_TKR_OVERHEAD = 0; // reset the total overhead once recorded
     // tkrLockRelease(&myLock);
+    // printf("TRACKER VOL FILE Close: TOTAL_TKR_OVERHEAD should be 0 : %ld\n", TOTAL_TKR_OVERHEAD);
+    cleanup_hash_table();
 #endif
 
 
@@ -3635,9 +3638,6 @@ H5VL_tracker_object_open(void *obj, const H5VL_loc_params_t *loc_params,
             obj_name = loc_params->loc_data.loc_by_name.name;
 
         new_obj = _obj_wrap_under(under, o, obj_name, *obj_to_open_type, dxpl_id, req);
-    } /* end if */
-    else
-        new_obj = NULL;
 
 #ifdef VOLTRK_SCHEMA
 
@@ -3647,6 +3647,7 @@ H5VL_tracker_object_open(void *obj, const H5VL_loc_params_t *loc_params,
     }
     if(new_obj->my_type == H5I_DATASET){
 
+
         dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)new_obj->generic_tkr_info;
         file_tkr_info_t * file_info = dset_info->obj_info.file_info;
         
@@ -3654,11 +3655,30 @@ H5VL_tracker_object_open(void *obj, const H5VL_loc_params_t *loc_params,
         dset_info->pfile_sorder_id = file_info->sorder_id;
         dset_info->dataset_read_cnt+=1;
 
-        // dtype_id and dset_id cannot be accessed here
-        dataset_info_update("H5VLobject_open", NULL, NULL, NULL, new_obj, dxpl_id);
+        // Make copy of file name and dataset name to use as key
+        const char * check_ds_name = obj_name ? strdup(obj_name) : NULL;
+        const char * check_fname = file_info->file_name ? strdup(file_info->file_name) : NULL;
 
+        // if both names are not null, then create a key
+        if (check_ds_name && check_fname){
+            char * key = encode_two_strings(check_fname, check_ds_name);
+            // printf("TRACKER VOL INT : _obj_wrap_under 4.1 H5I_DATASET: key: %s\n", key);
+            int has_key = key_exists(key);
+            if (has_key == 0) {
+                printf("TRACKER VOL OBJECT Open: H5I_DATASET: key[%s] does not exist\n", key);
+                // dtype_id and dset_id cannot be accessed here
+                dataset_info_update("H5VLobject_open", NULL, NULL, NULL, new_obj, dxpl_id);                
+            } else{
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.1 H5I_DATASET: key[%s] exists\n", key);
+            }
+        }
     }
 #endif
+
+    } /* end if */
+    else
+        new_obj = NULL;
+
 
 #ifdef DEBUG_OVERHEAD_TKR_VOL
     if(o)
