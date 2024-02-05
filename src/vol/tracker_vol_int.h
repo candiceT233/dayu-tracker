@@ -2401,7 +2401,8 @@ void log_file_stat_yaml(tkr_helper_t* helper_in, const file_tkr_info_t* file_inf
 
     fprintf(f, "- Task:\n");
     fprintf(f, "  task_id: %d\n", getpid());
-    fprintf(f, "  VOL-Total-Overhead(ms): %ld\n", TOTAL_TKR_OVERHEAD/1000);
+    fprintf(f, "  VOL-Overhead(ms): %ld\n", TOTAL_TKR_OVERHEAD/1000);
+    TOTAL_TKR_OVERHEAD = 0; // reset the total overhead once recorded
 
     fflush(f);
     fclose(f);
