@@ -2935,7 +2935,7 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
             dset_info->dset_offset = dataset_get_offset(dset->under_object, dset->under_vol_id, dxpl_id);
 
 
-#ifdef DEBUG_TKR_VOL
+#ifdef DEBUG_PT_TKR_VOL
     // dataset_info_print(func_name, mem_type_id, mem_space_id, file_space_id, obj, dxpl_id);
     printf("TRACKER VOL INT : dataset_info_update: %s END\n", func_name);
 #endif
@@ -3390,7 +3390,7 @@ void decode_two_strings(const char* encoded_str, char** file_name, char** dset_n
 void file_ds_created(file_tkr_info_t *info)
 {
     assert(info);
-#ifdef DEBUG_TKR_VOL
+#ifdef DEBUG_PT_TKR_VOL
     printf("TRACKER VOL INT : file_ds_created\n");
 #endif
     if(info)
