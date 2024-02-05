@@ -2888,6 +2888,11 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
         strcpy(dset_info->layout, layout);
     }
 
+    // if contiguous and not vlen
+    if (strcmp(dset_info->layout,"H5D_CONTIGUOUS") == 0 && strcmp(get_datatype_class_str(dset_info->dt_class),"H5T_VLEN") != 0)
+    {
+        dset_info->storage_size = dset_info->dset_n_elements * dset_info->dset_type_size;
+    }
 
 
     // When dtype is vlen
@@ -2917,7 +2922,7 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
             dset_info->dset_offset = start_addr;
             dset_info->data_file_page_start = start_page;
             dset_info->data_file_page_end = end_page;
-            dset_info->storage_size = -1;
+            dset_info->storage_size = 0;
 
 #ifdef DEBUG_PT_TKR_VOL
     printf("TRACKER VOL INT : dataset_info_update:%s dset_name:%s\n", func_name, dset_info->obj_info.name);
@@ -3341,9 +3346,16 @@ char* encode_two_strings(const char* file_path, const char* dset_name) {
     char * file_name = (char*)file_path;
 
     if(file_name)
-        file_name++;
+        file_name++; // remove the '/' from the file name (why being added?)
     else
         file_name = (char*)file_path;
+    
+    // Remove the leading slash if it exists
+    if (dset_name[0] == '/'){
+        // printf("encode_two_strings() dset_name: %s\n", dset_name);
+        dset_name = dset_name + 1;
+    }
+    
 
     size_t file_name_len = strlen(file_name);
     size_t dset_name_len = strlen(dset_name);
