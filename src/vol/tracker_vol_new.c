@@ -1487,16 +1487,13 @@ H5VL_tracker_dataset_create(void *obj, const H5VL_loc_params_t *loc_params,
     
 #ifdef VOLTRK_SCHEMA
     unsigned long trk_start = get_time_usec();
+    // TODO: Record at close time to reduce overhead
     if(dset != NULL){
-        file_tkr_info_t * file_info = (file_tkr_info_t*)o->generic_tkr_info;
-        // file_ds_created(file_info); // This causes segmenation fault
-        dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)dset->generic_tkr_info;
-        dset_info->pfile_sorder_id = file_info->sorder_id;
-        if(!dset_info->dspace_id)
-            dset_info->dspace_id = space_id;
+        
         // get dataset offset and storage size not available yet
-        dataset_info_update("H5VLdataset_create", NULL, NULL, NULL, dset, dxpl_id); // This must exist
+        dataset_info_update("H5VLdataset_create", NULL, NULL, NULL, dset, dxpl_id); // this must exist
     }
+
     TRK_SCHEMA_UPDATE_TIME += (get_time_usec() - trk_start);
 #endif
 
@@ -1552,10 +1549,9 @@ H5VL_tracker_dataset_open(void *obj, const H5VL_loc_params_t *loc_params,
 
     dset_info->pfile_sorder_id = file_info->sorder_id;
 
-    // if(!dset_info->obj_info.name)
-    //     dset_info->obj_info.name = ds_name ? strdup(ds_name) : NULL;
-
+    // Record at close time to reduce overhead?
     dataset_info_update("H5VLdataset_open", NULL, NULL, NULL, dset, dxpl_id);
+
     TRK_SCHEMA_UPDATE_TIME += (get_time_usec() - trk_start);
 
 #endif
@@ -1657,7 +1653,6 @@ static herr_t H5VL_tracker_dataset_read(size_t count, void *dset[],
             if(!dset_info->dtype_id)
                 dset_info->dtype_id = mem_type_id[obj_idx];
 
-            dataset_info_update("H5VLdataset_read", mem_type_id[obj_idx], mem_space_id[obj_idx], file_space_id[obj_idx], dset[obj_idx], NULL); //H5P_DATASET_XFER
             TRK_SCHEMA_UPDATE_TIME += (get_time_usec() - trk_start);
 #endif
 
@@ -1821,11 +1816,9 @@ H5VL_tracker_dataset_get(void *dset, H5VL_dataset_get_args_t *args,
 
 
 #ifdef DEBUG_MORE_TKR_VOL
-    dataset_tkr_info_t* dset_info = (dataset_tkr_info_t*)o->generic_tkr_info;
-    assert(dset_info);
-
     // Cannot get dataset ID from arg list!! ‘union <anonymous>’ has no member named ‘refresh’
-    // dataset_info_update("H5VLdataset_get", NULL, dspace_id, NULL, dset, dxpl_id);
+    dataset_tkr_info_t* dset_info = (dataset_tkr_info_t*)o->generic_tkr_info;
+    // assert(dset_info);
     dataset_info_print("H5VLdataset_get", NULL, NULL, NULL, dset, dxpl_id);
 #endif
 
@@ -2032,10 +2025,9 @@ H5VL_tracker_dataset_close(void *dset, hid_t dxpl_id, void **req)
     dataset_tkr_info_t* dset_info = (dataset_tkr_info_t*)o->generic_tkr_info;
     assert(dset_info);
     
-    // dataset_info_update("H5VLdataset_close", NULL, NULL, NULL, dset, dxpl_id);
     BLOB_SORDER=0;
     // add to dset hashtable at dset close time
-    add_to_dset_ht(dset_info);
+    add_to_dset_ht(dset_info); // Record to hash table before freeing the dset_info
     TRK_SCHEMA_UPDATE_TIME += (get_time_usec() - trk_start);
 
 #endif
@@ -2049,6 +2041,7 @@ H5VL_tracker_dataset_close(void *dset, hid_t dxpl_id, void **req)
         *req = H5VL_tracker_new_obj(*req, o->under_vol_id, o->tkr_helper);
 
 #ifdef VOLTRK_SCHEMA
+    trk_start = get_time_usec();
     /* Release our wrapper, if underlying dataset was closed */
     if(ret_value >= 0){
         rm_dataset_node(o->tkr_helper, o->under_object, o->under_vol_id, dset_info);
@@ -3692,9 +3685,10 @@ H5VL_tracker_object_open(void *obj, const H5VL_loc_params_t *loc_params,
             // printf("TRACKER VOL INT : _obj_wrap_under 4.1 H5I_DATASET: key: %s\n", key);
             int has_key = key_exists(key);
             if (has_key == 0) {
-                printf("TRACKER VOL OBJECT Open: H5I_DATASET: key[%s] does not exist\n", key);
+                // printf("TRACKER VOL OBJECT Open: H5I_DATASET: key[%s] does not exist\n", key);
+
                 // dtype_id and dset_id cannot be accessed here
-                dataset_info_update("H5VLobject_open", NULL, NULL, NULL, new_obj, dxpl_id);                
+                dataset_info_update("H5VLobject_open", NULL, NULL, NULL, new_obj, dxpl_id); // must exist to not segfault
             }
         }
     }

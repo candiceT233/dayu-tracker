@@ -51,7 +51,7 @@ unsigned long GRP_LL_TOTAL_TIME;        //group
 unsigned long DT_LL_TOTAL_TIME;         //datatype
 unsigned long ATTR_LL_TOTAL_TIME;       //attribute
 unsigned long FILE_DSET_HT_TOTAL_TIME;       //record file_dset hash table overhead
-unsigned long TRK_SCHEMA_UPDATE_TIME;        //record dataset info update time
+unsigned long TRK_SCHEMA_UPDATE_TIME;        //record all schema info update time
 //shorten function id: use hash value
 static char* FUNC_DIC[STAT_FUNC_MOD];
 
@@ -2649,6 +2649,7 @@ char* get_dataspace_class_str(H5S_class_t class_id) {
 
 void file_info_update(char * func_name, void * obj, hid_t fapl_id, hid_t fcpl_id, hid_t dxpl_id)
 {
+    unsigned long start = get_time_usec();
     H5VL_tracker_t *file = (H5VL_tracker_t *)obj;
     file_tkr_info_t * file_info = (file_tkr_info_t*)file->generic_tkr_info;
 
@@ -2970,12 +2971,10 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
         if ((dset_info->dset_offset == NULL) || (dset_info->dset_offset < 0))
             dset_info->dset_offset = dataset_get_offset(dset->under_object, dset->under_vol_id, dxpl_id);
 
-
 #ifdef DEBUG_PT_TKR_VOL
     // dataset_info_print(func_name, mem_type_id, mem_space_id, file_space_id, obj, dxpl_id);
     printf("TRACKER VOL INT : dataset_info_update: %s END\n", func_name);
 #endif
-
 }
 
 void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
