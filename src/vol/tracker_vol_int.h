@@ -3677,7 +3677,7 @@ void log_dset_ht_yaml(FILE* f) {
             fprintf(f, "]\n");
             fprintf(f, "        dset_type_size: %d\n", dset_track_info->dset_type_size);
             fprintf(f, "        dataset_read_cnt: %d\n", dset_track_info->dataset_read_cnt);
-            fprintf(f, "        total_bytes_read: %d\n", (dset_track_info->dataset_read_cnt * dset_track_info->storage_size));
+            fprintf(f, "        total_bytes_read: %d\n", (dset_track_info->dset_select_npoints * dset_track_info->dset_type_size));
             fprintf(f, "        dataset_write_cnt: %d\n", dset_track_info->dataset_write_cnt);
             
             // TODO: VLen data dset_select_npoints=1, needs to calculate blob size
