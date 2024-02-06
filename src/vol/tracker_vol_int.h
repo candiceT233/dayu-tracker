@@ -50,6 +50,8 @@ unsigned long DS_LL_TOTAL_TIME;         //dataset
 unsigned long GRP_LL_TOTAL_TIME;        //group
 unsigned long DT_LL_TOTAL_TIME;         //datatype
 unsigned long ATTR_LL_TOTAL_TIME;       //attribute
+unsigned long FILE_DSET_HT_TOTAL_TIME;       //record file_dset hash table overhead
+unsigned long TRK_SCHEMA_UPDATE_TIME;        //record dataset info update time
 //shorten function id: use hash value
 static char* FUNC_DIC[STAT_FUNC_MOD];
 
@@ -1470,8 +1472,6 @@ dataset_tkr_info_t * add_dataset_node(unsigned long obj_file_no,
         file_info = file_info_in;
     }
 
-
-
     // Find dataset in linked list of opened datasets
     cur = file_info->opened_datasets;
     while (cur) {
@@ -1506,8 +1506,6 @@ dataset_tkr_info_t * add_dataset_node(unsigned long obj_file_no,
     tkrLockAcquire(&myLock);
     cur->sorder_id = ++DATA_SORDER;
     tkrLockRelease(&myLock);
-
-
 
     // Increment refcount on dataset
     cur->obj_info.ref_cnt++;
@@ -2424,6 +2422,8 @@ void log_file_stat_yaml(tkr_helper_t* helper_in, const file_tkr_info_t* file_inf
     fprintf(f, "  GRP_LL_TOTAL_TIME(ms): %ld\n", GRP_LL_TOTAL_TIME/1000);
     fprintf(f, "  DT_LL_TOTAL_TIME(ms): %ld\n", DT_LL_TOTAL_TIME/1000);
     fprintf(f, "  ATTR_LL_TOTAL_TIME(ms): %ld\n", ATTR_LL_TOTAL_TIME/1000);
+    fprintf(f, "  FILE_DSET_HT_TOTAL_TIME(ms): %ld\n", FILE_DSET_HT_TOTAL_TIME/1000);
+    fprintf(f, "  TRK_SCHEMA_UPDATE_TIME(ms): %ld\n", TRK_SCHEMA_UPDATE_TIME/1000);
 
     TOTAL_NATIVE_H5_TIME = 0; // reset the total native H5 time once recorded
     TKR_WRITE_TOTAL_TIME = 0; // reset the total write time once recorded
@@ -2432,7 +2432,8 @@ void log_file_stat_yaml(tkr_helper_t* helper_in, const file_tkr_info_t* file_inf
     GRP_LL_TOTAL_TIME = 0; // reset the total group time once recorded
     DT_LL_TOTAL_TIME = 0; // reset the total datatype time once recorded
     ATTR_LL_TOTAL_TIME = 0; // reset the total attribute time once recorded
-
+    FILE_DSET_HT_TOTAL_TIME = 0; // reset the total file-dataset hash table time once recorded
+    TRK_SCHEMA_UPDATE_TIME = 0; // reset the total dataset info update time once recorded
 
     fflush(f);
     fclose(f);
@@ -3550,6 +3551,7 @@ dset_track_t *create_dset_track_info(dataset_tkr_info_t* dset_info) {
 
 // Cleanup the hash table (using uthash)
 void cleanup_hash_table() {
+    unsigned long start = get_time_usec();
     DsetTrackHashEntry *current, *tmp;
 
     // Iterate over the hash table and delete each entry using uthash macros
@@ -3560,6 +3562,8 @@ void cleanup_hash_table() {
 
     // Set the hash table pointer to NULL
     lock.hash_table = NULL;
+
+    FILE_DSET_HT_TOTAL_TIME += (get_time_usec() - start);
 }
 
 // Initialize the lock
@@ -3936,6 +3940,7 @@ void update_dset_track_info(char * key, dataset_tkr_info_t* dset_info) {
 
 
 void add_to_dset_ht(dataset_tkr_info_t* dset_info){
+    unsigned long start = get_time_usec();
 
     if(dset_info->pfile_name == NULL || dset_info->obj_info.name == NULL){
         return;
@@ -3978,10 +3983,14 @@ void add_to_dset_ht(dataset_tkr_info_t* dset_info){
     // // Free the memory
     // free_dset_track_info(dset_track_info);
 
+    FILE_DSET_HT_TOTAL_TIME+= (get_time_usec() - start);
+
 }
 
 // Check if the key exists in the hash table
 int key_exists(char * key) {
+    unsigned long start = get_time_usec();
+
     DsetTrackHashEntry *entry = NULL;
     int exists = 0;
 
@@ -3993,6 +4002,8 @@ int key_exists(char * key) {
         exists = 1;
     // Release the lock
     pthread_mutex_unlock(&(lock.mutex));
+
+    FILE_DSET_HT_TOTAL_TIME+= (get_time_usec() - start);
 
     return exists;
 }
