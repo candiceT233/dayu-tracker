@@ -95,4 +95,4 @@ install(
     h5vol_tracker 
     LIBRARY 
     DESTINATION 
-        lib)
+        lib/vol)

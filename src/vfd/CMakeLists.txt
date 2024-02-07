@@ -93,4 +93,4 @@ install(
         h5vfd_tracker 
     LIBRARY 
     DESTINATION 
-        lib)
+        lib/vfd)
