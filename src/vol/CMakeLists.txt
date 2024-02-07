@@ -18,7 +18,7 @@ set(CMAKE_C_COMPILER h5cc)
 #-----------------------------------------------------------------------------
 # Define VOL Specific Options
 #-----------------------------------------------------------------------------
-option(VOLTRK_SCHEMA "Enable Tracker Schema Log to YAML Files" ON)
+option(ACCESS_STAT "Enable Tracker Schema Log to YAML Files" ON)
 
 option(DEBUG_TKR_VOL "Enable Tracker Logging (on groups and dataset objects)" ON)
 option(DEBUG_MORE_TKR_VOL "Enable More Tracker Logging (on all memory object all oprations)" OFF) # TODO: Not optimized for memory
@@ -47,10 +47,9 @@ endif()
 #-----------------------------------------------------------------------------
 # Debugging Options
 #-----------------------------------------------------------------------------
-add_compile_definitions(TRACKER_SCHEMA)
 # Check to set Logging
-if(VOLTRK_SCHEMA)
-    add_compile_definitions(VOLTRK_SCHEMA)
+if(ACCESS_STAT)
+    add_compile_definitions(ACCESS_STAT)
 endif()
 if(DEBUG_TKR_VOL)
     add_compile_definitions(DEBUG_TKR_VOL)
@@ -95,4 +94,4 @@ install(
     h5vol_tracker 
     LIBRARY 
     DESTINATION 
-        lib)
+        lib/vol)

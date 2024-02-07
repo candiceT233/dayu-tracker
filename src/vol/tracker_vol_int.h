@@ -50,6 +50,8 @@ unsigned long DS_LL_TOTAL_TIME;         //dataset
 unsigned long GRP_LL_TOTAL_TIME;        //group
 unsigned long DT_LL_TOTAL_TIME;         //datatype
 unsigned long ATTR_LL_TOTAL_TIME;       //attribute
+unsigned long FILE_DSET_HT_TOTAL_TIME;       //record file_dset hash table overhead
+unsigned long TRK_ACCESS_STAT_TIME;        //record all schema info update time
 //shorten function id: use hash value
 static char* FUNC_DIC[STAT_FUNC_MOD];
 
@@ -218,10 +220,11 @@ void myll_to_file(FILE * file, myll_t *head);
 void myll_free(myll_t **head);
 void myll_add(myll_t **head, myll_t **tail, unsigned long new_data);
 
+char* encode_two_strings(const char* file_path, const char* dset_name);
 dset_track_t *create_dset_track_info(dataset_tkr_info_t* dset_info);
 void remove_dset_track_info(char * key);
 void update_dset_track_info(char * key, dataset_tkr_info_t* dset_info);
-void add_dset_track_info(char * key, dset_track_t *dset_track_info);
+void add_dset_track_info(char * key, dset_track_t *dset_track_info, dataset_tkr_info_t* dset_info);
 void add_to_dset_ht(dataset_tkr_info_t* dset_info);
 
     /* candice added routine prototypes end */
@@ -943,6 +946,14 @@ file_tkr_info_t* new_file_info(const char* fname, unsigned long file_no)
     info = (file_tkr_info_t *)calloc(1, sizeof(file_tkr_info_t));
 
     info->file_name = fname ? strdup(fname) : NULL;
+
+    // Find and replace double slashes with a single slash (move left)
+    char* pch = strstr(info->file_name, "//");
+    while (pch != NULL) {
+        memmove(pch, pch + 1, strlen(pch));
+        pch = strstr(info->file_name, "//");
+    }
+
     // info->file_name = malloc(sizeof(char) * (strlen(fname) + 1));
     // strcpy(info->file_name, fname);
     info->tkr_helper = TKR_HELPER;
@@ -1447,7 +1458,7 @@ dataset_tkr_info_t * add_dataset_node(unsigned long obj_file_no,
     assert(dset);
     assert(dset->under_object);
     assert(file_info_in);
-	
+
     if (obj_file_no != file_info_in->file_no) {//creating a dataset from an external place
         file_tkr_info_t* external_home_file;
 
@@ -2362,6 +2373,7 @@ void log_file_stat_yaml(tkr_helper_t* helper_in, const file_tkr_info_t* file_inf
         return;
     }
 
+#ifdef ACCESS_STAT
     log_dset_ht_yaml(f);
 
     // char* file_name = strrchr(file_info->file_name, '/');
@@ -2397,12 +2409,32 @@ void log_file_stat_yaml(tkr_helper_t* helper_in, const file_tkr_info_t* file_inf
     fprintf(f, "    grp_accessed: %d\n", file_info->grp_accessed);
     fprintf(f, "    dtypes_created: %d\n", file_info->dtypes_created);
     fprintf(f, "    dtypes_accessed: %d\n", file_info->dtypes_accessed);
-
+#endif
 
     fprintf(f, "- Task:\n");
     fprintf(f, "  task_id: %d\n", getpid());
     fprintf(f, "  VOL-Overhead(ms): %ld\n", TOTAL_TKR_OVERHEAD/1000);
     TOTAL_TKR_OVERHEAD = 0; // reset the total overhead once recorded
+
+    fprintf(f, "  TOTAL_NATIVE_H5_TIME(ms): %ld\n", TOTAL_NATIVE_H5_TIME/1000);
+    fprintf(f, "  TKR_WRITE_TOTAL_TIME(ms): %ld\n", TKR_WRITE_TOTAL_TIME/1000);
+    fprintf(f, "  FILE_LL_TOTAL_TIME(ms): %ld\n", FILE_LL_TOTAL_TIME/1000);
+    fprintf(f, "  DS_LL_TOTAL_TIME(ms): %ld\n", DS_LL_TOTAL_TIME/1000);
+    fprintf(f, "  GRP_LL_TOTAL_TIME(ms): %ld\n", GRP_LL_TOTAL_TIME/1000);
+    fprintf(f, "  DT_LL_TOTAL_TIME(ms): %ld\n", DT_LL_TOTAL_TIME/1000);
+    fprintf(f, "  ATTR_LL_TOTAL_TIME(ms): %ld\n", ATTR_LL_TOTAL_TIME/1000);
+    fprintf(f, "  FILE_DSET_HT_TOTAL_TIME(ms): %ld\n", FILE_DSET_HT_TOTAL_TIME/1000);
+    fprintf(f, "  TRK_ACCESS_STAT_TIME(ms): %ld\n", TRK_ACCESS_STAT_TIME/1000);
+
+    TOTAL_NATIVE_H5_TIME = 0; // reset the total native H5 time once recorded
+    TKR_WRITE_TOTAL_TIME = 0; // reset the total write time once recorded
+    FILE_LL_TOTAL_TIME = 0; // reset the total file time once recorded
+    DS_LL_TOTAL_TIME = 0; // reset the total dataset time once recorded
+    GRP_LL_TOTAL_TIME = 0; // reset the total group time once recorded
+    DT_LL_TOTAL_TIME = 0; // reset the total datatype time once recorded
+    ATTR_LL_TOTAL_TIME = 0; // reset the total attribute time once recorded
+    FILE_DSET_HT_TOTAL_TIME = 0; // reset the total file-dataset hash table time once recorded
+    TRK_ACCESS_STAT_TIME = 0; // reset the total dataset info update time once recorded
 
     fflush(f);
     fclose(f);
@@ -2618,6 +2650,7 @@ char* get_dataspace_class_str(H5S_class_t class_id) {
 
 void file_info_update(char * func_name, void * obj, hid_t fapl_id, hid_t fcpl_id, hid_t dxpl_id)
 {
+    unsigned long start = get_time_usec();
     H5VL_tracker_t *file = (H5VL_tracker_t *)obj;
     file_tkr_info_t * file_info = (file_tkr_info_t*)file->generic_tkr_info;
 
@@ -2888,6 +2921,11 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
         strcpy(dset_info->layout, layout);
     }
 
+    // if contiguous and not vlen
+    if (strcmp(dset_info->layout,"H5D_CONTIGUOUS") == 0 && strcmp(get_datatype_class_str(dset_info->dt_class),"H5T_VLEN") != 0)
+    {
+        dset_info->storage_size = dset_info->dset_n_elements * dset_info->dset_type_size;
+    }
 
 
     // When dtype is vlen
@@ -2917,7 +2955,7 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
             dset_info->dset_offset = start_addr;
             dset_info->data_file_page_start = start_page;
             dset_info->data_file_page_end = end_page;
-            dset_info->storage_size = -1;
+            dset_info->storage_size = 0;
 
 #ifdef DEBUG_PT_TKR_VOL
     printf("TRACKER VOL INT : dataset_info_update:%s dset_name:%s\n", func_name, dset_info->obj_info.name);
@@ -2934,12 +2972,10 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
         if ((dset_info->dset_offset == NULL) || (dset_info->dset_offset < 0))
             dset_info->dset_offset = dataset_get_offset(dset->under_object, dset->under_vol_id, dxpl_id);
 
-
 #ifdef DEBUG_PT_TKR_VOL
     // dataset_info_print(func_name, mem_type_id, mem_space_id, file_space_id, obj, dxpl_id);
     printf("TRACKER VOL INT : dataset_info_update: %s END\n", func_name);
 #endif
-
 }
 
 void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
@@ -3341,9 +3377,16 @@ char* encode_two_strings(const char* file_path, const char* dset_name) {
     char * file_name = (char*)file_path;
 
     if(file_name)
-        file_name++;
+        file_name++; // remove the '/' from the file name (why being added?)
     else
         file_name = (char*)file_path;
+    
+    // Remove the leading slash if it exists
+    if (dset_name[0] == '/'){
+        // printf("encode_two_strings() dset_name: %s\n", dset_name);
+        dset_name = dset_name + 1;
+    }
+    
 
     size_t file_name_len = strlen(file_name);
     size_t dset_name_len = strlen(dset_name);
@@ -3508,6 +3551,7 @@ dset_track_t *create_dset_track_info(dataset_tkr_info_t* dset_info) {
 
 // Cleanup the hash table (using uthash)
 void cleanup_hash_table() {
+    unsigned long start = get_time_usec();
     DsetTrackHashEntry *current, *tmp;
 
     // Iterate over the hash table and delete each entry using uthash macros
@@ -3518,6 +3562,8 @@ void cleanup_hash_table() {
 
     // Set the hash table pointer to NULL
     lock.hash_table = NULL;
+
+    FILE_DSET_HT_TOTAL_TIME += (get_time_usec() - start);
 }
 
 // Initialize the lock
@@ -3539,7 +3585,7 @@ void destroy_hash_lock() {
 }
 
 // Add a dset_track_t object to the hash table
-void add_dset_track_info(char * key, dset_track_t *dset_track_info) {
+void add_dset_track_info(char * key, dset_track_t *dset_track_info, dataset_tkr_info_t* dset_info) {
     DsetTrackHashEntry *entry = (DsetTrackHashEntry *)malloc(sizeof(DsetTrackHashEntry));
     if (entry) {
         entry->key = key;
@@ -3555,6 +3601,9 @@ void add_dset_track_info(char * key, dset_track_t *dset_track_info) {
 
         // Release the lock
         pthread_mutex_unlock(&(lock.mutex));
+
+        // only record when it is first accessed, since we already recording read_cnt, write_cnt
+        myll_add(&(entry->dset_track_info->sorder_ids), &(entry->dset_track_info->sorder_ids_end), dset_info->sorder_id);
     }
 }
 
@@ -3629,7 +3678,7 @@ void log_dset_ht_yaml(FILE* f) {
             fprintf(f, "]\n");
             fprintf(f, "        dset_type_size: %d\n", dset_track_info->dset_type_size);
             fprintf(f, "        dataset_read_cnt: %d\n", dset_track_info->dataset_read_cnt);
-            fprintf(f, "        total_bytes_read: %d\n", (dset_track_info->dataset_read_cnt * dset_track_info->storage_size));
+            fprintf(f, "        total_bytes_read: %d\n", (dset_track_info->dset_select_npoints * dset_track_info->dset_type_size));
             fprintf(f, "        dataset_write_cnt: %d\n", dset_track_info->dataset_write_cnt);
             
             // TODO: VLen data dset_select_npoints=1, needs to calculate blob size
@@ -3879,7 +3928,7 @@ void update_dset_track_info(char * key, dataset_tkr_info_t* dset_info) {
             entry->dset_track_info->dset_offset = dset_info->dset_offset;
         }
 
-        myll_add(&(entry->dset_track_info->sorder_ids), &(entry->dset_track_info->sorder_ids_end), dset_info->sorder_id);
+        // myll_add(&(entry->dset_track_info->sorder_ids), &(entry->dset_track_info->sorder_ids_end), dset_info->sorder_id);
         myll_add(&entry->dset_track_info->metadata_file_pages, &entry->dset_track_info->metadata_file_pages_end, dset_info->metadata_file_page);
 
     }
@@ -3891,6 +3940,7 @@ void update_dset_track_info(char * key, dataset_tkr_info_t* dset_info) {
 
 
 void add_to_dset_ht(dataset_tkr_info_t* dset_info){
+    unsigned long start = get_time_usec();
 
     if(dset_info->pfile_name == NULL || dset_info->obj_info.name == NULL){
         return;
@@ -3921,7 +3971,7 @@ void add_to_dset_ht(dataset_tkr_info_t* dset_info){
         // Create a dset_track_t object
         dset_track_t *dset_track_info = create_dset_track_info(dset_info);
         // Add the dset_track_info to the hash table
-        add_dset_track_info(key, dset_track_info);
+        add_dset_track_info(key, dset_track_info, dset_info);
     }
 
     // // Print all the token numbers in the hash table
@@ -3933,4 +3983,48 @@ void add_to_dset_ht(dataset_tkr_info_t* dset_info){
     // // Free the memory
     // free_dset_track_info(dset_track_info);
 
+    FILE_DSET_HT_TOTAL_TIME+= (get_time_usec() - start);
+
+}
+
+// Check if the key exists in the hash table
+int key_exists(char * key) {
+    unsigned long start = get_time_usec();
+
+    DsetTrackHashEntry *entry = NULL;
+    int exists = 0;
+
+    // Acquire the lock before accessing the hash table
+    pthread_mutex_lock(&(lock.mutex));
+    // Find the entry in the hash table
+    HASH_FIND_STR(lock.hash_table, key, entry);
+    if (entry)
+        exists = 1;
+    // Release the lock
+    pthread_mutex_unlock(&(lock.mutex));
+
+    FILE_DSET_HT_TOTAL_TIME+= (get_time_usec() - start);
+
+    return exists;
+}
+
+
+// Function to check object's loc_params type and get some info
+void check_obj_loc_params_type(char* func, H5VL_loc_params_t *loc_params){
+    switch(loc_params->type){
+        case H5VL_OBJECT_BY_NAME:
+            printf("[%s]() obj_name[%s]\n", func, loc_params->loc_data.loc_by_name.name);
+            break;
+        case H5VL_OBJECT_BY_IDX:
+            printf("[%s]() obj_size[%ld]\n", func, loc_params->loc_data.loc_by_idx.n);
+            break;
+        case H5VL_OBJECT_BY_TOKEN:
+            printf("[%s]() obj_token[%ld]\n", func, loc_params->loc_data.loc_by_token.token);
+            break;
+        case H5VL_OBJECT_BY_SELF:
+            printf("[%s]() obj_self\n", func);
+            break;
+        default:
+            printf("H5VL_OBJECT UNKNOWN\n");
+    }
 }

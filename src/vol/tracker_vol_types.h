@@ -59,21 +59,6 @@ unsigned long END_PAGE;
 int TASK_ID = 0;
 
 
-
-
-// unsigned long VFD_ADDR ;
-// extern haddr_t vfd_start_addr;
-
-
-/* candice added local prototypes */
-// static int get_native_info(void *obj, H5I_type_t target_obj_type, hid_t connector_id,
-//                        hid_t dxpl_id, H5O_info2_t *oinfo);
-
-/* DsetTracker Related Code Start */
-/* candice added for tracking object access start */
-
-/* candice added for tracking object access end */
-
 typedef struct TrackerHelper {
     /* Tracker properties */
     char* tkr_file_path;

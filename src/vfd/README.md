@@ -67,7 +67,7 @@ Heres is a full example of running an HDF5 app with the Tracker VFD:
 ```sh
 HDF5_DRIVER_CONFIG="true ${TRACKER_VFD_PAGE_SIZE}" \
    HDF5_DRIVER=hdf5_tracker_vfd \
-   HDF5_LOG_FILE_PATH="${schema_file}" \
+   STAT_FILE_PATH="${schema_file}" \
    HDF5_PLUGIN_PATH=$TRACKER_BLD_DIR/vfd \
    ./my_hdf5_app
 ```
