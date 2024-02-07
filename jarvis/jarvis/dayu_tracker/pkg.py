@@ -18,8 +18,10 @@ class DayuTracker(Interceptor):
         self.vfd_tracker_name = 'hdf5_tracker_vfd'
         self.vol_tracker_name = 'tracker'
         
-        self.vfd_env_vars = ['HDF5_DRIVER', 'HDF5_DRIVER_CONFIG', 'HDF5_PLUGIN_PATH', 'STAT_FILE_PATH']
+        self.vfd_env_vars = ['HDF5_DRIVER', 'HDF5_DRIVER_CONFIG', 'HDF5_PLUGIN_PATH']
         self.vol_env_vars = ['HDF5_VOL_CONNECTOR', 'HDF5_PLUGIN_PATH']
+        
+        self.dayu_task_vars = ['PATH_FOR_TASK_FILES', "WORKFLOW_NAME"]
 
     def _configure_menu(self):
         """
@@ -66,6 +68,18 @@ class DayuTracker(Interceptor):
                 'msg': 'The path to the file to store the tracker statistics',
                 'type': str,
                 'default': f"{Package(self.pkg_type).pkg_root}/src/stat",
+            },
+            {
+                'name': 'taskname_file_path',
+                'msg': 'The path to the file to store the task names',
+                'type': str,
+                'default': "/tmp/dayu_tracker",
+            },
+            {
+                'name': 'workflow_name',
+                'msg': 'The name of the workflow(jarvis app) you are running',
+                'type': str,
+                'default': None,
             }
         ]
     
@@ -105,19 +119,26 @@ class DayuTracker(Interceptor):
         
         # Set current environment variables
         self.env['HDF5_DRIVER'] = self.vfd_tracker_name
-        self.env['HDF5_DRIVER_CONFIG'] = f'true {self.config["tracker_page_size"]}'
+        self.env['HDF5_DRIVER_CONFIG'] = '"' + self.config['stat_file_path'] + ";" + str(self.config['tracker_page_size']) + '"'
+        
+        # f"{self.config['stat_file_path']};{self.config['tracker_page_size']}"
         
         # if not empty, append the current HDF5_PLUGIN_PATH to the new plugin path
         if self.env['HDF5_PLUGIN_PATH'] != "":        
             self.env['HDF5_PLUGIN_PATH'] = self.config['dayu_lib'] + "/vfd" + ":" + self.env['HDF5_PLUGIN_PATH']
         else:
             self.env['HDF5_PLUGIN_PATH'] = self.config['dayu_lib'] + "/vfd"
-        self.env['STAT_FILE_PATH'] = self.config['stat_file_path']
+        
+        self.env['PATH_FOR_TASK_FILES'] = self.config['taskname_file_path']
+        self.env['WORKFLOW_NAME'] = self.config['workflow_name']
         
         # Set conda environment variables if required
         if self.config['conda_env']:
             self._unset_conda_vars(self.vfd_env_vars)
             self._set_conda_vars(self.vfd_env_vars)
+            
+            self._unset_conda_vars(self.dayu_task_vars)
+            self._set_conda_vars(self.dayu_task_vars)
     
     def _setup_vol_tracker(self):
         """
@@ -158,6 +179,18 @@ class DayuTracker(Interceptor):
         """
         # check if stat_file_path exist, if not make it
         pathlib.Path(self.config['stat_file_path']).mkdir(parents=True, exist_ok=True)
+
+        # workflow name is required
+        if not self.config['workflow_name']:
+            raise ValueError("workflow_name is required")
+        else:
+            # modify task file to be unique for each workflow
+            self.config['taskname_file_path'] = "/tmp/" + self.config['workflow_name']
+        
+        # check if taskname_file_path exist, if not make it
+        pathlib.Path(self.config['taskname_file_path']).mkdir(parents=True, exist_ok=True)
+        
+
 
     def modify_env(self):
         """
