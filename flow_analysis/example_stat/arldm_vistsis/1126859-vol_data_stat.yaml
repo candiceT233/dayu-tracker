@@ -1,0 +1,428 @@
+- file-2:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    task_name: "arldm_train-1126859"
+    datasets:
+        dset_name: "sis"
+        start_time: 1706855181807783
+        end_time: 1706855181808153
+        dt_class: "H5T_STRING"
+        ds_class: "H5S_SCALAR"
+        layout: "H5D_CONTIGUOUS"
+        storage_size: -1
+        dset_n_elements: 43
+        dimension_cnt: 1
+        dimensions: [43, ]
+        dset_type_size: 8
+        dataset_read_cnt: 1
+        total_bytes_read: -1
+        dataset_write_cnt: 0
+        total_bytes_written: 344
+        access_type: read_only
+        dset_offset: 3520
+        dset_select_type: "H5S_SEL_ALL"
+        dset_select_npoints: 43
+        data_file_pages: [0,-1]
+        metadata_file_pages: [0, ]
+        access_orders: [1, ]
+- file-2:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    open_time: 1706855181807144
+    close_time: 1706855181809683
+    file_size: 148078160
+    header_size: 0
+    sieve_buf_size: 0
+    file_intent: ["H5F_ACC_RDONLY"]
+    ds_created: 0
+    ds_accessed: 1
+    grp_created: 0
+    grp_accessed: 0
+    dtypes_created: 0
+    dtypes_accessed: 0
+- Task:
+  task_id: 1126859
+  VOL-Total-Overhead(ms): 0
+- file-4:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    open_time: 1706855181812831
+    close_time: 1706855181813709
+    file_size: 148078160
+    header_size: 0
+    sieve_buf_size: 0
+    file_intent: ["H5F_ACC_RDONLY"]
+    ds_created: 0
+    ds_accessed: 1
+    grp_created: 0
+    grp_accessed: 0
+    dtypes_created: 0
+    dtypes_accessed: 0
+- Task:
+  task_id: 1126859
+  VOL-Total-Overhead(ms): 3
+- file-6:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    open_time: 1706855181815896
+    close_time: 1706855181816540
+    file_size: 148078160
+    header_size: 0
+    sieve_buf_size: 0
+    file_intent: ["H5F_ACC_RDONLY"]
+    ds_created: 0
+    ds_accessed: 1
+    grp_created: 0
+    grp_accessed: 0
+    dtypes_created: 0
+    dtypes_accessed: 0
+- Task:
+  task_id: 1126859
+  VOL-Total-Overhead(ms): 4
+- file-8:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    open_time: 1706855486344641
+    close_time: 1706855486346005
+    file_size: 148078160
+    header_size: 0
+    sieve_buf_size: 0
+    file_intent: ["H5F_ACC_RDONLY"]
+    ds_created: 0
+    ds_accessed: 1
+    grp_created: 0
+    grp_accessed: 0
+    dtypes_created: 0
+    dtypes_accessed: 0
+- Task:
+  task_id: 1126859
+  VOL-Total-Overhead(ms): 5
+- file-10:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    open_time: 1706855486348643
+    close_time: 1706855486349447
+    file_size: 148078160
+    header_size: 0
+    sieve_buf_size: 0
+    file_intent: ["H5F_ACC_RDONLY"]
+    ds_created: 0
+    ds_accessed: 1
+    grp_created: 0
+    grp_accessed: 0
+    dtypes_created: 0
+    dtypes_accessed: 0
+- Task:
+  task_id: 1126859
+  VOL-Total-Overhead(ms): 6
+- file-12:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    open_time: 1706855486355405
+    close_time: 1706855486356684
+    file_size: 148078160
+    header_size: 0
+    sieve_buf_size: 0
+    file_intent: ["H5F_ACC_RDONLY"]
+    ds_created: 0
+    ds_accessed: 1
+    grp_created: 0
+    grp_accessed: 0
+    dtypes_created: 0
+    dtypes_accessed: 0
+- Task:
+  task_id: 1126859
+  VOL-Total-Overhead(ms): 7
+- file-14:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    open_time: 1706855486358383
+    close_time: 1706855486358905
+    file_size: 148078160
+    header_size: 0
+    sieve_buf_size: 0
+    file_intent: ["H5F_ACC_RDONLY"]
+    ds_created: 0
+    ds_accessed: 1
+    grp_created: 0
+    grp_accessed: 0
+    dtypes_created: 0
+    dtypes_accessed: 0
+- Task:
+  task_id: 1126859
+  VOL-Total-Overhead(ms): 8
+- file-16:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    open_time: 1706855486470320
+    close_time: 1706855486472220
+    file_size: 148078160
+    header_size: 0
+    sieve_buf_size: 0
+    file_intent: ["H5F_ACC_RDONLY"]
+    ds_created: 0
+    ds_accessed: 1
+    grp_created: 0
+    grp_accessed: 0
+    dtypes_created: 0
+    dtypes_accessed: 0
+- Task:
+  task_id: 1126859
+  VOL-Total-Overhead(ms): 9
+- file-18:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    open_time: 1706855486474270
+    close_time: 1706855486475214
+    file_size: 148078160
+    header_size: 0
+    sieve_buf_size: 0
+    file_intent: ["H5F_ACC_RDONLY"]
+    ds_created: 0
+    ds_accessed: 1
+    grp_created: 0
+    grp_accessed: 0
+    dtypes_created: 0
+    dtypes_accessed: 0
+- Task:
+  task_id: 1126859
+  VOL-Total-Overhead(ms): 11
+- file-20:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    open_time: 1706855486476986
+    close_time: 1706855486477908
+    file_size: 148078160
+    header_size: 0
+    sieve_buf_size: 0
+    file_intent: ["H5F_ACC_RDONLY"]
+    ds_created: 0
+    ds_accessed: 1
+    grp_created: 0
+    grp_accessed: 0
+    dtypes_created: 0
+    dtypes_accessed: 0
+- Task:
+  task_id: 1126859
+  VOL-Total-Overhead(ms): 12
+- file-22:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    open_time: 1706855486480142
+    close_time: 1706855486480935
+    file_size: 148078160
+    header_size: 0
+    sieve_buf_size: 0
+    file_intent: ["H5F_ACC_RDONLY"]
+    ds_created: 0
+    ds_accessed: 1
+    grp_created: 0
+    grp_accessed: 0
+    dtypes_created: 0
+    dtypes_accessed: 0
+- Task:
+  task_id: 1126859
+  VOL-Total-Overhead(ms): 13
+- file-24:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    open_time: 1706855486483236
+    close_time: 1706855486483991
+    file_size: 148078160
+    header_size: 0
+    sieve_buf_size: 0
+    file_intent: ["H5F_ACC_RDONLY"]
+    ds_created: 0
+    ds_accessed: 1
+    grp_created: 0
+    grp_accessed: 0
+    dtypes_created: 0
+    dtypes_accessed: 0
+- Task:
+  task_id: 1126859
+  VOL-Total-Overhead(ms): 14
+- file-26:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    open_time: 1706855486485731
+    close_time: 1706855486486458
+    file_size: 148078160
+    header_size: 0
+    sieve_buf_size: 0
+    file_intent: ["H5F_ACC_RDONLY"]
+    ds_created: 0
+    ds_accessed: 1
+    grp_created: 0
+    grp_accessed: 0
+    dtypes_created: 0
+    dtypes_accessed: 0
+- Task:
+  task_id: 1126859
+  VOL-Total-Overhead(ms): 15
+- file-16:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    task_name: "arldm_train-1126939"
+    datasets:
+        dset_name: "image0"
+        start_time: 1706855486701630
+        end_time: 1706855486709696
+        dt_class: "H5T_VLEN"
+        ds_class: "H5S_SCALAR"
+        layout: "H5D_CONTIGUOUS"
+        storage_size: -1
+        dset_n_elements: 43
+        dimension_cnt: 1
+        dimensions: [43, ]
+        dset_type_size: 16
+        dataset_read_cnt: 2
+        total_bytes_read: -2
+        dataset_write_cnt: 0
+        total_bytes_written: 688
+        access_type: read_only
+        dset_offset: 1832
+        dset_select_type: "H5S_SEL_ALL"
+        dset_select_npoints: 43
+        data_file_pages: [0,-1]
+        metadata_file_pages: [0, ]
+        access_orders: [8, ]
+- file-16:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    task_name: "arldm_train-1126939"
+    datasets:
+        dset_name: "image1"
+        start_time: 1706855486727246
+        end_time: 1706855486730200
+        dt_class: "H5T_VLEN"
+        ds_class: "H5S_SCALAR"
+        layout: "H5D_CONTIGUOUS"
+        storage_size: -1
+        dset_n_elements: 43
+        dimension_cnt: 1
+        dimensions: [43, ]
+        dset_type_size: 16
+        dataset_read_cnt: 2
+        total_bytes_read: -2
+        dataset_write_cnt: 0
+        total_bytes_written: 688
+        access_type: read_only
+        dset_offset: 2432
+        dset_select_type: "H5S_SEL_ALL"
+        dset_select_npoints: 43
+        data_file_pages: [0,-1]
+        metadata_file_pages: [0, ]
+        access_orders: [9, ]
+- file-16:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    task_name: "arldm_train-1126939"
+    datasets:
+        dset_name: "image2"
+        start_time: 1706855486741732
+        end_time: 1706855486747228
+        dt_class: "H5T_VLEN"
+        ds_class: "H5S_SCALAR"
+        layout: "H5D_CONTIGUOUS"
+        storage_size: -1
+        dset_n_elements: 43
+        dimension_cnt: 1
+        dimensions: [43, ]
+        dset_type_size: 16
+        dataset_read_cnt: 2
+        total_bytes_read: -2
+        dataset_write_cnt: 0
+        total_bytes_written: 688
+        access_type: read_only
+        dset_offset: 2704
+        dset_select_type: "H5S_SEL_ALL"
+        dset_select_npoints: 43
+        data_file_pages: [0,-1]
+        metadata_file_pages: [0, ]
+        access_orders: [10, ]
+- file-16:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    task_name: "arldm_train-1126939"
+    datasets:
+        dset_name: "image3"
+        start_time: 1706855486759935
+        end_time: 1706855486763127
+        dt_class: "H5T_VLEN"
+        ds_class: "H5S_SCALAR"
+        layout: "H5D_CONTIGUOUS"
+        storage_size: -1
+        dset_n_elements: 43
+        dimension_cnt: 1
+        dimensions: [43, ]
+        dset_type_size: 16
+        dataset_read_cnt: 2
+        total_bytes_read: -2
+        dataset_write_cnt: 0
+        total_bytes_written: 688
+        access_type: read_only
+        dset_offset: 2976
+        dset_select_type: "H5S_SEL_ALL"
+        dset_select_npoints: 43
+        data_file_pages: [0,-1]
+        metadata_file_pages: [0, ]
+        access_orders: [11, ]
+- file-16:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    task_name: "arldm_train-1126939"
+    datasets:
+        dset_name: "image4"
+        start_time: 1706855486775193
+        end_time: 1706855486777663
+        dt_class: "H5T_VLEN"
+        ds_class: "H5S_SCALAR"
+        layout: "H5D_CONTIGUOUS"
+        storage_size: -1
+        dset_n_elements: 43
+        dimension_cnt: 1
+        dimensions: [43, ]
+        dset_type_size: 16
+        dataset_read_cnt: 2
+        total_bytes_read: -2
+        dataset_write_cnt: 0
+        total_bytes_written: 688
+        access_type: read_only
+        dset_offset: 3248
+        dset_select_type: "H5S_SEL_ALL"
+        dset_select_npoints: 43
+        data_file_pages: [0,-1]
+        metadata_file_pages: [0, ]
+        access_orders: [12, ]
+- file-16:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    open_time: 1706855486701045
+    close_time: 1706855486892489
+    file_size: 148078160
+    header_size: 0
+    sieve_buf_size: 0
+    file_intent: ["H5F_ACC_RDONLY"]
+    ds_created: 0
+    ds_accessed: 6
+    grp_created: 0
+    grp_accessed: 0
+    dtypes_created: 0
+    dtypes_accessed: 0
+- Task:
+  task_id: 1126939
+  VOL-Total-Overhead(ms): 10
+- file-18:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    open_time: 1706855486914688
+    close_time: 1706855487041088
+    file_size: 148078160
+    header_size: 0
+    sieve_buf_size: 0
+    file_intent: ["H5F_ACC_RDONLY"]
+    ds_created: 0
+    ds_accessed: 6
+    grp_created: 0
+    grp_accessed: 0
+    dtypes_created: 0
+    dtypes_accessed: 0
+- Task:
+  task_id: 1126939
+  VOL-Total-Overhead(ms): 12
+- file-20:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    open_time: 1706855487061488
+    close_time: 1706855487203862
+    file_size: 148078160
+    header_size: 0
+    sieve_buf_size: 0
+    file_intent: ["H5F_ACC_RDONLY"]
+    ds_created: 0
+    ds_accessed: 6
+    grp_created: 0
+    grp_accessed: 0
+    dtypes_created: 0
+    dtypes_accessed: 0
+- Task:
+  task_id: 1126939
+  VOL-Total-Overhead(ms): 14

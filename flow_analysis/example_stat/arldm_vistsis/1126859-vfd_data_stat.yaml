@@ -1,0 +1,805 @@
+- file-1:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    task_name: "arldm_train-1126859"
+    open_time: 1706855181784350
+    close_time: 1706855181811285
+    file_intent: ["NOT_SPECIFIED"]
+    file_no: 0
+    file_read_cnt: 12
+    file_write_cnt: 0
+    access_type: read_only
+    file_type: input
+    total_io_bytes: 4408
+    file_size: 148078160
+    data:
+    metadata:
+      H5FD_MEM_OHDR:
+        read_bytes: 1536
+        read_cnt: 3
+        read_ranges: {3:[0,0],7:[0,0],11:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_SUPER:
+        read_bytes: 104
+        read_cnt: 3
+        read_ranges: {0:[0,0],1:[0,0],2:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_BTREE:
+        read_bytes: 1744
+        read_cnt: 4
+        read_ranges: {5:[0,0],6:[0,0],9:[0,0],10:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_LHEAP:
+        read_bytes: 1024
+        read_cnt: 2
+        read_ranges: {4:[0,0],8:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+- Task:
+  task_id: 1126859
+  tracker_vfd_page_size: 65536
+  VFD-Total-Overhead(ms): 0
+  POSIX-Total-IO-Time(ms): 23
+
+- file-2:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    task_name: "arldm_train-1126859"
+    open_time: 1706855181812644
+    close_time: 1706855181814683
+    file_intent: ["NOT_SPECIFIED"]
+    file_no: 0
+    file_read_cnt: 12
+    file_write_cnt: 0
+    access_type: read_only
+    file_type: input
+    total_io_bytes: 4408
+    file_size: 148078160
+    data:
+    metadata:
+      H5FD_MEM_OHDR:
+        read_bytes: 1536
+        read_cnt: 3
+        read_ranges: {15:[0,0],19:[0,0],23:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_SUPER:
+        read_bytes: 104
+        read_cnt: 3
+        read_ranges: {12:[0,0],13:[0,0],14:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_BTREE:
+        read_bytes: 1744
+        read_cnt: 4
+        read_ranges: {17:[0,0],18:[0,0],21:[0,0],22:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_LHEAP:
+        read_bytes: 1024
+        read_cnt: 2
+        read_ranges: {16:[0,0],20:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+- Task:
+  task_id: 1126859
+  tracker_vfd_page_size: 65536
+  VFD-Total-Overhead(ms): 1
+  POSIX-Total-IO-Time(ms): 23
+
+- file-3:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    task_name: "arldm_train-1126859"
+    open_time: 1706855181815756
+    close_time: 1706855181817342
+    file_intent: ["NOT_SPECIFIED"]
+    file_no: 0
+    file_read_cnt: 12
+    file_write_cnt: 0
+    access_type: read_only
+    file_type: input
+    total_io_bytes: 4408
+    file_size: 148078160
+    data:
+    metadata:
+      H5FD_MEM_OHDR:
+        read_bytes: 1536
+        read_cnt: 3
+        read_ranges: {27:[0,0],31:[0,0],35:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_SUPER:
+        read_bytes: 104
+        read_cnt: 3
+        read_ranges: {24:[0,0],25:[0,0],26:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_BTREE:
+        read_bytes: 1744
+        read_cnt: 4
+        read_ranges: {29:[0,0],30:[0,0],33:[0,0],34:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_LHEAP:
+        read_bytes: 1024
+        read_cnt: 2
+        read_ranges: {28:[0,0],32:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+- Task:
+  task_id: 1126859
+  tracker_vfd_page_size: 65536
+  VFD-Total-Overhead(ms): 2
+  POSIX-Total-IO-Time(ms): 23
+
+- file-4:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    task_name: "arldm_train-1126859"
+    open_time: 1706855486343930
+    close_time: 1706855486347222
+    file_intent: ["NOT_SPECIFIED"]
+    file_no: 0
+    file_read_cnt: 12
+    file_write_cnt: 0
+    access_type: read_only
+    file_type: input
+    total_io_bytes: 4408
+    file_size: 148078160
+    data:
+    metadata:
+      H5FD_MEM_OHDR:
+        read_bytes: 1536
+        read_cnt: 3
+        read_ranges: {39:[0,0],43:[0,0],47:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_SUPER:
+        read_bytes: 104
+        read_cnt: 3
+        read_ranges: {36:[0,0],37:[0,0],38:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_BTREE:
+        read_bytes: 1744
+        read_cnt: 4
+        read_ranges: {41:[0,0],42:[0,0],45:[0,0],46:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_LHEAP:
+        read_bytes: 1024
+        read_cnt: 2
+        read_ranges: {40:[0,0],44:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+- Task:
+  task_id: 1126859
+  tracker_vfd_page_size: 65536
+  VFD-Total-Overhead(ms): 3
+  POSIX-Total-IO-Time(ms): 24
+
+- file-5:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    task_name: "arldm_train-1126859"
+    open_time: 1706855486348493
+    close_time: 1706855486350419
+    file_intent: ["NOT_SPECIFIED"]
+    file_no: 0
+    file_read_cnt: 12
+    file_write_cnt: 0
+    access_type: read_only
+    file_type: input
+    total_io_bytes: 4408
+    file_size: 148078160
+    data:
+    metadata:
+      H5FD_MEM_OHDR:
+        read_bytes: 1536
+        read_cnt: 3
+        read_ranges: {51:[0,0],55:[0,0],59:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_SUPER:
+        read_bytes: 104
+        read_cnt: 3
+        read_ranges: {48:[0,0],49:[0,0],50:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_BTREE:
+        read_bytes: 1744
+        read_cnt: 4
+        read_ranges: {53:[0,0],54:[0,0],57:[0,0],58:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_LHEAP:
+        read_bytes: 1024
+        read_cnt: 2
+        read_ranges: {52:[0,0],56:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+- Task:
+  task_id: 1126859
+  tracker_vfd_page_size: 65536
+  VFD-Total-Overhead(ms): 4
+  POSIX-Total-IO-Time(ms): 24
+
+- file-6:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    task_name: "arldm_train-1126859"
+    open_time: 1706855486355031
+    close_time: 1706855486357535
+    file_intent: ["NOT_SPECIFIED"]
+    file_no: 0
+    file_read_cnt: 12
+    file_write_cnt: 0
+    access_type: read_only
+    file_type: input
+    total_io_bytes: 4408
+    file_size: 148078160
+    data:
+    metadata:
+      H5FD_MEM_OHDR:
+        read_bytes: 1536
+        read_cnt: 3
+        read_ranges: {63:[0,0],67:[1904,1904],71:[1904,1904]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_SUPER:
+        read_bytes: 104
+        read_cnt: 3
+        read_ranges: {60:[0,0],61:[0,0],62:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_BTREE:
+        read_bytes: 1744
+        read_cnt: 4
+        read_ranges: {65:[0,0],66:[0,0],69:[1904,1904],70:[1904,1904]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_LHEAP:
+        read_bytes: 1024
+        read_cnt: 2
+        read_ranges: {64:[0,0],68:[1904,1904]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+- Task:
+  task_id: 1126859
+  tracker_vfd_page_size: 65536
+  VFD-Total-Overhead(ms): 5
+  POSIX-Total-IO-Time(ms): 25
+
+- file-7:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    task_name: "arldm_train-1126859"
+    open_time: 1706855486358245
+    close_time: 1706855486359560
+    file_intent: ["NOT_SPECIFIED"]
+    file_no: 0
+    file_read_cnt: 12
+    file_write_cnt: 0
+    access_type: read_only
+    file_type: input
+    total_io_bytes: 4408
+    file_size: 148078160
+    data:
+    metadata:
+      H5FD_MEM_OHDR:
+        read_bytes: 1536
+        read_cnt: 3
+        read_ranges: {75:[0,0],79:[1904,1904],83:[1904,1904]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_SUPER:
+        read_bytes: 104
+        read_cnt: 3
+        read_ranges: {72:[0,0],73:[0,0],74:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_BTREE:
+        read_bytes: 1744
+        read_cnt: 4
+        read_ranges: {77:[0,0],78:[0,0],81:[1904,1904],82:[1904,1904]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_LHEAP:
+        read_bytes: 1024
+        read_cnt: 2
+        read_ranges: {76:[0,0],80:[1904,1904]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+- Task:
+  task_id: 1126859
+  tracker_vfd_page_size: 65536
+  VFD-Total-Overhead(ms): 5
+  POSIX-Total-IO-Time(ms): 25
+
+- file-8:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    task_name: "arldm_train-1126859"
+    open_time: 1706855486469322
+    close_time: 1706855486473216
+    file_intent: ["NOT_SPECIFIED"]
+    file_no: 0
+    file_read_cnt: 12
+    file_write_cnt: 0
+    access_type: read_only
+    file_type: input
+    total_io_bytes: 4408
+    file_size: 148078160
+    data:
+    metadata:
+      H5FD_MEM_OHDR:
+        read_bytes: 1536
+        read_cnt: 3
+        read_ranges: {87:[0,0],91:[0,0],95:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_SUPER:
+        read_bytes: 104
+        read_cnt: 3
+        read_ranges: {84:[0,0],85:[0,0],86:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_BTREE:
+        read_bytes: 1744
+        read_cnt: 4
+        read_ranges: {89:[0,0],90:[0,0],93:[0,0],94:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_LHEAP:
+        read_bytes: 1024
+        read_cnt: 2
+        read_ranges: {88:[0,0],92:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+- Task:
+  task_id: 1126859
+  tracker_vfd_page_size: 65536
+  VFD-Total-Overhead(ms): 6
+  POSIX-Total-IO-Time(ms): 25
+
+- file-9:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    task_name: "arldm_train-1126859"
+    open_time: 1706855486474060
+    close_time: 1706855486475929
+    file_intent: ["NOT_SPECIFIED"]
+    file_no: 0
+    file_read_cnt: 12
+    file_write_cnt: 0
+    access_type: read_only
+    file_type: input
+    total_io_bytes: 4408
+    file_size: 148078160
+    data:
+    metadata:
+      H5FD_MEM_OHDR:
+        read_bytes: 1536
+        read_cnt: 3
+        read_ranges: {99:[0,0],103:[0,0],107:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_SUPER:
+        read_bytes: 104
+        read_cnt: 3
+        read_ranges: {96:[0,0],97:[0,0],98:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_BTREE:
+        read_bytes: 1744
+        read_cnt: 4
+        read_ranges: {101:[0,0],102:[0,0],105:[0,0],106:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_LHEAP:
+        read_bytes: 1024
+        read_cnt: 2
+        read_ranges: {100:[0,0],104:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+- Task:
+  task_id: 1126859
+  tracker_vfd_page_size: 65536
+  VFD-Total-Overhead(ms): 7
+  POSIX-Total-IO-Time(ms): 26
+
+- file-10:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    task_name: "arldm_train-1126859"
+    open_time: 1706855486476776
+    close_time: 1706855486478595
+    file_intent: ["NOT_SPECIFIED"]
+    file_no: 0
+    file_read_cnt: 12
+    file_write_cnt: 0
+    access_type: read_only
+    file_type: input
+    total_io_bytes: 4408
+    file_size: 148078160
+    data:
+    metadata:
+      H5FD_MEM_OHDR:
+        read_bytes: 1536
+        read_cnt: 3
+        read_ranges: {111:[0,0],115:[0,0],119:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_SUPER:
+        read_bytes: 104
+        read_cnt: 3
+        read_ranges: {108:[0,0],109:[0,0],110:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_BTREE:
+        read_bytes: 1744
+        read_cnt: 4
+        read_ranges: {113:[0,0],114:[0,0],117:[0,0],118:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_LHEAP:
+        read_bytes: 1024
+        read_cnt: 2
+        read_ranges: {112:[0,0],116:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+- Task:
+  task_id: 1126859
+  tracker_vfd_page_size: 65536
+  VFD-Total-Overhead(ms): 8
+  POSIX-Total-IO-Time(ms): 26
+
+- file-11:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    task_name: "arldm_train-1126859"
+    open_time: 1706855486479953
+    close_time: 1706855486481682
+    file_intent: ["NOT_SPECIFIED"]
+    file_no: 0
+    file_read_cnt: 12
+    file_write_cnt: 0
+    access_type: read_only
+    file_type: input
+    total_io_bytes: 4408
+    file_size: 148078160
+    data:
+    metadata:
+      H5FD_MEM_OHDR:
+        read_bytes: 1536
+        read_cnt: 3
+        read_ranges: {123:[0,0],127:[0,0],131:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_SUPER:
+        read_bytes: 104
+        read_cnt: 3
+        read_ranges: {120:[0,0],121:[0,0],122:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_BTREE:
+        read_bytes: 1744
+        read_cnt: 4
+        read_ranges: {125:[0,0],126:[0,0],129:[0,0],130:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_LHEAP:
+        read_bytes: 1024
+        read_cnt: 2
+        read_ranges: {124:[0,0],128:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+- Task:
+  task_id: 1126859
+  tracker_vfd_page_size: 65536
+  VFD-Total-Overhead(ms): 9
+  POSIX-Total-IO-Time(ms): 26
+
+- file-12:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    task_name: "arldm_train-1126859"
+    open_time: 1706855486483028
+    close_time: 1706855486484656
+    file_intent: ["NOT_SPECIFIED"]
+    file_no: 0
+    file_read_cnt: 12
+    file_write_cnt: 0
+    access_type: read_only
+    file_type: input
+    total_io_bytes: 4408
+    file_size: 148078160
+    data:
+    metadata:
+      H5FD_MEM_OHDR:
+        read_bytes: 1536
+        read_cnt: 3
+        read_ranges: {135:[0,0],139:[0,0],143:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_SUPER:
+        read_bytes: 104
+        read_cnt: 3
+        read_ranges: {132:[0,0],133:[0,0],134:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_BTREE:
+        read_bytes: 1744
+        read_cnt: 4
+        read_ranges: {137:[0,0],138:[0,0],141:[0,0],142:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_LHEAP:
+        read_bytes: 1024
+        read_cnt: 2
+        read_ranges: {136:[0,0],140:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+- Task:
+  task_id: 1126859
+  tracker_vfd_page_size: 65536
+  VFD-Total-Overhead(ms): 10
+  POSIX-Total-IO-Time(ms): 26
+
+- file-13:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    task_name: "arldm_train-1126859"
+    open_time: 1706855486485532
+    close_time: 1706855486487041
+    file_intent: ["NOT_SPECIFIED"]
+    file_no: 0
+    file_read_cnt: 12
+    file_write_cnt: 0
+    access_type: read_only
+    file_type: input
+    total_io_bytes: 4408
+    file_size: 148078160
+    data:
+    metadata:
+      H5FD_MEM_OHDR:
+        read_bytes: 1536
+        read_cnt: 3
+        read_ranges: {147:[0,0],151:[0,0],155:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_SUPER:
+        read_bytes: 104
+        read_cnt: 3
+        read_ranges: {144:[0,0],145:[0,0],146:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_BTREE:
+        read_bytes: 1744
+        read_cnt: 4
+        read_ranges: {149:[0,0],150:[0,0],153:[0,0],154:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_LHEAP:
+        read_bytes: 1024
+        read_cnt: 2
+        read_ranges: {148:[0,0],152:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+- Task:
+  task_id: 1126859
+  tracker_vfd_page_size: 65536
+  VFD-Total-Overhead(ms): 10
+  POSIX-Total-IO-Time(ms): 26
+
+- file-8:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    task_name: "arldm_train-1126939"
+    open_time: 1706855486700310
+    close_time: 1706855486893685
+    file_intent: ["NOT_SPECIFIED"]
+    file_no: 0
+    file_read_cnt: 34
+    file_write_cnt: 0
+    access_type: read_only
+    file_type: input
+    total_io_bytes: 2676376
+    file_size: 148078160
+    data:
+      H5FD_MEM_DRAW:
+        read_bytes: 2669408
+        read_cnt: 17
+        read_ranges: {96:[0,0],97:[709,709],98:[717,725],100:[33,33],101:[717,717],102:[725,733],104:[45,45],105:[725,725],106:[734,742],108:[56,56],109:[734,734],110:[743,751],112:[67,67],113:[743,743],114:[750,757],116:[77,77],117:[628,628]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+    metadata:
+      H5FD_MEM_OHDR:
+        read_bytes: 4096
+        read_cnt: 8
+        read_ranges: {87:[0,0],91:[0,0],95:[0,0],99:[0,0],103:[0,0],107:[0,0],111:[0,0],115:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_SUPER:
+        read_bytes: 104
+        read_cnt: 3
+        read_ranges: {84:[0,0],85:[0,0],86:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_BTREE:
+        read_bytes: 1744
+        read_cnt: 4
+        read_ranges: {89:[0,0],90:[0,0],93:[0,0],94:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_LHEAP:
+        read_bytes: 1024
+        read_cnt: 2
+        read_ranges: {88:[0,0],92:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+- Task:
+  task_id: 1126939
+  tracker_vfd_page_size: 65536
+  VFD-Total-Overhead(ms): 7
+  POSIX-Total-IO-Time(ms): 35
+
+- file-9:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    task_name: "arldm_train-1126939"
+    open_time: 1706855486914245
+    close_time: 1706855487041996
+    file_intent: ["NOT_SPECIFIED"]
+    file_no: 0
+    file_read_cnt: 34
+    file_write_cnt: 0
+    access_type: read_only
+    file_type: input
+    total_io_bytes: 2828416
+    file_size: 148078160
+    data:
+      H5FD_MEM_DRAW:
+        read_bytes: 2821448
+        read_cnt: 17
+        read_ranges: {130:[0,0],131:[919,919],132:[927,935],134:[33,33],135:[927,927],136:[935,944],138:[45,45],139:[936,936],140:[945,955],142:[56,56],143:[946,946],144:[955,964],146:[67,67],147:[955,955],148:[962,969],150:[77,77],151:[834,834]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+    metadata:
+      H5FD_MEM_OHDR:
+        read_bytes: 4096
+        read_cnt: 8
+        read_ranges: {121:[0,0],125:[0,0],129:[0,0],133:[0,0],137:[0,0],141:[0,0],145:[0,0],149:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_SUPER:
+        read_bytes: 104
+        read_cnt: 3
+        read_ranges: {118:[0,0],119:[0,0],120:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_BTREE:
+        read_bytes: 1744
+        read_cnt: 4
+        read_ranges: {123:[0,0],124:[0,0],127:[0,0],128:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_LHEAP:
+        read_bytes: 1024
+        read_cnt: 2
+        read_ranges: {122:[0,0],126:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+- Task:
+  task_id: 1126939
+  tracker_vfd_page_size: 65536
+  VFD-Total-Overhead(ms): 7
+  POSIX-Total-IO-Time(ms): 44
+
+- file-10:
+    file_name: "/mnt/common/mtang11/experiments/ARLDM/output_data/vistsis_out.h5"
+    task_name: "arldm_train-1126939"
+    open_time: 1706855487061214
+    close_time: 1706855487204868
+    file_intent: ["NOT_SPECIFIED"]
+    file_no: 0
+    file_read_cnt: 34
+    file_write_cnt: 0
+    access_type: read_only
+    file_type: input
+    total_io_bytes: 2649760
+    file_size: 148078160
+    data:
+      H5FD_MEM_DRAW:
+        read_bytes: 2642792
+        read_cnt: 17
+        read_ranges: {164:[0,0],165:[1169,1169],166:[1180,1192],168:[33,33],169:[1180,1180],170:[1189,1197],172:[45,45],173:[1189,1189],174:[1196,1203],176:[56,56],177:[1196,1196],178:[1204,1212],180:[67,67],181:[1204,1204],182:[1209,1214],184:[77,77],185:[1048,1048]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+    metadata:
+      H5FD_MEM_OHDR:
+        read_bytes: 4096
+        read_cnt: 8
+        read_ranges: {155:[0,0],159:[0,0],163:[0,0],167:[0,0],171:[0,0],175:[0,0],179:[0,0],183:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_SUPER:
+        read_bytes: 104
+        read_cnt: 3
+        read_ranges: {152:[0,0],153:[0,0],154:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_BTREE:
+        read_bytes: 1744
+        read_cnt: 4
+        read_ranges: {157:[0,0],158:[0,0],161:[0,0],162:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+      H5FD_MEM_LHEAP:
+        read_bytes: 1024
+        read_cnt: 2
+        read_ranges: {156:[0,0],160:[0,0]}
+        write_bytes: 0
+        write_cnt: 0
+        write_ranges: {}
+- Task:
+  task_id: 1126939
+  tracker_vfd_page_size: 65536
+  VFD-Total-Overhead(ms): 8
+  POSIX-Total-IO-Time(ms): 50
+

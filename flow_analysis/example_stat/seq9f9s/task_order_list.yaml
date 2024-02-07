@@ -1,0 +1,9 @@
+0: run_idfeature
+1: run_tracksingle
+2: run_gettracks
+3: run_trackstats
+4: run_identifymcs
+5: run_matchpf
+6: run_robustmcs
+7: run_mapfeature
+8: run_speed
