@@ -51,7 +51,7 @@ unsigned long GRP_LL_TOTAL_TIME;        //group
 unsigned long DT_LL_TOTAL_TIME;         //datatype
 unsigned long ATTR_LL_TOTAL_TIME;       //attribute
 unsigned long FILE_DSET_HT_TOTAL_TIME;       //record file_dset hash table overhead
-unsigned long TRK_SCHEMA_UPDATE_TIME;        //record all schema info update time
+unsigned long TRK_ACCESS_STAT_TIME;        //record all schema info update time
 //shorten function id: use hash value
 static char* FUNC_DIC[STAT_FUNC_MOD];
 
@@ -2373,6 +2373,7 @@ void log_file_stat_yaml(tkr_helper_t* helper_in, const file_tkr_info_t* file_inf
         return;
     }
 
+#ifdef ACCESS_STAT
     log_dset_ht_yaml(f);
 
     // char* file_name = strrchr(file_info->file_name, '/');
@@ -2408,7 +2409,7 @@ void log_file_stat_yaml(tkr_helper_t* helper_in, const file_tkr_info_t* file_inf
     fprintf(f, "    grp_accessed: %d\n", file_info->grp_accessed);
     fprintf(f, "    dtypes_created: %d\n", file_info->dtypes_created);
     fprintf(f, "    dtypes_accessed: %d\n", file_info->dtypes_accessed);
-
+#endif
 
     fprintf(f, "- Task:\n");
     fprintf(f, "  task_id: %d\n", getpid());
@@ -2423,7 +2424,7 @@ void log_file_stat_yaml(tkr_helper_t* helper_in, const file_tkr_info_t* file_inf
     fprintf(f, "  DT_LL_TOTAL_TIME(ms): %ld\n", DT_LL_TOTAL_TIME/1000);
     fprintf(f, "  ATTR_LL_TOTAL_TIME(ms): %ld\n", ATTR_LL_TOTAL_TIME/1000);
     fprintf(f, "  FILE_DSET_HT_TOTAL_TIME(ms): %ld\n", FILE_DSET_HT_TOTAL_TIME/1000);
-    fprintf(f, "  TRK_SCHEMA_UPDATE_TIME(ms): %ld\n", TRK_SCHEMA_UPDATE_TIME/1000);
+    fprintf(f, "  TRK_ACCESS_STAT_TIME(ms): %ld\n", TRK_ACCESS_STAT_TIME/1000);
 
     TOTAL_NATIVE_H5_TIME = 0; // reset the total native H5 time once recorded
     TKR_WRITE_TOTAL_TIME = 0; // reset the total write time once recorded
@@ -2433,7 +2434,7 @@ void log_file_stat_yaml(tkr_helper_t* helper_in, const file_tkr_info_t* file_inf
     DT_LL_TOTAL_TIME = 0; // reset the total datatype time once recorded
     ATTR_LL_TOTAL_TIME = 0; // reset the total attribute time once recorded
     FILE_DSET_HT_TOTAL_TIME = 0; // reset the total file-dataset hash table time once recorded
-    TRK_SCHEMA_UPDATE_TIME = 0; // reset the total dataset info update time once recorded
+    TRK_ACCESS_STAT_TIME = 0; // reset the total dataset info update time once recorded
 
     fflush(f);
     fclose(f);
