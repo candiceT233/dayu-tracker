@@ -112,6 +112,7 @@ hid_t H5FDtracker_vfd_err_class_g = H5I_INVALID_HID;
 typedef struct H5FD_tracker_vfd_fapl_t {
   hbool_t logStat;    /* write to file name on flush */
   size_t  page_size;  /* page size */
+  char * stat_path;  /* file path for statistic files */
   
 } H5FD_tracker_vfd_fapl_t;
 
@@ -387,7 +388,6 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
   char config_str_buf[MAX_CONF_STR_LENGTH];
   char *saveptr = NULL;
   char* token = NULL;
-  char file_path[H5FD_MAX_FILENAME_LEN];
 
   /* Sanity check on file offsets */
   assert(sizeof(off_t) >= sizeof(size_t));
@@ -456,19 +456,56 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
   }
   H5E_END_TRY;
 
+  // // Allocate memory to hold the configuration string
+  // config_str_buf = (char *)malloc(config_str_len + 1);
+
   if (!fa || (H5P_FILE_ACCESS_DEFAULT == fapl_id)) {
     if ((config_str_len =
          H5Pget_driver_config_str(fapl_id, config_str_buf, 128)) < 0) {
           printf("H5Pget_driver_config_str error\n");
     }
-    *saveptr;
-    token = strtok_r(config_str_buf, " ", &saveptr);
-    if (!strcmp(token, "true") || !strcmp(token, "TRUE") ||
-        !strcmp(token, "True")) {
+
+    // if ((config_str_len =
+    //          H5Pget_driver_config_str(fapl_id, config_str_buf, config_str_len + 1)) < 0) {
+    //     printf("H5Pget_driver_config_str error\n");
+    //     free(config_str_buf);
+    // }
+
+    // // Parse the configuration string
+    // token = strtok_r(config_str_buf, ";", &saveptr);
+    // while (token != NULL) {
+    //     if (strstr(token, "path=") != NULL) {
+    //         // Extract the file path between "path=" and ";"
+    //         char *file_path_start = strstr(token, "path=") + strlen("path=");
+    //         // Copy the file path into the provided buffer
+    //         strncpy(file_path, file_path_start, H5FD_MAX_FILENAME_LEN);
+    //         // Ensure null-termination
+    //         file_path[H5FD_MAX_FILENAME_LEN - 1] = '\0';
+    //         // Update the file path in your structure (new_fa)
+    //         // new_fa.file_path = strdup(file_path);
+    //         printf("file_path = %s\n", file_path);
+    //     } else if (strstr(token, "page_size=") != NULL) {
+    //         // Extract the page size after "page_size="
+    //         char *page_size_str = strstr(token, "page_size=") + strlen("page_size=");
+    //         size_t page_size;
+    //         sscanf(page_size_str, "%zu", &page_size);
+    //         // Update the page size in your structure (new_fa)
+    //         new_fa.page_size = page_size;
+    //         printf("page_size = %zu\n", new_fa.page_size);
+    //     }
+    //     token = strtok_r(NULL, ";", &saveptr);
+    // }
+
+
+    token = strtok_r(config_str_buf, ";", &saveptr);
+    if (token != NULL) {
+      new_fa.stat_path = strdup(token);
       new_fa.logStat = true;
+      printf("token file_path = %s\n", new_fa.stat_path);
     }
-    token = strtok_r(0, " ", &saveptr);
+    token = strtok_r(0, ";", &saveptr);
     sscanf(token, "%zu", &(new_fa.page_size));
+    printf("token page_size = %zu\n", new_fa.page_size);
     fa = &new_fa;
   }
 
@@ -505,9 +542,8 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
   file->my_fapl_id = fapl_id;
   file->logStat = fa->logStat;
 
-  if(TKR_HELPER_VFD == nullptr){  
-    parseEnvironmentVariable(file_path);
-    TKR_HELPER_VFD = vfd_tkr_helper_init(file_path, file->logStat, file->page_size);
+  if(TKR_HELPER_VFD == nullptr){
+    TKR_HELPER_VFD = vfd_tkr_helper_init(new_fa.stat_path, file->logStat, file->page_size);
   }
 
   // file->vfd_file_info = add_vfd_file_node(name, file);
