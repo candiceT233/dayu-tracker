@@ -518,7 +518,7 @@ void dump_vfd_file_stat_yaml(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t
       return;
   }
 
-
+#ifdef ACCESS_STAT
   fprintf(f, "- file-%lu:\n", info->sorder_id);
   fprintf(f, "    file_name: \"/%s\"\n", file_name);
 
@@ -582,6 +582,7 @@ void dump_vfd_file_stat_yaml(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t
     dump_vfd_mem_stat_yaml(f, info->h5_lheap);
   }
   // Print other h5_mem_stat_t structs if they exist in a similar way
+#endif
 
   fprintf(f, "- Task:\n");
   fprintf(f, "  task_id: %d\n", getpid());
@@ -776,7 +777,7 @@ void read_write_info_update(std::string func_name, char * file_name, hid_t fapl_
   // std::cout << "read_write_info_update() done: info->file_name = " << info->file_name << std::endl;
 #endif
 
-#ifdef DEBUG_TRK_VFD
+#ifdef DEBUG_VFD
   read_write_info_print(func_name, file_name, fapl_id, _file,
     type, dxpl_id, addr, size, page_size, t_start);
 #endif
@@ -829,7 +830,7 @@ void open_close_info_update(const char* func_name, H5FD_tracker_vfd_t *file, siz
   std::cout << "open_close_info_update() done: info->file_name = " << info->file_name << std::endl;
 #endif
 
-#ifdef DEBUG_TRK_VFD
+#ifdef DEBUG_VFD
   print_open_close_info(func_name, file, info->file_name, eof, flags, t_start);
 #endif
 }

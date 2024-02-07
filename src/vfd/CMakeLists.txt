@@ -43,7 +43,7 @@ option(DEBUG_TRK_VFD "Enable VFD Logging" ON)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     message("h5vfd_tracker IN DEBUG MODE")
     add_compile_options(-g -O0) #-DDEBUG -gdwarf-4 -gdwarf-3 -gdwarf-2
-    add_compile_definitions(DEBUG DEBUG_LOG)
+    add_compile_definitions(DEBUG)
     # Check to set Logging
     if(DEBUG_TRK_VFD)
         add_compile_definitions(DEBUG_TRK_VFD)
@@ -63,6 +63,10 @@ if(VOL_TRACKER)
     add_compile_options(VOL_VFD)
 else()
     message("h5vfd_tracker BUILDING WITHOUT VOL_Tracker")
+endif()
+
+if(ACCESS_STAT)
+    add_compile_definitions(ACCESS_STAT)
 endif()
 
 #-----------------------------------------------------------------------------
