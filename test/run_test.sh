@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-TRACKER_SRC_DIR=/mnt/common/mtang11/scripts/vol-tracker/build/src
+TRACKER_SRC_DIR=../build/src
 export VOL_NAME="tracker"
 export HDF5_USE_FILE_LOCKING='FALSE' # TRUE FALSE BESTEFFORT
 export TRACKER_VFD_PAGE_SIZE=65536 #65536

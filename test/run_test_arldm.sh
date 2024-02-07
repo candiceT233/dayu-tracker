@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-TRACKER_SRC_DIR=/mnt/common/mtang11/scripts/vol-tracker/build/src
+TRACKER_SRC_DIR=../build/src
 export VOL_NAME="tracker"
 
 # export HDF5_USE_FILE_LOCKING='FALSE' # TRUE FALSE BESTEFFORT
@@ -106,8 +106,8 @@ ENV_VAR_VFD_VOL_IO () {
     
     set -x
 
-    export HDF5_VOL_CONNECTOR="$VOL_NAME under_vol=0;under_info={};path=$schema_file_path;level=2;format="
-    export HDF5_PLUGIN_PATH=$TRACKER_SRC_DIR/vol:$TRACKER_SRC_DIR/vfd:$HDF5_PLUGIN_PATH
+    #export HDF5_VOL_CONNECTOR="$VOL_NAME under_vol=0;under_info={};path=$schema_file_path;level=2;format="
+    export HDF5_PLUGIN_PATH=$TRACKER_SRC_DIR/vfd: #$TRACKER_SRC_DIR/vol:$HDF5_PLUGIN_PATH
     export HDF5_DRIVER=hdf5_tracker_vfd
     export HDF5_DRIVER_CONFIG="true ${TRACKER_VFD_PAGE_SIZE}"
     export HDF5_LOG_FILE_PATH="$schema_file_path"
