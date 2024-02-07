@@ -339,7 +339,7 @@ bool getCommandLineByPID(int pid, std::string& commandLine) {
 
 void parseEnvironmentVariable(char* file_path) {
   // get path to save yaml file
-  const char* path_str = std::getenv("HDF5_LOG_FILE_PATH");
+  const char* path_str = std::getenv("STAT_FILE_PATH");
   if (path_str) {
         // Find the first occurrence of ';' or the end of the string
         const char* delimiter = strchr(path_str, ';');
