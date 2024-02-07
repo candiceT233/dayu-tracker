@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# HDF5_PATH="`which h5cc |sed 's/.\{9\}$//'`"
+# export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HDF5_PATH/lib
+# TEST_DIR=h5bench-seq/test_cases
 
 TRACKER_SRC_DIR=../build/src
 export VOL_NAME="tracker"
@@ -71,9 +74,8 @@ ENV_VAR_VFD_IO (){
 
     set -x
 
-    export HDF5_DRIVER_CONFIG="true ${TRACKER_VFD_PAGE_SIZE}"
+    export HDF5_DRIVER_CONFIG="${schema_file_path};${TRACKER_VFD_PAGE_SIZE}"
     export HDF5_DRIVER=hdf5_tracker_vfd
-    export HDF5_LOG_FILE_PATH="$schema_file_path"
     export HDF5_PLUGIN_PATH=$TRACKER_SRC_DIR/vfd
     
     PREP_TASK_NAME "$arldm_saveh5"
@@ -109,8 +111,7 @@ ENV_VAR_VFD_VOL_IO () {
     #export HDF5_VOL_CONNECTOR="$VOL_NAME under_vol=0;under_info={};path=$schema_file_path;level=2;format="
     export HDF5_PLUGIN_PATH=$TRACKER_SRC_DIR/vfd: #$TRACKER_SRC_DIR/vol:$HDF5_PLUGIN_PATH
     export HDF5_DRIVER=hdf5_tracker_vfd
-    export HDF5_DRIVER_CONFIG="true ${TRACKER_VFD_PAGE_SIZE}"
-    export HDF5_LOG_FILE_PATH="$schema_file_path"
+    export HDF5_DRIVER_CONFIG="${schema_file_path};${TRACKER_VFD_PAGE_SIZE}"
     
 
     PREP_TASK_NAME "$arldm_saveh5"
