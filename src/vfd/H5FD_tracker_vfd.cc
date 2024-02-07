@@ -501,11 +501,9 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
     if (token != NULL) {
       new_fa.stat_path = strdup(token);
       new_fa.logStat = true;
-      printf("token file_path = %s\n", new_fa.stat_path);
     }
     token = strtok_r(0, ";", &saveptr);
     sscanf(token, "%zu", &(new_fa.page_size));
-    printf("token page_size = %zu\n", new_fa.page_size);
     fa = &new_fa;
   }
 
