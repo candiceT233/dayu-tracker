@@ -54,7 +54,7 @@ unsigned long FILE_DSET_HT_TOTAL_TIME;       //record file_dset hash table overh
 unsigned long TRK_ACCESS_STAT_TIME;        //record all schema info update time
 //shorten function id: use hash value
 static char* FUNC_DIC[STAT_FUNC_MOD];
-
+char *CURR_DSET;
 
 /* locks */
 void tkrLockInit(TKRLock* lock) {
@@ -237,8 +237,6 @@ void file_grp_created(file_tkr_info_t* info);
 void file_grp_accessed(file_tkr_info_t* info);
 void file_dtypes_created(file_tkr_info_t* info);
 void file_dtypes_accessed(file_tkr_info_t* info);
-
-
 
 
 
@@ -1498,10 +1496,6 @@ dataset_tkr_info_t * add_dataset_node(unsigned long obj_file_no,
     // print to check file_info->file_name
     /* Add dset info that requires parent file info */
     cur->pfile_name = file_info->file_name ? strdup(file_info->file_name) : NULL;
-    // TODO: update meta_page to tracking object
-    cur->metadata_file_page = NULL;
-    cur->metadata_file_page = (size_t) malloc(sizeof(size_t));
-    cur->metadata_file_page = token_to_num(cur->obj_info.token) / TKR_HELPER->tracker_page_size;
 
     tkrLockAcquire(&myLock);
     cur->sorder_id = ++DATA_SORDER;
@@ -1626,21 +1620,6 @@ dataset_tkr_info_t * new_ds_tkr_info(void* under_object, hid_t vol_id, H5O_token
     ds_info->dt_class = H5Tget_class(dt_id);
     ds_info->dset_type_size = H5Tget_size(dt_id);
     H5Tclose(dt_id);
-
-    ds_id = dataset_get_space(under_object, vol_id, dxpl_id);
-    if (ds_info->ds_class == H5S_SIMPLE) {
-        // dimension_cnt, dimensions, and dset_n_elements are not ready here
-        ds_info->dimension_cnt = (unsigned)H5Sget_simple_extent_ndims(ds_id);
-        H5Sget_simple_extent_dims(ds_id, ds_info->dimensions, NULL);
-        ds_info->dset_n_elements = (hsize_t)H5Sget_simple_extent_npoints(ds_id);
-
-        ds_info->ds_class = H5Sget_simple_extent_type(ds_id);
-    }
-    // ds_info->dset_offset = H5Dget_offset(ds_id); // TODO: all returns -1
-    H5Sclose(ds_id);
-
-    // dcpl_id = dataset_get_dcpl(under_object, vol_id, dxpl_id);
-    // H5Pclose(dcpl_id);
 
     return ds_info;
 }
@@ -2864,7 +2843,7 @@ size_t token_to_size_t(const H5O_token_t* token) {
 * This function updates the below parameters of dset_info.
 * All common updates: dspace_id, dimension_cnt, dimensions, dset_select_type, 
 *                     dset_select_npoints, dset_n_elements, layout
-* When dtype is vlen: storage_size, dset_offset, data_file_page_start, data_file_page_end
+* When dtype is vlen: storage_size, dset_offset
 */
 void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
     hid_t file_space_id, void * obj, hid_t dxpl_id)
@@ -2935,26 +2914,13 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
         {
             // get storage size
             size_t tracker_page_size = TKR_HELPER->tracker_page_size;
-            size_t start_addr;
-            size_t end_addr;
-            size_t start_page;
-            size_t end_page;
             size_t access_size;
+            size_t start_addr;
 
             memcpy(&start_addr, &dset_info->obj_info.token, sizeof(size_t));
 
-            end_addr = -1;
-            start_page = start_addr/tracker_page_size;
-            if (end_addr == -1){
-                end_page = -1;
-            } else {
-                end_page = end_addr/tracker_page_size;
-            }
             access_size = -1;
-
             dset_info->dset_offset = start_addr;
-            dset_info->data_file_page_start = start_page;
-            dset_info->data_file_page_end = end_page;
             dset_info->storage_size = 0;
 
 #ifdef DEBUG_PT_TKR_VOL
@@ -3505,22 +3471,15 @@ dset_track_t *create_dset_track_info(dataset_tkr_info_t* dset_info) {
         track_entry->hyper_nblocks = dset_info->hyper_nblocks;
 
         track_entry->pfile_sorder_id = dset_info->pfile_sorder_id;
-        track_entry->data_file_page_start = dset_info->data_file_page_start;
-        track_entry->data_file_page_end = dset_info->data_file_page_end;
 
         track_entry->sorder_ids = NULL;
         track_entry->sorder_ids_end = NULL;
-        track_entry->metadata_file_pages = NULL;
-        track_entry->metadata_file_pages_end = NULL;
 
         myll_add(&(track_entry->sorder_ids), &(track_entry->sorder_ids_end), dset_info->sorder_id);
-        myll_add(&(track_entry->metadata_file_pages), &(track_entry->metadata_file_pages_end), dset_info->metadata_file_page);
         track_entry->dset_select_type = strdup(dset_info->dset_select_type);
         track_entry->dset_select_npoints = dset_info->dset_select_npoints;
 
-        // add task name
-        // const char* curr_task = getenv("CURR_TASK");
-        // track_entry->task_name = curr_task ? strdup(curr_task) : NULL;
+        // TODO: improve add task name
         char *curr_task = NULL;
         if (getCurrentTask(&curr_task)) {
             // printf("Current task is: %s\n", curr_task);
@@ -3678,11 +3637,11 @@ void log_dset_ht_yaml(FILE* f) {
             fprintf(f, "]\n");
             fprintf(f, "        dset_type_size: %d\n", dset_track_info->dset_type_size);
             fprintf(f, "        dataset_read_cnt: %d\n", dset_track_info->dataset_read_cnt);
-            fprintf(f, "        total_bytes_read: %d\n", (dset_track_info->dset_select_npoints * dset_track_info->dset_type_size));
+            // fprintf(f, "        total_bytes_read: %d\n", (dset_track_info->dset_select_npoints * dset_track_info->dset_type_size));
             fprintf(f, "        dataset_write_cnt: %d\n", dset_track_info->dataset_write_cnt);
             
             // TODO: VLen data dset_select_npoints=1, needs to calculate blob size
-            fprintf(f, "        total_bytes_written: %d\n", (dset_track_info->dset_select_npoints * dset_track_info->dset_type_size));
+            // fprintf(f, "        total_bytes_written: %d\n", (dset_track_info->dset_select_npoints * dset_track_info->dset_type_size));
 
             if(dset_track_info->dataset_read_cnt > 0 && dset_track_info->dataset_write_cnt == 0) {
                 fprintf(f, "        access_type: read_only\n");
@@ -3695,11 +3654,6 @@ void log_dset_ht_yaml(FILE* f) {
             fprintf(f, "        dset_offset: %ld\n", dset_track_info->dset_offset);
             fprintf(f, "        dset_select_type: \"%s\"\n", dset_track_info->dset_select_type);
             fprintf(f, "        dset_select_npoints: %ld\n", dset_track_info->dset_select_npoints);
-            fprintf(f, "        data_file_pages: [%ld,%ld]\n", dset_track_info->data_file_page_start, dset_track_info->data_file_page_end);
-
-            fprintf(f, "        metadata_file_pages: [");
-            myll_to_file(f, dset_track_info->metadata_file_pages);
-            fprintf(f, "]\n");
 
             fprintf(f, "        access_orders: [");
             myll_to_file(f, dset_track_info->sorder_ids);
@@ -3771,13 +3725,7 @@ void print_ht_info() {
         printf("    dset_offset: %ld\n", dset_track_info->dset_offset);
         printf("    dset_select_type: \"%s\"\n", dset_track_info->dset_select_type);
         printf("    dset_select_npoints: %ld\n", dset_track_info->dset_select_npoints);
-        printf("    data_file_pages: [%ld,%ld]\n", dset_track_info->data_file_page_start, dset_track_info->data_file_page_end);
 
-        // printf("    metadata_file_pages: [");
-        // for (int i = 0; i < dset_track_info->metadata_file_page_cnt; i++) {
-        //     printf("%ld ", dset_track_info->metadata_file_pages[i]);
-        // }
-        // printf("]\n");
         count++;
     }
     printf("Total number of tracker entries: %d\n", count);
@@ -3820,8 +3768,6 @@ void free_dset_track_info(dset_track_t *dset_track_info) {
         // free(dset_track_info->dimensions);
         // free(dset_track_info->sorder_ids);
         // free(dset_track_info->sorder_ids_end);
-        // free(dset_track_info->metadata_file_pages);
-        // free(dset_track_info->metadata_file_pages_end);
         // free(dset_track_info->dset_select_type);
         free(dset_track_info);
     }
@@ -3913,7 +3859,6 @@ void update_dset_track_info(char * key, dataset_tkr_info_t* dset_info) {
         size_t new_token = token_to_num(dset_info->obj_info.token);
         if(new_token != entry->dset_track_info->token_num){
             entry->dset_track_info->token_num = new_token;
-            // TODO update metadata_file_pages if new_token
         }
         // update end time
         entry->dset_track_info->end_time = get_time_usec();
@@ -3929,8 +3874,6 @@ void update_dset_track_info(char * key, dataset_tkr_info_t* dset_info) {
         }
 
         // myll_add(&(entry->dset_track_info->sorder_ids), &(entry->dset_track_info->sorder_ids_end), dset_info->sorder_id);
-        myll_add(&entry->dset_track_info->metadata_file_pages, &entry->dset_track_info->metadata_file_pages_end, dset_info->metadata_file_page);
-
     }
 
     // Release the lock
