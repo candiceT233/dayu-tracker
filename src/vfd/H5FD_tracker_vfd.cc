@@ -250,8 +250,8 @@ H5FD__tracker_vfd_term(void) {
 #endif
   herr_t ret_value = SUCCEED;
 
-  // if(TKR_HELPER_VFD != nullptr)
-  //   vfd_tkr_helper_teardown(TKR_HELPER_VFD); // TODO: this segfault
+  if(TKR_HELPER_VFD != nullptr)
+    vfd_tkr_helper_teardown(TKR_HELPER_VFD); // TODO: this segfault
 
   /* Unregister from HDF5 error API */
   if (H5FDtracker_vfd_err_class_g >= 0) {
@@ -322,6 +322,8 @@ H5Pset_fapl_tracker_vfd(hid_t fapl_id, hbool_t logStat, size_t page_size, std::s
 #ifdef DEBUG_TRK_VFD
   print_H5Pset_fapl_info("H5Pset_fapl_tracker_vfd", logStat, page_size);
 #endif
+
+  VFD_ACCESS_IDX = 0;
 
   TOTAL_TKR_VFD_TIME += (get_time_usec() - t_start);
 
@@ -552,8 +554,8 @@ static herr_t H5FD__tracker_vfd_close(H5FD_t *_file) {
 
 #ifdef ACCESS_STAT
   open_close_info_update("H5FD__tracker_vfd_close", file, file->eof, file->flags, t_start);
+  dump_vfd_file_stat_json(TKR_HELPER_VFD, file->vfd_file_info);
 #endif
-  dump_vfd_file_stat_yaml(TKR_HELPER_VFD, file->vfd_file_info);
   rm_vfd_file_node(TKR_HELPER_VFD, _file);
   
 
@@ -859,7 +861,10 @@ static herr_t H5FD__tracker_vfd_read(H5FD_t *_file, H5FD_mem_t type,
 
 #ifdef ACCESS_STAT
   /* custom VFD code start */
-  read_write_info_update("H5FD__tracker_vfd_read", file->filename, file->my_fapl_id ,_file,
+  VFD_ACCESS_IDX++;
+  // check if VFD_ACCESS_IDX is every 10th access
+  if(VFD_ACCESS_IDX % ACCESS_INX_SKIP == 0)
+    read_write_info_update("H5FD__tracker_vfd_read", file->filename, file->my_fapl_id ,_file,
     type, dxpl_id, addr, read_size, file->page_size, t_start);
 #endif
 
@@ -976,7 +981,10 @@ static herr_t H5FD__tracker_vfd_write(H5FD_t *_file, H5FD_mem_t type,
 
 #ifdef ACCESS_STAT
   /* custom VFD code start */
-  read_write_info_update("H5FD__tracker_vfd_write", file->filename, file->my_fapl_id ,_file,
+  VFD_ACCESS_IDX++;
+  // check if VFD_ACCESS_IDX is every 10th access
+  if(VFD_ACCESS_IDX % ACCESS_INX_SKIP == 0)
+    read_write_info_update("H5FD__tracker_vfd_write", file->filename, file->my_fapl_id ,_file,
     type, dxpl_id, addr, write_size, file->page_size, t_start);
 #endif
 

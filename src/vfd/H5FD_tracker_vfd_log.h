@@ -71,7 +71,7 @@
 #define MAX_FILE_INTENT_LENGTH 128
 #define MAX_CONF_STR_LENGTH 128
 #define H5FD_MAX_FILENAME_LEN 1024 // same as H5FD_MAX_FILENAME_LEN
-#define VFD_STAT_FILE_NAME "vfd_data_stat.yaml"
+#define VFD_STAT_FILE_NAME "vfd_data_stat.json"
 
 static
 unsigned long get_time_usec(void) {
@@ -90,6 +90,7 @@ unsigned long TOTAL_POSIX_IO_TIME;
 typedef struct H5FD_tkr_file_info_t vfd_file_tkr_info_t;
 std::string read_func = "H5FD__tracker_vfd_read";
 std::string write_func = "H5FD__tracker_vfd_write";
+#define ACCESS_INX_SKIP 10
 
 // // Declare the shared memory region
 // #define SHM_NAME "/tracker_shm"
@@ -143,6 +144,14 @@ struct h5_dset_info_t {
     h5_mem_stat_t * h5_super; // H5FD_MEM_SUPER 
     h5_mem_stat_t * h5_btree; // H5FD_MEM_BTREE
     h5_mem_stat_t * h5_lheap; // H5FD_MEM_LHEAP
+
+    /* beloe types not added 
+    H5FD_MEM_DEFAULT, 
+    H5FD_MEM_GHEAP, 
+    H5FD_MEM_NTYPES, 
+    H5FD_MEM_NOLIST
+    */
+
 };
 
 typedef std::map<std::string, h5_dset_info_t*> DsetInfoMap;
@@ -164,25 +173,10 @@ struct H5FD_tkr_file_info_t { // used by VFD
     size_t io_bytes;
 
     DsetInfoMap h5_dset_info_map;
-
     
     int ref_cnt;
     unsigned long open_time;
     unsigned long close_time;
-
-    /* beloe types not added 
-    H5FD_MEM_DEFAULT, 
-    H5FD_MEM_GHEAP, 
-    H5FD_MEM_NTYPES, 
-    H5FD_MEM_NOLIST
-    */
-
-    /* common metadata access type */
-    // h5_mem_stat_t * h5_draw; // H5FD_MEM_DRAW
-    // h5_mem_stat_t * h5_ohdr; // H5FD_MEM_OHDR
-    // h5_mem_stat_t * h5_super; // H5FD_MEM_SUPER 
-    // h5_mem_stat_t * h5_btree; // H5FD_MEM_BTREE
-    // h5_mem_stat_t * h5_lheap; // H5FD_MEM_LHEAP
 
     vfd_file_tkr_info_t *next;
 };
@@ -236,8 +230,9 @@ void print_open_close_info(const char* func_name, void * obj, const char * file_
   size_t eof, int flags, unsigned long t_start);
 
 
-void dump_vfd_file_stat_yaml(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t* info);
-void dump_vfd_mem_stat_yaml(FILE* f, const h5_mem_stat_t* mem_stat);
+void dump_vfd_file_stat_json(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t* info);
+void dump_vfd_dset_stat_json(FILE* f, const vfd_file_tkr_info_t* info);
+void dump_vfd_mem_stat_json(FILE* f, const h5_mem_stat_t* mem_stat);
 
 void parseEnvironmentVariable(char* file_path);
 vfd_tkr_helper_t * vfd_tkr_helper_init( char* file_path, size_t page_size, hbool_t logStat);
@@ -457,57 +452,56 @@ void print_mem_stat(const h5_mem_stat_t* mem_stat)
     
     page_range_t* read_range = mem_stat->read_ranges;
     while (read_range != nullptr) {
-        printf("%d:(%zu,%zu)", read_range->io_idx, read_range->start_page, read_range->end_page);
+        printf("\"%d\":(%zu,%zu)", read_range->io_idx, read_range->start_page, read_range->end_page);
         read_range = read_range->next;
         if (read_range != nullptr) {
             printf(",");
         }
     }
     
-    printf("}\n");
+    printf("}, \n");
     printf("      write_bytes: %zu\n", mem_stat->write_bytes);
     printf("      write_cnt: %d\n", mem_stat->write_cnt);
     printf("      write_ranges: {");
     
     page_range_t* write_range = mem_stat->write_ranges;
     while (write_range != nullptr) {
-        printf("%d:(%zu,%zu)", write_range->io_idx, write_range->start_page, write_range->end_page);
+        printf("\"%d\":(%zu,%zu)", write_range->io_idx, write_range->start_page, write_range->end_page);
         write_range = write_range->next;
         if (write_range != nullptr) {
             printf(",");
         }
     }
     
-    printf("}\n");
+    printf("}, \n");
 }
 
 
 
-void dump_vfd_mem_stat_yaml(FILE* f, const h5_mem_stat_t* mem_stat) {
+void dump_vfd_mem_stat_json(FILE* f, const h5_mem_stat_t* mem_stat) {
 
-    fprintf(f, "      %s:\n", mem_stat->mem_type.c_str());
-    fprintf(f, "        read_bytes: %zu\n", mem_stat->read_bytes);
-    fprintf(f, "        read_cnt: %d\n", mem_stat->read_cnt);
-    fprintf(f, "        read_ranges: {");
+    fprintf(f, "\t\t\t\t\"%s\": {\n", mem_stat->mem_type.c_str());
+    fprintf(f, "\t\t\t\t\"read_bytes\": %zu, ", mem_stat->read_bytes);
+    fprintf(f, "\"read_cnt\": %d, ", mem_stat->read_cnt);
+    fprintf(f, "\"read_ranges\": {");
     
     page_range_t* read_range = mem_stat->read_ranges;
     while (read_range != nullptr) {
-        fprintf(f, "%d:[%zu,%zu]", read_range->io_idx, read_range->start_page, read_range->end_page);
+        fprintf(f, "\"%d\":[%zu,%zu]", read_range->io_idx, read_range->start_page, read_range->end_page);
         read_range = read_range->next;
         if (read_range != nullptr) {
             fprintf(f, ",");
         }
     }
-    
-    fprintf(f, "}\n");
-    fprintf(f, "        write_bytes: %zu\n", mem_stat->write_bytes);
-    fprintf(f, "        write_cnt: %d\n", mem_stat->write_cnt);
-    fprintf(f, "        write_ranges: {");
-    
+    fprintf(f, "},\n");
+
+    fprintf(f, "\t\t\t\t\"write_bytes\": %zu, ", mem_stat->write_bytes);
+    fprintf(f, "\"write_cnt\": %d, ", mem_stat->write_cnt);
+    fprintf(f, "\"write_ranges\": {");
     page_range_t* write_range = mem_stat->write_ranges;
     while (write_range != nullptr) {
         // fprintf(f, "(%zu,%zu)", write_range->start_page, write_range->end_page);
-        fprintf(f, "%d:[%zu,%zu]", write_range->io_idx, write_range->start_page, write_range->end_page);
+        fprintf(f, "\"%d\":[%zu,%zu]", write_range->io_idx, write_range->start_page, write_range->end_page);
         write_range = write_range->next;
         if (write_range != nullptr) {
             fprintf(f, ",");
@@ -515,37 +509,67 @@ void dump_vfd_mem_stat_yaml(FILE* f, const h5_mem_stat_t* mem_stat) {
     }
     
     fprintf(f, "}\n");
+    fprintf(f, "\t\t\t\t}\n");
+
 }
 
-void dump_vfd_dset_stat_yaml(FILE* f, const vfd_file_tkr_info_t* info) {
+void dump_vfd_dset_stat_json(FILE* f, const vfd_file_tkr_info_t* info) {
 
 #ifdef DEBUG_TRK_VFD
-  std::cout << "dump_vfd_dset_stat_yaml() : " << info->file_name << std::endl;
+  std::cout << "dump_vfd_dset_stat_json() : " << info->file_name << std::endl;
 #endif
-
+  fprintf(f, "\t\t\"data\":[{\n");
   // Print the dataset info map
   for (auto const& [dset_name, dset_info] : info->h5_dset_info_map) {
-      fprintf(f, "    - %s:\n", dset_name.c_str());
+      fprintf(f, "\t\t\t\"%s\": {\n", dset_name.c_str());
       // fprintf(f, "      group_dset_name: %s\n", dset_info->group_dset_name);
       if (dset_info->h5_draw != nullptr) {
-          dump_vfd_mem_stat_yaml(f, dset_info->h5_draw);
+          dump_vfd_mem_stat_json(f, dset_info->h5_draw);
       }
-      if (dset_info->h5_ohdr != nullptr) {
-          dump_vfd_mem_stat_yaml(f, dset_info->h5_ohdr);
-      }
-      if (dset_info->h5_super != nullptr) {
-          dump_vfd_mem_stat_yaml(f, dset_info->h5_super);
-      }
-      if (dset_info->h5_btree != nullptr) {
-          dump_vfd_mem_stat_yaml(f, dset_info->h5_btree);
-      }
-      if (dset_info->h5_lheap != nullptr) {
-          dump_vfd_mem_stat_yaml(f, dset_info->h5_lheap);
+      // If dset_name is the last element, do not write comma
+      if( dset_name != info->h5_dset_info_map.rbegin()->first){
+        fprintf(f, "\t\t\t},\n");
+      } else {
+        fprintf(f, "\t\t\t}\n");
       }
   }
+  
+  fprintf(f, "\t\t}],\n");
+
+  fprintf(f, "\t\t\"metadata\":[{\n");
+  // Print the dataset info map
+  for (auto const& [dset_name, dset_info] : info->h5_dset_info_map) {
+      fprintf(f, "\t\t\t\"%s\": {\n", dset_name.c_str());
+      if (dset_info->h5_ohdr != nullptr) {
+          dump_vfd_mem_stat_json(f, dset_info->h5_ohdr);
+      }
+      if (dset_info->h5_super != nullptr) {
+          if (dset_info->h5_ohdr != nullptr)
+              fprintf(f, "\t\t\t\t,\n");
+          dump_vfd_mem_stat_json(f, dset_info->h5_super);
+      }
+      if (dset_info->h5_btree != nullptr) {
+          if (dset_info->h5_super != nullptr)
+              fprintf(f, "\t\t\t\t,\n");
+          dump_vfd_mem_stat_json(f, dset_info->h5_btree);
+      }
+      if (dset_info->h5_lheap != nullptr) {
+          if (dset_info->h5_btree != nullptr)
+              fprintf(f, "\t\t\t\t,\n");
+          dump_vfd_mem_stat_json(f, dset_info->h5_lheap);
+      }
+      // If dset_name is the last element, do not write comma
+      if( dset_name != info->h5_dset_info_map.rbegin()->first){
+        fprintf(f, "\t\t\t},\n");
+      } else {
+        fprintf(f, "\t\t\t}\n");
+      }
+  }
+  
+  fprintf(f, "\t\t}]\n");
 }
 
-void dump_vfd_file_stat_yaml(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t* info) {
+void dump_vfd_file_stat_json(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t* info) {
 
 #ifdef DEBUG_TRK_VFD
   std::cout << "File close and write to : " << helper->tkr_file_path << std::endl;
@@ -563,92 +587,79 @@ void dump_vfd_file_stat_yaml(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t
   FILE * f = fopen(helper->tkr_file_path, "a");
 
   if (!info) {
-      fprintf(f, "dump_vfd_file_stat_yaml(): vfd_file_tkr_info_t is nullptr.\n");
+      fprintf(f, "dump_vfd_file_stat_json(): vfd_file_tkr_info_t is nullptr.\n");
       return;
   }
 
 #ifdef ACCESS_STAT
-  fprintf(f, "- file-%lu:\n", info->sorder_id);
-  fprintf(f, "    file_name: \"/%s\"\n", file_name);
-
-  // Check if the task name is set
+  // fprintf(f, "[\n");
+  /* file info */
+  fprintf(f, "\n{\n");
+  fprintf(f, "\t\"file-%lu\": ", info->sorder_id);
+  fprintf(f, "{");
+  fprintf(f, "\"file_name\": \"/%s\", ", file_name);
   if (info->task_name) {
-      fprintf(f, "    task_name: \"%s\"\n", info->task_name);
+      fprintf(f, "\"task_name\": \"%s\", ", info->task_name);
   } else {
-    // add task name
-    // const char* curr_task = std::getenv("CURR_TASK");
-    // // info->task_name = curr_task ? strdup(curr_task) : nullptr;
-    std::string curr_task = "unknown";
-    std::string task_name = curr_task + "-" + std::to_string(getpid());
-    fprintf(f, "    task_name: \"%s\"\n", task_name.c_str());
-
+      // add task name
+      const char* curr_task = std::getenv("CURR_TASK");
+      fprintf(f, "\"task_name\": \"%s\", ", curr_task);
   }
-  
-  fprintf(f, "    open_time: %lu\n", info->open_time);
-  fprintf(f, "    close_time: %lu\n", get_time_usec());
-  fprintf(f, "    file_intent: [");
+  fprintf(f, "\"open_time\": %lu, ", info->open_time);
+  fprintf(f, "\"close_time\": %lu, ", get_time_usec());
+  fprintf(f, "\"file_intent\": [");
   if (info->intent != nullptr) {
-      fprintf(f, "%s", info->intent);
+      fprintf(f, "\"%s\"", info->intent);
   }
-  fprintf(f, "]\n");
-
-  fprintf(f, "    file_no: %lu\n", info->file_no);
-  fprintf(f, "    file_read_cnt: %d\n", info->file_read_cnt);
-  fprintf(f, "    file_write_cnt: %d\n", info->file_write_cnt);
+  fprintf(f, "], ");
+  fprintf(f, "\"file_no\": %lu, ", info->file_no);
+  fprintf(f, "\"file_read_cnt\": %d, ", info->file_read_cnt);
+  fprintf(f, "\"file_write_cnt\": %d, ", info->file_write_cnt);
   if(info->file_read_cnt > 0 && info->file_write_cnt == 0){
-    fprintf(f, "    access_type: read_only\n");
-    fprintf(f, "    file_type: input\n");
+    fprintf(f, "\"access_type\": \"read_only\", ");
+    fprintf(f, "\"file_type\": \"input\", ");
   }
   else if(info->file_write_cnt > 0 && info->file_read_cnt == 0){
-    fprintf(f, "    access_type: write_only\n");
-    fprintf(f, "    file_type: output\n");
+    fprintf(f, "\"access_type\": \"write_only\", ");
+    fprintf(f, "\"file_type\": \"output\", ");
   }
   else if (info->file_write_cnt > 0 && info->file_read_cnt > 0){
     // read_write does not identify order of read and write
-    fprintf(f, "    access_type: read_write\n");
-    fprintf(f, "    file_type: input-output\n");
+    fprintf(f, "\"access_type\": \"read_write\", ");
+    fprintf(f, "\"file_type\": \"input-output\", ");
   } else {
-    fprintf(f, "    access_type: not_accessed\n");
-    fprintf(f, "    file_type: na\n");
+    fprintf(f, "\"access_type\": \"not_accessed\", ");
+    fprintf(f, "\"file_type\": \"na\", ");
   }
-  fprintf(f, "    total_io_bytes: %ld\n", info->io_bytes);
-  fprintf(f, "    file_size: %zu\n", info->file_size);
-  fprintf(f, "    data:\n");
-  dump_vfd_dset_stat_yaml(f, info);
 
-  // // Check and print h5_mem_stat_t structs if they exist
-  // if (info->h5_draw != nullptr) {
-  //   dump_vfd_mem_stat_yaml(f, info->h5_draw);
-  // }
-  // fprintf(f, "    metadata:\n");
-  // if (info->h5_ohdr != nullptr) {
-  //   dump_vfd_mem_stat_yaml(f, info->h5_ohdr);
-  // }
-  // if (info->h5_super != nullptr) {
-  //   dump_vfd_mem_stat_yaml(f, info->h5_super);
-  // }
-  // if (info->h5_btree != nullptr) {
-  //   dump_vfd_mem_stat_yaml(f, info->h5_btree);
-  // }
-  // if (info->h5_lheap != nullptr) {
-  //   dump_vfd_mem_stat_yaml(f, info->h5_lheap);
-  // }
-  // Print other h5_mem_stat_t structs if they exist in a similar way
+  fprintf(f, "\"io_bytes\": %ld, ", info->io_bytes);
+  fprintf(f, "\"file_size\": %zu, \n", info->file_size);
+  
+
+  dump_vfd_dset_stat_json(f, info);
+  fprintf(f, "\t},\n");
+  // fprintf(f, "}\n");
+
 #endif
-
-  fprintf(f, "- Task:\n");
-  if (info->task_name != nullptr) {
-      fprintf(f, "  task_name: %s\n", info->task_name);
+  /* task info */
+  // fprintf(f, "{\n");
+  fprintf(f, "\t\"Task\": {");
+  if (info->task_name) {
+      fprintf(f, "\"task_name\": \"%s\", ", info->task_name);
+  } else {
+      // add task name
+      const char* curr_task = std::getenv("CURR_TASK");
+      fprintf(f, "\"task_name\": \"%s\", ", curr_task);
   }
-  fprintf(f, "  task_id: %d\n", getpid());
-  fprintf(f, "  tracker_vfd_page_size: %ld\n", info->adaptor_page_size);
-  fprintf(f, "  VFD-Overhead(ms): %llu\n", TOTAL_TKR_VFD_TIME/1000 - TOTAL_POSIX_IO_TIME/1000);
-  fprintf(f, "  POSIX-IO-Time(ms): %llu\n", TOTAL_POSIX_IO_TIME/1000);
+  fprintf(f, "\"task_id\": %d, ", getpid());
+  fprintf(f, "\"tracker_vfd_page_size\": %ld, ", info->adaptor_page_size);
+  fprintf(f, "\"VFD-Overhead(ms)\": %llu, ", TOTAL_TKR_VFD_TIME/1000 - TOTAL_POSIX_IO_TIME/1000);
+  fprintf(f, "\"POSIX-IO-Time(ms)\": %llu}\n", TOTAL_POSIX_IO_TIME/1000);
   // reset the total overhead and posix io time once recorded
   TOTAL_TKR_VFD_TIME = 0;
   TOTAL_POSIX_IO_TIME = 0;
 
-  fprintf(f, "\n");
+  fprintf(f, "},");
 
 
   fflush(f);
@@ -663,18 +674,18 @@ std::string getFileIntentFlagsStr(unsigned int flags) {
     std::string intentFlagsStr;
 
     if (flags == 0)
-        intentFlagsStr += "\"NOT_SPECIFIED\",";
+        intentFlagsStr += "\'NOT_SPECIFIED\',";
     else{
       if (flags & H5F_ACC_RDWR)
-          intentFlagsStr += "\"H5F_ACC_RDWR\",";
+          intentFlagsStr += "\'H5F_ACC_RDWR\',";
       if (flags & H5F_ACC_RDONLY)
-          intentFlagsStr += "\"H5F_ACC_RDONLY\",";
+          intentFlagsStr += "\'H5F_ACC_RDONLY\',";
       if (flags & H5F_ACC_TRUNC)
-          intentFlagsStr += "\"H5F_ACC_TRUNC\",";
+          intentFlagsStr += "\'H5F_ACC_TRUNC\',";
       if (flags & H5F_ACC_CREAT)
-          intentFlagsStr += "\"H5F_ACC_CREAT\",";
+          intentFlagsStr += "\'H5F_ACC_CREAT\',";
       if (flags & H5F_ACC_EXCL)
-          intentFlagsStr += "\"H5F_ACC_EXCL\",";
+          intentFlagsStr += "\'H5F_ACC_EXCL\',";
     }
 
     // Remove the trailing comma if there are any flags
@@ -697,7 +708,7 @@ void update_mem_type_stat_helper(int rw, size_t start_page,
         page_range_t* new_range = new page_range_t();
         new_range->start_page = start_page;
         new_range->end_page = end_page;
-        new_range->io_idx = VFD_ACCESS_IDX;
+        new_range->io_idx= VFD_ACCESS_IDX;
         new_range->next = nullptr;
 
         if (mem_stat->read_ranges == nullptr) {
@@ -715,7 +726,7 @@ void update_mem_type_stat_helper(int rw, size_t start_page,
         page_range_t* new_range = new page_range_t();
         new_range->start_page = start_page;
         new_range->end_page = end_page;
-        new_range->io_idx = VFD_ACCESS_IDX;
+        new_range->io_idx= VFD_ACCESS_IDX;
         new_range->next = nullptr;
 
         if (mem_stat->write_ranges == nullptr) {
@@ -1146,6 +1157,11 @@ vfd_tkr_helper_t * vfd_tkr_helper_init( char* file_path, size_t page_size, hbool
     new_helper->tracker_vfd_page_size = page_size;
     /* VFD vars end */
 
+    // New json file list
+    FILE * f = fopen(new_helper->tkr_file_path, "a");
+    fprintf(f, "[\n");
+    fclose(f);
+
     // Get the user's login name
     if (getlogin_r(new_helper->user_name, sizeof(new_helper->user_name)) != 0) {
         printf("Failed to get user name.\n");
@@ -1166,6 +1182,8 @@ void vfd_file_info_free(vfd_file_tkr_info_t* info)
 
     // if(info->task_name)
     //   free((void*)(info->task_name));
+
+    info->h5_dset_info_map.clear();
 
     free(info);
 }
@@ -1315,19 +1333,30 @@ int rm_vfd_file_node(vfd_tkr_helper_t* helper, H5FD_t *_file)
 
 void vfd_tkr_helper_teardown(vfd_tkr_helper_t* helper){
   printf("vfd_tkr_helper_teardown()\n");
-  // frea down causes double free error in single process mode
-  if(helper){// not null
 
-      if(helper->logStat){//no file
-        fflush(helper->tkr_file_handle);
-        fclose(helper->tkr_file_handle);
-      }
+  // Close json file list
+  FILE * f = fopen(TKR_HELPER_VFD->tkr_file_path, "r+");
 
-      if(helper->tkr_file_path)
-          free(helper->tkr_file_path);
+  fseek(f, -2, SEEK_END);
+  // Add the closing JSON array bracket
+  fwrite("}]", 2, 1, f);
 
-      // free(helper);
-  }
+  // Close the file
+  fclose(f);
+
+  // // frea down causes double free error in single process mode
+  // if(helper){// not null
+
+  //     if(helper->logStat){//no file
+  //       fflush(helper->tkr_file_handle);
+  //       fclose(helper->tkr_file_handle);
+  //     }
+
+  //     if(helper->tkr_file_path)
+  //         free(helper->tkr_file_path);
+
+  //     // free(helper);
+  // }
 }
 
 
