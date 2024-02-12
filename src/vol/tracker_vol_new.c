@@ -2932,7 +2932,7 @@ H5VL_tracker_file_close(void *file, hid_t dxpl_id, void **req)
     file_info->file_size = file_get_size(o->under_object,o->under_vol_id, dxpl_id);
     file_info_update("H5VLfile_close", file, NULL, NULL, dxpl_id);
 #endif
-    log_file_stat_yaml(TKR_HELPER,file_info);
+    log_file_stat_json(TKR_HELPER,file_info);
 #ifdef ACCESS_STAT
     // TOTAL_TKR_OVERHEAD = 0; // reset the total overhead once recorded
     // tkrLockRelease(&myLock);

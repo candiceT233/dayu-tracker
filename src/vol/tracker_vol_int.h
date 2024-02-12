@@ -189,9 +189,8 @@ char * get_datatype_class_str(hid_t type_id);
 
     
     /* candice added routine prototypes start */
-// void log_file_stat_yaml(FILE *f, const file_tkr_info_t* file_info);
-void log_file_stat_yaml(tkr_helper_t* helper_in, const file_tkr_info_t* file_info);
-void log_dset_ht_yaml(FILE *f);
+void log_file_stat_json(tkr_helper_t* helper_in, const file_tkr_info_t* file_info);
+void log_dset_ht_json(FILE *f);
 // void print_order_id();
 // void tracker_insert_file(file_list_t** head_ref, file_tkr_info_t * file_info);
 // void print_all_tracker(file_list_t * head);
@@ -840,6 +839,11 @@ tkr_helper_t * tkr_helper_init( char* file_path, Track_level tkr_level, char* tk
     
     printf("vol new_helper tkr_file_path: %s\n", new_helper->tkr_file_path);
     /* VFD vars end */
+
+    // New json file list
+    FILE * f = fopen(new_helper->tkr_file_path, "a");
+    fprintf(f, "[");
+    fclose(f);
 
     return new_helper;
 }
@@ -2183,7 +2187,18 @@ void attribute_stats_tkr_write(const attribute_tkr_info_t *attr_info) {
 }
 
 void tkr_helper_teardown(tkr_helper_t* helper){
+
     if(helper){// not null
+
+    // Close json file list
+    FILE * f = fopen(helper->tkr_file_path, "r+");
+
+    fseek(f, -3, SEEK_END);
+    // Add the closing JSON array bracket
+    fwrite("}]", 2, 1, f);
+
+    // Close the file
+    fclose(f);
 
 #ifdef VOLTRK_PROV_DEBUG
 
@@ -2343,17 +2358,17 @@ int tkr_write(tkr_helper_t* helper_in, const char* msg, unsigned long duration){
 
 
     /* candice added routine implementation start*/
-void log_file_stat_yaml(tkr_helper_t* helper_in, const file_tkr_info_t* file_info)
+void log_file_stat_json(tkr_helper_t* helper_in, const file_tkr_info_t* file_info)
 {
     FILE * f = fopen(helper_in->tkr_file_path, "a");
     
     if (!file_info) {
-        fprintf(f, "log_file_stat_yaml(): file_info is NULL.\n");
+        fprintf(f, "log_file_stat_json(): file_info is NULL.\n");
         return;
     }
 
 #ifdef ACCESS_STAT
-    log_dset_ht_yaml(f);
+    log_dset_ht_json(f);
 
     // char* file_name = strrchr(file_info->file_name, '/');
     char* file_name = (char *) file_info->file_name;
@@ -2363,48 +2378,44 @@ void log_file_stat_yaml(tkr_helper_t* helper_in, const file_tkr_info_t* file_inf
     else
         file_name = (char*)file_info->file_name;
 
-    fprintf(f, "- file-%ld:\n", file_info->sorder_id);
-    fprintf(f, "    file_name: \"/%s\"\n", file_name);
-    // if(file_info->task_name != NULL){
-    //     fprintf(f, "    task_name: \"%s\"\n", file_info->task_name);
-    // }else{
-    //     const char* curr_task = getenv("CURR_TASK");
-    //     if (curr_task)
-    //         fprintf(f, "    task_name: \"%s\"\n", curr_task);
-    //     else
-    //         fprintf(f, "    task_name: \"\"\n");
-    // }
-    fprintf(f, "    open_time: %ld\n", file_info->open_time);
-    fprintf(f, "    close_time: %ld\n", get_time_usec());
-    fprintf(f, "    file_size: %zu\n", file_info->file_size);
-    fprintf(f, "    header_size: %zu\n", file_info->header_size);
-    fprintf(f, "    sieve_buf_size: %zu\n", file_info->sieve_buf_size);
-    fprintf(f, "    file_intent: [\"%s\"]\n", file_info->intent);
+    fprintf(f, "{\n");
+    fprintf(f, "    \"file-%ld\": {\n", file_info->sorder_id);
+    fprintf(f, "        \"file_name\": \"/%s\",\n", file_name);
+    fprintf(f, "        \"open_time\": %ld,\n", file_info->open_time);
+    fprintf(f, "        \"close_time\": %ld,\n", get_time_usec());
+    fprintf(f, "        \"file_size\": %zu,\n", file_info->file_size);
+    fprintf(f, "        \"header_size\": %zu,\n", file_info->header_size);
+    fprintf(f, "        \"sieve_buf_size\": %zu,\n", file_info->sieve_buf_size);
+    fprintf(f, "        \"file_intent\": [\"%s\"],\n", file_info->intent);
 
+    fprintf(f, "        \"ds_created\": %d,\n", file_info->ds_created);
+    fprintf(f, "        \"ds_accessed\": %d,\n", file_info->ds_accessed);
+    fprintf(f, "        \"grp_created\": %d,\n", file_info->grp_created);
+    fprintf(f, "        \"grp_accessed\": %d,\n", file_info->grp_accessed);
+    fprintf(f, "        \"dtypes_created\": %d,\n", file_info->dtypes_created);
+    fprintf(f, "        \"dtypes_accessed\": %d\n", file_info->dtypes_accessed);
+    fprintf(f, "    }\n");
+    fprintf(f, "},\n");
 
-    fprintf(f, "    ds_created: %d\n", file_info->ds_created);
-    fprintf(f, "    ds_accessed: %d\n", file_info->ds_accessed);
-    fprintf(f, "    grp_created: %d\n", file_info->grp_created);
-    fprintf(f, "    grp_accessed: %d\n", file_info->grp_accessed);
-    fprintf(f, "    dtypes_created: %d\n", file_info->dtypes_created);
-    fprintf(f, "    dtypes_accessed: %d\n", file_info->dtypes_accessed);
 #endif
 
-    fprintf(f, "- Task:\n");
-    fprintf(f, "  task_id: %d\n", getpid());
-    fprintf(f, "  VOL-Overhead(ms): %ld\n", TOTAL_TKR_OVERHEAD/1000);
+    fprintf(f, "{\n");
+    fprintf(f, "    \"Task\": {\n");
+    fprintf(f, "        \"task_id\": %d,\n", getpid());
+    fprintf(f, "        \"VOL-Overhead(ms)\": %ld,\n", TOTAL_TKR_OVERHEAD / 1000);
+    fprintf(f, "        \"TOTAL_NATIVE_H5_TIME(ms)\": %ld,\n", TOTAL_NATIVE_H5_TIME / 1000);
+    fprintf(f, "        \"TKR_WRITE_TOTAL_TIME(ms)\": %ld,\n", TKR_WRITE_TOTAL_TIME / 1000);
+    fprintf(f, "        \"FILE_LL_TOTAL_TIME(ms)\": %ld,\n", FILE_LL_TOTAL_TIME / 1000);
+    fprintf(f, "        \"DS_LL_TOTAL_TIME(ms)\": %ld,\n", DS_LL_TOTAL_TIME / 1000);
+    fprintf(f, "        \"GRP_LL_TOTAL_TIME(ms)\": %ld,\n", GRP_LL_TOTAL_TIME / 1000);
+    fprintf(f, "        \"DT_LL_TOTAL_TIME(ms)\": %ld,\n", DT_LL_TOTAL_TIME / 1000);
+    fprintf(f, "        \"ATTR_LL_TOTAL_TIME(ms)\": %ld,\n", ATTR_LL_TOTAL_TIME / 1000);
+    fprintf(f, "        \"FILE_DSET_HT_TOTAL_TIME(ms)\": %ld,\n", FILE_DSET_HT_TOTAL_TIME / 1000);
+    fprintf(f, "        \"TRK_ACCESS_STAT_TIME(ms)\": %ld\n", TRK_ACCESS_STAT_TIME / 1000);
+    fprintf(f, "    }\n");
+    fprintf(f, "},\n");
+
     TOTAL_TKR_OVERHEAD = 0; // reset the total overhead once recorded
-
-    fprintf(f, "  TOTAL_NATIVE_H5_TIME(ms): %ld\n", TOTAL_NATIVE_H5_TIME/1000);
-    fprintf(f, "  TKR_WRITE_TOTAL_TIME(ms): %ld\n", TKR_WRITE_TOTAL_TIME/1000);
-    fprintf(f, "  FILE_LL_TOTAL_TIME(ms): %ld\n", FILE_LL_TOTAL_TIME/1000);
-    fprintf(f, "  DS_LL_TOTAL_TIME(ms): %ld\n", DS_LL_TOTAL_TIME/1000);
-    fprintf(f, "  GRP_LL_TOTAL_TIME(ms): %ld\n", GRP_LL_TOTAL_TIME/1000);
-    fprintf(f, "  DT_LL_TOTAL_TIME(ms): %ld\n", DT_LL_TOTAL_TIME/1000);
-    fprintf(f, "  ATTR_LL_TOTAL_TIME(ms): %ld\n", ATTR_LL_TOTAL_TIME/1000);
-    fprintf(f, "  FILE_DSET_HT_TOTAL_TIME(ms): %ld\n", FILE_DSET_HT_TOTAL_TIME/1000);
-    fprintf(f, "  TRK_ACCESS_STAT_TIME(ms): %ld\n", TRK_ACCESS_STAT_TIME/1000);
-
     TOTAL_NATIVE_H5_TIME = 0; // reset the total native H5 time once recorded
     TKR_WRITE_TOTAL_TIME = 0; // reset the total write time once recorded
     FILE_LL_TOTAL_TIME = 0; // reset the total file time once recorded
@@ -3593,7 +3604,7 @@ void remove_dset_track_info(char * key) {
 }
 
 
-void log_dset_ht_yaml(FILE* f) {
+void log_dset_ht_json(FILE* f) {
     DsetTrackHashEntry* entry = NULL;
 
     // Acquire the lock before accessing the hash table
@@ -3607,57 +3618,45 @@ void log_dset_ht_yaml(FILE* f) {
             decode_two_strings(entry->key, &file_name, &dset_name);
             dset_track_t* dset_track_info = entry->dset_track_info;
 
-            fprintf(f, "- file-%ld:\n", dset_track_info->pfile_sorder_id);
-            fprintf(f, "    file_name: \"/%s\"\n", file_name);
 
-            if (dset_track_info->task_name != NULL) {
-                fprintf(f, "    task_name: \"%s\"\n", dset_track_info->task_name);
-            } else {
-                char task_name[32]; // Adjust the buffer size as needed
-                snprintf(task_name, sizeof(task_name), "%d", getpid());
-                fprintf(f, "    task_name: \"%s\"\n", task_name);
-            }
+            fprintf(f, "{\n");
+            fprintf(f, "    \"file-%ld\": {\n", dset_track_info->pfile_sorder_id);
+            fprintf(f, "        \"file_name\": \"/%s\",\n", file_name);
+            fprintf(f, "        \"task_name\": \"%s\",\n", dset_track_info->task_name ? dset_track_info->task_name : "Unknown");
 
-            fprintf(f, "    datasets:\n");
-            // fprintf(f, "    - dset:\n");
-            fprintf(f, "        dset_name: \"%s\"\n", dset_name);
-            fprintf(f, "        start_time: %ld\n", dset_track_info->start_time);
-            fprintf(f, "        end_time: %ld\n", dset_track_info->end_time);
-            // fprintf(f, "      token: %ld\n", dset_track_info->token_num);
-            fprintf(f, "        dt_class: \"%s\"\n", get_datatype_class_str(dset_track_info->dt_class));
-            fprintf(f, "        ds_class: \"%s\"\n", get_dataspace_class_str(dset_track_info->ds_class));
-            fprintf(f, "        layout: \"%s\"\n", dset_track_info->layout);
-            fprintf(f, "        storage_size: %ld\n", dset_track_info->storage_size);
-            fprintf(f, "        dset_n_elements: %ld\n", dset_track_info->dset_n_elements);
-            fprintf(f, "        dimension_cnt: %d\n", dset_track_info->dimension_cnt);
-            fprintf(f, "        dimensions: [");
+            fprintf(f, "        \"datasets\": [\n");
+            fprintf(f, "            {\n");
+            fprintf(f, "                \"dset_name\": \"%s\",\n", dset_name);
+            fprintf(f, "                \"start_time\": %ld,\n", dset_track_info->start_time);
+            fprintf(f, "                \"end_time\": %ld,\n", dset_track_info->end_time);
+            fprintf(f, "                \"dt_class\": \"%s\",\n", get_datatype_class_str(dset_track_info->dt_class));
+            fprintf(f, "                \"ds_class\": \"%s\",\n", get_dataspace_class_str(dset_track_info->ds_class));
+            fprintf(f, "                \"layout\": \"%s\",\n", dset_track_info->layout);
+            fprintf(f, "                \"storage_size\": %ld,\n", dset_track_info->storage_size);
+            fprintf(f, "                \"dset_n_elements\": %ld,\n", dset_track_info->dset_n_elements);
+            fprintf(f, "                \"dimension_cnt\": %d,\n", dset_track_info->dimension_cnt);
+            fprintf(f, "                \"dimensions\": [");
             for (int i = 0; i < dset_track_info->dimension_cnt; i++) {
-                fprintf(f, "%ld, ", dset_track_info->dimensions[i]);
+                fprintf(f, "%ld%s", dset_track_info->dimensions[i], i == dset_track_info->dimension_cnt - 1 ? "" : ", ");
             }
-            fprintf(f, "]\n");
-            fprintf(f, "        dset_type_size: %d\n", dset_track_info->dset_type_size);
-            fprintf(f, "        dataset_read_cnt: %d\n", dset_track_info->dataset_read_cnt);
-            // fprintf(f, "        total_bytes_read: %d\n", (dset_track_info->dset_select_npoints * dset_track_info->dset_type_size));
-            fprintf(f, "        dataset_write_cnt: %d\n", dset_track_info->dataset_write_cnt);
-            
-            // TODO: VLen data dset_select_npoints=1, needs to calculate blob size
-            // fprintf(f, "        total_bytes_written: %d\n", (dset_track_info->dset_select_npoints * dset_track_info->dset_type_size));
-
-            if(dset_track_info->dataset_read_cnt > 0 && dset_track_info->dataset_write_cnt == 0) {
-                fprintf(f, "        access_type: read_only\n");
-            }
-            else if (dset_track_info->dataset_read_cnt == 0 && dset_track_info->dataset_write_cnt > 0) {
-                fprintf(f, "        access_type: write_only\n");
-            } else {
-                fprintf(f, "        access_type: read_write\n");
-            }
-            fprintf(f, "        dset_offset: %ld\n", dset_track_info->dset_offset);
-            fprintf(f, "        dset_select_type: \"%s\"\n", dset_track_info->dset_select_type);
-            fprintf(f, "        dset_select_npoints: %ld\n", dset_track_info->dset_select_npoints);
-
-            fprintf(f, "        access_orders: [");
+            fprintf(f, "],\n");
+            fprintf(f, "                \"dset_type_size\": %d,\n", dset_track_info->dset_type_size);
+            fprintf(f, "                \"dataset_read_cnt\": %d,\n", dset_track_info->dataset_read_cnt);
+            fprintf(f, "                \"dataset_write_cnt\": %d,\n", dset_track_info->dataset_write_cnt);
+            fprintf(f, "                \"access_type\": \"%s\",\n", 
+                dset_track_info->dataset_read_cnt > 0 && dset_track_info->dataset_write_cnt == 0 ? "read_only" :
+                (dset_track_info->dataset_read_cnt == 0 && dset_track_info->dataset_write_cnt > 0 ? "write_only" : "read_write"));
+            fprintf(f, "                \"dset_offset\": %ld,\n", dset_track_info->dset_offset);
+            fprintf(f, "                \"dset_select_type\": \"%s\",\n", dset_track_info->dset_select_type);
+            fprintf(f, "                \"dset_select_npoints\": %ld,\n", dset_track_info->dset_select_npoints);
+            fprintf(f, "                \"access_orders\": [");
             myll_to_file(f, dset_track_info->sorder_ids);
             fprintf(f, "]\n");
+            fprintf(f, "            }\n");
+            fprintf(f, "        ]\n");
+            fprintf(f, "    }\n");
+            fprintf(f, "},\n");
+
 
             // // Remove the entry from the hash table
             // HASH_DEL(lock.hash_table, entry);
@@ -3802,7 +3801,9 @@ void myll_to_file(FILE * f, myll_t *head) {
     myll_t *current = head;
     int count =0;
     while (current != NULL) {
-        fprintf(f, "%ld, ", current->data);
+        if (count!= 0)
+            fprintf(f, ", ");
+        fprintf(f, "%ld", current->data);
         current = current->next;
         count ++;
     }

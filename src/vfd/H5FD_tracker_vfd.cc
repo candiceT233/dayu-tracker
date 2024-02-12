@@ -554,8 +554,8 @@ static herr_t H5FD__tracker_vfd_close(H5FD_t *_file) {
 
 #ifdef ACCESS_STAT
   open_close_info_update("H5FD__tracker_vfd_close", file, file->eof, file->flags, t_start);
-  dump_vfd_file_stat_json(TKR_HELPER_VFD, file->vfd_file_info);
 #endif
+  dump_vfd_file_stat_json(TKR_HELPER_VFD, file->vfd_file_info);
   rm_vfd_file_node(TKR_HELPER_VFD, _file);
   
 

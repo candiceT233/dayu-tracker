@@ -16,7 +16,7 @@
 #define H5FD_MAX_FILENAME_LEN 1024 // same as H5FD_MAX_FILENAME_LEN
 #define SHM_NAME "/tracker_shm"
 #define SHM_SIZE 256
-#define VOL_STAT_FILE_NAME "vol_data_stat.yaml"
+#define VOL_STAT_FILE_NAME "vol_data_stat.json"
 char* CURR_DSET;
 
 /************/

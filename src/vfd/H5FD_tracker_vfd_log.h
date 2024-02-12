@@ -638,11 +638,12 @@ void dump_vfd_file_stat_json(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t
 
   dump_vfd_dset_stat_json(f, info);
   fprintf(f, "\t},\n");
-  // fprintf(f, "}\n");
 
+#else
+  fprintf(f, "\n{\n");
 #endif
+
   /* task info */
-  // fprintf(f, "{\n");
   fprintf(f, "\t\"Task\": {");
   if (info->task_name) {
       fprintf(f, "\"task_name\": \"%s\", ", info->task_name);
@@ -659,7 +660,7 @@ void dump_vfd_file_stat_json(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t
   TOTAL_TKR_VFD_TIME = 0;
   TOTAL_POSIX_IO_TIME = 0;
 
-  fprintf(f, "},");
+  fprintf(f, "},\n");
 
 
   fflush(f);
@@ -1159,7 +1160,7 @@ vfd_tkr_helper_t * vfd_tkr_helper_init( char* file_path, size_t page_size, hbool
 
     // New json file list
     FILE * f = fopen(new_helper->tkr_file_path, "a");
-    fprintf(f, "[\n");
+    fprintf(f, "[");
     fclose(f);
 
     // Get the user's login name
@@ -1335,9 +1336,9 @@ void vfd_tkr_helper_teardown(vfd_tkr_helper_t* helper){
   printf("vfd_tkr_helper_teardown()\n");
 
   // Close json file list
-  FILE * f = fopen(TKR_HELPER_VFD->tkr_file_path, "r+");
+  FILE * f = fopen(helper->tkr_file_path, "r+");
 
-  fseek(f, -2, SEEK_END);
+  fseek(f, -3, SEEK_END);
   // Add the closing JSON array bracket
   fwrite("}]", 2, 1, f);
 
