@@ -13,7 +13,7 @@ add_library(h5vfd_tracker SHARED H5FD_tracker_vfd.cc)
 #-----------------------------------------------------------------------------
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_COMPILER h5c++)
-set(CMAKE_C_COMPILER h5cc)
+# set(CMAKE_C_COMPILER h5cc)
 
 #-----------------------------------------------------------------------------
 # Define HDF5 POSIX I/O Required Flags
@@ -35,7 +35,7 @@ set(POSIX_FLAGS
 #-----------------------------------------------------------------------------
 # Define VFD Specific Options
 #-----------------------------------------------------------------------------
-option(DEBUG_TRK_VFD "Enable VFD Logging" ON)
+option(DEBUG_TRK_VFD "Enable VFD Debug Logs" ON)
 
 #-----------------------------------------------------------------------------
 # Compiler Optimization

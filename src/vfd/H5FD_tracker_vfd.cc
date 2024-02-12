@@ -207,7 +207,7 @@ static const H5FD_class_t H5FD_tracker_vfd_g = {
 hid_t
 H5FD_tracker_vfd_init(void) {
   // Overhead not recorded here, common to internal VFD
-#ifdef DEBUG_VFD
+#ifdef DEBUG_TRK_VFD
   std::cout << "H5FD_tracker_vfd_init()" << std::endl;
 #endif
 
@@ -245,7 +245,7 @@ done:
 static herr_t
 H5FD__tracker_vfd_term(void) {
   // Overhead not recorded here, common to internal VFD
-#ifdef DEBUG_VFD
+#ifdef DEBUG_TRK_VFD
   std::cout << "H5FD__tracker_vfd_term()" << std::endl;
 #endif
   herr_t ret_value = SUCCEED;
@@ -319,7 +319,7 @@ H5Pset_fapl_tracker_vfd(hid_t fapl_id, hbool_t logStat, size_t page_size, std::s
                            "can't set Tracker VFD as driver");
   }
 
-#ifdef DEBUG_VFD
+#ifdef DEBUG_TRK_VFD
   print_H5Pset_fapl_info("H5Pset_fapl_tracker_vfd", logStat, page_size);
 #endif
 
@@ -365,8 +365,8 @@ static H5FD_t *
 H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
                   haddr_t maxaddr) {
 
-#ifdef DEBUG_VFD
-  std::cout << "H5FD__open() name = " << name << std::endl;
+#ifdef DEBUG_TRK_VFD
+  std::cout << "H5FD__tracker_vfd_open() name = " << name << std::endl;
     /* If an existing file is opened, load the whole file into memory. */
 #endif
 
@@ -394,8 +394,8 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
 
   H5FD_TRACKER_VFD_INIT;
 
-#ifdef DEBUG_VFD
-  std::cout << "H5FD__open() name = " << name << std::endl;
+#ifdef DEBUG_TRK_VFD
+  std::cout << "H5FD__tracker_vfd_open() name = " << name << std::endl;
 #endif
 
   /* custom VFD code end */
@@ -420,8 +420,8 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
       o_flags |= O_EXCL;
   }
 
-#ifdef DEBUG_VFD
-  std::cout << "H5FD__open() flags = " << flags << std::endl;
+#ifdef DEBUG_TRK_VFD
+  std::cout << "H5FD__tracker_vfd_open() flags = " << flags << std::endl;
 #endif
 
   t1 = get_time_usec();
@@ -437,80 +437,9 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
   t2 = get_time_usec();
   TOTAL_POSIX_IO_TIME += (t2 - t1);
 
-#ifdef DEBUG_VFD
-  std::cout << "H5FD__open() fd = " << fd << std::endl;
-#endif
-
   // if (HDfstat(fd, &sb) < 0)
   if (fstat(fd, &sb) < 0)
     H5FD_TRACKER_VFD_SYS_GOTO_ERROR(H5E_FILE, H5E_BADFILE, NULL, "unable to fstat file");
-      
-
-#ifdef DEBUG_VFD
-  std::cout << "H5FD__open() sb.st_size = " << sb.st_size << std::endl;
-#endif
-
-  /* Get the driver specific information */
-  H5E_BEGIN_TRY {
-    fa = static_cast<const H5FD_tracker_vfd_fapl_t*>(H5Pget_driver_info(fapl_id));
-  }
-  H5E_END_TRY;
-
-  // // Allocate memory to hold the configuration string
-  // config_str_buf = (char *)malloc(config_str_len + 1);
-
-  if (!fa || (H5P_FILE_ACCESS_DEFAULT == fapl_id)) {
-    if ((config_str_len =
-         H5Pget_driver_config_str(fapl_id, config_str_buf, 128)) < 0) {
-          printf("H5Pget_driver_config_str error\n");
-    }
-
-    // if ((config_str_len =
-    //          H5Pget_driver_config_str(fapl_id, config_str_buf, config_str_len + 1)) < 0) {
-    //     printf("H5Pget_driver_config_str error\n");
-    //     free(config_str_buf);
-    // }
-
-    // // Parse the configuration string
-    // token = strtok_r(config_str_buf, ";", &saveptr);
-    // while (token != NULL) {
-    //     if (strstr(token, "path=") != NULL) {
-    //         // Extract the file path between "path=" and ";"
-    //         char *file_path_start = strstr(token, "path=") + strlen("path=");
-    //         // Copy the file path into the provided buffer
-    //         strncpy(file_path, file_path_start, H5FD_MAX_FILENAME_LEN);
-    //         // Ensure null-termination
-    //         file_path[H5FD_MAX_FILENAME_LEN - 1] = '\0';
-    //         // Update the file path in your structure (new_fa)
-    //         // new_fa.file_path = strdup(file_path);
-    //         printf("file_path = %s\n", file_path);
-    //     } else if (strstr(token, "page_size=") != NULL) {
-    //         // Extract the page size after "page_size="
-    //         char *page_size_str = strstr(token, "page_size=") + strlen("page_size=");
-    //         size_t page_size;
-    //         sscanf(page_size_str, "%zu", &page_size);
-    //         // Update the page size in your structure (new_fa)
-    //         new_fa.page_size = page_size;
-    //         printf("page_size = %zu\n", new_fa.page_size);
-    //     }
-    //     token = strtok_r(NULL, ";", &saveptr);
-    // }
-
-
-    token = strtok_r(config_str_buf, ";", &saveptr);
-    if (token != NULL) {
-      new_fa.stat_path = strdup(token);
-      new_fa.logStat = true;
-    }
-    token = strtok_r(0, ";", &saveptr);
-    sscanf(token, "%zu", &(new_fa.page_size));
-    fa = &new_fa;
-  }
-
-#ifdef DEBUG_VFD
-  std::cout << "H5FD__open() fa->logStat = " << fa->logStat << std::endl;
-  std::cout << "H5FD__open() fa->page_size = " << fa->page_size << std::endl;
-#endif
 
   /* Create the new file struct */
   if (NULL == (file = (H5FD_tracker_vfd_t *)calloc((size_t)1, sizeof(H5FD_tracker_vfd_t))))
@@ -521,8 +450,38 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
   file->op  = OP_UNKNOWN;
   /* FIXME: Possible overflow! */
   file->eof = (haddr_t)sb.st_size;
-  // H5_CHECKED_ASSIGN(file->eof, haddr_t, sb.st_size, h5_stat_size_t);
+  // H5_CHECKED_ASSIGN(file->eof, haddr_t, sb.st_size, h5_stat_size_t);  
 
+#ifdef DEBUG_TRK_VFD
+  std::cout << "H5FD__tracker_vfd_open() fd=" << fd << "sb.st_size="<< sb.st_size << std::endl;
+#endif
+
+  /* Get the driver specific information */
+  H5E_BEGIN_TRY {
+    fa = static_cast<const H5FD_tracker_vfd_fapl_t*>(H5Pget_driver_info(fapl_id));
+  }
+  H5E_END_TRY;
+
+  /* custom VFD code start */
+  if (!fa || (H5P_FILE_ACCESS_DEFAULT == fapl_id)) {
+    if ((config_str_len =
+         H5Pget_driver_config_str(fapl_id, config_str_buf, 128)) < 0) {
+          printf("H5Pget_driver_config_str error\n");
+    }
+    token = strtok_r(config_str_buf, ";", &saveptr);
+    if (token != NULL) {
+      new_fa.stat_path = strdup(token);
+      new_fa.logStat = true;
+    }
+    token = strtok_r(0, ";", &saveptr);
+    sscanf(token, "%zu", &(new_fa.page_size));
+    fa = &new_fa;
+  }
+
+#ifdef DEBUG_TRK_VFD
+  std::cout << "H5FD__tracker_vfd_open() fa->logStat = " << fa->logStat << std::endl;
+  std::cout << "H5FD__tracker_vfd_open() fa->page_size = " << fa->page_size << std::endl;
+#endif
 
     /* Check the file locking flags in the fapl */
     if (ignore_disabled_file_locks_s != FAIL)
@@ -530,12 +489,10 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
         file->ignore_disabled_file_locks = ignore_disabled_file_locks_s;
 
 
-    /* Retain a copy of the name used to open the file, for possible error reporting */
-    strncpy(file->filename, name, sizeof(file->filename) - 1);
-    file->filename[sizeof(file->filename) - 1] = '\0';
-
-
-  /* custom VFD code start */
+  /* Retain a copy of the name used to open the file, for possible error reporting */
+  strncpy(file->filename, name, sizeof(file->filename) - 1);
+  file->filename[sizeof(file->filename) - 1] = '\0';
+  
   file->page_size = fa->page_size;
   file->my_fapl_id = fapl_id;
   file->logStat = fa->logStat;
@@ -801,8 +758,8 @@ done:
 static herr_t H5FD__tracker_vfd_read(H5FD_t *_file, H5FD_mem_t type,
                                 hid_t dxpl_id, haddr_t addr,
                                 size_t size, void *buf) {
-#ifdef DEBUG_VFD
-  std::cout << "H5FD__read() size:" << size << std::endl;
+#ifdef DEBUG_TRK_VFD
+  std::cout << "H5FD__tracker_vfd_read() size:" << size << std::endl;
 #endif
 
 
@@ -936,8 +893,8 @@ done:
 static herr_t H5FD__tracker_vfd_write(H5FD_t *_file, H5FD_mem_t type,
                                  hid_t dxpl_id, haddr_t addr,
                                  size_t size, const void *buf) {
-#ifdef DEBUG_VFD
-  std::cout << "H5FD__write() size:" << size << std::endl;
+#ifdef DEBUG_TRK_VFD
+  std::cout << "H5FD__tracker_vfd_write() size:" << size << std::endl;
 #endif
 
   unsigned long t_start = get_time_usec();
