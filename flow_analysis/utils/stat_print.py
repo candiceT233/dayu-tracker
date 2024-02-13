@@ -98,7 +98,7 @@ def show_vfd_stats(G):
     return stat_str
 
 
-def draw_graph(G, test_name, graph_type="datalife", prefix="", save=False):
+def draw_graph(G, test_name, stat_path, graph_type="datalife", prefix="", save=False):
     plt.figure(figsize=(80, 20))
     pos = {node: data['pos'] for node, data in G.nodes(data=True)}
     # Draw the graph with node labels
@@ -108,7 +108,7 @@ def draw_graph(G, test_name, graph_type="datalife", prefix="", save=False):
         out_file_name=f"{test_name}-{graph_type}-networkx.png"
         if prefix != "": out_file_name=f"{prefix}-{test_name}-{graph_type}-networkx.png"
         
-        save_image_path=f"../example_stat/{test_name}/{out_file_name}"
+        save_image_path=f"{stat_path}/{out_file_name}"
         plt.savefig(save_image_path)
     
     # Show the graph

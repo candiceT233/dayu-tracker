@@ -69,7 +69,7 @@ def load_task_order_list(stat_path):
             print(exc)
     
     # switch dict key and value
-    task_order_list = {v: k for k, v in task_order_list.items()}
+    task_order_list = {v: int(k) for k, v in task_order_list.items()}
     return task_order_list
 
 def correct_end_stage(TOL,select_end):
