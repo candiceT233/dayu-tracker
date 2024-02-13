@@ -73,7 +73,7 @@ class DayuTracker(Interceptor):
                 'name': 'taskname_file_path',
                 'msg': 'The path to the file to store the task names',
                 'type': str,
-                'default': "/tmp/dayu_tracker",
+                'default': None,
             },
             {
                 'name': 'workflow_name',
@@ -93,7 +93,7 @@ class DayuTracker(Interceptor):
         
         cmd = ' '.join(cmd)
         Exec(cmd, LocalExecInfo(env=self.mod_env,))
-        self.log(f"DDMD _unset_vfd_vars: {cmd}")
+        self.log(f"DayuTracker _unset_vfd_vars: {cmd}")
     
     def _set_conda_vars(self,env_vars_toset):
         # Get current environment variables
@@ -107,7 +107,7 @@ class DayuTracker(Interceptor):
         cmd.append(self.config['conda_env'])
         cmd = ' '.join(cmd)
         Exec(cmd, LocalExecInfo(env=self.mod_env,))
-        self.log(f"DDMD _set_env_vars: {cmd}")
+        self.log(f"DayuTracker _set_env_vars: {cmd}")
             
     
     def _setup_vfd_tracker(self):
@@ -116,24 +116,25 @@ class DayuTracker(Interceptor):
 
         :return: None
         """
+        self.log(f"Setting up VFD tracker environment variables.")
         
         # Set current environment variables
-        self.mod_env['HDF5_DRIVER'] = self.vfd_tracker_name
-        self.mod_env['HDF5_DRIVER_CONFIG'] = '"' + self.config['stat_file_path'] + ";" + str(self.config['tracker_page_size']) + '"'
+        self.setenv('HDF5_DRIVER', self.vfd_tracker_name)
         
-        # f"{self.config['stat_file_path']};{self.config['tracker_page_size']}"
+        driver_config_str = f'"{self.config["stat_file_path"]};{self.config["tracker_page_size"]}"'
+        
+        self.setenv('HDF5_DRIVER_CONFIG', driver_config_str)
+        self.log(f"HDF5_DRIVER_CONFIG: {self.env['HDF5_DRIVER_CONFIG']}")
         
         # if not empty, append the current HDF5_PLUGIN_PATH to the new plugin path
-        if self.mod_env['HDF5_PLUGIN_PATH'] != "":        
-            self.mod_env['HDF5_PLUGIN_PATH'] = self.config['dayu_lib'] + "/vfd" + ":" + self.mod_env['HDF5_PLUGIN_PATH']
+        if 'HDF5_PLUGIN_PATH' in self.env and self.env['HDF5_PLUGIN_PATH'] != "":
+            plugin_path_str = f'"{self.config["dayu_lib"]}/vfd:{self.env["HDF5_PLUGIN_PATH"]}'
+            self.setenv('HDF5_PLUGIN_PATH', plugin_path_str)
         else:
-            self.mod_env['HDF5_PLUGIN_PATH'] = self.config['dayu_lib'] + "/vfd"
-        
-        self.mod_env['PATH_FOR_TASK_FILES'] = self.config['taskname_file_path']
-        self.mod_env['WORKFLOW_NAME'] = self.config['workflow_name']
+            self.setenv('HDF5_PLUGIN_PATH', f"{self.config['dayu_lib']}/vfd")
         
         # Set conda environment variables if required
-        if self.config['conda_env']:
+        if self.config['conda_env'] is not None:
             self._unset_conda_vars(self.vfd_env_vars)
             self._set_conda_vars(self.vfd_env_vars)
             
@@ -146,22 +147,25 @@ class DayuTracker(Interceptor):
 
         :return: None
         """
-        self.vol_env_vars = ['HDF5_VOL_CONNECTOR', 'HDF5_PLUGIN_PATH']
+        self.log(f"Setting up VOL tracker environment variables.")
+        
         vol_connector_str = (
-            f"{self.vol_tracker_name} under_vol=0;" 
-            + "under_info={};" 
-            + f"path={self.config['stat_file_path']};"
-            + "level=2;format="
+            f'"{self.vol_tracker_name} under_vol=0;'
+            + 'under_info={};'
+            + f'path={self.config["stat_file_path"]};'
+            + 'level=2;format="'
             )
+        
         self.log(f"HDF5_VOL_CONNECTOR: {vol_connector_str}")
         
-        self.mod_env['HDF5_VOL_CONNECTOR'] = vol_connector_str
+        self.setenv('HDF5_VOL_CONNECTOR', vol_connector_str)
         
         # if not empty, append the current HDF5_PLUGIN_PATH to the new plugin path
-        if self.mod_env['HDF5_PLUGIN_PATH'] != "":        
-            self.mod_env['HDF5_PLUGIN_PATH'] = self.config['dayu_lib'] + "/vol" + ":" + self.mod_env['HDF5_PLUGIN_PATH']
+        if 'HDF5_PLUGIN_PATH' in self.env and self.env['HDF5_PLUGIN_PATH'] != "":
+            plugin_path_str = f'"{self.config["dayu_lib"]}/vol:{self.env["HDF5_PLUGIN_PATH"]}'
+            self.setenv('HDF5_PLUGIN_PATH', plugin_path_str)
         else:
-            self.mod_env['HDF5_PLUGIN_PATH'] = self.config['dayu_lib'] + "/vol"
+            self.setenv('HDF5_PLUGIN_PATH', f"{self.config['dayu_lib']}/vol")
         
         # Set conda environment variables if required
         if self.config['conda_env']:
@@ -177,8 +181,7 @@ class DayuTracker(Interceptor):
         :param kwargs: Configuration parameters for this pkg.
         :return: None
         """
-        # check if stat_file_path exist, if not make it
-        pathlib.Path(self.config['stat_file_path']).mkdir(parents=True, exist_ok=True)
+
 
         # workflow name is required
         if not self.config['workflow_name']:
@@ -186,10 +189,8 @@ class DayuTracker(Interceptor):
         else:
             # modify task file to be unique for each workflow
             self.config['taskname_file_path'] = "/tmp/" + self.config['workflow_name']
-        
-        # check if taskname_file_path exist, if not make it
-        pathlib.Path(self.config['taskname_file_path']).mkdir(parents=True, exist_ok=True)
-        
+            self.setenv('PATH_FOR_TASK_FILES', self.config['taskname_file_path'])
+            self.setenv('WORKFLOW_NAME', self.config['workflow_name'])
 
 
     def modify_env(self):
@@ -198,9 +199,25 @@ class DayuTracker(Interceptor):
 
         :return: None
         """
-        # Cleanup the HDF5_PLUGIN_PATH variables first, this is run before any application
-        self.mod_env['HDF5_PLUGIN_PATH'] = ""
+
+        # check if stat_file_path exist, if not make it
+        pathlib.Path(self.config['stat_file_path']).mkdir(parents=True, exist_ok=True)
+
+        # Make path when start
+        pathlib.Path(self.config['taskname_file_path']).mkdir(parents=True, exist_ok=True)
         
+        # Cleanup the HDF5_PLUGIN_PATH variables first, this is run before any application
+        # self.mod_env['HDF5_PLUGIN_PATH'] = ""
+        # self.setenv('HDF5_PLUGIN_PATH',"")
+        
+        # self.setenv('PATH_FOR_TASK_FILES', self.config['taskname_file_path'])
+        # self.setenv('WORKFLOW_NAME', self.config['workflow_name'])
+        
+        # self.env.append('PATH_FOR_TASK_FILES', "")
+        
+        # self.env['PATH_FOR_TASK_FILES'] = self.config['taskname_file_path']
+        # self.env['WORKFLOW_NAME'] = self.config['workflow_name']
+    
         if self.config['vfd_tracker']:
             self._setup_vfd_tracker()
         if self.config['vol_tracker']:
