@@ -35,6 +35,10 @@ def display_all_nodes_attr(G):
         print(f"Node Name: {node}")
         print(f"- Order: {G.nodes[node]['order']} - Type: {G.nodes[node]['type']} - Position: {G.nodes[node]['pos']}")
         # print(f"- Statistics: {G.nodes[node]['stat']}")
+        
+def display_all_edges_attr(G):
+    for edge in G.edges():
+        print(f"Edge: {edge} - {G.edges[edge]}")
 
 # vol_file_dict
 def show_all_overhead(type, file_dict):
