@@ -46,8 +46,10 @@ def show_all_overhead(type, file_dict):
     overhead = 0
     for pid_file, pid_stat in file_dict.items():
         for item in pid_stat:
+            # print(f"Item: {item.keys()}")
             if "Task" in item.keys():
-                overhead += float(item[f'{type}-Overhead(ms)'])
+                task_info = item["Task"]
+                overhead += float(task_info[f'{type}-Overhead(ms)'])
     print(f"Total {type} overhead: {overhead} ms")
     
     # Also output posix IO time for VFD
@@ -56,7 +58,8 @@ def show_all_overhead(type, file_dict):
         for pid_file, pid_stat in file_dict.items():
             for item in pid_stat:
                 if "Task" in item.keys():
-                    io_time += float(item['POSIX-IO-Time(ms)'])
+                    task_info = item["Task"]
+                    io_time += float(task_info['POSIX-IO-Time(ms)'])
         print(f"Total POSIX IO time: {io_time} ms")
         
 

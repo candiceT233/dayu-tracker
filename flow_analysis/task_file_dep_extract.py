@@ -1,8 +1,8 @@
 # TODO: add dependency parser code here
 
 import re
-import yaml
-# from yaml import CSafeDumper as Dumper
+import json
+# from json import CSafeDumper as Dumper
 import argparse
 
 # My utility functions
@@ -220,32 +220,30 @@ def stat_to_task_file_dic(vfd_file_dict, prefetch_schema=False):
                 read_cnt = li[key]['file_read_cnt']
                 write_cnt = li[key]['file_write_cnt']
                 task_file_dict[task_name]['io_cnt'] += (read_cnt + write_cnt)
-                
-                # 2. Get blob and operation info
-                
-                try:
-                    data_stat = li[key]['data']#['H5FD_MEM_DRAW']
-                    if data_stat == None:
-                        data_stat = {}
-                        print("No data_stat with H5FD_MEM_DRAW...")
-                except:
-                    data_stat = {}
-                    print("No data_stat with H5FD_MEM_DRAW...")
-                try:
-                    meta_stats = li[key]['metadata']
-                    if meta_stats == None:
-                        meta_stats = {}
-                        print("No meta_stats ...")
-                except:
-                    meta_stats = {}
-                    print("No meta_stats ...")
-                
-                data_stat.update(meta_stats)
 
                 if prefetch_schema:
-                    io_stat = get_min_max_op_idx(data_stat)
+
+                    # 2. Get IO page and operation info
+                    # Iterate through datasets to get the data_stat and meta_stats
+                    all_data_stat = li[key]['metadata'] # get metadata first
+                    if all_data_stat == None:
+                        all_data_stat = {}
+                        print("No meta_stats ...")
+                        break
+
+                    for dset in all_data_stat:
+                        data_stat = li[key]['data'][dset]#['H5FD_MEM_DRAW']
+                        if data_stat == None:
+                            data_stat = {}
+                            print("No data_stat with H5FD_MEM_DRAW...")
+                            continue
+                        all_data_stat[dset].extend(data_stat)
+                    
+                    io_stat = get_min_max_op_idx(all_data_stat) #FIXME: update to new json format
                 else:
                     io_stat = {}
+                    
+
                     
                 # 2. Add file to intput/output list
                 file_type = li[key]['file_type']
@@ -261,10 +259,6 @@ def stat_to_task_file_dic(vfd_file_dict, prefetch_schema=False):
                     # task_file_dict[task_name]['input'][file_name] = io_stat
                     task_file_dict[task_name]['output'][file_name] = io_stat
                     # TODO: currently only doing output (as observed in DDMD read is after write)
-                
-
-                # print(f"{file_name}: {io_stat}")
-                # data_stat_range_list = list(data_stat['write_ranges'].values())
                 
     return task_file_dict
 
@@ -291,13 +285,11 @@ def sort_task_in_order(task_file_dict, task_order_list):
 
 # Save the task to input/output file mapping
 def save_task_file_dict(task_file_dict, stat_path, test_name):
-    tf_file_path = f"{stat_path}/{test_name}-task_to_file.yaml"
+    tf_file_path = f"{stat_path}/{test_name}-task_to_file.json"
     
-    # if os.path.exists(tf_file_path):
-    #     # Remove the file
-    #     os.remove(tf_file_path)
+    task_to_file_dict = {}
     
-    with open(tf_file_path, 'w') as yaml_file:
+    with open(tf_file_path, 'w') as json_file:
         for task_name,data in task_file_dict.items():
             input_files = list(data['input'].keys())
             output_files = list(data['output'].keys())
@@ -310,13 +302,15 @@ def save_task_file_dict(task_file_dict, stat_path, test_name):
                     'output': output_files
                 }
             }
-            yaml.dump(item_dict, yaml_file)
+            task_to_file_dict.update(item_dict)
+            
+        json.dump(task_to_file_dict, json_file, indent=2)
 
 
 # Convert dictionary to prefetcher format
 def save_hermes_prefetch(task_file_dict, stat_path, test_name):
 
-    prefetch_file_path = f"{stat_path}/apriori_{test_name}.yaml"
+    prefetch_file_path = f"{stat_path}/apriori_{test_name}.json"
 
     with open(prefetch_file_path, 'w') as file:
         file.write("0:\n")
@@ -433,7 +427,7 @@ def extract_hermes_prefetch(task_file_dict):
 
 def save_prefetch_to_file(pf_dict, stat_path, test_name):
     
-    prefetch_file_path = f"{stat_path}/apriori_{test_name}_compact.yaml"
+    prefetch_file_path = f"{stat_path}/apriori_{test_name}_compact.json"
     
     with open(prefetch_file_path, 'w') as file:
         file.write("0:\n")
@@ -496,7 +490,7 @@ def main(args):
     prefetch_schema = args.schema
     
     vfd_files = sload.find_files_with_pattern(stat_path, "vfd")
-    vfd_file_dict = sload.load_stat_yaml(vfd_files)
+    vfd_file_dict = sload.load_stat_json(vfd_files)
     task_order_list = sload.load_task_order_list(stat_path)
     
     task_file_dict = stat_to_task_file_dic(vfd_file_dict, prefetch_schema)
@@ -512,7 +506,7 @@ def main(args):
         sp.show_all_overhead("VFD",vfd_file_dict)
         # load VOL stats
         vol_files = sload.find_files_with_pattern(stat_path, "vol")
-        vol_file_dict = sload.load_stat_yaml(vol_files)
+        vol_file_dict = sload.load_stat_json(vol_files)
         sp.show_all_overhead("VOL",vol_file_dict)
 
 if __name__ == '__main__':    
