@@ -540,21 +540,25 @@ void dump_vfd_dset_stat_json(FILE* f, const vfd_file_tkr_info_t* info) {
   // Print the dataset info map
   for (auto const& [dset_name, dset_info] : info->h5_dset_info_map) {
       fprintf(f, "\t\t\t\"%s\": {\n", dset_name.c_str());
+      int prevs = 0;
       if (dset_info->h5_ohdr != nullptr) {
           dump_vfd_mem_stat_json(f, dset_info->h5_ohdr);
+          prevs = 1;
       }
       if (dset_info->h5_super != nullptr) {
-          if (dset_info->h5_ohdr != nullptr)
+          if (prevs == 1)
               fprintf(f, "\t\t\t\t,\n");
           dump_vfd_mem_stat_json(f, dset_info->h5_super);
+          prevs = 1;
       }
       if (dset_info->h5_btree != nullptr) {
-          if (dset_info->h5_super != nullptr)
+          if (prevs == 1)
               fprintf(f, "\t\t\t\t,\n");
           dump_vfd_mem_stat_json(f, dset_info->h5_btree);
+          prevs = 1;
       }
       if (dset_info->h5_lheap != nullptr) {
-          if (dset_info->h5_btree != nullptr)
+          if (prevs == 1)
               fprintf(f, "\t\t\t\t,\n");
           dump_vfd_mem_stat_json(f, dset_info->h5_lheap);
       }
