@@ -28,7 +28,7 @@ SIMPLE_VOL_IO (){
     local task2="read2"
 
     schema_file_path="`pwd`"
-    rm -rf $schema_file_path/*vol_data_stat.yaml
+    rm -rf $schema_file_path/*vol_data_stat.json
     
     export HDF5_VOL_CONNECTOR="$VOL_NAME under_vol=0;under_info={};path=$schema_file_path;level=2;format="
     export HDF5_PLUGIN_PATH=$TRACKER_SRC_DIR/vol
@@ -46,7 +46,7 @@ SIMPLE_VFD_IO (){
     local task2="read2"
 
     schema_file_path="`pwd`"
-    rm -rf $schema_file_path/*vfd_data_stat.yaml
+    rm -rf $schema_file_path/*vfd_data_stat.json
     
 
     echo "TRACKER_VFD_DIR = $TRACKER_SRC_DIR/vfd"
@@ -76,8 +76,8 @@ SIMPLE_VFD_VOL_IO () {
     local task2="read2"
 
     schema_file_path="`pwd`"
-    rm -rf $schema_file_path/*vfd_data_stat.yaml
-    rm -rf $schema_file_path/*vol_data_stat.yaml
+    rm -rf $schema_file_path/*vfd_data_stat.json
+    rm -rf $schema_file_path/*vol_data_stat.json
 
     echo "TRACKER_VFD_DIR : `ls -l $TRACKER_SRC_DIR/*`"
     

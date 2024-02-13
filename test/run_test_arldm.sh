@@ -4,15 +4,17 @@
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HDF5_PATH/lib
 # TEST_DIR=h5bench-seq/test_cases
 
-TRACKER_SRC_DIR=../build/src
+TRACKER_SRC_DIR="$HOME/scripts/dayu-tracker/build/src"
 export VOL_NAME="tracker"
 
-# export HDF5_USE_FILE_LOCKING='FALSE' # TRUE FALSE BESTEFFORT
+export HDF5_USE_FILE_LOCKING='FALSE' # TRUE FALSE BESTEFFORT
 
 export TRACKER_VFD_PAGE_SIZE=65536
 
 export PROJECT_PATH=$HOME/scripts/hdf5_workflow/ARLDM # $HOME/scripts/hdf5_workflow/ARLDM
 export DATA_PATH=$HOME/experiments/ARLDM
+
+export PRETRAIN_MODEL_PATH=$HOME/experiments/ARLDM/input_data/model_large.pth
 
 TRAIN (){
     echo "Run ARLDM training"
@@ -37,7 +39,7 @@ ENV_VAR_VOL_IO (){
     local arldm_train="arldm_train"
 
     schema_file_path="`pwd`"
-    rm -rf $schema_file_path/*vol_data_stat.yaml
+    rm -rf $schema_file_path/*vol_data_stat.json
     
     set -x
 
@@ -67,7 +69,7 @@ ENV_VAR_VFD_IO (){
     local arldm_train="arldm_train"
 
     schema_file_path="`pwd`"
-    rm -rf $schema_file_path/*vfd_data_stat.yaml
+    rm -rf $schema_file_path/*vfd_data_stat.json
     
 
     echo "TRACKER_VFD_DIR = $TRACKER_SRC_DIR/vfd"
@@ -102,32 +104,33 @@ ENV_VAR_VFD_VOL_IO () {
     local arldm_train="arldm_train"
 
     schema_file_path="`pwd`"
-    rm -rf $schema_file_path/*vfd_data_stat.yaml
-    rm -rf $schema_file_path/*vol_data_stat.yaml
+    rm -rf $schema_file_path/*vfd_data_stat.json
+    rm -rf $schema_file_path/*vol_data_stat.json
     TRACKER_VFD_PAGE_SIZE=65536 #65536
     
     set -x
 
-    #export HDF5_VOL_CONNECTOR="$VOL_NAME under_vol=0;under_info={};path=$schema_file_path;level=2;format="
-    export HDF5_PLUGIN_PATH=$TRACKER_SRC_DIR/vfd: #$TRACKER_SRC_DIR/vol:$HDF5_PLUGIN_PATH
+    export HDF5_VOL_CONNECTOR="$VOL_NAME under_vol=0;under_info={};path=$schema_file_path;level=2;format="
+    export HDF5_PLUGIN_PATH=$TRACKER_SRC_DIR/vfd:$TRACKER_SRC_DIR/vol:$HDF5_PLUGIN_PATH
     export HDF5_DRIVER=hdf5_tracker_vfd
     export HDF5_DRIVER_CONFIG="${schema_file_path};${TRACKER_VFD_PAGE_SIZE}"
     
 
     PREP_TASK_NAME "$arldm_saveh5"
 
-    # python $PROJECT_PATH/data_script/vist_hdf5.py \
-    #     --sis_json_dir $PROJECT_PATH/input_data/sis \
-    #     --dii_json_dir $PROJECT_PATH/input_data/dii \
-    #     --img_dir $PROJECT_PATH/input_data/visit_img \
-    #     --save_path $DATA_PATH/output_data/vistsis_out.h5
+    python $PROJECT_PATH/data_script/vist_hdf5.py \
+        --sis_json_dir $PROJECT_PATH/input_data/sis \
+        --dii_json_dir $PROJECT_PATH/input_data/dii \
+        --img_dir $PROJECT_PATH/input_data/visit_img \
+        --save_path $DATA_PATH/output_data/vistsis_out.h5
 
-    python $PROJECT_PATH/data_script/flintstones_hdf5.py \
-        --data_dir $DATA_PATH/input_data/flintstones \
-        --save_path $DATA_PATH/output_data/flintstones_out.h5
+    # python $PROJECT_PATH/data_script/flintstones_hdf5.py \
+    #     --data_dir $DATA_PATH/input_data/flintstones \
+    #     --save_path $DATA_PATH/output_data/flintstones_out.h5
 
     cd $PROJECT_PATH
     PREP_TASK_NAME "$arldm_train"
+
     python $PROJECT_PATH/main.py
     cd -
 
