@@ -80,7 +80,7 @@ def add_task_dset_file_edges(G, stat_dict, task_list):
                             # TODO: currently treating read_write as read_only (infer from VFD stat)
                             # file -> dset -> task
                             
-                            dset_node_name = f"{dset_node_name}-read"
+                            dset_node_name = f"{dset_node_name}-read-{task_name_base}"
                             
                             if not G.has_node(file_node_name): # add file node
                                 G.add_node(file_node_name, pos=(0,node_order))
@@ -125,7 +125,7 @@ def add_task_dset_file_edges(G, stat_dict, task_list):
                             
                         if access_type == 'write_only':
                             # task -> dset -> file
-                            dset_node_name = f"{dset_node_name}-write"
+                            dset_node_name = f"{dset_node_name}-write-{task_name_base}"
                             if not G.has_node(task_name):  # add task node
                                 G.add_node(task_name, pos=(2,node_order))
                                 # TODO: change to use VFD stats here
