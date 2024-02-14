@@ -178,7 +178,8 @@ EDGE_COLOR_RGBA = {
 # color names : https://www.w3schools.com/colors/colors_names.asp
 COLOR_MAP = {"task": "Red", # read
             "dataset": "Gold", # yellow
-            "file": "MediumBlue", # blue
+            "file": "Navy", # blue
+            "addr": "MediumBlue", # slightly darker blue than file
             "none": "grey",
             }
 OPACITY = 0.6

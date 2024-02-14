@@ -38,7 +38,7 @@ def add_task_file_nodes(G, stat_dict, task_list):
                             nx.set_node_attributes(G, node_attrs)
                         # add edges
                         if not G.has_edge(file_name, task_name):
-                            edge_stats[(file_name, task_name)] = {'access_type': access_type, 'stat': li[k]}
+                            edge_stats[(file_name, task_name)] = {'access_type': access_type, 'file_stat': li[k]}
                         
                     elif access_type == 'write_only' or access_type == 'read_write': # Intermediate files
                         # add task node statistics
@@ -52,7 +52,7 @@ def add_task_file_nodes(G, stat_dict, task_list):
                             nx.set_node_attributes(G, node_attrs)
                         
                         if not G.has_edge(task_name, file_name):
-                            edge_stats[(task_name, file_name)] = {'access_type': access_type, 'stat': li[k]}
+                            edge_stats[(task_name, file_name)] = {'access_type': access_type, 'file_stat': li[k]}
                     else:
                         print(f"Unknown access_type: {access_type}")
     G.add_edges_from(edge_stats.keys())
@@ -87,7 +87,7 @@ def set_task_position(G, tfe_dic):
                 print(f"node : {task_name}, pos: {node_attrs['pos']}")
             
         else:
-            node_attrs = {task_name: {'rpos':1, 'order': task_order, 'type':'task', 'stat':v}}
+            node_attrs = {task_name: {'rpos':1, 'order': task_order, 'type':'task', 'file_stat':v}}
             position = (task_order,task_order_cnt[task_order])
             G.add_node(task_name, pos=position)
             nx.set_node_attributes(G, node_attrs)
@@ -121,7 +121,7 @@ def set_task_position_full(G, tfe_dic, stage_start):
                 print(f"node : {task_name}, pos: {node_attrs['pos']}")
             
         else:
-            node_attrs = {task_name: {'rpos':1, 'order': task_order, 'type':'task', 'stat':v}}
+            node_attrs = {task_name: {'rpos':1, 'order': task_order, 'type':'task', 'file_stat':v}}
             position = (task_order,task_order_cnt[task_order])
             G.add_node(task_name, pos=position)
             nx.set_node_attributes(G, node_attrs)
@@ -169,34 +169,27 @@ def set_file_position(G, map_dic):
     # G.add_edges_from(edge_list)
     return G
 
-def prepare_sankey_stat_full(G):
+
+def prepare_sankey_stat_full_old(G):
     all_edge_attr = G.edges()
     sankey_edge_attr = {}
     for edge, stat in all_edge_attr.items():
-        dset_stat = stat['dset_stat']
-        file_stat = stat['stat']
+        all_dset_stat = stat['dset_stat']
+        file_stat = stat['file_stat']
         
         data_access_bytes = 0
         data_access_cnt = 0
         metadata_access_bytes = 0
         metadata_access_cnt = 0
             
-        # data access cnt
-        all_dset_stats = {}
-        # dataset_stat = dset_stat['metadata']
-        for dataset in dset_stat.keys():
-            if dataset not in all_dset_stats:
-                all_dset_stats[dataset] = {}
-            all_dset_stats[dataset]['metadata'] = dset_stat['metadata'][dataset]
-            all_dset_stats[dataset]['data'] = dset_stat['data'][dataset]
-        
-        for dset, dset_stat in all_dset_stats.items():
-            for meta_type in dset_stat['metadata']:
-                meta_stat = dset_stat['metadata'][meta_type]
+        # data access cnt        
+        for dset, dstat in all_dset_stat.items():
+            for meta_type in all_dset_stat['metadata']:
+                meta_stat = all_dset_stat['metadata'][meta_type]
                 metadata_access_bytes += meta_stat['read_bytes'] + meta_stat['write_bytes']
                 metadata_access_cnt += meta_stat['read_cnt'] + meta_stat['write_cnt']
-            for data_type in dset_stat['data']:
-                data_stat = dset_stat['data'][data_type]
+            for data_type in all_dset_stat['data']:
+                data_stat = all_dset_stat['data'][data_type]
                 data_access_bytes += data_stat['read_bytes'] + data_stat['write_bytes']
                 data_access_cnt += data_stat['read_cnt'] + data_stat['write_cnt']        
         
@@ -222,9 +215,10 @@ def prepare_sankey_stat_full(G):
     nx.set_edge_attributes(G, sankey_edge_attr)
 
 def prepare_sankey_stat(G):
-    all_edge_attr = nx.get_edge_attributes(G,'stat')
+    all_edge_attr = nx.get_edge_attributes(G,'file_stat')
     sankey_edge_attr = {}
     for edge, stat in all_edge_attr.items():
+        
         access_cnt = stat['file_read_cnt'] + stat['file_write_cnt']
         acesss_size = stat['io_bytes']
         access_time_in_sec = (stat['close_time'] - stat['open_time'])/1000000
