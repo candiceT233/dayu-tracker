@@ -34,7 +34,7 @@ class DayuTracker(Interceptor):
         return [
             {
                 'name': 'conda_env',
-                'msg': 'Name of the conda environment to update parameters',
+                'msg': 'Name of the conda environment to update parameters (if multiple, separate by comma)',
                 'type': str,
                 'default': None,
                 'required': False,
@@ -84,30 +84,41 @@ class DayuTracker(Interceptor):
         ]
     
     def _unset_conda_vars(self,env_vars_toset):
-        cmd = ['conda', 'env', 'config', 'vars', 'unset',]
         
-        for env_var in env_vars_toset:
-            cmd.append(f'{env_var}')
-        cmd.append('-n')
-        cmd.append(self.config['conda_env'])
+        # deliminate by comma
+        conda_envs = self.config['conda_env'].split(',')
         
-        cmd = ' '.join(cmd)
-        Exec(cmd, LocalExecInfo(env=self.mod_env,))
-        self.log(f"DayuTracker _unset_vfd_vars: {cmd}")
+        for cenv in conda_envs:
+            
+            cmd = ['conda', 'env', 'config', 'vars', 'unset',]
+            
+            for env_var in env_vars_toset:
+                cmd.append(f'{env_var}')
+            cmd.append('-n')
+            cmd.append(cenv)
+            
+            cmd = ' '.join(cmd)
+            Exec(cmd, LocalExecInfo(env=self.mod_env,))
+            self.log(f"DayuTracker _unset_vfd_vars: {cmd}")
     
     def _set_conda_vars(self,env_vars_toset):
-        # Get current environment variables
-        cmd = [ 'conda', 'env', 'config', 'vars', 'set']
-        for env_var in env_vars_toset:
-            env_var_val = self.env[env_var]
-            if env_var_val:
-                cmd.append(f'{env_var}={env_var_val}')
         
-        cmd.append('-n')
-        cmd.append(self.config['conda_env'])
-        cmd = ' '.join(cmd)
-        Exec(cmd, LocalExecInfo(env=self.mod_env,))
-        self.log(f"DayuTracker _set_env_vars: {cmd}")
+        # deliminate by comma
+        conda_envs = self.config['conda_env'].split(',')
+        
+        for cenv in conda_envs:
+            # Get current environment variables
+            cmd = [ 'conda', 'env', 'config', 'vars', 'set']
+            for env_var in env_vars_toset:
+                env_var_val = self.env[env_var]
+                if env_var_val:
+                    cmd.append(f'{env_var}={env_var_val}')
+            
+            cmd.append('-n')
+            cmd.append(cenv)
+            cmd = ' '.join(cmd)
+            Exec(cmd, LocalExecInfo(env=self.mod_env,))
+            self.log(f"DayuTracker _set_env_vars: {cmd}")
             
     
     def _setup_vfd_tracker(self):
