@@ -8,12 +8,17 @@ option(VOL_TRACKER "Build VOL Tracker" ON)
 option(VFD_TRACKER "Build VFD Tracker" ON)
 option(BUILD_C_TESTS "Build tests with C code" OFF)
 option(BUILD_PY_TESTS "Build tests with python code" OFF)
-
+# set default CMAKE_BUILD_TYPE to Release
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Release")
+endif()
 
 #-----------------------------------------------------------------------------
 # Compiler Optimization
 #-----------------------------------------------------------------------------
 set(CMAKE_CXX_STANDARD 17)
+
+
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     message("IN DEBUG MODE")
 else()

@@ -440,8 +440,11 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
   TOTAL_POSIX_IO_TIME += (t2 - t1);
 
   // if (HDfstat(fd, &sb) < 0)
+  t1 = get_time_usec();
   if (fstat(fd, &sb) < 0)
     H5FD_TRACKER_VFD_SYS_GOTO_ERROR(H5E_FILE, H5E_BADFILE, NULL, "unable to fstat file");
+  t2 = get_time_usec();
+  TOTAL_POSIX_IO_TIME += (t4 - t3);
 
   /* Create the new file struct */
   if (NULL == (file = (H5FD_tracker_vfd_t *)calloc((size_t)1, sizeof(H5FD_tracker_vfd_t))))
@@ -505,7 +508,7 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
 
   // file->vfd_file_info = add_vfd_file_node(name, file);
   file->vfd_file_info = add_vfd_file_node(TKR_HELPER_VFD, name, file);
-#ifdef ACCESS_STAT
+#ifdef VFD_ACCESS_STAT
   open_close_info_update("H5FD__tracker_vfd_open", file, file->eof, flags, t_start);
 #endif
   
@@ -552,7 +555,7 @@ static herr_t H5FD__tracker_vfd_close(H5FD_t *_file) {
   /* custom VFD code start */
   // print_open_close_info("H5FD__tracker_vfd_close", file, file->filename, t_start, get_time_usec(), file->eof, file->flags);
 
-#ifdef ACCESS_STAT
+#ifdef VFD_ACCESS_STAT
   open_close_info_update("H5FD__tracker_vfd_close", file, file->eof, file->flags, t_start);
 #endif
   dump_vfd_file_stat_json(TKR_HELPER_VFD, file->vfd_file_info);
@@ -859,7 +862,7 @@ static herr_t H5FD__tracker_vfd_read(H5FD_t *_file, H5FD_mem_t type,
     file->pos = addr;
     file->op  = OP_READ;
 
-#ifdef ACCESS_STAT
+#ifdef VFD_ACCESS_STAT
   /* custom VFD code start */
   VFD_ACCESS_IDX++;
   // check if VFD_ACCESS_IDX is every 10th access
@@ -979,7 +982,7 @@ static herr_t H5FD__tracker_vfd_write(H5FD_t *_file, H5FD_mem_t type,
     if (file->pos > file->eof)
         file->eof = file->pos;
 
-#ifdef ACCESS_STAT
+#ifdef VFD_ACCESS_STAT
   /* custom VFD code start */
   VFD_ACCESS_IDX++;
   // check if VFD_ACCESS_IDX is every 10th access

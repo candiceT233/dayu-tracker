@@ -595,7 +595,7 @@ void dump_vfd_file_stat_json(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t
       return;
   }
 
-#ifdef ACCESS_STAT
+#ifdef VFD_ACCESS_STAT
   // fprintf(f, "[\n");
   /* file info */
   fprintf(f, "\n{\n");
@@ -1337,7 +1337,7 @@ int rm_vfd_file_node(vfd_tkr_helper_t* helper, H5FD_t *_file)
 }
 
 void vfd_tkr_helper_teardown(vfd_tkr_helper_t* helper){
-  printf("vfd_tkr_helper_teardown()\n");
+  printf("vfd_tkr_helper_teardown(): %s\n", helper->tkr_file_path);
 
   // Close json file list
   FILE * f = fopen(helper->tkr_file_path, "r+");

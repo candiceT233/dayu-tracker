@@ -36,6 +36,7 @@ set(POSIX_FLAGS
 # Define VFD Specific Options
 #-----------------------------------------------------------------------------
 option(DEBUG_TRK_VFD "Enable VFD Debug Logs" ON)
+option(VFD_ACCESS_STAT "Enable VFD Access Statistics logging to JSON file" ON)
 
 #-----------------------------------------------------------------------------
 # Compiler Optimization
@@ -65,8 +66,8 @@ else()
     message("h5vfd_tracker BUILDING WITHOUT VOL_Tracker")
 endif()
 
-if(ACCESS_STAT)
-    add_compile_definitions(ACCESS_STAT)
+if(VFD_ACCESS_STAT)
+    add_compile_definitions(VFD_ACCESS_STAT)
 endif()
 
 #-----------------------------------------------------------------------------

@@ -390,7 +390,7 @@ H5VL_tracker_init(hid_t vipl_id)
     tkrLockInit(&myLock);
     init_hasn_lock();
 
-#ifdef ACCESS_STAT
+#ifdef VOL_ACCESS_STAT
     tkrLockAcquire(&myLock);
     dset_shm_write("file"); // set the current object to file
     tkrLockRelease(&myLock);
@@ -446,7 +446,7 @@ H5VL_tracker_term(void)
     printf("TRACKER VOL TERM\n");
 #endif
     // Release resources, etc.
-#ifdef ACCESS_STAT
+#ifdef VOL_ACCESS_STAT
     unsigned long trk_start = get_time_usec();
     tkr_helper_teardown(TKR_HELPER);
     TRK_ACCESS_STAT_TIME += (get_time_usec() - trk_start);
@@ -1505,7 +1505,7 @@ H5VL_tracker_dataset_create(void *obj, const H5VL_loc_params_t *loc_params,
     else
         dset = NULL;
     
-#ifdef ACCESS_STAT
+#ifdef VOL_ACCESS_STAT
     unsigned long trk_start = get_time_usec();
     // TODO: Record at close time to reduce overhead
     if(dset != NULL){
@@ -1561,7 +1561,7 @@ H5VL_tracker_dataset_open(void *obj, const H5VL_loc_params_t *loc_params,
     else
         dset = NULL;
 
-#ifdef ACCESS_STAT
+#ifdef VOL_ACCESS_STAT
     unsigned long trk_start = get_time_usec();
     file_tkr_info_t * file_info = (file_tkr_info_t*)o->generic_tkr_info;
     // printf("FileName[%s]\n", file_info->file_name);
@@ -1606,7 +1606,7 @@ static herr_t H5VL_tracker_dataset_read(size_t count, void *dset[],
     // H5VL_tracker_t *o = (H5VL_tracker_t *)dset[0]; // only get the first dataset
 
     hid_t under_vol_id;                     /* VOL ID for all objects */
-#ifdef ACCESS_STAT
+#ifdef VOL_ACCESS_STAT
     unsigned long trk_start = get_time_usec();
     H5VL_tracker_t *o = (H5VL_tracker_t *)dset[0];
     dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)o->generic_tkr_info;
@@ -1668,7 +1668,7 @@ static herr_t H5VL_tracker_dataset_read(size_t count, void *dset[],
         } /* end else */
 #endif /* H5_HAVE_PARALLEL */
 
-#ifdef ACCESS_STAT
+#ifdef VOL_ACCESS_STAT
             unsigned long trk_start = get_time_usec();
             
             dset_info->dataset_read_cnt++;
@@ -1725,7 +1725,7 @@ static herr_t H5VL_tracker_dataset_write(size_t count, void *dset[],
 #ifdef DEBUG_PT_TKR_VOL
     printf("TRACKER VOL DATASET Write\n");
 #endif
-#ifdef ACCESS_STAT
+#ifdef VOL_ACCESS_STAT
     unsigned long trk_start = get_time_usec();
     // Assume only 1 dataset being open at a time from the same process
     H5VL_tracker_t *o = (H5VL_tracker_t *)(dset[0]);
@@ -1780,7 +1780,7 @@ static herr_t H5VL_tracker_dataset_write(size_t count, void *dset[],
                 dset_info->broken_coll_dataset_write_cnt++;
         } /* end else */
 #endif /* H5_HAVE_PARALLEL */
-#ifdef ACCESS_STAT
+#ifdef VOL_ACCESS_STAT
             unsigned long trk_start = get_time_usec();
             dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)o->generic_tkr_info;
 
@@ -2043,7 +2043,7 @@ H5VL_tracker_dataset_close(void *dset, hid_t dxpl_id, void **req)
 #endif
 
 
-#ifdef ACCESS_STAT
+#ifdef VOL_ACCESS_STAT
     unsigned long trk_start = get_time_usec();
     dataset_tkr_info_t* dset_info = (dataset_tkr_info_t*)o->generic_tkr_info;
     assert(dset_info);
@@ -2062,7 +2062,7 @@ H5VL_tracker_dataset_close(void *dset, hid_t dxpl_id, void **req)
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, o->under_vol_id, o->tkr_helper);
 
-#ifdef ACCESS_STAT
+#ifdef VOL_ACCESS_STAT
     trk_start = get_time_usec();
     /* Release our wrapper, if underlying dataset was closed */
     if(ret_value >= 0){
@@ -2926,14 +2926,14 @@ H5VL_tracker_file_close(void *file, hid_t dxpl_id, void **req)
 
     file_tkr_info_t* file_info = (file_tkr_info_t*)o->generic_tkr_info;
     
-#ifdef ACCESS_STAT
+#ifdef VOL_ACCESS_STAT
     unsigned long trk_start = get_time_usec();
     // tkrLockAcquire(&myLock);
     file_info->file_size = file_get_size(o->under_object,o->under_vol_id, dxpl_id);
     file_info_update("H5VLfile_close", file, NULL, NULL, dxpl_id);
 #endif
     log_file_stat_json(TKR_HELPER,file_info);
-#ifdef ACCESS_STAT
+#ifdef VOL_ACCESS_STAT
     // TOTAL_TKR_OVERHEAD = 0; // reset the total overhead once recorded
     // tkrLockRelease(&myLock);
     // printf("TRACKER VOL FILE Close: TOTAL_TKR_OVERHEAD should be 0 : %ld\n", TOTAL_TKR_OVERHEAD);
@@ -3010,7 +3010,7 @@ H5VL_tracker_group_create(void *obj, const H5VL_loc_params_t *loc_params,
 #endif
 
 
-#ifdef ACCESS_STAT
+#ifdef VOL_ACCESS_STAT
     unsigned long trk_start = get_time_usec();
     H5VL_tracker_t *file = (H5VL_tracker_t *)obj;
     file_tkr_info_t * file_info = (file_tkr_info_t*)file->generic_tkr_info;
@@ -3067,7 +3067,7 @@ H5VL_tracker_group_open(void *obj, const H5VL_loc_params_t *loc_params,
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
 #endif
 
-#ifdef ACCESS_STAT
+#ifdef VOL_ACCESS_STAT
     unsigned long trk_start = get_time_usec();
     H5VL_tracker_t *file = (H5VL_tracker_t *)obj;
     file_tkr_info_t * file_info = (file_tkr_info_t*)file->generic_tkr_info;
@@ -3122,7 +3122,7 @@ H5VL_tracker_group_get(void *obj, H5VL_group_get_args_t *args, hid_t dxpl_id,
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
 #endif
 
-#ifdef ACCESS_STAT
+#ifdef VOL_ACCESS_STAT
     unsigned long trk_start = get_time_usec();
     H5VL_tracker_t *group = (H5VL_tracker_t *)obj;
     group_tkr_info_t* group_info = (group_tkr_info_t*)group->generic_tkr_info;
@@ -3684,7 +3684,7 @@ H5VL_tracker_object_open(void *obj, const H5VL_loc_params_t *loc_params,
 
         new_obj = _obj_wrap_under(under, o, obj_name, *obj_to_open_type, dxpl_id, req);
 
-#ifdef ACCESS_STAT
+#ifdef VOL_ACCESS_STAT
     unsigned long trk_start = get_time_usec();
     if(new_obj->my_type == H5I_FILE){
 
@@ -4375,7 +4375,7 @@ H5VL_tracker_blob_put(void *obj, const void *buf, size_t size,
     blob_info_print("H5VLblob_put", obj, NULL, size, blob_id, buf, ctx);
 #endif
 
-#ifdef ACCESS_STAT
+#ifdef VOL_ACCESS_STAT
     // blob_info_update("H5VLblob_put", obj, NULL, size, blob_id, buf, ctx);
     // TODO: use shm to store blob_info to dset_info
 #endif

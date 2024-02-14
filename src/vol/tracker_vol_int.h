@@ -837,7 +837,7 @@ tkr_helper_t * tkr_helper_init( char* file_path, Track_level tkr_level, char* tk
       "%s/%d-%s",file_path, new_helper->pid, VOL_STAT_FILE_NAME);
 
     
-    printf("vol new_helper tkr_file_path: %s\n", new_helper->tkr_file_path);
+    // printf("vol new_helper tkr_file_path: %s\n", new_helper->tkr_file_path);
     /* VFD vars end */
 
     // New json file list
@@ -2187,6 +2187,7 @@ void attribute_stats_tkr_write(const attribute_tkr_info_t *attr_info) {
 }
 
 void tkr_helper_teardown(tkr_helper_t* helper){
+    printf("vol tkr_helper_teardown(): %s\n", helper->tkr_file_path);
 
     if(helper){// not null
 
@@ -2367,7 +2368,7 @@ void log_file_stat_json(tkr_helper_t* helper_in, const file_tkr_info_t* file_inf
         return;
     }
 
-#ifdef ACCESS_STAT
+#ifdef VOL_ACCESS_STAT
     log_dset_ht_json(f);
 
     // char* file_name = strrchr(file_info->file_name, '/');
