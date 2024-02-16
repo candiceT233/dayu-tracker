@@ -8,7 +8,9 @@ option(VOL_TRACKER "Build VOL Tracker" ON)
 option(VFD_TRACKER "Build VFD Tracker" ON)
 option(BUILD_C_TESTS "Build tests with C code" OFF)
 option(BUILD_PY_TESTS "Build tests with python code" OFF)
-# set default CMAKE_BUILD_TYPE to Release
+option(HERMES "Running without Hermes hrun daemon" OFF)
+
+# Set default build type to release
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release")
 endif()
