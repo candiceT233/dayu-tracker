@@ -18,7 +18,7 @@ set(CMAKE_C_COMPILER h5cc)
 #-----------------------------------------------------------------------------
 # Define VOL Specific Options
 #-----------------------------------------------------------------------------
-option(VOL_ACCESS_STAT "Enable VOL Tracker Schema Log to JSON Files" ON)
+option(ACCESS_STAT "Enable VOL Tracker Schema Log to JSON Files" ON)
 
 option(DEBUG_TKR_VOL "Enable Tracker Logging (on groups and dataset objects)" ON)
 option(DEBUG_MORE_TKR_VOL "Enable More Tracker Logging (on all memory object all oprations)" OFF) # TODO: Not optimized for memory
@@ -48,8 +48,8 @@ endif()
 # Debugging Options
 #-----------------------------------------------------------------------------
 # Check to set Logging
-if(VOL_ACCESS_STAT)
-    add_compile_definitions(VOL_ACCESS_STAT)
+if(ACCESS_STAT)
+    add_compile_definitions(ACCESS_STAT)
 endif()
 if(DEBUG_TKR_VOL)
     add_compile_definitions(DEBUG_TKR_VOL)
@@ -66,9 +66,7 @@ endif()
 if(DEBUG_BLOB_TKR_VOL)
     add_compile_definitions(DEBUG_BLOB_TKR_VOL)
 endif()
-if(VFD_ACCESS_STAT)
-    add_compile_definitions(VFD_ACCESS_STAT)
-endif()
+
 
 #-----------------------------------------------------------------------------
 # Compile VOL_Tracker Dynamic Library

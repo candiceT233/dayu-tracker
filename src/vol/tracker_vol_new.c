@@ -184,41 +184,6 @@ static herr_t H5VL_tracker_optional(void *obj, H5VL_optional_args_t *args, hid_t
 /* Local variables */
 /*******************/
 
-void dset_shm_write(const char *obj_name) {
-    // remove leading / if in obj_name
-    if (obj_name[0] == '/') {
-        obj_name++;
-    }
-
-    // Only write to shared memory if it is different from the current object
-    if (CURR_DSET != NULL && strcmp(CURR_DSET, obj_name) == 0) {
-        return;
-    }
-
-    pid_t pid = getpid();
-    size_t len = strlen(SHM_NAME) + 1 + sizeof(pid) * 3; // +1 for null terminator
-    char *task_shm_name = (char *)malloc(len);
-    snprintf(task_shm_name, len, "%s_%d", SHM_NAME, pid);
-
-    // Allocate shared memory
-    int shm_fd = shm_open(task_shm_name, O_CREAT | O_RDWR, 0666);
-    ftruncate(shm_fd, SHM_SIZE);
-    if (CURR_DSET != NULL) {
-        munmap(CURR_DSET, SHM_SIZE);
-    }
-    CURR_DSET = (char *)mmap(0, SHM_SIZE, PROT_WRITE, MAP_SHARED, shm_fd, 0);
-
-    strcpy(CURR_DSET, obj_name);
-
-#ifdef DEBUG_TKR_VOL
-    printf("Shared Memory Name: %s\n", task_shm_name);
-    printf("Object Name: %s\n", CURR_DSET);
-#endif
-
-    // Clean up
-    close(shm_fd);
-    free(task_shm_name);
-}
 
 /* TRACKER VOL connector class struct */
 static const H5VL_class_t H5VL_tracker_cls = {
@@ -390,10 +355,10 @@ H5VL_tracker_init(hid_t vipl_id)
     tkrLockInit(&myLock);
     init_hasn_lock();
 
-#ifdef VOL_ACCESS_STAT
-    tkrLockAcquire(&myLock);
-    dset_shm_write("file"); // set the current object to file
-    tkrLockRelease(&myLock);
+#ifdef ACCESS_STAT
+    // tkrLockAcquire(&myLock);
+    dset_shm_write("file"); // set the current object to file, represented as "/"
+    // tkrLockRelease(&myLock);
 #endif
 
 #ifdef DEBUG_PT_TKR_VOL
@@ -446,7 +411,7 @@ H5VL_tracker_term(void)
     printf("TRACKER VOL TERM\n");
 #endif
     // Release resources, etc.
-#ifdef VOL_ACCESS_STAT
+#ifdef ACCESS_STAT
     unsigned long trk_start = get_time_usec();
     tkr_helper_teardown(TKR_HELPER);
     TRK_ACCESS_STAT_TIME += (get_time_usec() - trk_start);
@@ -483,6 +448,18 @@ H5VL_tracker_info_copy(const void *_info)
     printf("TRACKER VOL INFO Copy\n");
 #endif
 
+    /* Make sure the underneath VOL of this pass-through VOL is specified */
+    if (!info) {
+        printf("\nH5VLpassthru.c line %d in %s: info for pass-through VOL can't be null\n", __LINE__,
+               __func__);
+        return NULL;
+    }
+    if (H5Iis_valid(info->under_vol_id) <= 0) {
+        printf("\nH5VLpassthru.c line %d in %s: not a valid underneath VOL ID for pass-through VOL\n",
+               __LINE__, __func__);
+        return NULL;
+    }
+
     /* Allocate new VOL info struct for the TRACKER connector */
     new_info = (H5VL_tracker_info_t *)calloc(1, sizeof(H5VL_tracker_info_t));
 
@@ -497,6 +474,10 @@ H5VL_tracker_info_copy(const void *_info)
     if(info->tkr_line_format)
         new_info->tkr_line_format = strdup(info->tkr_line_format);
     new_info->tkr_level = info->tkr_level;
+
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL INFO Copy: END\n");
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start);
 
@@ -601,7 +582,11 @@ H5VL_tracker_info_free(void *_info)
 
     err_id = H5Eget_current_stack();
 
+
+
     H5Idec_ref(info->under_vol_id);
+
+
 
     H5Eset_current_stack(err_id);
 
@@ -611,6 +596,10 @@ H5VL_tracker_info_free(void *_info)
     free(info);
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start);
+
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL INFO Free: END\n");
+#endif
     return 0;
 } /* end H5VL_tracker_info_free() */
 
@@ -788,6 +777,10 @@ H5VL_tracker_get_object(const void *obj)
     ret = H5VLget_object(o->under_object, o->under_vol_id);
     m2 = get_time_usec();
 
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL Get Object: H5VLget_object() done\n");
+#endif
+
 #ifdef DEBUG_OVERHEAD_TKR_VOL
     tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
 #endif
@@ -799,20 +792,20 @@ H5VL_tracker_get_object(const void *obj)
         file_info_update("H5VLget_object", obj, NULL, NULL, NULL);
     }
 
-    if(o->my_type == H5I_GROUP){
-        group_info_print("H5VLget_object", obj, NULL, NULL, NULL, NULL, NULL);
-    }
-    if(o->my_type == H5I_ATTR){
-        attribute_info_print("H5VLget_object", obj, NULL, NULL, NULL, NULL);
-    }
+    // if(o->my_type == H5I_GROUP){ // segfault
+    //     group_info_print("H5VLget_object", obj, NULL, NULL, NULL, NULL, NULL);
+    // }
+
+    // if(o->my_type == H5I_ATTR){
+    //     attribute_info_print("H5VLget_object", obj, NULL, NULL, NULL, NULL);
+    // }
+
     if(o->my_type == H5I_DATASET){
         dataset_info_update("H5VLget_object", NULL, NULL, NULL, obj, NULL);
     }
+
 #endif
 
-#ifdef DEBUG_MORE_TKR_VOL
-    // printf("H5VLget_object(): %ld, \n", obj);
-#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
 
@@ -855,11 +848,9 @@ H5VL_tracker_get_wrap_ctx(const void *obj, void **wrap_ctx)
         case H5I_ATTR:
             new_wrap_ctx->file_info = ((object_tkr_info_t *)(o->generic_tkr_info))->file_info;
             break;
-
         case H5I_FILE:
             new_wrap_ctx->file_info = (file_tkr_info_t*)(o->generic_tkr_info);
             break;
-
         case H5I_UNINIT:
         case H5I_BADID:
         case H5I_DATASPACE:
@@ -872,7 +863,9 @@ H5VL_tracker_get_wrap_ctx(const void *obj, void **wrap_ctx)
         case H5I_ERROR_STACK:
         case H5I_NTYPES:
         default:
+#ifdef DEBUG_TKR_VOL
             printf("%s:%d: unexpected type: my_type = %d\n", __func__, __LINE__, (int)o->my_type);
+#endif
             break;
     }
 
@@ -932,7 +925,11 @@ H5VL_tracker_wrap_object(void *under_under_in, H5I_type_t obj_type, void *_wrap_
         fake_upper_o = _fake_obj_new(wrap_ctx->file_info, wrap_ctx->under_vol_id);
 
         new_obj = _obj_wrap_under(under, fake_upper_o, NULL, obj_type, H5P_DEFAULT, NULL);
-        
+
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL WRAP Object: _obj_wrap_under() done\n");
+#endif
+
         _fake_obj_free(fake_upper_o);
     }
     else
@@ -1493,7 +1490,7 @@ H5VL_tracker_dataset_create(void *obj, const H5VL_loc_params_t *loc_params,
     void *under;
 
 #ifdef DEBUG_PT_TKR_VOL
-    printf("TRACKER VOL DATASET Create [%s]\n", ds_name);
+    printf("TRACKER VOL DATASET Create\n");
 #endif
 
     m1 = get_time_usec();
@@ -1505,11 +1502,10 @@ H5VL_tracker_dataset_create(void *obj, const H5VL_loc_params_t *loc_params,
     else
         dset = NULL;
     
-#ifdef VOL_ACCESS_STAT
+#ifdef ACCESS_STAT
     unsigned long trk_start = get_time_usec();
     // TODO: Record at close time to reduce overhead
     if(dset != NULL){
-        
         // get dataset offset and storage size not available yet
         dataset_info_update("H5VLdataset_create", NULL, NULL, NULL, dset, dxpl_id); // this must exist
     }
@@ -1561,7 +1557,7 @@ H5VL_tracker_dataset_open(void *obj, const H5VL_loc_params_t *loc_params,
     else
         dset = NULL;
 
-#ifdef VOL_ACCESS_STAT
+#ifdef ACCESS_STAT
     unsigned long trk_start = get_time_usec();
     file_tkr_info_t * file_info = (file_tkr_info_t*)o->generic_tkr_info;
     // printf("FileName[%s]\n", file_info->file_name);
@@ -1603,12 +1599,16 @@ static herr_t H5VL_tracker_dataset_read(size_t count, void *dset[],
     unsigned long start = get_time_usec();
     unsigned long m1, m2;
     void *o_arr[count];   /* Array of under objects */
-    // H5VL_tracker_t *o = (H5VL_tracker_t *)dset[0]; // only get the first dataset
-
+    H5VL_tracker_t *o = (H5VL_tracker_t *)dset[0]; // only get the first dataset
     hid_t under_vol_id;                     /* VOL ID for all objects */
-#ifdef VOL_ACCESS_STAT
+    herr_t ret_value;
+
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL DATASET Read\n");
+#endif
+
+#ifdef ACCESS_STAT
     unsigned long trk_start = get_time_usec();
-    H5VL_tracker_t *o = (H5VL_tracker_t *)dset[0];
     dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)o->generic_tkr_info;
     dset_shm_write(dset_info->obj_info.name); // TODO: improve to update only when dataset is changed
     TRK_ACCESS_STAT_TIME += (get_time_usec() - trk_start);
@@ -1616,17 +1616,10 @@ static herr_t H5VL_tracker_dataset_read(size_t count, void *dset[],
 
 #ifdef H5_HAVE_PARALLEL
     H5FD_mpio_xfer_t xfer_mode = H5FD_MPIO_INDEPENDENT;
-#endif /* H5_HAVE_PARALLEL */
-    herr_t ret_value;
-
-#ifdef DEBUG_PT_TKR_VOL
-    printf("TRACKER VOL DATASET Read\n");
-#endif
-
-#ifdef H5_HAVE_PARALLEL
     // Retrieve MPI-IO transfer option
     H5Pget_dxpl_mpio(plist_id, &xfer_mode);
 #endif /* H5_HAVE_PARALLEL */
+    
 
     /* Populate the array of under objects */
     under_vol_id = ((H5VL_tracker_t *)(dset[0]))->under_vol_id;
@@ -1638,9 +1631,11 @@ static herr_t H5VL_tracker_dataset_read(size_t count, void *dset[],
     m1 = get_time_usec();
     // ret_value = H5VLdataset_read(o->under_object, o->under_vol_id, mem_type_id, mem_space_id, file_space_id, plist_id, buf, req);
     ret_value = H5VLdataset_read(count, o_arr, under_vol_id, mem_type_id, mem_space_id, file_space_id, plist_id, buf, req);
-
     m2 = get_time_usec();
 
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL DATASET Read: H5VLdataset_read() done\n");
+#endif
 
     if(ret_value >= 0){
         for (int obj_idx=0; obj_idx<count; obj_idx++){
@@ -1657,10 +1652,8 @@ static herr_t H5VL_tracker_dataset_read(size_t count, void *dset[],
             dset_info->ind_dataset_read_cnt++;
         else {
             H5D_mpio_actual_io_mode_t actual_io_mode;
-
             // Increment counter for collective writes
             dset_info->coll_dataset_read_cnt++;
-
             // Check for actually completing a collective I/O
             H5Pget_mpio_actual_io_mode(plist_id, &actual_io_mode);
             if(!actual_io_mode)
@@ -1668,17 +1661,14 @@ static herr_t H5VL_tracker_dataset_read(size_t count, void *dset[],
         } /* end else */
 #endif /* H5_HAVE_PARALLEL */
 
-#ifdef VOL_ACCESS_STAT
+#ifdef ACCESS_STAT
             unsigned long trk_start = get_time_usec();
-            
+            // dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)o->generic_tkr_info;
             dset_info->dataset_read_cnt++;
-
             if(!dset_info->dspace_id)
                 dset_info->dspace_id = mem_space_id[obj_idx];
             if(!dset_info->dtype_id)
                 dset_info->dtype_id = mem_type_id[obj_idx];
-            
-
             TRK_ACCESS_STAT_TIME += (get_time_usec() - trk_start);
 #endif
 
@@ -1687,7 +1677,9 @@ static herr_t H5VL_tracker_dataset_read(size_t count, void *dset[],
 #endif
         }
     }
-
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL DATASET Read: END\n");
+#endif
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
@@ -1725,14 +1717,21 @@ static herr_t H5VL_tracker_dataset_write(size_t count, void *dset[],
 #ifdef DEBUG_PT_TKR_VOL
     printf("TRACKER VOL DATASET Write\n");
 #endif
-#ifdef VOL_ACCESS_STAT
+
+#ifdef ACCESS_STAT
     unsigned long trk_start = get_time_usec();
     // Assume only 1 dataset being open at a time from the same process
     H5VL_tracker_t *o = (H5VL_tracker_t *)(dset[0]);
     dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)o->generic_tkr_info;
-    dset_shm_write(dset_info->obj_info.name); // TODO: improve to update only when dataset is changed
+    if(dset_info->obj_info.name)
+        dset_shm_write(dset_info->obj_info.name); // TODO: improve to update only when dataset is changed
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL DATASET Write: dset_shm_write() done\n");
+#endif
     TRK_ACCESS_STAT_TIME += (get_time_usec() - trk_start);
 #endif
+
+
 
 #ifdef H5_HAVE_PARALLEL
     // Retrieve MPI-IO transfer option
@@ -1749,13 +1748,21 @@ static herr_t H5VL_tracker_dataset_write(size_t count, void *dset[],
         assert(under_vol_id == ((H5VL_tracker_t *)(dset[u]))->under_vol_id);
     }
 
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL DATASET Write: H5VLdataset_write() begin\n");
+#endif
+
     // reuse A envelop
     m1 = get_time_usec();
     // ret_value = H5VLdataset_write(o->under_object, o->under_vol_id, mem_type_id, mem_space_id, file_space_id, plist_id, buf, req);
     ret_value = H5VLdataset_write(count, o_arr, under_vol_id, mem_type_id, mem_space_id, file_space_id, plist_id, buf, req);
 
     m2 = get_time_usec();
-    
+
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL DATASET Write: H5VLdataset_write() done\n");
+#endif
+
 
     if(ret_value >= 0){
         H5VL_tracker_t *o;
@@ -1780,7 +1787,7 @@ static herr_t H5VL_tracker_dataset_write(size_t count, void *dset[],
                 dset_info->broken_coll_dataset_write_cnt++;
         } /* end else */
 #endif /* H5_HAVE_PARALLEL */
-#ifdef VOL_ACCESS_STAT
+#ifdef ACCESS_STAT
             unsigned long trk_start = get_time_usec();
             dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)o->generic_tkr_info;
 
@@ -1801,6 +1808,10 @@ static herr_t H5VL_tracker_dataset_write(size_t count, void *dset[],
 
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
+
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL DATASET Write: END\n");
+#endif
 
     return ret_value;
 } /* end H5VL_tracker_dataset_write() */
@@ -1834,20 +1845,17 @@ H5VL_tracker_dataset_get(void *dset, H5VL_dataset_get_args_t *args,
     m1 = get_time_usec();
     ret_value = H5VLdataset_get(o->under_object, o->under_vol_id, args, dxpl_id, req);
     m2 = get_time_usec();
-    
-
-
-
-#ifdef DEBUG_MORE_TKR_VOL
-    // Cannot get dataset ID from arg list!! ‘union <anonymous>’ has no member named ‘refresh’
-    dataset_tkr_info_t* dset_info = (dataset_tkr_info_t*)o->generic_tkr_info;
-    // assert(dset_info);
-    dataset_info_print("H5VLdataset_get", NULL, NULL, NULL, dset, dxpl_id);
-#endif
 
     /* Check for async request */
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, o->under_vol_id, o->tkr_helper);
+
+#ifdef DEBUG_MORE_TKR_VOL
+    // Cannot get dataset ID from arg list!! ‘union <anonymous>’ has no member named ‘refresh’
+    dataset_tkr_info_t* dset_info = (dataset_tkr_info_t*)o->generic_tkr_info;
+    assert(dset_info);
+    dataset_info_print("H5VLdataset_get", NULL, NULL, NULL, dset, dxpl_id);
+#endif
 
 #ifdef DEBUG_OVERHEAD_TKR_VOL
     if(o)
@@ -2043,7 +2051,7 @@ H5VL_tracker_dataset_close(void *dset, hid_t dxpl_id, void **req)
 #endif
 
 
-#ifdef VOL_ACCESS_STAT
+#ifdef ACCESS_STAT
     unsigned long trk_start = get_time_usec();
     dataset_tkr_info_t* dset_info = (dataset_tkr_info_t*)o->generic_tkr_info;
     assert(dset_info);
@@ -2062,7 +2070,7 @@ H5VL_tracker_dataset_close(void *dset, hid_t dxpl_id, void **req)
     if(req && *req)
         *req = H5VL_tracker_new_obj(*req, o->under_vol_id, o->tkr_helper);
 
-#ifdef VOL_ACCESS_STAT
+#ifdef ACCESS_STAT
     trk_start = get_time_usec();
     /* Release our wrapper, if underlying dataset was closed */
     if(ret_value >= 0){
@@ -2519,7 +2527,7 @@ H5VL_tracker_file_create(const char *name, unsigned flags, hid_t fcpl_id,
     }
 #endif /* H5_HAVE_PARALLEL */
 
-#ifdef DEBUG_MORE_TKR_VOL
+#ifdef ACCESS_STAT
     file_tkr_info_t *file_info = file->generic_tkr_info;
     if(!file_info->fapl_id)
         file_info->fapl_id = fapl_id;
@@ -2926,14 +2934,13 @@ H5VL_tracker_file_close(void *file, hid_t dxpl_id, void **req)
 
     file_tkr_info_t* file_info = (file_tkr_info_t*)o->generic_tkr_info;
     
-#ifdef VOL_ACCESS_STAT
+#ifdef ACCESS_STAT
     unsigned long trk_start = get_time_usec();
-    // tkrLockAcquire(&myLock);
     file_info->file_size = file_get_size(o->under_object,o->under_vol_id, dxpl_id);
     file_info_update("H5VLfile_close", file, NULL, NULL, dxpl_id);
 #endif
     log_file_stat_json(TKR_HELPER,file_info);
-#ifdef VOL_ACCESS_STAT
+#ifdef ACCESS_STAT
     // TOTAL_TKR_OVERHEAD = 0; // reset the total overhead once recorded
     // tkrLockRelease(&myLock);
     // printf("TRACKER VOL FILE Close: TOTAL_TKR_OVERHEAD should be 0 : %ld\n", TOTAL_TKR_OVERHEAD);
@@ -3010,7 +3017,7 @@ H5VL_tracker_group_create(void *obj, const H5VL_loc_params_t *loc_params,
 #endif
 
 
-#ifdef VOL_ACCESS_STAT
+#ifdef ACCESS_STAT
     unsigned long trk_start = get_time_usec();
     H5VL_tracker_t *file = (H5VL_tracker_t *)obj;
     file_tkr_info_t * file_info = (file_tkr_info_t*)file->generic_tkr_info;
@@ -3067,7 +3074,7 @@ H5VL_tracker_group_open(void *obj, const H5VL_loc_params_t *loc_params,
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
 #endif
 
-#ifdef VOL_ACCESS_STAT
+#ifdef ACCESS_STAT
     unsigned long trk_start = get_time_usec();
     H5VL_tracker_t *file = (H5VL_tracker_t *)obj;
     file_tkr_info_t * file_info = (file_tkr_info_t*)file->generic_tkr_info;
@@ -3109,6 +3116,7 @@ H5VL_tracker_group_get(void *obj, H5VL_group_get_args_t *args, hid_t dxpl_id,
     printf("TRACKER VOL GROUP Get\n");
 #endif
 
+
     m1 = get_time_usec();
     ret_value = H5VLgroup_get(o->under_object, o->under_vol_id, args, dxpl_id, req);
     m2 = get_time_usec();
@@ -3122,7 +3130,8 @@ H5VL_tracker_group_get(void *obj, H5VL_group_get_args_t *args, hid_t dxpl_id,
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
 #endif
 
-#ifdef VOL_ACCESS_STAT
+#ifdef DEBUG_MORE_TKR_VOL
+
     unsigned long trk_start = get_time_usec();
     H5VL_tracker_t *group = (H5VL_tracker_t *)obj;
     group_tkr_info_t* group_info = (group_tkr_info_t*)group->generic_tkr_info;
@@ -3132,10 +3141,13 @@ H5VL_tracker_group_get(void *obj, H5VL_group_get_args_t *args, hid_t dxpl_id,
     TRK_ACCESS_STAT_TIME += (get_time_usec() - trk_start);
 #endif
 
-#ifdef DEBUG_TKR_VOL
-    group_info_print("H5VLgroup_get",obj, args, NULL, NULL, dxpl_id, req);
-#endif
+// #ifdef DEBUG_TKR_VOL
+//     group_info_print("H5VLgroup_get",obj, args, NULL, NULL, dxpl_id, req);
+// #endif
 
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL GROUP Get: END\n");
+#endif
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return ret_value;
 } /* end H5VL_tracker_group_get() */
@@ -3666,6 +3678,16 @@ H5VL_tracker_object_open(void *obj, const H5VL_loc_params_t *loc_params,
     H5VL_tracker_t *new_obj;
     H5VL_tracker_t *o = (H5VL_tracker_t *)obj;
     void *under;
+    const char* obj_name = NULL;
+
+#ifdef ACCESS_STAT
+    if(loc_params->type == H5VL_OBJECT_BY_NAME){
+        obj_name = loc_params->loc_data.loc_by_name.name;
+        dset_shm_write(obj_name); 
+    }
+#endif
+
+
 
 #ifdef DEBUG_PT_TKR_VOL
     printf("TRACKER VOL OBJECT Open\n");
@@ -3677,14 +3699,14 @@ H5VL_tracker_object_open(void *obj, const H5VL_loc_params_t *loc_params,
     m2 = get_time_usec();
 
     if(under) {
-        const char* obj_name = NULL;
+        
 
         if(loc_params->type == H5VL_OBJECT_BY_NAME)
             obj_name = loc_params->loc_data.loc_by_name.name;
 
         new_obj = _obj_wrap_under(under, o, obj_name, *obj_to_open_type, dxpl_id, req);
 
-#ifdef VOL_ACCESS_STAT
+#ifdef ACCESS_STAT
     unsigned long trk_start = get_time_usec();
     if(new_obj->my_type == H5I_FILE){
 
@@ -3692,13 +3714,14 @@ H5VL_tracker_object_open(void *obj, const H5VL_loc_params_t *loc_params,
     }
     if(new_obj->my_type == H5I_DATASET){
 
-
         dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)new_obj->generic_tkr_info;
         file_tkr_info_t * file_info = dset_info->obj_info.file_info;
         
         /* Copy name to file_name */
         dset_info->pfile_sorder_id = file_info->sorder_id;
         dset_info->dataset_read_cnt+=1;
+
+        // dataset_info_update("H5VLobject_open", NULL, NULL, NULL, new_obj, dxpl_id); // must exist to not segfault
 
         // Make copy of file name and dataset name to use as key
         const char * check_ds_name = obj_name ? strdup(obj_name) : NULL;
@@ -3710,8 +3733,6 @@ H5VL_tracker_object_open(void *obj, const H5VL_loc_params_t *loc_params,
             // printf("TRACKER VOL INT : _obj_wrap_under 4.1 H5I_DATASET: key: %s\n", key);
             int has_key = key_exists(key);
             if (has_key == 0) {
-                // printf("TRACKER VOL OBJECT Open: H5I_DATASET: key[%s] does not exist\n", key);
-
                 // dtype_id and dset_id cannot be accessed here
                 dataset_info_update("H5VLobject_open", NULL, NULL, NULL, new_obj, dxpl_id); // must exist to not segfault
             }
@@ -3823,13 +3844,9 @@ H5VL_tracker_object_get(void *obj, const H5VL_loc_params_t *loc_params, H5VL_obj
         // dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)o->generic_tkr_info;
         // dataset must already opened before calling object_get, no increment in order
 
-        dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)o->generic_tkr_info;
-        file_tkr_info_t * file_info = dset_info->obj_info.file_info;
-        
-        /* Copy name to file_name */
-
-        dset_info->pfile_sorder_id = file_info->sorder_id;        
-
+        // dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)o->generic_tkr_info;
+        // file_tkr_info_t * file_info = dset_info->obj_info.file_info;
+        // dset_info->pfile_sorder_id = file_info->sorder_id;        
 
 #ifdef DEBUG_MORE_TKR_VOL
         dataset_info_update("H5VLobject_get", NULL, NULL, NULL, o, dxpl_id);
@@ -4375,7 +4392,7 @@ H5VL_tracker_blob_put(void *obj, const void *buf, size_t size,
     blob_info_print("H5VLblob_put", obj, NULL, size, blob_id, buf, ctx);
 #endif
 
-#ifdef VOL_ACCESS_STAT
+#ifdef ACCESS_STAT
     // blob_info_update("H5VLblob_put", obj, NULL, size, blob_id, buf, ctx);
     // TODO: use shm to store blob_info to dset_info
 #endif

@@ -1,7 +1,15 @@
 #------------------------------------------------------------------------------
 # External dependencies
 #------------------------------------------------------------------------------
-# None for now
+# # HermesShm (temporarily used for recording time)
+# find_package(HermesShm CONFIG REQUIRED)
+# message(STATUS "found hermes_shm.h at ${HermesShm_INCLUDE_DIRS}")
+# include_directories(${HermesShm_INCLUDE_DIRS})
+
+# # spdlog
+# find_package(spdlog CONFIG REQUIRED)
+# message(STATUS "found spdlog.h at ${SPDLOG_INCLUDE_DIRS}")
+# include_directories(${SPDLOG_INCLUDE_DIRS})
 
 #------------------------------------------------------------------------------
 # Build VFD_Tracker Library
@@ -36,7 +44,7 @@ set(POSIX_FLAGS
 # Define VFD Specific Options
 #-----------------------------------------------------------------------------
 option(DEBUG_TRK_VFD "Enable VFD Debug Logs" ON)
-option(VFD_ACCESS_STAT "Enable VFD Access Statistics logging to JSON file" ON)
+# option(ACCESS_STAT "Enable VFD Access Statistics logging to JSON file" ON)
 
 #-----------------------------------------------------------------------------
 # Compiler Optimization
@@ -49,6 +57,8 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     if(DEBUG_TRK_VFD)
         add_compile_definitions(DEBUG_TRK_VFD)
     endif()
+    
+    add_compile_definitions(DEBUG_VFD)
         
 else()
     message("h5vfd_tracker IN RELEASE MODE")
@@ -59,16 +69,20 @@ endif()
 #-----------------------------------------------------------------------------
 # Build with VOL
 #-----------------------------------------------------------------------------
-if(VOL_TRACKER)
-    message("h5vfd_tracker BUILDING WITH VOL_Tracker")
-    add_compile_options(VOL_VFD)
-else()
-    message("h5vfd_tracker BUILDING WITHOUT VOL_Tracker")
+# if(VOL_TRACKER)
+#     message("h5vfd_tracker BUILDING WITH VOL_Tracker")
+#     add_compile_options(VOL_VFD)
+# else()
+#     message("h5vfd_tracker BUILDING WITHOUT VOL_Tracker")
+# endif()
+
+if(ACCESS_STAT)
+    add_compile_definitions(ACCESS_STAT)
 endif()
 
-if(VFD_ACCESS_STAT)
-    add_compile_definitions(VFD_ACCESS_STAT)
-endif()
+
+
+
 
 #-----------------------------------------------------------------------------
 # Build VFD_Tracker Dynamic Library

@@ -164,7 +164,7 @@ H5VL_tracker_t * _file_open_common(void* under, hid_t vol_id, const char* name);
 
 
 herr_t tracker_file_setup(const char* str_in, char* file_path_out, Track_level* level_out, char* format_out);
-H5VL_tracker_t * _fake_obj_new(file_tkr_info_t* root_file, hid_t under_vol_id);
+H5VL_tracker_t * _fake_obj_new(file_tkr_info_t *root_file, hid_t under_vol_id);
 void _fake_obj_free(H5VL_tracker_t* obj);
 H5VL_tracker_t * _obj_wrap_under(void* under, H5VL_tracker_t* upper_o,
         const char *name, H5I_type_t type, hid_t dxpl_id, void** req);
@@ -238,7 +238,7 @@ void file_dtypes_created(file_tkr_info_t* info);
 void file_dtypes_accessed(file_tkr_info_t* info);
 
 
-
+void dset_shm_write(const char *obj_name);
 
 
 
@@ -427,10 +427,13 @@ H5VL_tracker_new_obj(void *under_obj, hid_t under_vol_id, tkr_helper_t* helper)
     new_obj->tkr_helper = helper;
 
     ptr_cnt_increment(new_obj->tkr_helper);
-
     H5Iinc_ref(new_obj->under_vol_id);
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start);
+
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL INT : H5VL_tracker_new_obj END\n");
+#endif
 
     return new_obj;
 } /* end H5VL__tracker_new_obj() */
@@ -801,11 +804,10 @@ tkr_helper_t * tkr_helper_init( char* file_path, Track_level tkr_level, char* tk
     
     tkr_helper_t* new_helper = (tkr_helper_t *)calloc(1, sizeof(tkr_helper_t));
 
-    if(tkr_level >= 2) {//write to file
-        if(!file_path){
-            printf("tkr_helper_init() failed, tracker file path is not set.\n");
-            return NULL;
-        }
+
+    if(!file_path){
+        printf("tkr_helper_init() failed, tracker file path is not set.\n");
+        return NULL;
     }
 
 
@@ -836,9 +838,8 @@ tkr_helper_t * tkr_helper_init( char* file_path, Track_level tkr_level, char* tk
     snprintf(new_helper->tkr_file_path, strlen(file_path) + prefix_len + 2, 
       "%s/%d-%s",file_path, new_helper->pid, VOL_STAT_FILE_NAME);
 
-    
-    // printf("vol new_helper tkr_file_path: %s\n", new_helper->tkr_file_path);
     /* VFD vars end */
+    printf("vol new_helper tkr_file_path: %s\n", new_helper->tkr_file_path);
 
     // New json file list
     FILE * f = fopen(new_helper->tkr_file_path, "a");
@@ -857,10 +858,10 @@ datatype_tkr_info_t *new_dtype_info(file_tkr_info_t* root_file,
     info = (datatype_tkr_info_t *)calloc(1, sizeof(datatype_tkr_info_t));
     info->obj_info.tkr_helper = TKR_HELPER;
     info->obj_info.file_info = root_file;
-    // info->obj_info.name = name ? strdup(name) : NULL;
-    info->obj_info.name = (char*) malloc(sizeof(char) * (strlen(name) + 1));
-    strcpy(info->obj_info.name, name);
-    info->obj_info.name = (char*) name;
+    info->obj_info.name = name ? strdup(name) : NULL;
+    // info->obj_info.name = (char*) malloc(sizeof(char) * (strlen(name) + 1));
+    // strcpy(info->obj_info.name, name);
+    // info->obj_info.name = (char*) name;
     info->obj_info.token = token;
 
     return info;
@@ -912,15 +913,15 @@ group_tkr_info_t *new_group_info(file_tkr_info_t *root_file,
     info = (group_tkr_info_t *)calloc(1, sizeof(group_tkr_info_t));
     info->obj_info.tkr_helper = TKR_HELPER;
     info->obj_info.file_info = root_file;
-    info->obj_info.name = (char*) malloc(sizeof(char) * (strlen(name) + 1));
-    strcpy(info->obj_info.name, name);
-    // info->obj_info.name = (char*) name;
-    // info->obj_info.name = name ? strdup(name) : NULL;
+    // info->obj_info.name = (char*) malloc(sizeof(char) * (strlen(name) + 1));
+    // strcpy(info->obj_info.name, name);
+
+    info->obj_info.name = name ? strdup(name) : NULL;
     info->obj_info.token = token;
 
-// #ifdef DEBUG_PT_TKR_VOL
-//     printf("TRACKER VOL INT : new_group_info END\n");
-// #endif
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL INT : new_group_info END\n");
+#endif
 
     return info;
 }
@@ -941,20 +942,52 @@ attribute_tkr_info_t *new_attribute_info(file_tkr_info_t *root_file,
     return info;
 }
 
+void remove_double_slashes(char **file_name_ptr) {
+    if (file_name_ptr == NULL || *file_name_ptr == NULL) {
+        return; // Invalid input
+    }
+
+    char *file_name = *file_name_ptr;
+    size_t length = strlen(file_name);
+    char *dst = file_name;
+    char *src = file_name;
+
+    while (*src) {
+        if (*src == '/' && *(src + 1) == '/') {
+            src++; // Skip the second slash
+        }
+        *dst++ = *src++;
+    }
+    *dst = '\0'; // Null-terminate the modified string
+
+    // If the modified string is shorter, reallocate memory to avoid memory leaks
+    if (strlen(file_name) < length) {
+        *file_name_ptr = strdup(file_name);
+        free(file_name);
+    }
+
+    // Using memmove directly causes a segfault
+    // char* pch = strstr(info->file_name, "//");
+    // while (pch != NULL) {
+    //     memmove(pch, pch + 1, strlen(pch));
+    //     pch = strstr(info->file_name, "//");
+    // }
+}
+
 file_tkr_info_t* new_file_info(const char* fname, unsigned long file_no)
 {
+
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL INT : new_file_info\n");
+#endif
+
     file_tkr_info_t *info;
 
     info = (file_tkr_info_t *)calloc(1, sizeof(file_tkr_info_t));
 
     info->file_name = fname ? strdup(fname) : NULL;
 
-    // Find and replace double slashes with a single slash (move left)
-    char* pch = strstr(info->file_name, "//");
-    while (pch != NULL) {
-        memmove(pch, pch + 1, strlen(pch));
-        pch = strstr(info->file_name, "//");
-    }
+    remove_double_slashes(&info->file_name);
 
     // info->file_name = malloc(sizeof(char) * (strlen(fname) + 1));
     // strcpy(info->file_name, fname);
@@ -1321,6 +1354,9 @@ int rm_attr_node(tkr_helper_t *helper, void *under_obj, hid_t under_vol_id, attr
 file_tkr_info_t* add_file_node(tkr_helper_t* helper, const char* file_name,
     unsigned long file_no)
 {
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL INT : add_file_node\n");
+#endif
     unsigned long start = get_time_usec();
     file_tkr_info_t* cur;
 
@@ -1328,6 +1364,10 @@ file_tkr_info_t* add_file_node(tkr_helper_t* helper, const char* file_name,
 
     if(!helper->opened_files) //empty linked list, no opened file.
         assert(helper->opened_files_cnt == 0);
+
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL INT : assert done\n");
+#endif
 
     // Search for file in list of currently opened ones
     cur = helper->opened_files;
@@ -1340,6 +1380,10 @@ file_tkr_info_t* add_file_node(tkr_helper_t* helper, const char* file_name,
         cur = cur->next;
     }
 
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL INT : find cur\n");
+#endif
+
     if(!cur) {
         // Allocate and initialize new file node
         cur = new_file_info(file_name, file_no);
@@ -1349,6 +1393,10 @@ file_tkr_info_t* add_file_node(tkr_helper_t* helper, const char* file_name,
         helper->opened_files = cur;
         helper->opened_files_cnt++;
     }
+
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL INT : new_file_info\n");
+#endif
 
     // Increment refcount on file node
     cur->ref_cnt++;
@@ -1780,7 +1828,6 @@ H5VL_tracker_t * _obj_wrap_under(void *under, H5VL_tracker_t *upper_o,
             case H5I_FILE:
                 file_info = (file_tkr_info_t*)upper_o->generic_tkr_info;
                 break;
-
             case H5I_UNINIT:
             case H5I_BADID:
             case H5I_DATASPACE:
@@ -1797,6 +1844,7 @@ H5VL_tracker_t * _obj_wrap_under(void *under, H5VL_tracker_t *upper_o,
                 break;
         }
         assert(file_info);
+
 
         obj = H5VL_tracker_new_obj(under, upper_o->under_vol_id, upper_o->tkr_helper);
 
@@ -1820,7 +1868,7 @@ H5VL_tracker_t * _obj_wrap_under(void *under, H5VL_tracker_t *upper_o,
 
         switch (target_obj_type) {
             case H5I_DATASET:
-                // printf("TRACKER VOL INT : _obj_wrap_under 4.1 H5I_DATASET\n");
+                printf("TRACKER VOL INT : _obj_wrap_under 4.1 H5I_DATASET\n");
                 obj->generic_tkr_info = add_dataset_node(file_no, obj, token, file_info, target_obj_name, dxpl_id, req);
                 obj->my_type = H5I_DATASET;
                 // file_ds_created(file_info); //candice added
@@ -1828,39 +1876,39 @@ H5VL_tracker_t * _obj_wrap_under(void *under, H5VL_tracker_t *upper_o,
                 break;
 
             case H5I_GROUP:
-                // printf("TRACKER VOL INT : _obj_wrap_under 4.2 H5I_GROUP\n");
+                printf("TRACKER VOL INT : _obj_wrap_under 4.2 H5I_GROUP\n");
                 obj->generic_tkr_info = add_grp_node(file_info, obj, target_obj_name, token);
                 obj->my_type = H5I_GROUP;
                 break;
 
             case H5I_FILE: //newly added. if target_obj_name == NULL: it's a fake upper_o
-                // printf("TRACKER VOL INT : _obj_wrap_under 4.3 H5I_FILE\n");
+                printf("TRACKER VOL INT : _obj_wrap_under 4.3 H5I_FILE\n");
                 obj->generic_tkr_info = add_file_node(TKR_HELPER, target_obj_name, file_no);
                 obj->my_type = H5I_FILE;
                 break;
 
             case H5I_DATATYPE:
-                // printf("TRACKER VOL INT : _obj_wrap_under 4.4 H5I_DATATYPE\n");
+                printf("TRACKER VOL INT : _obj_wrap_under 4.4 H5I_DATATYPE\n");
                 obj->generic_tkr_info = add_dtype_node(file_info, obj, target_obj_name, token);
                 obj->my_type = H5I_DATATYPE;
                 break;
 
             case H5I_ATTR:
-                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_ATTR\n");
+                printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_ATTR\n");
                 obj->generic_tkr_info = add_attr_node(file_info, obj, target_obj_name, token);
                 obj->my_type = H5I_ATTR;
                 break;
 
             case H5I_UNINIT:
-                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_UNINIT\n");
+                printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_UNINIT\n");
             case H5I_BADID:
-                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_BADID\n");
+                printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_BADID\n");
             case H5I_DATASPACE:
-                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_DATASPACE\n");
+                printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_DATASPACE\n");
             case H5I_VFL:
-                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_VFL\n");
+                printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_VFL\n");
             case H5I_VOL:
-                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_VOL\n");
+                printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_VOL\n");
                 /* TODO(candice): this is redundant */
                 // obj->generic_tkr_info = add_dataset_node(file_no, obj, token, file_info, target_obj_name, dxpl_id, req);
                 // obj->my_type = H5I_VOL;
@@ -1869,17 +1917,17 @@ H5VL_tracker_t * _obj_wrap_under(void *under, H5VL_tracker_t *upper_o,
                 // file_ds_accessed(file_info);
                 // break;
             case H5I_GENPROP_CLS:
-                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_GENPROP_CLS\n");
+                printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_GENPROP_CLS\n");
             case H5I_GENPROP_LST:
-                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_GENPROP_LST\n");
+                printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_GENPROP_LST\n");
             case H5I_ERROR_CLASS:
-                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_ERROR_CLASS\n");
+                printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_ERROR_CLASS\n");
             case H5I_ERROR_MSG:
-                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_ERROR_MSG\n");
+                printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_ERROR_MSG\n");
             case H5I_ERROR_STACK:
-                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_ERROR_STACK\n");
+                printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_ERROR_STACK\n");
             case H5I_NTYPES:
-                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_NTYPES\n");
+                printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_NTYPES\n");
             default:
                 break;
         }
@@ -2187,7 +2235,6 @@ void attribute_stats_tkr_write(const attribute_tkr_info_t *attr_info) {
 }
 
 void tkr_helper_teardown(tkr_helper_t* helper){
-    printf("vol tkr_helper_teardown(): %s\n", helper->tkr_file_path);
 
     if(helper){// not null
 
@@ -2368,7 +2415,7 @@ void log_file_stat_json(tkr_helper_t* helper_in, const file_tkr_info_t* file_inf
         return;
     }
 
-#ifdef VOL_ACCESS_STAT
+#ifdef ACCESS_STAT
     log_dset_ht_json(f);
 
     // char* file_name = strrchr(file_info->file_name, '/');
@@ -2776,6 +2823,9 @@ void attribute_info_print(char * func_name, void *obj,  const H5VL_loc_params_t 
 void group_info_print(char * func_name, void *obj, void *args,
     const char *name, hid_t gapl_id, hid_t dxpl_id, void **req)
 {
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL INT : group_info_print()\n");
+#endif
     // TODO: use if else to get different args
     // if(strcmp(func_name, "H5VLgroup_get") == 0)
     //     H5VL_group_get_args_t * extra_args = (H5VL_group_get_args_t*)args;
@@ -2860,7 +2910,7 @@ size_t token_to_size_t(const H5O_token_t* token) {
 void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
     hid_t file_space_id, void * obj, hid_t dxpl_id)
 {
-#ifdef DEBUG_PT_TKR_VOL
+#ifdef DEBUG_TKR_VOL
     printf("TRACKER VOL INT : dataset_info_update: %s\n", func_name);
 #endif
 
@@ -2908,8 +2958,9 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
         // only valid with creation property list
         char * layout = dataset_get_layout(dcpl_id); 
         // dset_info->layout = layout ? strdup(layout) : NULL;
-        dset_info->layout = (char*) malloc(sizeof(char) * (strlen(layout) + 1));
-        strcpy(dset_info->layout, layout);
+        // dset_info->layout = (char*) malloc(sizeof(char) * (strlen(layout) + 1));
+        // strcpy(dset_info->layout, layout);
+        dset_info->layout = strdup(layout);
     }
 
     // if contiguous and not vlen
@@ -2935,7 +2986,7 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
             dset_info->dset_offset = start_addr;
             dset_info->storage_size = 0;
 
-#ifdef DEBUG_PT_TKR_VOL
+#ifdef DEBUG_TKR_VOL
     printf("TRACKER VOL INT : dataset_info_update:%s dset_name:%s\n", func_name, dset_info->obj_info.name);
 #endif
 
@@ -2950,7 +3001,7 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
         if ((dset_info->dset_offset == NULL) || (dset_info->dset_offset < 0))
             dset_info->dset_offset = dataset_get_offset(dset->under_object, dset->under_vol_id, dxpl_id);
 
-#ifdef DEBUG_PT_TKR_VOL
+#ifdef DEBUG_TKR_VOL
     // dataset_info_print(func_name, mem_type_id, mem_space_id, file_space_id, obj, dxpl_id);
     printf("TRACKER VOL INT : dataset_info_update: %s END\n", func_name);
 #endif
@@ -2998,7 +3049,7 @@ void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
     printf("\"dxpl_id\": %d, ", dxpl_id);
     printf("}\n");
 
-#ifdef DEBUG_PT_TKR_VOL
+#ifdef DEBUG_TKR_VOL
     printf("TRACKER VOL INT : dataset_info_print: %s END\n", func_name);
 #endif
 
@@ -3443,6 +3494,9 @@ void file_ds_accessed(file_tkr_info_t* info)
 }
 void file_grp_accessed(file_tkr_info_t *info)
 {
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL INT: file_grp_accessed()\n");
+#endif
     assert(info);
     if(info)
         info->grp_accessed++;
@@ -3674,6 +3728,8 @@ void log_dset_ht_json(FILE* f) {
         }
 
     }
+
+    // TODO: remove logged entries
 
     // fprintf(f, "\n");
 
@@ -3972,4 +4028,91 @@ void check_obj_loc_params_type(char* func, H5VL_loc_params_t *loc_params){
         default:
             printf("H5VL_OBJECT UNKNOWN\n");
     }
+}
+
+void file_shm_write() {
+    // Only write to shared memory if it is different from the current object
+    // TODO: This method only writes "/" to the shared memory
+    // TODO: This method is used to overwrite current shm with / only
+}
+
+void group_shm_write(const char * group_name){
+    // Name is represented as "/group_name/dataset_name/"
+    // TODO: This method is used to overwrite current shm with "/group_name/" only
+}
+
+void dset_shm_remove() {
+    // Name is represented as "/group_name/dataset_name/"
+    // TODO: This method is used to remove the "/dataset_name/" part from the current shm
+}
+
+char *remove_leading_slash(const char *input) {
+    // Copy the input string to the result string, omitting the leading '/'
+    if (input[0] == '/') {
+
+        // Find the length of the input string
+        size_t len = strlen(input) -1;
+        // Allocate memory for the new string
+        char *result = (char *)malloc(len);
+
+        strcpy(result, input + 1);
+        return result;
+    } else {
+
+        // Find the length of the input string
+        size_t len = strlen(input) ;
+        // Allocate memory for the new string
+        char *result = (char *)malloc(len);
+
+        strcpy(result, input);
+        return result;
+    }
+}
+
+
+
+void dset_shm_write(const char *dset_name) { // TODO: modify to append to the end
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL INT: dset_shm_write()\n");
+#endif
+
+    char * cp_dset_name = strdup(dset_name);
+
+    // remove leading / if in dset_name
+    if (cp_dset_name[0] == '/') {
+        cp_dset_name++;
+    }
+
+
+    // Only write to shared memory if it is different from the current object
+    if (CURR_DSET != NULL && strcmp(CURR_DSET, cp_dset_name) == 0) {
+        return;
+    }
+
+
+    pid_t pid = getpid();
+    size_t len = strlen(SHM_NAME) + 1 + sizeof(pid) * 3; // +1 for null terminator
+    char *task_shm_name = (char *)malloc(len);
+    snprintf(task_shm_name, len, "%s_%d", SHM_NAME, pid);
+
+    // Allocate shared memory
+    int shm_fd = shm_open(task_shm_name, O_CREAT | O_RDWR, 0666);
+    ftruncate(shm_fd, SHM_SIZE);
+
+    if (CURR_DSET != NULL) {
+        munmap(CURR_DSET, SHM_SIZE);
+    }
+
+
+    CURR_DSET = (char *)mmap(0, SHM_SIZE, PROT_WRITE, MAP_SHARED, shm_fd, 0);
+    strcpy(CURR_DSET, cp_dset_name);
+
+#ifdef DEBUG_TKR_VOL
+    printf("Shared Memory Name: %s\n", task_shm_name);
+    printf("Object Name: %s\n", CURR_DSET);
+#endif
+
+    // Clean up
+    close(shm_fd);
+    free(task_shm_name);
 }

@@ -49,12 +49,6 @@
 
 /* private method copies */
 #include "H5private.h"
-// #include "H5Pprivate.h"
-// #include "H5Iprivate.h"
-
-// extern "C" {
-// #include "H5FDtracker_vfd_log.h" /* Connecting to vol         */
-// }
 
 /* For TRACKER end */
 
@@ -251,7 +245,7 @@ H5FD__tracker_vfd_term(void) {
   herr_t ret_value = SUCCEED;
 
   if(TKR_HELPER_VFD != nullptr)
-    vfd_tkr_helper_teardown(TKR_HELPER_VFD); // TODO: this segfault
+    teardownVFDTkrHelper(TKR_HELPER_VFD); // TODO: this segfault
 
   /* Unregister from HDF5 error API */
   if (H5FDtracker_vfd_err_class_g >= 0) {
@@ -278,6 +272,12 @@ H5FD__tracker_vfd_term(void) {
   /* Reset VFL ID */
   H5FD_TRACKER_VFD_g = H5I_INVALID_HID;
 
+  // std::cout << "POSIX-READ-Time(us): " << timer_read.GetUsec() << std::endl;
+  // std::cout << "POSIX-WRITE-Time(us): " << timer_write.GetUsec() << std::endl;
+  // std::cout << "POSIX-OPEN-Time(us): " << timer_open.GetUsec() << std::endl;
+  // std::cout << "POSIX-CLOSE-Time(us): " << timer_close.GetUsec() << std::endl;
+  // std::cout << "POSIX-DELETE-Time(us): " << timer_del.GetUsec() << std::endl;
+  
 done:
   H5FD_TRACKER_VFD_FUNC_LEAVE_API;
   // return ret_value;
@@ -297,7 +297,7 @@ done:
 herr_t
 H5Pset_fapl_tracker_vfd(hid_t fapl_id, hbool_t logStat, size_t page_size, std::string logFilePath) {
 
-  unsigned long t_start = get_time_usec();
+  timer_vfd.Resume();
   H5FD_tracker_vfd_fapl_t fa; /* Tracker VFD info */
   herr_t ret_value = SUCCEED; /* Return value */
 
@@ -325,7 +325,7 @@ H5Pset_fapl_tracker_vfd(hid_t fapl_id, hbool_t logStat, size_t page_size, std::s
 
   VFD_ACCESS_IDX = 0;
 
-  TOTAL_TKR_VFD_TIME += (get_time_usec() - t_start);
+  timer_vfd.Pause();
 
 done:
   H5FD_TRACKER_VFD_FUNC_LEAVE_API;
@@ -366,13 +366,13 @@ static herr_t H5FD__tracker_vfd_fapl_free(void *_fa) {
 static H5FD_t *
 H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
                   haddr_t maxaddr) {
-
+  double t_start = timer.GetUsFromEpoch();
 #ifdef DEBUG_TRK_VFD
   std::cout << "H5FD__tracker_vfd_open() name = " << name << std::endl;
     /* If an existing file is opened, load the whole file into memory. */
 #endif
 
-  unsigned long t_start = get_time_usec();
+  timer_vfd.Resume();
   H5FD_tracker_vfd_t  *file = NULL; /* tracker_vfd VFD info          */
   int fd = -1;
   int o_flags = 0;
@@ -426,7 +426,7 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
   std::cout << "H5FD__tracker_vfd_open() flags = " << flags << std::endl;
 #endif
 
-  t1 = get_time_usec();
+  timer_open.Resume();
   /* Open the file */
   if ((fd = HDopen(name, o_flags, H5_POSIX_CREATE_MODE_RW)) < 0) {
       int myerrno = errno;
@@ -436,15 +436,18 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
           name, myerrno, strerror(myerrno), flags, (unsigned)o_flags);
   } /* end if */
 
-  t2 = get_time_usec();
-  TOTAL_POSIX_IO_TIME += (t2 - t1);
+  timer_open.Pause();
+  // t2 = get_time_usec();
+  // TOTAL_POSIX_IO_TIME += (t2 - t1);
 
   // if (HDfstat(fd, &sb) < 0)
-  t1 = get_time_usec();
+  // t1 = get_time_usec();
+  timer_open.Resume();
   if (fstat(fd, &sb) < 0)
     H5FD_TRACKER_VFD_SYS_GOTO_ERROR(H5E_FILE, H5E_BADFILE, NULL, "unable to fstat file");
-  t2 = get_time_usec();
-  TOTAL_POSIX_IO_TIME += (t4 - t3);
+  timer_open.Pause();
+  // t2 = get_time_usec();
+  // TOTAL_POSIX_IO_TIME += (t2 - t1);
 
   /* Create the new file struct */
   if (NULL == (file = (H5FD_tracker_vfd_t *)calloc((size_t)1, sizeof(H5FD_tracker_vfd_t))))
@@ -503,16 +506,16 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
   file->logStat = fa->logStat;
 
   if(TKR_HELPER_VFD == nullptr){
-    TKR_HELPER_VFD = vfd_tkr_helper_init(new_fa.stat_path, file->logStat, file->page_size);
+    TKR_HELPER_VFD = vfdTkrHelperInit(new_fa.stat_path, file->logStat, file->page_size);
   }
 
-  // file->vfd_file_info = add_vfd_file_node(name, file);
-  file->vfd_file_info = add_vfd_file_node(TKR_HELPER_VFD, name, file);
-#ifdef VFD_ACCESS_STAT
-  open_close_info_update("H5FD__tracker_vfd_open", file, file->eof, flags, t_start);
+  // file->vfd_file_info = addVFDFileNode(name, file);
+  file->vfd_file_info = addVFDFileNode(TKR_HELPER_VFD, name, file);
+#ifdef ACCESS_STAT
+  updateOpenCloseInfo("H5FD__tracker_vfd_open", file, file->eof, flags, t_start);
 #endif
   
-  TOTAL_TKR_VFD_TIME += (get_time_usec() - t_start);
+  timer_vfd.Pause();
   /* custom VFD code end */
 
   /* Set return value */
@@ -521,10 +524,12 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
 done:
   if (NULL == ret_value) {
     if (fd >= 0){
-      t3 = get_time_usec();
+      // t3 = get_time_usec();
+      timer_close.Resume();
       close(fd);
-      t4 = get_time_usec();
-      TOTAL_POSIX_IO_TIME += (t4 - t3);
+      timer_close.Pause();
+      // t4 = get_time_usec();
+      // TOTAL_POSIX_IO_TIME += (t4 - t3);
     }
     if (file) {
       free(file);
@@ -546,39 +551,36 @@ done:
  */
 static herr_t H5FD__tracker_vfd_close(H5FD_t *_file) {
 
-  unsigned long t_start = get_time_usec();
+  
+  timer_vfd.Resume();
   unsigned long t1, t2;
   H5FD_tracker_vfd_t *file = (H5FD_tracker_vfd_t *)_file;
   herr_t ret_value = SUCCEED; /* Return value */
   assert(file);
 
+#ifdef ACCESS_STAT
+  updateOpenCloseInfo("H5FD__tracker_vfd_close", file, file->eof, file->flags, timer.GetUsFromEpoch());
+#endif
+
   /* custom VFD code start */
   // print_open_close_info("H5FD__tracker_vfd_close", file, file->filename, t_start, get_time_usec(), file->eof, file->flags);
 
-#ifdef VFD_ACCESS_STAT
-  open_close_info_update("H5FD__tracker_vfd_close", file, file->eof, file->flags, t_start);
-#endif
-  dump_vfd_file_stat_json(TKR_HELPER_VFD, file->vfd_file_info);
-  rm_vfd_file_node(TKR_HELPER_VFD, _file);
-  
-
+  DumpJsonFileStat(TKR_HELPER_VFD, file->vfd_file_info);
+  rmVFDFileNode(TKR_HELPER_VFD, _file);
   /* custom VFD code end */
 
-
-  t1 = get_time_usec();
+  timer_close.Resume();
   if (close(file->fd) < 0)
     H5FD_TRACKER_VFD_SYS_GOTO_ERROR(H5E_IO, H5E_CANTCLOSEFILE, FAIL,
                                 "unable to close file");
-  t2 = get_time_usec();
-  TOTAL_POSIX_IO_TIME += (t2 - t1);
-  
-  // TOTAL_TKR_VFD_TIME += (get_time_usec() - t_start - (t2 - t1));
-  TOTAL_TKR_VFD_TIME += (get_time_usec() - t_start);
+  timer_close.Pause();
+
 
   // if (file->filename)
   //   free(file->filename); // this segfaults
 
   free(file);
+  timer_vfd.Pause();
   
 done:
   H5FD_TRACKER_VFD_FUNC_LEAVE_API;
@@ -763,12 +765,13 @@ done:
 static herr_t H5FD__tracker_vfd_read(H5FD_t *_file, H5FD_mem_t type,
                                 hid_t dxpl_id, haddr_t addr,
                                 size_t size, void *buf) {
+  double t_start = timer.GetUsFromEpoch();
 #ifdef DEBUG_TRK_VFD
   std::cout << "H5FD__tracker_vfd_read() size:" << size << std::endl;
 #endif
 
 
-  unsigned long t_start = get_time_usec();
+  timer_vfd.Resume();
   unsigned long t1, t2, t3, t4;
   (void) dxpl_id; (void) type;
   H5FD_tracker_vfd_t *file = (H5FD_tracker_vfd_t *)_file;
@@ -814,7 +817,8 @@ static herr_t H5FD__tracker_vfd_read(H5FD_t *_file, H5FD_mem_t type,
             bytes_in = (h5_posix_io_t)size;
 
         do {
-          t1 = get_time_usec();
+          // t1 = get_time_usec();
+          timer_read.Resume();
 #ifdef H5_HAVE_PREADWRITE
             bytes_read = HDpread(file->fd, buf, bytes_in, offset);
             if (bytes_read > 0)
@@ -822,18 +826,21 @@ static herr_t H5FD__tracker_vfd_read(H5FD_t *_file, H5FD_mem_t type,
 #else
             bytes_read  = HDread(file->fd, buf, bytes_in);
 #endif /* H5_HAVE_PREADWRITE */
-          t2 = get_time_usec();
-          TOTAL_POSIX_IO_TIME += (t2 - t1);
+          // t2 = get_time_usec();
+          // TOTAL_POSIX_IO_TIME += (t2 - t1);
+          timer_read.Pause();
         } while (-1 == bytes_read && EINTR == errno);
 
         if (-1 == bytes_read) { /* error */
             int    myerrno = errno;
             time_t mytime  = HDtime(NULL);
 
-            t3 = get_time_usec();
+            // t3 = get_time_usec();
+            timer_read.Resume();
             offset = HDlseek(file->fd, (HDoff_t)0, SEEK_CUR);
-            t4 = get_time_usec();
-            TOTAL_POSIX_IO_TIME += (t3 - t4); // Q: Record seek time?
+            timer_read.Pause();
+            // t4 = get_time_usec();
+            // TOTAL_POSIX_IO_TIME += (t3 - t4); // Q: Record seek time?
 
             H5FD_TRACKER_VFD_GOTO_ERROR(H5E_IO, H5E_READERROR, FAIL,
                         "file read failed: time = %s, filename = '%s', file descriptor = %d, errno = %d, "
@@ -862,17 +869,17 @@ static herr_t H5FD__tracker_vfd_read(H5FD_t *_file, H5FD_mem_t type,
     file->pos = addr;
     file->op  = OP_READ;
 
-#ifdef VFD_ACCESS_STAT
+#ifdef ACCESS_STAT
   /* custom VFD code start */
   VFD_ACCESS_IDX++;
-  // check if VFD_ACCESS_IDX is every 10th access
-  if(VFD_ACCESS_IDX % ACCESS_INX_SKIP == 0)
-    read_write_info_update("H5FD__tracker_vfd_read", file->filename, file->my_fapl_id ,_file,
-    type, dxpl_id, addr, read_size, file->page_size, t_start);
+  // check if VFD_ACCESS_IDX is every ACCESS_INX_SKIP'th access
+  // if(VFD_ACCESS_IDX % ACCESS_INX_SKIP == 0 || VFD_ACCESS_IDX == 1)
+
+  updateReadWriteInfo("H5FD__tracker_vfd_read", file->filename, file->my_fapl_id ,_file,
+  type, dxpl_id, addr, read_size, file->page_size, t_start);
 #endif
 
-  // TOTAL_TKR_VFD_TIME += (get_time_usec() - t_start -(t2 -t1) - (t4 - t3));
-  TOTAL_TKR_VFD_TIME += (get_time_usec() - t_start);
+  timer_vfd.Pause();
   /* custom VFD code end */
 
 done:
@@ -901,18 +908,17 @@ done:
 static herr_t H5FD__tracker_vfd_write(H5FD_t *_file, H5FD_mem_t type,
                                  hid_t dxpl_id, haddr_t addr,
                                  size_t size, const void *buf) {
+  double t_start = timer.GetUsFromEpoch();
 #ifdef DEBUG_TRK_VFD
   std::cout << "H5FD__tracker_vfd_write() size:" << size << std::endl;
 #endif
 
-  unsigned long t_start = get_time_usec();
-  unsigned long t1, t2, t3, t4;
+  timer_vfd.Resume();
   size_t write_size = size;
   (void) dxpl_id; (void) type;
   H5FD_tracker_vfd_t *file = (H5FD_tracker_vfd_t *)_file;
   HDoff_t      offset    = (HDoff_t)addr;
   herr_t ret_value = SUCCEED;
-
 
 #ifndef H5_HAVE_PREADWRITE
     /* Seek to the correct location (if we don't have pwrite) */
@@ -937,7 +943,7 @@ static herr_t H5FD__tracker_vfd_write(H5FD_t *_file, H5FD_mem_t type,
             bytes_in = (h5_posix_io_t)size;
 
         do {
-          t1 = get_time_usec();
+          timer_write.Resume();
 #ifdef H5_HAVE_PREADWRITE
             
             bytes_wrote = HDpwrite(file->fd, buf, bytes_in, offset);
@@ -946,18 +952,17 @@ static herr_t H5FD__tracker_vfd_write(H5FD_t *_file, H5FD_mem_t type,
 #else
             bytes_wrote = HDwrite(file->fd, buf, bytes_in);
 #endif /* H5_HAVE_PREADWRITE */
-          t2 = get_time_usec();
-          TOTAL_POSIX_IO_TIME += (t2 - t1);
+          timer_write.Pause();
         } while (-1 == bytes_wrote && EINTR == errno);
 
         if (-1 == bytes_wrote) { /* error */
             int    myerrno = errno;
             time_t mytime  = HDtime(NULL);
 
-            t3 = get_time_usec();
+            // t3 = get_time_usec();
+            timer_write.Resume();
             offset = HDlseek(file->fd, (HDoff_t)0, SEEK_CUR);
-            t4 = get_time_usec();
-            TOTAL_POSIX_IO_TIME += (t3 - t4); // Q: Record seek time?
+            timer_write.Pause(); // Q: Record seek time?
 
             H5FD_TRACKER_VFD_GOTO_ERROR(H5E_IO, H5E_WRITEERROR, FAIL,
                         "file write failed: time = %s, filename = '%s', file descriptor = %d, errno = %d, "
@@ -982,17 +987,20 @@ static herr_t H5FD__tracker_vfd_write(H5FD_t *_file, H5FD_mem_t type,
     if (file->pos > file->eof)
         file->eof = file->pos;
 
-#ifdef VFD_ACCESS_STAT
+#ifdef ACCESS_STAT
   /* custom VFD code start */
   VFD_ACCESS_IDX++;
   // check if VFD_ACCESS_IDX is every 10th access
-  if(VFD_ACCESS_IDX % ACCESS_INX_SKIP == 0)
-    read_write_info_update("H5FD__tracker_vfd_write", file->filename, file->my_fapl_id ,_file,
-    type, dxpl_id, addr, write_size, file->page_size, t_start);
+  // if(VFD_ACCESS_IDX % ACCESS_INX_SKIP == 0 || VFD_ACCESS_IDX == 1)
+  updateReadWriteInfo("H5FD__tracker_vfd_write", file->filename, file->my_fapl_id ,_file,
+  type, dxpl_id, addr, write_size, file->page_size, t_start);
 #endif
 
-  // TOTAL_TKR_VFD_TIME += (get_time_usec() - t_start -(t2 -t1) - (t4 - t3));
-  TOTAL_TKR_VFD_TIME += (get_time_usec() - t_start);
+#ifdef DEBUG_TRK_VFD
+  std::cout << "H5FD__tracker_vfd_write() updateReadWriteInfo() done: " << file->filename << std::endl;
+#endif
+
+  timer_vfd.Pause();
   /* custom VFD code end */
 
 done:
@@ -1144,11 +1152,13 @@ H5FD__tracker_vfd_delete(const char *filename, hid_t H5_ATTR_UNUSED fapl_id)
 
   assert(filename);
 
-  t1 = get_time_usec();
+  // t1 = get_time_usec();
+  timer_del.Resume();
   if (HDremove(filename) < 0)
       H5FD_TRACKER_VFD_SYS_GOTO_ERROR(H5E_VFL, H5E_CANTDELETEFILE, FAIL, "unable to delete file");
-  t2 = get_time_usec();
-  TOTAL_POSIX_IO_TIME += (t2 - t1);
+  timer_del.Pause();
+  // t2 = get_time_usec();
+  // TOTAL_POSIX_IO_TIME += (t2 - t1);
 
 done:
   FUNC_LEAVE_NOAPI(ret_value);
@@ -1203,3 +1213,6 @@ const void*
 H5PLget_plugin_info(void) {
   return &H5FD_tracker_vfd_g;
 }
+
+
+
