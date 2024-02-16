@@ -18,8 +18,8 @@ class DayuTracker(Interceptor):
         self.vfd_tracker_name = 'hdf5_tracker_vfd'
         self.vol_tracker_name = 'tracker'
         
-        self.vfd_env_vars = ['HDF5_DRIVER', 'HDF5_DRIVER_CONFIG', 'HDF5_PLUGIN_PATH']
-        self.vol_env_vars = ['HDF5_VOL_CONNECTOR', 'HDF5_PLUGIN_PATH']
+        self.vfd_env_vars = ['HDF5_DRIVER', 'HDF5_DRIVER_CONFIG', 'HDF5_PLUGIN_PATH'] # 
+        self.vol_env_vars = ['HDF5_PLUGIN_PATH', 'HDF5_VOL_CONNECTOR'] #
         
         self.dayu_task_vars = ['PATH_FOR_TASK_FILES', "WORKFLOW_NAME"]
 
@@ -89,7 +89,7 @@ class DayuTracker(Interceptor):
         conda_envs = self.config['conda_env'].split(',')
         
         for cenv in conda_envs:
-            
+            # TODO: change to use empty string
             cmd = ['conda', 'env', 'config', 'vars', 'unset',]
             
             for env_var in env_vars_toset:
@@ -131,26 +131,21 @@ class DayuTracker(Interceptor):
         
         # Set current environment variables
         self.setenv('HDF5_DRIVER', self.vfd_tracker_name)
+        self.log(f"HDF5_DRIVER: \"{self.env['HDF5_DRIVER']}\"")
         
-        driver_config_str = f'"{self.config["stat_file_path"]};{self.config["tracker_page_size"]}"'
+        driver_config_str = f'\"{self.config["stat_file_path"]};{str(self.config["tracker_page_size"])}\"'
         
         self.setenv('HDF5_DRIVER_CONFIG', driver_config_str)
         self.log(f"HDF5_DRIVER_CONFIG: {self.env['HDF5_DRIVER_CONFIG']}")
         
         # if not empty, append the current HDF5_PLUGIN_PATH to the new plugin path
-        if 'HDF5_PLUGIN_PATH' in self.env and self.env['HDF5_PLUGIN_PATH'] != "":
-            plugin_path_str = f'"{self.config["dayu_lib"]}/vfd:{self.env["HDF5_PLUGIN_PATH"]}'
-            self.setenv('HDF5_PLUGIN_PATH', plugin_path_str)
+        if self.config['vol_tracker']:
+            plugin_path_str = f'\"{self.config["dayu_lib"]}/vfd/:{self.config["dayu_lib"]}/vol/\"'
         else:
-            self.setenv('HDF5_PLUGIN_PATH', f"{self.config['dayu_lib']}/vfd")
+            plugin_path_str = f'\"{self.config["dayu_lib"]}/vfd/\"'
+        self.setenv('HDF5_PLUGIN_PATH', plugin_path_str)
+        self.log(f"HDF5_PLUGIN_PATH: {self.env['HDF5_PLUGIN_PATH']}")
         
-        # Set conda environment variables if required
-        if self.config['conda_env'] is not None:
-            self._unset_conda_vars(self.vfd_env_vars)
-            self._set_conda_vars(self.vfd_env_vars)
-            
-            self._unset_conda_vars(self.dayu_task_vars)
-            self._set_conda_vars(self.dayu_task_vars)
     
     def _setup_vol_tracker(self):
         """
@@ -161,10 +156,10 @@ class DayuTracker(Interceptor):
         self.log(f"Setting up VOL tracker environment variables.")
         
         vol_connector_str = (
-            f'"{self.vol_tracker_name} under_vol=0;'
+            f'\"{self.vol_tracker_name} under_vol=0;'
             + 'under_info={};'
             + f'path={self.config["stat_file_path"]};'
-            + 'level=2;format="'
+            + 'level=2;format=\"'
             )
         
         self.log(f"HDF5_VOL_CONNECTOR: {vol_connector_str}")
@@ -172,17 +167,13 @@ class DayuTracker(Interceptor):
         self.setenv('HDF5_VOL_CONNECTOR', vol_connector_str)
         
         # if not empty, append the current HDF5_PLUGIN_PATH to the new plugin path
-        if 'HDF5_PLUGIN_PATH' in self.env and self.env['HDF5_PLUGIN_PATH'] != "":
-            plugin_path_str = f'"{self.config["dayu_lib"]}/vol:{self.env["HDF5_PLUGIN_PATH"]}'
-            self.setenv('HDF5_PLUGIN_PATH', plugin_path_str)
+        if self.config['vfd_tracker']:
+            plugin_path_str = f'\"{self.config["dayu_lib"]}/vol/:{self.config["dayu_lib"]}/vfd/\"'
         else:
-            self.setenv('HDF5_PLUGIN_PATH', f"{self.config['dayu_lib']}/vol")
+            plugin_path_str = f'\"{self.config["dayu_lib"]}/vol/\"'
         
-        # Set conda environment variables if required
-        if self.config['conda_env']:
-            self._unset_conda_vars(self.vol_env_vars)
-            self._set_conda_vars(self.vol_env_vars)
-        
+        self.setenv('HDF5_PLUGIN_PATH', plugin_path_str)
+        self.log(f"HDF5_PLUGIN_PATH: {self.env['HDF5_PLUGIN_PATH']}")
     
     def _configure(self, **kwargs):
         """
@@ -203,6 +194,10 @@ class DayuTracker(Interceptor):
             self.setenv('PATH_FOR_TASK_FILES', self.config['taskname_file_path'])
             self.setenv('WORKFLOW_NAME', self.config['workflow_name'])
 
+        if self.config['vfd_tracker']:
+            self._setup_vfd_tracker()
+        if self.config['vol_tracker']:
+            self._setup_vol_tracker()
 
     def modify_env(self):
         """
@@ -217,19 +212,14 @@ class DayuTracker(Interceptor):
         # Make path when start
         pathlib.Path(self.config['taskname_file_path']).mkdir(parents=True, exist_ok=True)
         
-        # Cleanup the HDF5_PLUGIN_PATH variables first, this is run before any application
-        # self.mod_env['HDF5_PLUGIN_PATH'] = ""
-        # self.setenv('HDF5_PLUGIN_PATH',"")
         
-        # self.setenv('PATH_FOR_TASK_FILES', self.config['taskname_file_path'])
-        # self.setenv('WORKFLOW_NAME', self.config['workflow_name'])
+        # Set conda environment variables if required
+        if self.config['conda_env'] is not None:
+            conda_env_to_set = self.dayu_task_vars
         
-        # self.env.append('PATH_FOR_TASK_FILES', "")
-        
-        # self.env['PATH_FOR_TASK_FILES'] = self.config['taskname_file_path']
-        # self.env['WORKFLOW_NAME'] = self.config['workflow_name']
-    
-        if self.config['vfd_tracker']:
-            self._setup_vfd_tracker()
-        if self.config['vol_tracker']:
-            self._setup_vol_tracker()
+            if self.config['vfd_tracker']: conda_env_to_set.extend(self.vfd_env_vars)
+            if self.config['vol_tracker']: conda_env_to_set.extend(self.vol_env_vars)
+            
+            conda_env_to_set = list(set(conda_env_to_set))
+            self._unset_conda_vars(conda_env_to_set)
+            self._set_conda_vars(conda_env_to_set)
