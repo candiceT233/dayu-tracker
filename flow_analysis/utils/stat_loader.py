@@ -60,7 +60,8 @@ def load_task_order_list(stat_path):
     given_order_list = f"{stat_path}/task_order_list.json"
     # check if path exists
     if not os.path.exists(given_order_list):
-        raise ValueError(f"task_order_list.json not found in {stat_path}")
+        print("WARING: task_order_list.json not found in {}".format(stat_path))
+        return None
 
     with open(given_order_list, 'r') as stream:
         try:
