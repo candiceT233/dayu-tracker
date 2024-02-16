@@ -1016,6 +1016,10 @@ H5VL_tracker_unwrap_object(void *obj)
         H5VL_tracker_free_obj(o);
     }
 
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL UNWRAP Object: END\n");
+#endif
+
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return under;
 } /* end H5VL_tracker_unwrap_object() */
@@ -2430,19 +2434,11 @@ H5VL_tracker_file_create(const char *name, unsigned flags, hid_t fcpl_id,
     /* Get copy of our VOL info from FAPL */
     H5Pget_vol_info(fapl_id, (void **)&info);
 
-#ifdef DEBUG_PT_TKR_VOL
-    printf("TRACKER VOL FILE Create -3\n");
-#endif
-
     /* Copy the FAPL */
     under_fapl_id = H5Pcopy(fapl_id);
 
     /* Set the VOL ID and info for the underlying FAPL */
     H5Pset_vol(under_fapl_id, info->under_vol_id, info->under_vol_info);
-
-#ifdef DEBUG_PT_TKR_VOL
-    printf("TRACKER VOL FILE Create -2\n");
-#endif
 
 #ifdef H5_HAVE_PARALLEL
     // Determine if the file is accessed with the parallel VFD (MPI-IO)
@@ -2456,28 +2452,16 @@ H5VL_tracker_file_create(const char *name, unsigned flags, hid_t fcpl_id,
     }
 #endif /* H5_HAVE_PARALLEL */
 
-#ifdef DEBUG_PT_TKR_VOL
-    printf("TRACKER VOL FILE Create -4\n");
-#endif
-
     /* Open the file with the underlying VOL connector */
     m1 = get_time_usec();
     under = H5VLfile_create(name, flags, fcpl_id, under_fapl_id, dxpl_id, req);
     m2 = get_time_usec();
-
-#ifdef DEBUG_PT_TKR_VOL
-    printf("TRACKER VOL FILE Create -5\n");
-#endif
 
     if(under) {
         if(!TKR_HELPER)
             TKR_HELPER = tkr_helper_init(info->tkr_file_path, info->tkr_level, info->tkr_line_format);
 
         file = _file_open_common(under, info->under_vol_id, name);
-
-#ifdef DEBUG_PT_TKR_VOL
-    printf("TRACKER VOL FILE Create -1\n");
-#endif
 
 #ifdef H5_HAVE_PARALLEL
         if(have_mpi_comm_info) {
@@ -2508,13 +2492,13 @@ H5VL_tracker_file_create(const char *name, unsigned flags, hid_t fcpl_id,
         H5Pclose(under_fapl_id);
 
 #ifdef DEBUG_PT_TKR_VOL
-    printf("TRACKER VOL FILE Create 1\n");
+    printf("TRACKER VOL FILE Create: H5Pclose()\n");
 #endif
     /* Release copy of our VOL info */
     if(info)
         H5VL_tracker_info_free(info);
 #ifdef DEBUG_PT_TKR_VOL
-    printf("TRACKER VOL FILE Create 2\n");
+    printf("TRACKER VOL FILE Create: H5VL_tracker_info_free()\n");
 #endif
 
 #ifdef H5_HAVE_PARALLEL
@@ -2634,10 +2618,17 @@ H5VL_tracker_file_open(const char *name, unsigned flags, hid_t fapl_id,
     /* Close underlying FAPL */
     if(under_fapl_id > 0)
         H5Pclose(under_fapl_id);
-
+    
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL FILE Open: H5Pclose()\n");
+#endif
     /* Release copy of our VOL info */
     if(info)
         H5VL_tracker_info_free(info);
+
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL FILE Open: H5VL_tracker_info_free()\n");
+#endif
 
 #ifdef H5_HAVE_PARALLEL
     // Release MPI Comm & Info, if they weren't taken over
@@ -2832,16 +2823,28 @@ H5VL_tracker_file_specific(void *file, H5VL_file_specific_args_t *args,
         /* Close underlying FAPL */
         H5Pclose(my_args.args.is_accessible.fapl_id);
 
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL FILE Specific: H5VL_FILE_IS_ACCESSIBLE: H5Pclose()\n");
+#endif
         /* Release copy of our VOL info */
         H5VL_tracker_info_free(info);
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL FILE Specific: H5VL_FILE_IS_ACCESSIBLE: H5VL_tracker_info_free()\n");
+#endif
     } /* end else-if */
     /* Check for 'delete' operation */
     else if(args->op_type == H5VL_FILE_DELETE) {
         /* Close underlying FAPL */
         H5Pclose(my_args.args.del.fapl_id);
 
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL FILE Specific: H5VL_FILE_DELETE: H5Pclose()\n");
+#endif
         /* Release copy of our VOL info */
         H5VL_tracker_info_free(info);
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL FILE Specific: H5VL_FILE_DELETE: H5VL_tracker_info_free()\n");
+#endif
     } /* end else-if */
     else if(args->op_type == H5VL_FILE_REOPEN) {
         /* Wrap reopened file struct pointer, if we reopened one */

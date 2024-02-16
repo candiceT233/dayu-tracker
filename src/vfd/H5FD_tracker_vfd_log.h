@@ -45,13 +45,21 @@
 /* HDF5 header for dynamic plugin loading */
 // #include "H5PLextern.h"
 #include "H5FD_tracker_vfd.h"     /* Tracker VFD file driver     */
-// #include "H5FD_tracker_vfd_err.h" /* TODO: error handling         */
+#include "H5FD_tracker_vfd_err.h" /* Error handling         */
+
+
+
 
 
 // #ifdef ENABLE_TRACKER
 #include "../vol/tracker_vol_types.h" /* Connecting to vol */
-#include "../utils/debug/timer.h" /* for recording time */
+// #include "../utils/debug/timer.h" /* for recording time */
 // #include "../utils/debug/Tracer_cpp.h" /* for debug and evaluation */
+#ifdef HERMES
+#include <hermes/hermes.h> // For Node ID matching with Hermes
+#else
+#include "../utils/debug/timer.h" /* for recording time */
+#endif
 
 
 #include <time.h>       // for struct timespec, clock_gettime(CLOCK_MONOTONIC, &end);
@@ -67,6 +75,9 @@
 #include <dirent.h>
 #include <fcntl.h> // For flags like O_RDONLY
 /* candice added functions for I/O traces end */
+
+
+
 
 #define MAX_FILE_INTENT_LENGTH 128
 #define MAX_CONF_STR_LENGTH 128
@@ -1269,6 +1280,7 @@ void DumpJsonFileStat(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t* info)
   }
 
 #ifdef ACCESS_STAT
+  
   // fprintf(f, "[\n");
   /* file info */
   fprintf(f, "\n{\n");
@@ -1282,6 +1294,19 @@ void DumpJsonFileStat(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t* info)
       const char* curr_task = std::getenv("CURR_TASK");
       fprintf(f, "\"task_name\": \"%s\", ", curr_task);
   }
+#ifdef HERMES
+  TRANSPARENT_HERMES();
+  fprintf(f, "\"node_id\": \"%d\", ", HRUN_CLIENT->node_id_);
+#else
+  char hostname[128];
+    // Get the hostname
+    if (gethostname(hostname, sizeof(hostname)) == 0) {
+        fprintf(f, "\"node_id\": \"%s\", ", hostname);
+    } else {
+        fprintf(f, "\"node_id\": \"unknown\", ", hostname);
+    }
+#endif
+
   fprintf(f, "\"open_time(us)\": %f, ", info->open_time);
   fprintf(f, "\"close_time(us)\": %f, ", timer.GetUsFromEpoch());
   fprintf(f, "\"file_intent\": [");

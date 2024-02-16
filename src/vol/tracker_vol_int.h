@@ -1868,7 +1868,7 @@ H5VL_tracker_t * _obj_wrap_under(void *under, H5VL_tracker_t *upper_o,
 
         switch (target_obj_type) {
             case H5I_DATASET:
-                printf("TRACKER VOL INT : _obj_wrap_under 4.1 H5I_DATASET\n");
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.1 H5I_DATASET\n");
                 obj->generic_tkr_info = add_dataset_node(file_no, obj, token, file_info, target_obj_name, dxpl_id, req);
                 obj->my_type = H5I_DATASET;
                 // file_ds_created(file_info); //candice added
@@ -1876,39 +1876,39 @@ H5VL_tracker_t * _obj_wrap_under(void *under, H5VL_tracker_t *upper_o,
                 break;
 
             case H5I_GROUP:
-                printf("TRACKER VOL INT : _obj_wrap_under 4.2 H5I_GROUP\n");
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.2 H5I_GROUP\n");
                 obj->generic_tkr_info = add_grp_node(file_info, obj, target_obj_name, token);
                 obj->my_type = H5I_GROUP;
                 break;
 
             case H5I_FILE: //newly added. if target_obj_name == NULL: it's a fake upper_o
-                printf("TRACKER VOL INT : _obj_wrap_under 4.3 H5I_FILE\n");
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.3 H5I_FILE\n");
                 obj->generic_tkr_info = add_file_node(TKR_HELPER, target_obj_name, file_no);
                 obj->my_type = H5I_FILE;
                 break;
 
             case H5I_DATATYPE:
-                printf("TRACKER VOL INT : _obj_wrap_under 4.4 H5I_DATATYPE\n");
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.4 H5I_DATATYPE\n");
                 obj->generic_tkr_info = add_dtype_node(file_info, obj, target_obj_name, token);
                 obj->my_type = H5I_DATATYPE;
                 break;
 
             case H5I_ATTR:
-                printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_ATTR\n");
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_ATTR\n");
                 obj->generic_tkr_info = add_attr_node(file_info, obj, target_obj_name, token);
                 obj->my_type = H5I_ATTR;
                 break;
 
             case H5I_UNINIT:
-                printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_UNINIT\n");
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_UNINIT\n");
             case H5I_BADID:
-                printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_BADID\n");
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_BADID\n");
             case H5I_DATASPACE:
-                printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_DATASPACE\n");
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_DATASPACE\n");
             case H5I_VFL:
-                printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_VFL\n");
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_VFL\n");
             case H5I_VOL:
-                printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_VOL\n");
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_VOL\n");
                 /* TODO(candice): this is redundant */
                 // obj->generic_tkr_info = add_dataset_node(file_no, obj, token, file_info, target_obj_name, dxpl_id, req);
                 // obj->my_type = H5I_VOL;
@@ -1917,17 +1917,17 @@ H5VL_tracker_t * _obj_wrap_under(void *under, H5VL_tracker_t *upper_o,
                 // file_ds_accessed(file_info);
                 // break;
             case H5I_GENPROP_CLS:
-                printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_GENPROP_CLS\n");
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_GENPROP_CLS\n");
             case H5I_GENPROP_LST:
-                printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_GENPROP_LST\n");
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_GENPROP_LST\n");
             case H5I_ERROR_CLASS:
-                printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_ERROR_CLASS\n");
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_ERROR_CLASS\n");
             case H5I_ERROR_MSG:
-                printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_ERROR_MSG\n");
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_ERROR_MSG\n");
             case H5I_ERROR_STACK:
-                printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_ERROR_STACK\n");
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_ERROR_STACK\n");
             case H5I_NTYPES:
-                printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_NTYPES\n");
+                // printf("TRACKER VOL INT : _obj_wrap_under 4.5 H5I_NTYPES\n");
             default:
                 break;
         }

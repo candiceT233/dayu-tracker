@@ -11,6 +11,23 @@
 # message(STATUS "found spdlog.h at ${SPDLOG_INCLUDE_DIRS}")
 # include_directories(${SPDLOG_INCLUDE_DIRS})
 
+# Hermes (for node ID)
+if(HERMES)
+    message("LD_LIBRARY_PATH: $ENV{LD_LIBRARY_PATH}")
+    find_package(Hermes CONFIG REQUIRED)
+    message(STATUS "found Hermes at ${Hermes_DIR}")
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+        add_compile_definitions(HERMES_LOG_VERBOSITY=1)
+    endif()
+    include_directories(${Hermes_INCLUDE_DIRS})
+    message("Hermes Includes: ${Hermes_INCLUDE_DIRS}")
+    message("Hermes Libraries: ${Hermes_LIBRARIES}")
+    add_compile_definitions(HERMES)
+endif()
+
+
+
+
 #------------------------------------------------------------------------------
 # Build VFD_Tracker Library
 #------------------------------------------------------------------------------
@@ -94,14 +111,25 @@ target_compile_options(h5vfd_tracker PRIVATE
     -I${HDF5_DIR}/include   # Include Directory for HDF5
     ${POSIX_FLAGS}          # POSIX Flags for HDF5
 )
+if(HERMES)
+    target_link_libraries(h5vfd_tracker PRIVATE
+        -shared                 # Generate a Shared Library
+        -fPIC                   # Generate Position-Independent Code
+        -L${HDF5_DIR}/lib       # Library Directory for HDF5
+        -lhdf5                  # Link HDF5 Library
+        -lz                     # Link zlib Library
+        ${Hermes_LIBRARIES}     # Link Hermes Library
+    )
+else()
+    target_link_libraries(h5vfd_tracker PRIVATE
+        -shared                 # Generate a Shared Library
+        -fPIC                   # Generate Position-Independent Code
+        -L${HDF5_DIR}/lib       # Library Directory for HDF5
+        -lhdf5                  # Link HDF5 Library
+        -lz                     # Link zlib Library
+    )
+endif()
 
-target_link_libraries(h5vfd_tracker PRIVATE
-    -shared                 # Generate a Shared Library
-    -fPIC                   # Generate Position-Independent Code
-    -L${HDF5_DIR}/lib       # Library Directory for HDF5
-    -lhdf5                  # Link HDF5 Library
-    -lz                     # Link zlib Library
-)
 
 
 #-----------------------------------------------------------------------------
