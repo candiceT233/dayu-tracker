@@ -491,8 +491,19 @@ def main(args):
     
     vfd_files = sload.find_files_with_pattern(stat_path, "vfd")
     vfd_file_dict = sload.load_stat_json(vfd_files)
-    task_order_list = sload.load_task_order_list(stat_path)
+
+    if args.showstat:
+        sp.show_all_overhead("VFD",vfd_file_dict)
+        # load VOL stats
+        vol_files = sload.find_files_with_pattern(stat_path, "vol")
+        vol_file_dict = sload.load_stat_json(vol_files)
+        sp.show_all_overhead("VOL",vol_file_dict)
     
+    
+    task_order_list = sload.load_task_order_list(stat_path)
+    if not task_order_list:
+        print("No task_order_list.json found. Exiting...")
+        exit(1)
     task_file_dict = stat_to_task_file_dic(vfd_file_dict, prefetch_schema)
     ordered_task_file_dict = sort_task_in_order(task_file_dict, task_order_list)
     save_task_file_dict(ordered_task_file_dict, stat_path, test_name)
@@ -502,12 +513,7 @@ def main(args):
         pf_dict = extract_hermes_prefetch(task_file_dict)
         save_prefetch_to_file(pf_dict, stat_path, test_name)
     
-    if args.showstat:
-        sp.show_all_overhead("VFD",vfd_file_dict)
-        # load VOL stats
-        vol_files = sload.find_files_with_pattern(stat_path, "vol")
-        vol_file_dict = sload.load_stat_json(vol_files)
-        sp.show_all_overhead("VOL",vol_file_dict)
+
 
 if __name__ == '__main__':    
     parser = argparse.ArgumentParser(description='arguments for extracting task-file dependency')
