@@ -1,0 +1,102 @@
+[
+{
+	"file-2": {"file_name": "/mnt/nvme/mtang11/ddmd_test/inference_runs/stage0002/task0000/virtual_stage0002_task0000.h5", "task_name": "inference-379835", "open_time(us)": 1708109897897094.000000, "close_time(us)": 1708109897897562.000000, "file_intent": ["'H5F_ACC_RDWR'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 0, "access_type": "not_accessed", "file_type": "na", "io_bytes": 0, "file_size": 9523, 
+		"data":[{
+		}],
+		"metadata":[{
+		}]
+	},
+	"Task": {"task_name": "inference-379835", "task_id": 379835, "tracker_vfd_page_size": 65536, "VFD-Overhead(us)": 2289.864000, "POSIX-READ-Time(us)": 24.763000, "POSIX-WRITE-Time(us)": 0.000000, "POSIX-OPEN-Time(us)": 19.356000, "POSIX-CLOSE-Time(us)": 0.000000, "POSIX-DELETE-Time(us)": 0.000000 }
+},
+
+{
+	"file-3": {"file_name": "/mnt/nvme/mtang11/ddmd_test/inference_runs/stage0002/task0000/virtual_stage0002_task0000.h5", "task_name": "inference-379835", "open_time(us)": 1708109897898265.000000, "close_time(us)": 1708109897925425.000000, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 9, "access_type": "write_only", "file_type": "output", "io_bytes": 9571, "file_size": 9523, 
+		"data":[{
+			"file": {
+				"H5FD_MEM_DRAW": {
+				"read_bytes": 0, "read_cnt": 0, "read_ranges": {},
+				"write_bytes": 8192, "write_cnt": 2, "write_ranges": {"14":[0,0],"17":[0,0]}
+				}
+			}
+		}],
+		"metadata":[{
+			"file": {
+				"H5FD_MEM_OHDR": {
+				"read_bytes": 0, "read_cnt": 0, "read_ranges": {},
+				"write_bytes": 1283, "write_cnt": 5, "write_ranges": {"12":[0,0],"13":[0,0],"15":[0,0],"16":[0,0],"18":[0,0]}
+				}
+				,
+				"H5FD_MEM_SUPER": {
+				"read_bytes": 0, "read_cnt": 0, "read_ranges": {},
+				"write_bytes": 96, "write_cnt": 2, "write_ranges": {"19":[0,0],"20":[0,0]}
+				}
+			}
+		}]
+	},
+	"Task": {"task_name": "inference-379835", "task_id": 379835, "tracker_vfd_page_size": 65536, "VFD-Overhead(us)": 3607.415000, "POSIX-READ-Time(us)": 24.763000, "POSIX-WRITE-Time(us)": 48.387000, "POSIX-OPEN-Time(us)": 132.912000, "POSIX-CLOSE-Time(us)": 8.158000, "POSIX-DELETE-Time(us)": 0.000000 }
+},
+
+{
+	"file-1": {"file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0000/stage0000_task0000.h5", "task_name": "inference-379835", "open_time(us)": 1708109897893144.000000, "close_time(us)": 1708109897927270.000000, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 4048, "file_size": 165592, 
+		"data":[{
+			"contact_map": {
+			},
+			"file": {
+			},
+			"fnc": {
+			},
+			"point_cloud": {
+			},
+			"rmsd": {
+			}
+		}],
+		"metadata":[{
+			"contact_map": {
+				"H5FD_MEM_OHDR": {
+				"read_bytes": 512, "read_cnt": 1, "read_ranges": {"8":[0,0]},
+				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
+				}
+			},
+			"file": {
+				"H5FD_MEM_OHDR": {
+				"read_bytes": 512, "read_cnt": 1, "read_ranges": {"4":[0,0]},
+				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
+				}
+				,
+				"H5FD_MEM_SUPER": {
+				"read_bytes": 104, "read_cnt": 3, "read_ranges": {"1":[0,0],"2":[0,0],"3":[0,0]},
+				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
+				}
+				,
+				"H5FD_MEM_BTREE": {
+				"read_bytes": 872, "read_cnt": 2, "read_ranges": {"5":[0,0],"6":[0,0]},
+				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
+				}
+				,
+				"H5FD_MEM_LHEAP": {
+				"read_bytes": 512, "read_cnt": 1, "read_ranges": {"7":[0,0]},
+				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
+				}
+			},
+			"fnc": {
+				"H5FD_MEM_OHDR": {
+				"read_bytes": 512, "read_cnt": 1, "read_ranges": {"9":[2,2]},
+				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
+				}
+			},
+			"point_cloud": {
+				"H5FD_MEM_OHDR": {
+				"read_bytes": 512, "read_cnt": 1, "read_ranges": {"10":[1,1]},
+				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
+				}
+			},
+			"rmsd": {
+				"H5FD_MEM_OHDR": {
+				"read_bytes": 512, "read_cnt": 1, "read_ranges": {"11":[2,2]},
+				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
+				}
+			}
+		}]
+	},
+	"Task": {"task_name": "inference-379835", "task_id": 379835, "tracker_vfd_page_size": 65536, "VFD-Overhead(us)": 4429.808000, "POSIX-READ-Time(us)": 24.763000, "POSIX-WRITE-Time(us)": 48.387000, "POSIX-OPEN-Time(us)": 132.912000, "POSIX-CLOSE-Time(us)": 57.825000, "POSIX-DELETE-Time(us)": 0.000000 }
+}]

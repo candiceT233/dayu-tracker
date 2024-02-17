@@ -22,6 +22,7 @@ class DayuTracker(Interceptor):
         self.vol_env_vars = ['HDF5_PLUGIN_PATH', 'HDF5_VOL_CONNECTOR'] #
         
         self.dayu_task_vars = ['PATH_FOR_TASK_FILES', "WORKFLOW_NAME"]
+        self.hermes_vars = ['HERMES_ADAPTER_MODE', 'HERMES_CLIENT_CONF', 'HERMES_CONF']
 
     def _configure_menu(self):
         """
@@ -76,11 +77,12 @@ class DayuTracker(Interceptor):
                 'default': None,
             },
             {
-                'name': 'workflow_name',
-                'msg': 'The name of the workflow(jarvis app) you are running',
-                'type': str,
-                'default': None,
-            }
+                'name': 'with_hermes',
+                'msg': 'Whether to run Hermes with DayuTracker',
+                'type': bool,
+                'default': False,
+            },
+
         ]
     
     def _unset_conda_vars(self,env_vars_toset):
@@ -127,16 +129,16 @@ class DayuTracker(Interceptor):
 
         :return: None
         """
-        self.log(f"Setting up VFD tracker environment variables.")
+        self.log(f"DayuTracker Setting up VFD tracker environment variables.")
         
         # Set current environment variables
         self.setenv('HDF5_DRIVER', self.vfd_tracker_name)
-        self.log(f"HDF5_DRIVER: \"{self.env['HDF5_DRIVER']}\"")
+        self.log(f"DayuTracker HDF5_DRIVER: \"{self.env['HDF5_DRIVER']}\"")
         
         driver_config_str = f'\"{self.config["stat_file_path"]};{str(self.config["tracker_page_size"])}\"'
         
         self.setenv('HDF5_DRIVER_CONFIG', driver_config_str)
-        self.log(f"HDF5_DRIVER_CONFIG: {self.env['HDF5_DRIVER_CONFIG']}")
+        self.log(f"DayuTracker HDF5_DRIVER_CONFIG: {self.env['HDF5_DRIVER_CONFIG']}")
         
         # if not empty, append the current HDF5_PLUGIN_PATH to the new plugin path
         if self.config['vol_tracker']:
@@ -144,8 +146,15 @@ class DayuTracker(Interceptor):
         else:
             plugin_path_str = f'\"{self.config["dayu_lib"]}/vfd/\"'
         self.setenv('HDF5_PLUGIN_PATH', plugin_path_str)
-        self.log(f"HDF5_PLUGIN_PATH: {self.env['HDF5_PLUGIN_PATH']}")
+        self.log(f"DayuTracker HDF5_PLUGIN_PATH: {self.env['HDF5_PLUGIN_PATH']}")
+    
+    def _setup_hermes_vars(self):
         
+        for vars in self.hermes_vars:
+            vars_val = self.env[vars]
+            self.setenv(vars, vars_val)
+            self.log(f"DayuTracker {vars}: {self.env[vars]}")
+
     
     def _setup_vol_tracker(self):
         """
@@ -153,7 +162,7 @@ class DayuTracker(Interceptor):
 
         :return: None
         """
-        self.log(f"Setting up VOL tracker environment variables.")
+        self.log(f"DayuTracker Setting up VOL tracker environment variables.")
         
         vol_connector_str = (
             f'\"{self.vol_tracker_name} under_vol=0;'
@@ -162,7 +171,7 @@ class DayuTracker(Interceptor):
             + 'level=2;format=\"'
             )
         
-        self.log(f"HDF5_VOL_CONNECTOR: {vol_connector_str}")
+        self.log(f"DayuTracker HDF5_VOL_CONNECTOR: {vol_connector_str}")
         
         self.setenv('HDF5_VOL_CONNECTOR', vol_connector_str)
         
@@ -173,7 +182,7 @@ class DayuTracker(Interceptor):
             plugin_path_str = f'\"{self.config["dayu_lib"]}/vol/\"'
         
         self.setenv('HDF5_PLUGIN_PATH', plugin_path_str)
-        self.log(f"HDF5_PLUGIN_PATH: {self.env['HDF5_PLUGIN_PATH']}")
+        self.log(f"DayuTracker HDF5_PLUGIN_PATH: {self.env['HDF5_PLUGIN_PATH']}")
     
     def _configure(self, **kwargs):
         """
@@ -198,6 +207,9 @@ class DayuTracker(Interceptor):
             self._setup_vfd_tracker()
         if self.config['vol_tracker']:
             self._setup_vol_tracker()
+        
+        if self.config['with_hermes']:
+            self._setup_hermes_vars()
 
     def modify_env(self):
         """
@@ -219,6 +231,7 @@ class DayuTracker(Interceptor):
         
             if self.config['vfd_tracker']: conda_env_to_set.extend(self.vfd_env_vars)
             if self.config['vol_tracker']: conda_env_to_set.extend(self.vol_env_vars)
+            if self.config['with_hermes']: conda_env_to_set.extend(self.hermes_vars)
             
             conda_env_to_set = list(set(conda_env_to_set))
             self._unset_conda_vars(conda_env_to_set)

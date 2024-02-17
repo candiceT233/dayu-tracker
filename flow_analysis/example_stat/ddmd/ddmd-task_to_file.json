@@ -1,0 +1,156 @@
+{
+  "openmm-378094": {
+    "order": 0,
+    "io_cnt": 424,
+    "input": [],
+    "output": [
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0001/stage0000_task0001.h5"
+    ]
+  },
+  "openmm-378096": {
+    "order": 0,
+    "io_cnt": 424,
+    "input": [],
+    "output": [
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0000/stage0000_task0000.h5"
+    ]
+  },
+  "openmm-378097": {
+    "order": 0,
+    "io_cnt": 424,
+    "input": [],
+    "output": [
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0002/stage0000_task0002.h5"
+    ]
+  },
+  "openmm-378100": {
+    "order": 0,
+    "io_cnt": 424,
+    "input": [],
+    "output": [
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0004/stage0000_task0004.h5"
+    ]
+  },
+  "openmm-378102": {
+    "order": 0,
+    "io_cnt": 424,
+    "input": [],
+    "output": [
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0003/stage0000_task0003.h5"
+    ]
+  },
+  "openmm-378105": {
+    "order": 0,
+    "io_cnt": 424,
+    "input": [],
+    "output": [
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0005/stage0000_task0005.h5"
+    ]
+  },
+  "openmm-378110": {
+    "order": 0,
+    "io_cnt": 424,
+    "input": [],
+    "output": [
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0006/stage0000_task0006.h5"
+    ]
+  },
+  "openmm-378115": {
+    "order": 0,
+    "io_cnt": 424,
+    "input": [],
+    "output": [
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0009/stage0000_task0009.h5"
+    ]
+  },
+  "openmm-378116": {
+    "order": 0,
+    "io_cnt": 424,
+    "input": [],
+    "output": [
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0010/stage0000_task0010.h5"
+    ]
+  },
+  "openmm-378119": {
+    "order": 0,
+    "io_cnt": 424,
+    "input": [],
+    "output": [
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0007/stage0000_task0007.h5"
+    ]
+  },
+  "openmm-378120": {
+    "order": 0,
+    "io_cnt": 424,
+    "input": [],
+    "output": [
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0008/stage0000_task0008.h5"
+    ]
+  },
+  "openmm-378126": {
+    "order": 0,
+    "io_cnt": 424,
+    "input": [],
+    "output": [
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0011/stage0000_task0011.h5"
+    ]
+  },
+  "aggregate-379606": {
+    "order": 1,
+    "io_cnt": 7661,
+    "input": [
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0000/stage0000_task0000.h5",
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0001/stage0000_task0001.h5",
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0002/stage0000_task0002.h5",
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0003/stage0000_task0003.h5",
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0004/stage0000_task0004.h5",
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0005/stage0000_task0005.h5",
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0006/stage0000_task0006.h5",
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0007/stage0000_task0007.h5",
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0008/stage0000_task0008.h5",
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0009/stage0000_task0009.h5",
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0010/stage0000_task0010.h5",
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0011/stage0000_task0011.h5"
+    ],
+    "output": [
+      "/mnt/nvme/mtang11/ddmd_test/aggregate_runs/stage0000/task0000/aggregated.h5"
+    ]
+  },
+  "train-379664": {
+    "order": 2,
+    "io_cnt": 2890,
+    "input": [
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0002/stage0000_task0002.h5",
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0006/stage0000_task0006.h5",
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0009/stage0000_task0009.h5",
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0010/stage0000_task0010.h5",
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0011/stage0000_task0011.h5",
+      "/mnt/nvme/mtang11/ddmd_test/machine_learning_runs/stage0001/task0000/virtual_stage0001_task0000.h5",
+      "/mnt/nvme/mtang11/ddmd_test/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-5-20240216-125723.h5",
+      "/mnt/nvme/mtang11/ddmd_test/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-10-20240216-125801.h5"
+    ],
+    "output": [
+      "/mnt/nvme/mtang11/ddmd_test/machine_learning_runs/stage0001/task0000/virtual_stage0001_task0000.h5",
+      "/mnt/nvme/mtang11/ddmd_test/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-1-20240216-125703.h5",
+      "/mnt/nvme/mtang11/ddmd_test/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-2-20240216-125708.h5",
+      "/mnt/nvme/mtang11/ddmd_test/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-3-20240216-125713.h5",
+      "/mnt/nvme/mtang11/ddmd_test/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-4-20240216-125718.h5",
+      "/mnt/nvme/mtang11/ddmd_test/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-5-20240216-125723.h5",
+      "/mnt/nvme/mtang11/ddmd_test/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-6-20240216-125741.h5",
+      "/mnt/nvme/mtang11/ddmd_test/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-7-20240216-125746.h5",
+      "/mnt/nvme/mtang11/ddmd_test/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-8-20240216-125751.h5",
+      "/mnt/nvme/mtang11/ddmd_test/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-9-20240216-125756.h5",
+      "/mnt/nvme/mtang11/ddmd_test/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-10-20240216-125801.h5"
+    ]
+  },
+  "inference-379835": {
+    "order": 3,
+    "io_cnt": 20,
+    "input": [
+      "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0000/stage0000_task0000.h5"
+    ],
+    "output": [
+      "/mnt/nvme/mtang11/ddmd_test/inference_runs/stage0002/task0000/virtual_stage0002_task0000.h5"
+    ]
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "0": "openmm",
+  "1": "aggregate",
+  "2": "train",
+  "3": "inference"
+}
