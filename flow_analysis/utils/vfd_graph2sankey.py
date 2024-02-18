@@ -222,10 +222,9 @@ def in_file_time_to_x(G,task):
         return
     
     # get open time ranks from edge stats
-    in_files_opentime = [G.edges[file,task]['file_stat']['open_time'] for file in in_files]
+    in_files_opentime = [G.edges[file,task]['file_stat']['open_time(us)'] for file in in_files]
     
     # # get open time ranks
-    # in_files_opentime = [G.nodes[file]['file_stat']['open_time'] for file in in_files]
     if len(in_files_opentime) > 1:
         in_files_opentime_rank = rankdata(in_files_opentime)
         # only normalize between 0 and 0.5, save space between task
@@ -259,10 +258,8 @@ def out_file_time_to_x(G,task):
         return
     
     # # get close time ranks
-    # out_files_closetime = [G.nodes[file]['file_stat']['close_time'] for file in out_fiels]
-
     # get close time ranks from edge stats
-    out_files_closetime = [G.edges[task,file]['file_stat']['close_time'] for file in out_files]
+    out_files_closetime = [G.edges[task,file]['file_stat']['close_time(us)'] for file in out_files]
 
     if len(out_files_closetime) > 1:
         out_files_closetime_rank = rankdata(out_files_closetime)

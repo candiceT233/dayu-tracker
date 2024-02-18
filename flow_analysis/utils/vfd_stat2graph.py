@@ -29,12 +29,12 @@ def add_task_file_nodes(G, stat_dict, task_list):
                     if access_type == 'read_only': # Initial input files
                         # add task node statistics
                         if not G.has_node(task_name):
-                            node_attrs = {task_name: {'rpos':0, 'order': node_order, 'type':'task' }} # task has no stat
+                            node_attrs = {task_name: {'rpos':0, 'phase': node_order, 'type':'task' }} # task has no stat
                             G.add_node(task_name, pos=(0,0))
                             nx.set_node_attributes(G, node_attrs)
                         if not G.has_node(file_name):
                             G.add_node(file_name, pos=(0,node_order))
-                            node_attrs = {file_name: {'rpos':0, 'order': 0, 'type':'file'}}
+                            node_attrs = {file_name: {'rpos':0, 'phase': 0, 'type':'file'}}
                             nx.set_node_attributes(G, node_attrs)
                         # add edges
                         if not G.has_edge(file_name, task_name):
@@ -43,12 +43,12 @@ def add_task_file_nodes(G, stat_dict, task_list):
                     elif access_type == 'write_only' or access_type == 'read_write': # Intermediate files
                         # add task node statistics
                         if not G.has_node(task_name):
-                            node_attrs = {task_name: {'rpos':0, 'order': node_order, 'type':'task'}} # task has no stat
+                            node_attrs = {task_name: {'rpos':0, 'phase': node_order, 'type':'task'}} # task has no stat
                             G.add_node(task_name, pos=(0,0))
                             nx.set_node_attributes(G, node_attrs)
                         if not G.has_node(file_name):
                             G.add_node(file_name, pos=(0,node_order))
-                            node_attrs = {file_name: {'rpos':0, 'order': 0, 'type':'file'}}
+                            node_attrs = {file_name: {'rpos':0, 'phase': 0, 'type':'file'}}
                             nx.set_node_attributes(G, node_attrs)
                         
                         if not G.has_edge(task_name, file_name):
@@ -79,7 +79,7 @@ def set_task_position(G, tfe_dic):
         if task_name in G.nodes:
             node_attrs = G.nodes[task_name]
             print(f"node {task_name} : {node_attrs}, pos: {node_attrs['pos']}")
-            node_attrs['order'] = task_order # update task order
+            node_attrs['phase'] = task_order # update task order
             node_attrs['pos'] = (task_start_pos,task_order_cnt[task_order]) # add task position
             if node_attrs['rpos'] == 0:
                 node_attrs['rpos'] = 1 # add task position
@@ -87,7 +87,7 @@ def set_task_position(G, tfe_dic):
                 print(f"node : {task_name}, pos: {node_attrs['pos']}")
             
         else:
-            node_attrs = {task_name: {'rpos':1, 'order': task_order, 'type':'task', 'file_stat':v}}
+            node_attrs = {task_name: {'rpos':1, 'phase': task_order, 'type':'task', 'file_stat':v}}
             position = (task_order,task_order_cnt[task_order])
             G.add_node(task_name, pos=position)
             nx.set_node_attributes(G, node_attrs)
@@ -101,7 +101,7 @@ def set_task_position_full(G, tfe_dic, stage_start):
     task_order_cnt = {}
     # task_file_edges dictionay
     for task_name,v in tfe_dic.items():
-        task_order = int(v['order'])
+        task_order = int(v['phase'])
         task_start_pos = task_order * skip_pos
         print(f"task_name: {task_name}, task_order: {task_order}")
 
@@ -113,7 +113,7 @@ def set_task_position_full(G, tfe_dic, stage_start):
         if task_name in G.nodes:
             node_attrs = G.nodes[task_name]
             print(f"node {task_name} : {node_attrs}, pos: {node_attrs['pos']}")
-            node_attrs['order'] = task_order # update task order
+            node_attrs['phase'] = task_order # update task order
             node_attrs['pos'] = (task_start_pos,task_order_cnt[task_order]) # add task position
             if node_attrs['rpos'] == 0:
                 node_attrs['rpos'] = 1 # add task position
@@ -121,7 +121,7 @@ def set_task_position_full(G, tfe_dic, stage_start):
                 print(f"node : {task_name}, pos: {node_attrs['pos']}")
             
         else:
-            node_attrs = {task_name: {'rpos':1, 'order': task_order, 'type':'task', 'file_stat':v}}
+            node_attrs = {task_name: {'rpos':1, 'phase': task_order, 'type':'task', 'file_stat':v}}
             position = (task_order,task_order_cnt[task_order])
             G.add_node(task_name, pos=position)
             nx.set_node_attributes(G, node_attrs)
@@ -196,7 +196,7 @@ def prepare_sankey_stat_full_old(G):
         
         access_cnt = file_stat['file_read_cnt'] + file_stat['file_write_cnt']
         acesss_size = data_access_bytes + metadata_access_bytes        
-        access_time_in_sec = (file_stat['close_time'] - file_stat['open_time'])/1000000
+        access_time_in_sec = (file_stat['close_time(us)'] - file_stat['open_time(us)'])/1000000
         bandwidth = acesss_size / access_time_in_sec
         position = G.nodes[edge[1]]['pos']
         
@@ -221,7 +221,7 @@ def prepare_sankey_stat(G):
         
         access_cnt = stat['file_read_cnt'] + stat['file_write_cnt']
         acesss_size = stat['io_bytes']
-        access_time_in_sec = (stat['close_time'] - stat['open_time'])/1000000
+        access_time_in_sec = (stat['close_time(us)'] - stat['open_time(us)'])/1000000
         bandwidth = acesss_size / access_time_in_sec
         position = G.nodes[edge[1]]['pos']
         

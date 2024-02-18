@@ -33,7 +33,7 @@ def humanbw(nbytes):
 def display_all_nodes_attr(G):
     for node in G.nodes():
         print(f"Node Name: {node}")
-        print(f"- Order: {G.nodes[node]['order']} - Type: {G.nodes[node]['type']} - Position: {G.nodes[node]['pos']}")
+        print(f"- Order: {G.nodes[node]['phase']} - Type: {G.nodes[node]['type']} - Position: {G.nodes[node]['pos']}")
         # print(f"- Statistics: {G.nodes[node]['stat']}")
 
 def display_all_nodes_position(G):
@@ -104,7 +104,7 @@ def show_vfd_stats(G):
     # get all nodes that are tasks
     task_nodes = [n for n in G.nodes() if G.nodes[n]['type'] == 'task']
     # get all task nodes that are order = 0
-    task_nodes_0 = [n for n in task_nodes if G.nodes[n]['order'] == 0]
+    task_nodes_0 = [n for n in task_nodes if G.nodes[n]['phase'] == 0]
     # get all in_edges of task_nodes_0
     in_edges = []
     for n in task_nodes_0:
