@@ -195,7 +195,7 @@ def prepare_sankey_stat_full_old(G):
         
         
         access_cnt = file_stat['file_read_cnt'] + file_stat['file_write_cnt']
-        acesss_size = data_access_bytes + metadata_access_bytes        
+        acesss_size = data_access_bytes + metadata_access_bytes
         access_time_in_sec = (file_stat['close_time(us)'] - file_stat['open_time(us)'])/1000000
         bandwidth = acesss_size / access_time_in_sec
         position = G.nodes[edge[1]]['pos']
@@ -214,12 +214,14 @@ def prepare_sankey_stat_full_old(G):
     
     nx.set_edge_attributes(G, sankey_edge_attr)
 
-def prepare_sankey_stat(G):
+def prepare_sankey_stat(G,io_skip=1):
     all_edge_attr = nx.get_edge_attributes(G,'file_stat')
     sankey_edge_attr = {}
     for edge, stat in all_edge_attr.items():
         
         access_cnt = stat['file_read_cnt'] + stat['file_write_cnt']
+        access_cnt = access_cnt * io_skip
+        
         acesss_size = stat['io_bytes']
         access_time_in_sec = (stat['close_time(us)'] - stat['open_time(us)'])/1000000
         bandwidth = acesss_size / access_time_in_sec
@@ -243,12 +245,13 @@ def prepare_sankey_stat(G):
         for dset, dset_stat in all_dset_stats.items():
             for meta_type in dset_stat['metadata']:
                 meta_stat = dset_stat['metadata'][meta_type]
-                metadata_access_bytes += meta_stat['read_bytes'] + meta_stat['write_bytes']
-                metadata_access_cnt += meta_stat['read_cnt'] + meta_stat['write_cnt']
+                metadata_access_bytes += (meta_stat['read_bytes'] + meta_stat['write_bytes']) * io_skip
+                metadata_access_cnt += (meta_stat['read_cnt'] + meta_stat['write_cnt']) * io_skip
+                
             for data_type in dset_stat['data']:
                 data_stat = dset_stat['data'][data_type]
-                data_access_bytes += data_stat['read_bytes'] + data_stat['write_bytes']
-                data_access_cnt += data_stat['read_cnt'] + data_stat['write_cnt']          
+                data_access_bytes += (data_stat['read_bytes'] + data_stat['write_bytes']) * io_skip
+                data_access_cnt += (data_stat['read_cnt'] + data_stat['write_cnt']) * io_skip
         
         edge_attr = {
                 'position': position,
