@@ -134,6 +134,8 @@ def set_file_position(G, map_dic):
     # edge_list = []
     prev_task_x = 0
     
+    file_y_pos = {}
+    
     for task_name, rw_info in map_dic.items():
         
         input_files = rw_info['input']
@@ -148,8 +150,13 @@ def set_file_position(G, map_dic):
                 file_y = i
             
             if G.nodes[file_name]['rpos'] == 0:
-                G.nodes[file_name]['pos'] = (task_x - 1, file_y)
+                file_x = task_x - 1
+                if file_x in file_y_pos.keys(): file_y_pos[file_x] += 1
+                else: file_y_pos[file_x] = 0
+                
+                G.nodes[file_name]['pos'] = (file_x, file_y_pos[file_x])
                 G.nodes[file_name]['rpos'] = 1
+                G.nodes[file_name]['phase'] = file_x
                 # print(f"{file_name} position updated to {G.nodes[file_name]['pos']}")
     
         output_files = rw_info['output']
@@ -161,8 +168,13 @@ def set_file_position(G, map_dic):
             else:
                 file_y = i
             if G.nodes[file_name]['rpos'] == 0:
-                G.nodes[file_name]['pos'] = (task_x + 1, file_y)
+                file_x = task_x + 1
+                if file_x in file_y_pos.keys(): file_y_pos[file_x] += 1
+                else: file_y_pos[file_x] = 0
+                
+                G.nodes[file_name]['pos'] = (file_x, file_y_pos[file_x])
                 G.nodes[file_name]['rpos'] = 1
+                G.nodes[file_name]['phase'] = file_x
                 # print(f"{file_name} position updated to {G.nodes[file_name]['pos']}")
                 
         prev_task_x = task_x
