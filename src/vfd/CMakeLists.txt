@@ -25,7 +25,13 @@ if(HERMES)
     add_compile_definitions(HERMES)
 endif()
 
+if(MIO)
+    add_compile_definitions(MIO)
+endif()
 
+if(MMAP_IO)
+    add_compile_definitions(MMAP_IO)
+endif()
 
 
 #------------------------------------------------------------------------------

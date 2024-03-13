@@ -50,6 +50,10 @@
 /* private method copies */
 #include "H5private.h"
 
+#ifdef MMAP_IO
+#define _MMAP_IO true
+#endif
+
 /* For TRACKER end */
 
 
@@ -135,6 +139,7 @@ static herr_t H5FD__tracker_vfd_unlock(H5FD_t *_file);
 static herr_t H5FD__tracker_vfd_delete(const char *filename, hid_t H5_ATTR_UNUSED fapl_id);
 static herr_t H5FD__tracker_vfd_ctl(H5FD_t H5_ATTR_UNUSED *_file, uint64_t H5_ATTR_UNUSED op_code, uint64_t flags,
                const void H5_ATTR_UNUSED *input, void H5_ATTR_UNUSED **output);
+
 
 
 
@@ -373,7 +378,7 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
 #endif
 
   timer_vfd.Resume();
-  H5FD_tracker_vfd_t  *file = NULL; /* tracker_vfd VFD info          */
+  H5FD_tracker_vfd_t  *file = new H5FD_tracker_vfd_t(); // NULL; /* tracker_vfd VFD info          */
   int fd = -1;
   int o_flags = 0;
   struct stat     sb = {0};
@@ -426,6 +431,7 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
   std::cout << "H5FD__tracker_vfd_open() flags = " << flags << std::endl;
 #endif
 
+
   timer_open.Resume();
   /* Open the file */
   if ((fd = HDopen(name, o_flags, H5_POSIX_CREATE_MODE_RW)) < 0) {
@@ -437,21 +443,15 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
   } /* end if */
 
   timer_open.Pause();
-  // t2 = get_time_usec();
-  // TOTAL_POSIX_IO_TIME += (t2 - t1);
 
-  // if (HDfstat(fd, &sb) < 0)
-  // t1 = get_time_usec();
   timer_open.Resume();
   if (fstat(fd, &sb) < 0)
     H5FD_TRACKER_VFD_SYS_GOTO_ERROR(H5E_FILE, H5E_BADFILE, NULL, "unable to fstat file");
   timer_open.Pause();
-  // t2 = get_time_usec();
-  // TOTAL_POSIX_IO_TIME += (t2 - t1);
 
-  /* Create the new file struct */
-  if (NULL == (file = (H5FD_tracker_vfd_t *)calloc((size_t)1, sizeof(H5FD_tracker_vfd_t))))
-      H5FD_TRACKER_VFD_GOTO_ERROR(H5E_RESOURCE, H5E_NOSPACE, NULL, "unable to allocate file struct");
+  // /* Create the new file struct */
+  // if (NULL == (file = (H5FD_tracker_vfd_t *)calloc((size_t)1, sizeof(H5FD_tracker_vfd_t))))
+  //     H5FD_TRACKER_VFD_GOTO_ERROR(H5E_RESOURCE, H5E_NOSPACE, NULL, "unable to allocate file struct");
 
   file->fd = fd;
   file->pos = HADDR_UNDEF;
@@ -463,6 +463,50 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
 #ifdef DEBUG_TRK_VFD
   std::cout << "H5FD__tracker_vfd_open() fd=" << fd << "sb.st_size="<< sb.st_size << std::endl;
 #endif
+
+// #ifdef MIO
+//   // using MIO for memory mapped file
+//   std::cout << "MIO OPEN name = " << name << std::endl;
+//   if(flags == 0){
+//     // NOT_SPECIFIED : currently set to read_onlyf
+//     file->ro_mmap.map(fd, file->mmap_error);
+//     if (file->mmap_error) { handle_error(file->mmap_error, "H5FD__tracker_vfd_open(ro_mmap)"); }
+//     else { std::cout << "read_only mmap file created: "<< name << std::endl; }
+//   } else {
+//     file->rw_mmap = mio::make_mmap_sink(fd, 0, mio::map_entire_file, file->mmap_error);
+//     if (file->mmap_error){ handle_error(file->mmap_error, "H5FD__tracker_vfd_open(rw_mmap)");} // TODO: error here
+//     else { std::cout << "mmap file created: "<< name << std::endl; }
+//     // std::fill(file->rw_mmap.begin(), file->rw_mmap.end(), 'a');
+//     // TODO: need to fill mmap region?
+//   }
+// #endif /* MIO */
+
+    file->mmap_size = sb.st_size; // sb.st_size; // TODO: change to Hint buffer size (16443392) (20971520)
+    file->file_size = sb.st_size;
+    file->flags = flags;
+    file->mmap_offset = 0; // TODO: change to Hint offset
+
+  if(_MMAP_IO == true && file->mmap_size != 0){
+    // Using mmap
+
+    if(flags == 0){
+        std::cout << "MMAP_IO read_only file created: "<< name 
+          << " mmap_size: " << file->mmap_size
+          << " fd: " << fd << std::endl;
+        file->mmap_prot = PROT_READ;
+    } else {
+        std::cout << "MMAP_IO read_write file created: "<< name 
+          << " mmap_size: " << file->mmap_size
+          << " fd: " << fd << std::endl;
+        file->mmap_prot = PROT_READ | PROT_WRITE;
+    }
+    
+    file->mmap_offset = 0; // TODO: change to Hint offset
+    file->mmap_addr = mmap(NULL, file->mmap_size, file->mmap_prot, MAP_SHARED, fd, 0);
+  } else {
+      std::cout << "MMAP_IO file not mmaped size 0: "<< name << std::endl;
+      file->mmap_addr = NULL;
+  }
 
   /* Get the driver specific information */
   H5E_BEGIN_TRY {
@@ -526,7 +570,9 @@ done:
     if (fd >= 0){
       // t3 = get_time_usec();
       timer_close.Resume();
+
       close(fd);
+
       timer_close.Pause();
       // t4 = get_time_usec();
       // TOTAL_POSIX_IO_TIME += (t4 - t3);
@@ -568,6 +614,22 @@ static herr_t H5FD__tracker_vfd_close(H5FD_t *_file) {
   DumpJsonFileStat(TKR_HELPER_VFD, file->vfd_file_info);
   rmVFDFileNode(TKR_HELPER_VFD, _file);
   /* custom VFD code end */
+
+// #ifdef MIO
+//       if(file->flags != 0){
+//         // only sync for write
+//         file->rw_mmap.sync(file->mmap_error);
+//         if (file->mmap_error) { handle_error(file->mmap_error, "H5FD__tracker_vfd_close"); }
+//         file->rw_mmap.unmap();
+//       }
+// #endif
+
+  if(_MMAP_IO == true && file->mmap_addr != NULL){
+    // Using mmap
+    if(munmap(file->mmap_addr, file->mmap_size) < 0){
+      std::cout << "munmap failed" << std::endl;
+    }
+  }
 
   timer_close.Resume();
   if (close(file->fd) < 0)
@@ -781,6 +843,12 @@ static herr_t H5FD__tracker_vfd_read(H5FD_t *_file, H5FD_mem_t type,
   size_t read_size = size;
   char file_name_copy[H5FD_MAX_FILENAME_LEN];
 
+  /* MIO */
+  size_t size_remaining = size;
+  size_t bytes_processed = 0;
+  size_t bytes_to_read;
+  char* buffer_ptr = static_cast<char*>(buf);
+
   assert(file && file->pub.cls);
   assert(buf);
 
@@ -801,6 +869,41 @@ static herr_t H5FD__tracker_vfd_read(H5FD_t *_file, H5FD_mem_t type,
             H5FD_TRACKER_VFD_SYS_GOTO_ERROR(H5E_IO, H5E_SEEKERROR, FAIL, "unable to seek to proper position")
 #endif /* H5_HAVE_PREADWRITE */
 
+
+#ifdef MIO
+    std::cout << "MIO READ" << std::endl;
+    while (size_remaining > 0) {
+        
+        // Determine how many bytes to read in this iteration
+        bytes_to_read = std::min(size_remaining, size);  // buffer_size is the size of the buffer
+
+        std::cout << "MIO READ bytes_to_read: "<< bytes_to_read << std::endl;
+        if(file->flags == 0){
+          // read_only
+          std::cout << "ro_mmap READ bytes_processed: "<< bytes_processed << std::endl;
+          // Read data from the memory-mapped region into the buffer
+          
+          std::copy_n(file->ro_mmap.begin() + bytes_processed, bytes_to_read, buffer_ptr);
+        } else {
+          // read_write
+          std::cout << "rw_mmap READ bytes_processed: "<< bytes_processed << std::endl;
+          // Read data from the memory-mapped region into the buffer
+          std::copy_n(file->rw_mmap.begin() + bytes_processed, bytes_to_read, buffer_ptr);
+        }
+        size_remaining -= bytes_to_read;
+        bytes_processed += bytes_to_read;
+        buffer_ptr += bytes_to_read;
+    }
+#else
+#endif /* MIO */
+
+  if(_MMAP_IO == true && file->mmap_size != 0){
+    // bytes_read = HDpread(file->fd, buf, bytes_in, offset);
+    std::cout << "MMAP READ" << std::endl;
+    // Copy data from memory-mapped region to buffer
+    std::memcpy(buf, static_cast<char*>(file->mmap_addr) + offset, read_size);
+  } else {
+
     /* Read data, being careful of interrupted system calls, partial results,
      * and the end of the file.
      */
@@ -820,10 +923,12 @@ static herr_t H5FD__tracker_vfd_read(H5FD_t *_file, H5FD_mem_t type,
           // t1 = get_time_usec();
           timer_read.Resume();
 #ifdef H5_HAVE_PREADWRITE
+            std::cout << "POSIX PREAD" << std::endl;
             bytes_read = HDpread(file->fd, buf, bytes_in, offset);
             if (bytes_read > 0)
                 offset += bytes_read;
 #else
+            std::cout << "POSIX READ" << std::endl;
             bytes_read  = HDread(file->fd, buf, bytes_in);
 #endif /* H5_HAVE_PREADWRITE */
           // t2 = get_time_usec();
@@ -865,9 +970,11 @@ static herr_t H5FD__tracker_vfd_read(H5FD_t *_file, H5FD_mem_t type,
         buf = (char *)buf + bytes_read;
     } /* end while */
 
+
     /* Update current position */
     file->pos = addr;
     file->op  = OP_READ;
+  }
 
 #ifdef ACCESS_STAT
   /* custom VFD code start */
@@ -926,7 +1033,26 @@ static herr_t H5FD__tracker_vfd_write(H5FD_t *_file, H5FD_mem_t type,
         if (HDlseek(file->fd, (HDoff_t)addr, SEEK_SET) < 0)
             H5FD_TRACKER_VFD_SYS_GOTO_ERROR(H5E_IO, H5E_SEEKERROR, FAIL, "unable to seek to proper position")
 #endif /* H5_HAVE_PREADWRITE */
-    
+
+// #ifdef MIO
+//             std::cout << "MIO WRITE" << std::endl;
+//             // std::fill(file->rw_mmap.begin(), file->rw_mmap.end(), buf);
+//             std::fill(file->rw_mmap.begin(), file->rw_mmap.end(), *reinterpret_cast<const char*>(buf));
+// #else  
+// #endif /* MIO */
+
+  if(_MMAP_IO == true && file->mmap_size != 0){
+    // Using mmap
+    std::cout << "MMAP WRITE" << std::endl;
+    // Write to region
+    std::memcpy(file->mmap_addr + offset, buf, write_size);
+    // msync(file->mmap_addr + offset, fsize, MS_SYNC);
+    // file->mmap_addr[offset] = *reinterpret_cast<const char*>(buf);
+    msync(file->mmap_addr + offset, file->file_size, MS_SYNC);
+    std::cout << "MMAP WRITE END" << std::endl;
+  } else {
+    // std::cout << "MMAP WRITE not performed" << std::endl;
+
     /* Write the data, being careful of interrupted system calls and partial
      * results
      */
@@ -950,6 +1076,7 @@ static herr_t H5FD__tracker_vfd_write(H5FD_t *_file, H5FD_mem_t type,
             if (bytes_wrote > 0)
                 offset += bytes_wrote;
 #else
+            std::cout << "POSIX WRITE" << std::endl;
             bytes_wrote = HDwrite(file->fd, buf, bytes_in);
 #endif /* H5_HAVE_PREADWRITE */
           timer_write.Pause();
@@ -986,6 +1113,7 @@ static herr_t H5FD__tracker_vfd_write(H5FD_t *_file, H5FD_mem_t type,
     file->op  = OP_WRITE;
     if (file->pos > file->eof)
         file->eof = file->pos;
+  }
 
 #ifdef ACCESS_STAT
   /* custom VFD code start */
@@ -1213,6 +1341,5 @@ const void*
 H5PLget_plugin_info(void) {
   return &H5FD_tracker_vfd_g;
 }
-
 
 

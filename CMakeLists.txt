@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
+cmake_policy(SET CMP0079 NEW)
 project(HDF5_Tracker)
 
 #-----------------------------------------------------------------------------
@@ -9,6 +10,8 @@ option(VFD_TRACKER "Build VFD Tracker" ON)
 option(BUILD_C_TESTS "Build tests with C code" OFF)
 option(BUILD_PY_TESTS "Build tests with python code" OFF)
 option(HERMES "Running without Hermes hrun daemon" OFF)
+option(MIO "Running with mio library" OFF)
+option(MMAP_IO "Running with memory mapping IO" ON)
 
 # Set default build type to release
 if(NOT CMAKE_BUILD_TYPE)
@@ -50,4 +53,10 @@ endif()
 # Option for VFD_TRACKER
 if(VFD_TRACKER)
     add_subdirectory(src/vfd)
+endif()
+
+if(MIO)
+    add_subdirectory( src/vfd/mio)
+    target_link_libraries(h5vfd_tracker PUBLIC mio::mio)
+    # target_link_libraries(h5vfd_tracker PUBLIC <mio::mio | mio>)
 endif()

@@ -62,9 +62,8 @@
 #endif
 
 
-#include <time.h>       // for struct timespec, clock_gettime(CLOCK_MONOTONIC, &end);
 
-// For extracing runtime command
+// For debug logs
 #ifdef DEBUG_TRK_VFD
 #include <iostream>
 #endif
@@ -73,10 +72,27 @@
 #include <sstream>
 #include <vector>
 #include <dirent.h>
-#include <fcntl.h> // For flags like O_RDONLY
+#include <fcntl.h> // For flags like O_RDONLY, O_RDWR, etc.
+
+// For memory mapping files
+#ifdef MIO
+#include <mio/mmap.hpp>
+// #include <mio/mio.hpp> if using single header
+#include <system_error> // for std::error_code
+#include <cstdio> // for std::printf
+#include <cassert>
+#include <algorithm>
+#endif
+
+#ifdef MMAP_IO
+#include <sys/mman.h>
+#endif
+
+
 /* candice added functions for I/O traces end */
 
 
+// #include <time.h>       // for struct timespec, clock_gettime(CLOCK_MONOTONIC, &end);
 
 
 #define MAX_FILE_INTENT_LENGTH 128
@@ -88,13 +104,7 @@
 /************/
 /* Typedefs */
 /************/
-// extern double TOTAL_TKR_VFD_TIME;
-// extern hshm::Timer timer_read;
-// extern hshm::Timer timer_write;
-// extern hshm::Timer timer_open;
-// extern hshm::Timer timer_close;
-// extern hshm::Timer timer_del;
-// unsigned long TOTAL_POSIX_IO_TIME;
+// For recording time
 hshm::Timer timer;
 hshm::Timer timer_vfd;
 hshm::Timer timer_read;
@@ -102,6 +112,8 @@ hshm::Timer timer_write;
 hshm::Timer timer_open;
 hshm::Timer timer_close;
 hshm::Timer timer_del;
+
+
 
 
 typedef struct H5FD_tkr_file_info_t vfd_file_tkr_info_t;
@@ -220,6 +232,20 @@ typedef struct H5FD_tracker_vfd_t {
     vfd_tkr_helper_t *vfd_tkr_helper; /* pointer shared among all layers, one per process. */
     vfd_file_tkr_info_t * vfd_file_info; /* file info */
     // std::string logFilePath; /* log file path */
+#ifdef MIO
+    std::error_code mmap_error;
+    mio::mmap_sink rw_mmap;
+    mio::mmap_source ro_mmap;
+#endif
+
+#ifdef MMAP_IO
+    size_t mmap_size;
+    int mmap_prot;
+    int mmap_flags;
+    int mmap_offset;
+    void *mmap_addr;
+    int file_size;
+#endif
 
   /* custom VFD code end */
 
@@ -262,6 +288,12 @@ void teardownVFDTkrHelper(vfd_tkr_helper_t* helper);
 
 std::string getOhdrType(H5F_mem_t type);
 std::string getMemType(H5F_mem_t type);
+
+#ifdef MIO
+// For memory map io
+int handle_error(const std::error_code& error, const std::string& func_name);
+void allocate_file(const std::string& path, const int size);
+#endif
 
 // Function to extract the pipe_handle number from the command line string
 bool extractPipeHandle(const std::string& commandLine, int& pipeHandle) {
@@ -1377,3 +1409,20 @@ void DumpJsonFileStat(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t* info)
 
 }
 
+
+#ifdef MIO
+int handle_error(const std::error_code& error, const std::string& func_name)
+{
+    const auto& errmsg = error.message();
+    // std::printf("error mapping file: %s, exiting...\n", errmsg.c_str());
+    std::cout << func_name << ": error mapping file: " << errmsg << ", exiting..." << std::endl;
+    return error.value();
+}
+
+void allocate_file(const std::string& path, const int size)
+{
+    std::ofstream file(path);
+    std::string s(size, '0');
+    file << s;
+}
+#endif
