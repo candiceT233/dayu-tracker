@@ -107,13 +107,26 @@
 // For recording time
 hshm::Timer timer;
 hshm::Timer timer_vfd;
+
+// For IO Evaluation
+hshm::Timer timer_mmap_read;
+hshm::Timer timer_mmap_write;
+hshm::Timer timer_mmap_open;
+hshm::Timer timer_mmap_close;
 hshm::Timer timer_read;
 hshm::Timer timer_write;
 hshm::Timer timer_open;
 hshm::Timer timer_close;
 hshm::Timer timer_del;
 
-
+// For Internal Evaluation
+hshm::Timer timerInitVFD;
+hshm::Timer timerTermVFD;
+hshm::Timer timerInitTracker;
+hshm::Timer timerAddStat;
+hshm::Timer timerUpdateStat;
+hshm::Timer timerLogStat;
+hshm::Timer timerRmStat;
 
 
 typedef struct H5FD_tkr_file_info_t vfd_file_tkr_info_t;
@@ -257,20 +270,20 @@ void UpdateDsetStat(int rw, size_t start_page,
   size_t end_page, size_t access_size, H5FD_mem_t type, vfd_file_tkr_info_t * info);
 void HelperUpdateMemTypeStat(int rw, size_t start_page, 
   size_t end_page, size_t access_size, h5_mem_stat_t* mem_stat);
-
 void UpdateMemTypeStat(int rw, size_t start_page, 
   size_t end_page, size_t access_size, H5FD_mem_t type, h5_dset_info_t * info);
 void updateReadWriteInfo(std::string func_name, char * file_name, hid_t fapl_id, H5FD_t *_file,
   H5FD_mem_t type, hid_t dxpl_id, haddr_t addr,
   size_t size, size_t page_size, double t_start);
+void updateOpenCloseInfo(const char* func_name, H5FD_tracker_vfd_t *file, size_t eof, int flags, 
+  double t_start);
+
 void ReadWriteInfoPrint(std::string func_name, char * file_name, hid_t fapl_id, void * obj,
   H5FD_mem_t type, hid_t dxpl_id, haddr_t addr,
   size_t size, size_t page_size, double t_start);
-
-void updateOpenCloseInfo(const char* func_name, H5FD_tracker_vfd_t *file, size_t eof, int flags, 
-  double t_start);
 void OpenCloseInfoPrint(const char* func_name, void * obj, const char * file_name, 
   size_t eof, int flags, double t_start);
+
 
 
 void DumpJsonFileStat(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t* info);
@@ -823,7 +836,7 @@ void updateReadWriteInfo(std::string func_name, char * file_name, hid_t fapl_id,
   H5FD_mem_t type, hid_t dxpl_id, haddr_t addr,
   size_t size, size_t page_size, double t_start)
 {
-
+  timerUpdateStat.Resume();
 #ifdef DEBUG_TRK_VFD
   std::cout << "updateReadWriteInfo() file_name = " << file_name << std::endl;
 #endif
@@ -864,13 +877,13 @@ void updateReadWriteInfo(std::string func_name, char * file_name, hid_t fapl_id,
   ReadWriteInfoPrint(func_name, file_name, fapl_id, _file,
     type, dxpl_id, addr, size, page_size, t_start);
 #endif
-
+  timerUpdateStat.Pause();
 }
 
 void updateOpenCloseInfo(const char* func_name, H5FD_tracker_vfd_t *file, size_t eof, int flags, 
   double t_start)
 {
-
+  timerUpdateStat.Resume();
   // H5FD_tracker_vfd_t *file = (H5FD_tracker_vfd_t *)_file;
   vfd_file_tkr_info_t * info = (vfd_file_tkr_info_t *)file->vfd_file_info;
 
@@ -912,6 +925,7 @@ void updateOpenCloseInfo(const char* func_name, H5FD_tracker_vfd_t *file, size_t
 #ifdef DEBUG_VFD
   OpenCloseInfoPrint(func_name, file, info->file_name, eof, flags, t_start);
 #endif
+  timerUpdateStat.Pause();
 }
 
 
@@ -1048,6 +1062,7 @@ void print_H5Pset_fapl_info(const char* func_name, hbool_t logStat, size_t page_
 
 vfd_tkr_helper_t * vfdTkrHelperInit( char* file_path, size_t page_size, hbool_t logStat)
 {
+    timerInitTracker.Resume();
     vfd_tkr_helper_t* new_helper = new vfd_tkr_helper_t();
 
     if(logStat) {//write to file
@@ -1099,6 +1114,7 @@ vfd_tkr_helper_t * vfdTkrHelperInit( char* file_path, size_t page_size, hbool_t 
 
     // INIT_TRACE_MANAGER(); // TODO: switch to debug mode only:
 
+    timerInitTracker.Pause();
     return new_helper;
 }
 
@@ -1167,6 +1183,7 @@ vfd_file_tkr_info_t* newVFDFileInfo(const char* fname, unsigned long file_no)
 
 vfd_file_tkr_info_t* addVFDFileNode(vfd_tkr_helper_t * helper, const char* file_name, void * obj)
 {
+  timerAddStat.Resume();
   vfd_file_tkr_info_t* cur;
   H5FD_t *_file = (H5FD_t *) obj;
   unsigned long file_no = _file->fileno;
@@ -1200,6 +1217,7 @@ vfd_file_tkr_info_t* addVFDFileNode(vfd_tkr_helper_t * helper, const char* file_
   // Increment refcount on file node
   cur->ref_cnt++;
 
+  timerAddStat.Pause();
   return cur;
 }
 
@@ -1208,7 +1226,7 @@ vfd_file_tkr_info_t* addVFDFileNode(vfd_tkr_helper_t * helper, const char* file_
 //need a dumy node to make it simpler
 int rmVFDFileNode(vfd_tkr_helper_t* helper, H5FD_t *_file)
 {
-
+  timerRmStat.Resume();
   vfd_file_tkr_info_t* cur;
   vfd_file_tkr_info_t* last;
   unsigned long file_no = _file->fileno;
@@ -1272,6 +1290,7 @@ void teardownVFDTkrHelper(vfd_tkr_helper_t* helper){
 
   // Close the file
   fclose(f);
+  timerRmStat.Pause();
 
   // // free down causes double free error in single process mode
   // if(helper){// not null
@@ -1290,7 +1309,7 @@ void teardownVFDTkrHelper(vfd_tkr_helper_t* helper){
 
 
 void DumpJsonFileStat(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t* info) {
-
+  timerLogStat.Resume();
 #ifdef DEBUG_TRK_VFD
   std::cout << "File close and write to : " << helper->tkr_file_path << std::endl;
 #endif
@@ -1390,14 +1409,32 @@ void DumpJsonFileStat(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t* info)
   fprintf(f, "\"tracker_vfd_page_size\": %ld, ", info->adaptor_page_size);
 
   double posix_time = timer_read.GetUsec() + timer_write.GetUsec() + timer_open.GetUsec() + timer_close.GetUsec() + timer_del.GetUsec();
-  fprintf(f, "\"VFD-Overhead(us)\": %f, ", timer_vfd.GetUsec());
+
   // reset the total overhead and posix io time once recorded
 
   fprintf(f, "\"POSIX-READ-Time(us)\": %f, ", timer_read.GetUsec());
   fprintf(f, "\"POSIX-WRITE-Time(us)\": %f, ", timer_write.GetUsec());
   fprintf(f, "\"POSIX-OPEN-Time(us)\": %f, ", timer_open.GetUsec());
   fprintf(f, "\"POSIX-CLOSE-Time(us)\": %f, ", timer_close.GetUsec());
-  fprintf(f, "\"POSIX-DELETE-Time(us)\": %f ", timer_del.GetUsec());
+  fprintf(f, "\"POSIX-DELETE-Time(us)\": %f, ", timer_del.GetUsec());
+
+  // Log all MMAP IO related overhead
+  fprintf(f, "\"MMAP-READ-Time(us)\": %f, ", timer_mmap_read.GetUsec());
+  fprintf(f, "\"MMAP-WRITE-Time(us)\": %f, ", timer_mmap_write.GetUsec());
+  fprintf(f, "\"MMAP-OPEN-Time(us)\": %f, ", timer_mmap_open.GetUsec());
+  fprintf(f, "\"MMAP-CLOSE-Time(us)\": %f, ", timer_mmap_close.GetUsec());
+
+  // Log all VFD related overhead
+  fprintf(f, "\"VFD-Overhead(us)\": %f, ", timer_vfd.GetUsec());
+  fprintf(f, "\"VFD-Init(us)\": %f, ", timerInitVFD.GetUsec());
+  fprintf(f, "\"VFD-Term(us)\": %f, ", timerTermVFD.GetUsec());
+  fprintf(f, "\"VFD-Tracker-Init(us)\": %f, ", timerInitTracker.GetUsec());
+  fprintf(f, "\"VFD-Stat-Add(us)\": %f, ", timerAddStat.GetUsec());
+  fprintf(f, "\"VFD-Stat-Update(us)\": %f, ", timerUpdateStat.GetUsec());
+  fprintf(f, "\"VFD-Stat-Rm(us)\": %f, ", timerRmStat.GetUsec());
+  fprintf(f, "\"VFD-Stat-Log(us)\": %f ", timerLogStat.GetUsec());
+
+
   fprintf(f, "}\n");
   // TOTAL_POSIX_IO_TIME = 0;
 
@@ -1406,6 +1443,7 @@ void DumpJsonFileStat(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t* info)
 
   fflush(f);
   fclose(f);
+  timerLogStat.Pause();
 
 }
 
