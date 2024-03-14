@@ -303,7 +303,6 @@ static hid_t tkr_connector_id_global = H5I_INVALID_HID;
 
 
 
-
 /*-------------------------------------------------------------------------
  * Function:    H5VL_tracker_register
  *
@@ -368,7 +367,7 @@ H5VL_tracker_init(hid_t vipl_id)
     TOTAL_NATIVE_H5_TIME = 0;
     TKR_WRITE_TOTAL_TIME = 0;
     FILE_LL_TOTAL_TIME = 0;
-    DS_LL_TOTAL_TIME = 0;
+    DSET_LL_TOTAL_TIME = 0;
     GRP_LL_TOTAL_TIME = 0;
     DT_LL_TOTAL_TIME = 0;
     ATTR_LL_TOTAL_TIME = 0;
@@ -386,6 +385,7 @@ H5VL_tracker_init(hid_t vipl_id)
     (void)vipl_id;
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start);
+    TKR_INIT_TIME += (get_time_usec() - start);
     return 0;
 } /* end H5VL_tracker_init() */
 
@@ -422,6 +422,7 @@ H5VL_tracker_term(void)
     tkr_connector_id_global = H5I_INVALID_HID;
 
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start);
+    TKR_TERM_TIME += (get_time_usec() - start);
     return 0;
 } /* end H5VL_tracker_term() */
 
@@ -939,7 +940,7 @@ H5VL_tracker_wrap_object(void *under_under_in, H5I_type_t obj_type, void *_wrap_
     printf("TRACKER VOL WRAP Object END\n");
 #endif
 
-
+    TKR_OBJ_WRAP += (get_time_usec() - start - (m2 - m1));
     TOTAL_TKR_OVERHEAD += (get_time_usec() - start - (m2 - m1));
     return (void*)new_obj;
 } /* end H5VL_tracker_wrap_object() */
@@ -1460,8 +1461,6 @@ H5VL_tracker_attr_close(void *attr, hid_t dxpl_id, void **req)
 #ifdef DEBUG_OVERHEAD_TKR_VOL
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
 #endif
-        attribute_stats_tkr_write(attr_info);
-
         rm_attr_node(o->tkr_helper, o->under_object, o->under_vol_id, attr_info);
         H5VL_tracker_free_obj(o);
     }
@@ -2384,7 +2383,6 @@ H5VL_tracker_datatype_close(void *dt, hid_t dxpl_id, void **req)
 
         info = (datatype_tkr_info_t*)(o->generic_tkr_info);
 
-        datatype_stats_tkr_write(info);
         rm_dtype_node(TKR_HELPER, o->under_object, o->under_vol_id , info);
 
 #ifdef DEBUG_OVERHEAD_TKR_VOL
@@ -2955,7 +2953,6 @@ H5VL_tracker_file_close(void *file, hid_t dxpl_id, void **req)
 #ifdef DEBUG_OVERHEAD_TKR_VOL
     if(o){
         assert(o->generic_tkr_info);
-        // file_stats_tkr_write((file_tkr_info_t*)(o->generic_tkr_info));
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
     }
 #endif
@@ -3335,7 +3332,6 @@ H5VL_tracker_group_close(void *grp, hid_t dxpl_id, void **req)
 #ifdef DEBUG_OVERHEAD_TKR_VOL
         tkr_write(o->tkr_helper, __func__, get_time_usec() - start);
 #endif
-        group_stats_tkr_write(grp_info);
 
         rm_grp_node(o->tkr_helper, o->under_object, o->under_vol_id, grp_info);
 

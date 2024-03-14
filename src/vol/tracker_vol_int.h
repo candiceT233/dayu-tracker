@@ -43,14 +43,46 @@
 /************/
 static tkr_helper_t* TKR_HELPER = NULL;
 unsigned long TOTAL_TKR_OVERHEAD;
+unsigned long TKR_INIT_TIME;
+unsigned long TKR_TERM_TIME;        // included tkr_helper_teardown and all locks teardown
+unsigned long TKR_LOG_TIME;
+
 unsigned long TOTAL_NATIVE_H5_TIME;
 unsigned long TKR_WRITE_TOTAL_TIME;
-unsigned long FILE_LL_TOTAL_TIME;       //record file linked list overhead
-unsigned long DS_LL_TOTAL_TIME;         //dataset
-unsigned long GRP_LL_TOTAL_TIME;        //group
-unsigned long DT_LL_TOTAL_TIME;         //datatype
-unsigned long ATTR_LL_TOTAL_TIME;       //attribute
+unsigned long TKR_OBJ_WRAP;            //record obj wrap overhead
+
 unsigned long FILE_DSET_HT_TOTAL_TIME;       //record file_dset hash table overhead
+unsigned long FILE_DSET_HT_ADD_TIME;         //record file_dset hash table add/update overhead
+unsigned long FILE_DSET_HT_RM_TIME;          //record file_dset hash table remove overhead
+unsigned long FILE_DSET_HT_SEARCH_TIME;          //record file_dset hash table lookup key overhead
+
+
+unsigned long FILE_LL_TOTAL_TIME;       //record file linked list overhead
+unsigned long FILE_INFO_ADD_TIME;
+unsigned long FILE_INFO_RM_TIME;
+unsigned long FILE_INFO_UPDATE_TIME;
+
+unsigned long DSET_LL_TOTAL_TIME;         //dataset
+unsigned long DSET_INFO_ADD_TIME;
+unsigned long DSET_INFO_RM_TIME;
+unsigned long DSET_INFO_UPDATE_TIME;
+
+unsigned long GRP_LL_TOTAL_TIME;        //group
+unsigned long GRP_INFO_ADD_TIME;
+unsigned long GRP_INFO_RM_TIME;
+// unsigned long GRP_INFO_UPDATE_TIME; // not used
+
+unsigned long DT_LL_TOTAL_TIME;         //datatype
+unsigned long DT_INFO_ADD_TIME;
+unsigned long DT_INFO_RM_TIME;
+// unsigned long DT_INFO_UPDATE_TIME; // not used
+
+unsigned long ATTR_LL_TOTAL_TIME;       //attribute
+unsigned long ATTR_INFO_ADD_TIME;
+unsigned long ATTR_INFO_RM_TIME;
+// unsigned long ATTR_INFO_UPDATE_TIME; // not used
+
+
 unsigned long TRK_ACCESS_STAT_TIME;        //record all schema info update time
 //shorten function id: use hash value
 static char* FUNC_DIC[STAT_FUNC_MOD];
@@ -177,15 +209,9 @@ void _dic_free(void);
 /* Tracker internal print and logs prototypes */
 void _dic_print(void);
 void _preset_dic_print(void);
-void file_stats_tkr_write(const file_tkr_info_t* file_info);
-void dataset_stats_tkr_write(const dataset_tkr_info_t* ds_info);
-void datatype_stats_tkr_write(const datatype_tkr_info_t* dt_info);
-void group_stats_tkr_write(const group_tkr_info_t* grp_info);
-void attribute_stats_tkr_write(const attribute_tkr_info_t *attr_info);
 void tkr_helper_teardown(tkr_helper_t* helper);
 int tkr_write(tkr_helper_t* helper_in, const char* msg, unsigned long duration);
 char * get_datatype_class_str(hid_t type_id);
-
 
     
     /* candice added routine prototypes start */
@@ -797,7 +823,7 @@ static hsize_t dataset_get_vlen_buf_size(void *under_dset, hid_t under_vol_id, h
 
 tkr_helper_t * tkr_helper_init( char* file_path, Track_level tkr_level, char* tkr_line_format)
 {
-
+    unsigned long start = get_time_usec();
 #ifdef DEBUG_PT_TKR_VOL
     printf("TRACKER VOL INT : tkr_helper_init\n");
 #endif
@@ -809,8 +835,6 @@ tkr_helper_t * tkr_helper_init( char* file_path, Track_level tkr_level, char* tk
         printf("tkr_helper_init() failed, tracker file path is not set.\n");
         return NULL;
     }
-
-
 
     new_helper->tkr_line_format = strdup(tkr_line_format);
     new_helper->tkr_level = tkr_level;
@@ -846,6 +870,7 @@ tkr_helper_t * tkr_helper_init( char* file_path, Track_level tkr_level, char* tk
     fprintf(f, "[");
     fclose(f);
 
+    TKR_INIT_TIME += (get_time_usec() - start);
     return new_helper;
 }
 
@@ -1093,6 +1118,7 @@ datatype_tkr_info_t * add_dtype_node(file_tkr_info_t *file_info,
     // Increment refcount on datatype
     cur->obj_info.ref_cnt++;
 
+    DT_INFO_ADD_TIME += (get_time_usec() - start);
     DT_LL_TOTAL_TIME += (get_time_usec() - start);
     return cur;
 }
@@ -1141,6 +1167,7 @@ int rm_dtype_node(tkr_helper_t *helper, void *under, hid_t under_vol_id, datatyp
                 assert(file_info->opened_dtypes == NULL);
 
             // Decrement refcount on file info
+            DT_INFO_RM_TIME += (get_time_usec() - start);
             DT_LL_TOTAL_TIME += (get_time_usec() - start);
             rm_file_node(helper, file_info->file_no);
 
@@ -1151,6 +1178,7 @@ int rm_dtype_node(tkr_helper_t *helper, void *under, hid_t under_vol_id, datatyp
         cur = cur->next;
     }
 
+    DT_INFO_RM_TIME += (get_time_usec() - start);
     DT_LL_TOTAL_TIME += (get_time_usec() - start);
     //node not found.
     return -1;
@@ -1197,6 +1225,7 @@ group_tkr_info_t *add_grp_node(file_tkr_info_t *file_info,
     // Increment refcount on group
     cur->obj_info.ref_cnt++;
 
+    GRP_INFO_ADD_TIME += (get_time_usec() - start);
     GRP_LL_TOTAL_TIME += (get_time_usec() - start);
     return cur;
 }
@@ -1251,6 +1280,7 @@ int rm_grp_node(tkr_helper_t *helper, void *under_obj, hid_t under_vol_id, group
         cur = cur->next;
     }
 
+    GRP_INFO_RM_TIME += (get_time_usec() - start);
     GRP_LL_TOTAL_TIME += (get_time_usec() - start);
     //node not found.
     return -1;
@@ -1291,6 +1321,7 @@ attribute_tkr_info_t *add_attr_node(file_tkr_info_t *file_info,
     // Increment refcount on attribute
     cur->obj_info.ref_cnt++;
 
+    ATTR_INFO_ADD_TIME += (get_time_usec() - start);
     ATTR_LL_TOTAL_TIME += (get_time_usec() - start);
     return cur;
 }
@@ -1334,6 +1365,7 @@ int rm_attr_node(tkr_helper_t *helper, void *under_obj, hid_t under_vol_id, attr
             if(file_info->opened_attrs_cnt == 0)
                 assert(file_info->opened_attrs == NULL);
 
+            ATTR_INFO_RM_TIME += (get_time_usec() - start);
             ATTR_LL_TOTAL_TIME += (get_time_usec() - start);
 
             // Decrement refcount on file info
@@ -1346,6 +1378,7 @@ int rm_attr_node(tkr_helper_t *helper, void *under_obj, hid_t under_vol_id, attr
         cur = cur->next;
     }
 
+    ATTR_INFO_RM_TIME += (get_time_usec() - start);
     ATTR_LL_TOTAL_TIME += (get_time_usec() - start);
     //node not found.
     return -1;
@@ -1408,6 +1441,7 @@ file_tkr_info_t* add_file_node(tkr_helper_t* helper, const char* file_name,
     cur->sorder_id =FILE_SORDER; // sync order with VFD, no add
     tkrLockRelease(&myLock);
 
+    FILE_INFO_ADD_TIME+= (get_time_usec() - start);
     FILE_LL_TOTAL_TIME += (get_time_usec() - start);
 
     return cur;
@@ -1467,6 +1501,7 @@ int rm_file_node(tkr_helper_t* helper, unsigned long file_no)
         cur = cur->next;
     }
 
+    FILE_INFO_RM_TIME += (get_time_usec() - start);
     FILE_LL_TOTAL_TIME += (get_time_usec() - start);
 
 #ifdef DEBUG_PT_TKR_VOL
@@ -1556,7 +1591,8 @@ dataset_tkr_info_t * add_dataset_node(unsigned long obj_file_no,
     // Increment refcount on dataset
     cur->obj_info.ref_cnt++;
 
-    DS_LL_TOTAL_TIME += (get_time_usec() - start);
+    DSET_INFO_ADD_TIME+= (get_time_usec() - start);
+    DSET_LL_TOTAL_TIME += (get_time_usec() - start);
     return cur;
 }
 
@@ -1602,7 +1638,8 @@ int rm_dataset_node(tkr_helper_t *helper, void *under_obj, hid_t under_vol_id, d
                 assert(file_info->opened_datasets == NULL);
 
             // Decrement refcount on file info
-            DS_LL_TOTAL_TIME += (get_time_usec() - start);
+            DSET_INFO_RM_TIME += (get_time_usec() - start);
+            DSET_LL_TOTAL_TIME += (get_time_usec() - start);
             rm_file_node(helper, file_info->file_no);
 
             return 0;
@@ -1612,7 +1649,8 @@ int rm_dataset_node(tkr_helper_t *helper, void *under_obj, hid_t under_vol_id, d
         cur = cur->next;
     }
 
-    DS_LL_TOTAL_TIME += (get_time_usec() - start);
+    DSET_INFO_RM_TIME += (get_time_usec() - start);
+    DSET_LL_TOTAL_TIME += (get_time_usec() - start);
     //node not found.
     return -1;
 }
@@ -2157,82 +2195,7 @@ void _preset_dic_print(void){
     }
 }
 
-//not file_tkr_info_t!
-void file_stats_tkr_write(const file_tkr_info_t* file_info) {
-    if(!file_info){
-       printf("file_stats_tkr_write(): ds_info is NULL.\n");
-        return;
-    }
 
-    printf("File Close Statistic Summary Start ===========================================\n");
-    printf("File name = %s \n",file_info->file_name);
-    printf("File order_id = %ld\n",file_info->sorder_id);
-    printf("H5 file closed, %d datasets are created, %d datasets are accessed.\n", file_info->ds_created, file_info->ds_accessed);
-    printf("File Close Statistic Summary End =============================================\n");
-
-    // tkr_log_open_things(TKR_HELPER->tkr_file_handle);
-}
-
-void dataset_stats_tkr_write(const dataset_tkr_info_t* dset_info){
-
-    if(!dset_info){
-        printf("dataset_stats_tkr_write(): dset_info is NULL.\n");
-        return;
-    }
-
-    printf("Dataset Close Statistic Summary Start ===========================================\n");
-    printf("Dataset name = %s \n",dset_info->obj_info.name);
-    printf("Dataset order_id = %ld-%ld \n",dset_info->pfile_sorder_id,dset_info->sorder_id);
-    printf("Dataset parent file name = %s \n",dset_info->pfile_name);
-    printf("Dataset type class = %d \n",dset_info->dt_class);
-    printf("Dataset type size = %ld \n",dset_info->dset_type_size);
-    printf("Dataset space class = %d \n",dset_info->ds_class);
-    printf("Dataset storage size = %ld \n",dset_info->storage_size);
-    printf("Dataset num elements = %ld \n",dset_info->dset_n_elements);
-    printf("Dataset dimension count = %u \n", dset_info->dimension_cnt);
-    // print dimentions
-    printf("Dataset dimensions = {");
-    for (int i=0; i < dset_info->dimension_cnt; i++){
-    printf("%ld,",dset_info->dimensions[i]);
-    }
-    printf("}\n");
-    printf("Dataset num hyperslab blocks = %ld \n",dset_info->hyper_nblocks);
-    printf("Dataset offset = %ld \n", dset_info->dset_offset);
-    // printf("Dataset is read %d time, %lu bytes in total, costs %lu us.\n", dset_info->dataset_read_cnt, dset_info->total_bytes_read, dset_info->total_read_time);
-    // printf("Dataset is written %d time, %lu bytes in total, costs %lu us.\n", dset_info->dataset_write_cnt, dset_info->total_bytes_written, dset_info->total_write_time);
-    printf("Data Blob is get %d time, %lu bytes in total, costs %lu us.\n", dset_info->blob_get_cnt, dset_info->total_bytes_blob_get, dset_info->total_blob_get_time);
-    printf("Data Blob is put %d time, %lu bytes in total, costs %lu us.\n", dset_info->blob_put_cnt, dset_info->total_bytes_blob_put, dset_info->total_blob_put_time);
-    printf("Dataset Close Statistic Summary End =============================================\n");
-
-    // tkr_log_open_things(TKR_HELPER->tkr_file_handle);
-    
-}
-
-
-
-void datatype_stats_tkr_write(const datatype_tkr_info_t* dt_info) {
-    if(!dt_info){
-        //printf("datatype_stats_tkr_write(): ds_info is NULL.\n");
-        return;
-    }
-    //printf("Datatype name = %s, commited %d times, datatype get is called %d times.\n", dt_info->dtype_name, dt_info->datatype_commit_cnt, dt_info->datatype_get_cnt);
-}
-
-void group_stats_tkr_write(const group_tkr_info_t* grp_info) {
-    if(!grp_info){
-        //printf("group_stats_tkr_write(): grp_info is NULL.\n");
-        return;
-    }
-    //printf("group_stats_tkr_write() is yet to be implemented.\n");
-}
-
-void attribute_stats_tkr_write(const attribute_tkr_info_t *attr_info) {
-    if(!attr_info){
-        //printf("attribute_stats_tkr_write(): attr_info is NULL.\n");
-        return;
-    }
-    //printf("attribute_stats_tkr_write() is yet to be implemented.\n");
-}
 
 void tkr_helper_teardown(tkr_helper_t* helper){
 
@@ -2255,7 +2218,7 @@ void tkr_helper_teardown(tkr_helper_t* helper){
                 "TOTAL_NATIVE_H5_TIME %llu\n"
                 "TKR_WRITE_TOTAL_TIME %llu\n"
                 "FILE_LL_TOTAL_TIME %llu\n"
-                "DS_LL_TOTAL_TIME %llu\n"
+                "DSET_LL_TOTAL_TIME %llu\n"
                 "GRP_LL_TOTAL_TIME %llu\n"
                 "DT_LL_TOTAL_TIME %llu\n"
                 "ATTR_LL_TOTAL_TIME %llu\n",
@@ -2263,7 +2226,7 @@ void tkr_helper_teardown(tkr_helper_t* helper){
                 TOTAL_NATIVE_H5_TIME,
                 TKR_WRITE_TOTAL_TIME,
                 FILE_LL_TOTAL_TIME,
-                DS_LL_TOTAL_TIME,
+                DSET_LL_TOTAL_TIME,
                 GRP_LL_TOTAL_TIME,
                 DT_LL_TOTAL_TIME,
                 ATTR_LL_TOTAL_TIME);
@@ -2277,7 +2240,7 @@ void tkr_helper_teardown(tkr_helper_t* helper){
         //         "TOTAL_NATIVE_H5_TIME %llu\n"
         //         "TKR_WRITE_TOTAL_TIME %llu\n"
         //         "FILE_LL_TOTAL_TIME %llu\n"
-        //         "DS_LL_TOTAL_TIME %llu\n"
+        //         "DSET_LL_TOTAL_TIME %llu\n"
         //         "GRP_LL_TOTAL_TIME %llu\n"
         //         "DT_LL_TOTAL_TIME %llu\n"
         //         "ATTR_LL_TOTAL_TIME %llu\n",
@@ -2285,7 +2248,7 @@ void tkr_helper_teardown(tkr_helper_t* helper){
         //         TOTAL_NATIVE_H5_TIME,
         //         TKR_WRITE_TOTAL_TIME,
         //         FILE_LL_TOTAL_TIME,
-        //         DS_LL_TOTAL_TIME,
+        //         DSET_LL_TOTAL_TIME,
         //         GRP_LL_TOTAL_TIME,
         //         DT_LL_TOTAL_TIME,
         //         ATTR_LL_TOTAL_TIME);
@@ -2408,6 +2371,7 @@ int tkr_write(tkr_helper_t* helper_in, const char* msg, unsigned long duration){
     /* candice added routine implementation start*/
 void log_file_stat_json(tkr_helper_t* helper_in, const file_tkr_info_t* file_info)
 {
+    unsigned long start = get_time_usec();
     FILE * f = fopen(helper_in->tkr_file_path, "a");
     
     if (!file_info) {
@@ -2429,8 +2393,8 @@ void log_file_stat_json(tkr_helper_t* helper_in, const file_tkr_info_t* file_inf
     fprintf(f, "{\n");
     fprintf(f, "    \"file-%ld\": {\n", file_info->sorder_id);
     fprintf(f, "        \"file_name\": \"/%s\",\n", file_name);
-    fprintf(f, "        \"open_time\": %ld,\n", file_info->open_time);
-    fprintf(f, "        \"close_time\": %ld,\n", get_time_usec());
+    fprintf(f, "        \"open_time(us)\": %ld,\n", file_info->open_time);
+    fprintf(f, "        \"close_time(us)\": %ld,\n", get_time_usec());
     fprintf(f, "        \"file_size\": %zu,\n", file_info->file_size);
     fprintf(f, "        \"header_size\": %zu,\n", file_info->header_size);
     fprintf(f, "        \"sieve_buf_size\": %zu,\n", file_info->sieve_buf_size);
@@ -2450,16 +2414,39 @@ void log_file_stat_json(tkr_helper_t* helper_in, const file_tkr_info_t* file_inf
     fprintf(f, "{\n");
     fprintf(f, "    \"Task\": {\n");
     fprintf(f, "        \"task_id\": %d,\n", getpid());
-    fprintf(f, "        \"VOL-Overhead(ms)\": %ld,\n", TOTAL_TKR_OVERHEAD / 1000);
-    fprintf(f, "        \"TOTAL_NATIVE_H5_TIME(ms)\": %ld,\n", TOTAL_NATIVE_H5_TIME / 1000);
-    fprintf(f, "        \"TKR_WRITE_TOTAL_TIME(ms)\": %ld,\n", TKR_WRITE_TOTAL_TIME / 1000);
-    fprintf(f, "        \"FILE_LL_TOTAL_TIME(ms)\": %ld,\n", FILE_LL_TOTAL_TIME / 1000);
-    fprintf(f, "        \"DS_LL_TOTAL_TIME(ms)\": %ld,\n", DS_LL_TOTAL_TIME / 1000);
-    fprintf(f, "        \"GRP_LL_TOTAL_TIME(ms)\": %ld,\n", GRP_LL_TOTAL_TIME / 1000);
-    fprintf(f, "        \"DT_LL_TOTAL_TIME(ms)\": %ld,\n", DT_LL_TOTAL_TIME / 1000);
-    fprintf(f, "        \"ATTR_LL_TOTAL_TIME(ms)\": %ld,\n", ATTR_LL_TOTAL_TIME / 1000);
-    fprintf(f, "        \"FILE_DSET_HT_TOTAL_TIME(ms)\": %ld,\n", FILE_DSET_HT_TOTAL_TIME / 1000);
-    fprintf(f, "        \"TRK_ACCESS_STAT_TIME(ms)\": %ld\n", TRK_ACCESS_STAT_TIME / 1000);
+    fprintf(f, "        \"VOL-Overhead(us)\": %ld,\n", TOTAL_TKR_OVERHEAD);
+    fprintf(f, "        \"VOL-Init(us)\": %ld,\n", TKR_INIT_TIME);
+    fprintf(f, "        \"VOL-Term(us)\": %ld,\n", TKR_TERM_TIME);
+    fprintf(f, "        \"VOL-Log(us)\": %ld,\n", TKR_LOG_TIME);
+
+    fprintf(f, "        \"VOL-HT-Overhead(us)\": %ld,\n", FILE_DSET_HT_TOTAL_TIME);
+    fprintf(f, "        \"VOL-HT-Add(us)\": %ld,\n", FILE_DSET_HT_ADD_TIME);
+    fprintf(f, "        \"VOL-HT-Rm(us)\": %ld,\n", FILE_DSET_HT_RM_TIME);
+    fprintf(f, "        \"VOL-HT-Search(us)\": %ld,\n", FILE_DSET_HT_SEARCH_TIME);
+    
+    fprintf(f, "        \"VOL-FILE_LL-Overhead(us)\": %ld,\n", FILE_LL_TOTAL_TIME);
+    fprintf(f, "        \"VOL-FILE_LL-Add(us)\": %ld,\n", FILE_INFO_ADD_TIME);
+    fprintf(f, "        \"VOL-FILE_LL-Rm(us)\": %ld,\n", FILE_INFO_RM_TIME);
+    fprintf(f, "        \"VOL-FILE_LL-Update(us)\": %ld,\n", FILE_INFO_UPDATE_TIME);
+
+    fprintf(f, "        \"VOL-DS_LL-Overhead(us)\": %ld,\n", DSET_LL_TOTAL_TIME);
+    fprintf(f, "        \"VOL-DS_LL-Add(us)\": %ld,\n", DSET_INFO_ADD_TIME);
+    fprintf(f, "        \"VOL-DS_LL-Rm(us)\": %ld,\n", DSET_INFO_RM_TIME);
+    fprintf(f, "        \"VOL-DS_LL-Update(us)\": %ld,\n", DSET_INFO_UPDATE_TIME);
+
+    fprintf(f, "        \"VOL-GRP_LL-Overhead(us)\": %ld,\n", GRP_LL_TOTAL_TIME);
+    fprintf(f, "        \"VOL-GRP_LL-Add(us)\": %ld,\n", GRP_INFO_ADD_TIME);
+    fprintf(f, "        \"VOL-GRP_LL-Rm(us)\": %ld,\n", GRP_INFO_RM_TIME);
+
+    fprintf(f, "        \"VOL-DT_LL-Overhead(us)\": %ld,\n", DT_LL_TOTAL_TIME);
+    fprintf(f, "        \"VOL-DT_LL-Add(us)\": %ld,\n", DT_INFO_ADD_TIME);
+    fprintf(f, "        \"VOL-DT_LL-Rm(us)\": %ld,\n", DT_INFO_RM_TIME);
+
+    fprintf(f, "        \"VOL-All_LL-Overhead(us)\": %ld\n", TRK_ACCESS_STAT_TIME);
+
+    // fprintf(f, "        \"TOTAL_NATIVE_H5_TIME(us)\": %ld,\n", TOTAL_NATIVE_H5_TIME);
+    // fprintf(f, "        \"TKR_WRITE_TOTAL_TIME(us)\": %ld,\n", TKR_WRITE_TOTAL_TIME);
+    
     fprintf(f, "    }\n");
     fprintf(f, "},\n");
 
@@ -2467,7 +2454,7 @@ void log_file_stat_json(tkr_helper_t* helper_in, const file_tkr_info_t* file_inf
     TOTAL_NATIVE_H5_TIME = 0; // reset the total native H5 time once recorded
     TKR_WRITE_TOTAL_TIME = 0; // reset the total write time once recorded
     FILE_LL_TOTAL_TIME = 0; // reset the total file time once recorded
-    DS_LL_TOTAL_TIME = 0; // reset the total dataset time once recorded
+    DSET_LL_TOTAL_TIME = 0; // reset the total dataset time once recorded
     GRP_LL_TOTAL_TIME = 0; // reset the total group time once recorded
     DT_LL_TOTAL_TIME = 0; // reset the total datatype time once recorded
     ATTR_LL_TOTAL_TIME = 0; // reset the total attribute time once recorded
@@ -2476,6 +2463,8 @@ void log_file_stat_json(tkr_helper_t* helper_in, const file_tkr_info_t* file_inf
 
     fflush(f);
     fclose(f);
+
+    TKR_LOG_TIME += (get_time_usec() - start);
 }
 
 void H5VL_arrow_get_selected_sub_region(hid_t space_id, size_t org_type_size) {
@@ -2720,6 +2709,7 @@ void file_info_update(char * func_name, void * obj, hid_t fapl_id, hid_t fcpl_id
 #ifdef DEBUG_TKR_VOL
     file_info_print(func_name, obj, fapl_id, fcpl_id, dxpl_id);
 #endif
+    FILE_INFO_UPDATE_TIME+= (get_time_usec() - start);
 }
 
 void file_info_print(char * func_name, void * obj, hid_t fapl_id, hid_t fcpl_id, hid_t dxpl_id)
@@ -2910,6 +2900,7 @@ size_t token_to_size_t(const H5O_token_t* token) {
 void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
     hid_t file_space_id, void * obj, hid_t dxpl_id)
 {
+    unsigned long start = get_time_usec();
 #ifdef DEBUG_TKR_VOL
     printf("TRACKER VOL INT : dataset_info_update: %s\n", func_name);
 #endif
@@ -3005,6 +2996,7 @@ void dataset_info_update(char * func_name, hid_t mem_type_id, hid_t mem_space_id
     // dataset_info_print(func_name, mem_type_id, mem_space_id, file_space_id, obj, dxpl_id);
     printf("TRACKER VOL INT : dataset_info_update: %s END\n", func_name);
 #endif
+    DSET_INFO_UPDATE_TIME+= (get_time_usec() - start);
 }
 
 void dataset_info_print(char * func_name, hid_t mem_type_id, hid_t mem_space_id,
@@ -3576,7 +3568,7 @@ dset_track_t *create_dset_track_info(dataset_tkr_info_t* dset_info) {
 
 // Cleanup the hash table (using uthash)
 void cleanup_hash_table() {
-    unsigned long start = get_time_usec();
+    
     DsetTrackHashEntry *current, *tmp;
 
     // Iterate over the hash table and delete each entry using uthash macros
@@ -3587,8 +3579,6 @@ void cleanup_hash_table() {
 
     // Set the hash table pointer to NULL
     lock.hash_table = NULL;
-
-    FILE_DSET_HT_TOTAL_TIME += (get_time_usec() - start);
 }
 
 // Initialize the lock
@@ -3599,6 +3589,9 @@ void init_hasn_lock() {
 
 // Destroy the lock and cleanup the hash table
 void destroy_hash_lock() {
+    unsigned long start = get_time_usec();
+    
+
     // Lock the mutex to ensure exclusive access during destruction
     pthread_mutex_lock(&(lock.mutex));
 
@@ -3607,6 +3600,9 @@ void destroy_hash_lock() {
 
     // Destroy the mutex
     pthread_mutex_destroy(&(lock.mutex));
+
+    FILE_DSET_HT_RM_TIME+= (get_time_usec() - start);
+    FILE_DSET_HT_TOTAL_TIME += (get_time_usec() - start);
 }
 
 // Add a dset_track_t object to the hash table
@@ -3660,6 +3656,7 @@ void remove_dset_track_info(char * key) {
 
 
 void log_dset_ht_json(FILE* f) {
+
     DsetTrackHashEntry* entry = NULL;
 
     // Acquire the lock before accessing the hash table
@@ -3975,17 +3972,13 @@ void add_to_dset_ht(dataset_tkr_info_t* dset_info){
         add_dset_track_info(key, dset_track_info, dset_info);
     }
 
-    // // Print all the token numbers in the hash table
-    // print_ht_token_numbers();
-
     // // Remove the dset_track_info from the hash table
     // remove_dset_track_info(key);
-
     // // Free the memory
     // free_dset_track_info(dset_track_info);
-
+    
+    FILE_DSET_HT_ADD_TIME+= (get_time_usec() - start);
     FILE_DSET_HT_TOTAL_TIME+= (get_time_usec() - start);
-
 }
 
 // Check if the key exists in the hash table
@@ -4004,6 +3997,7 @@ int key_exists(char * key) {
     // Release the lock
     pthread_mutex_unlock(&(lock.mutex));
 
+    FILE_DSET_HT_SEARCH_TIME+= (get_time_usec() - start);
     FILE_DSET_HT_TOTAL_TIME+= (get_time_usec() - start);
 
     return exists;
