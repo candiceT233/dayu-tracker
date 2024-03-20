@@ -66,7 +66,7 @@ set(POSIX_FLAGS
 #-----------------------------------------------------------------------------
 # Define VFD Specific Options
 #-----------------------------------------------------------------------------
-option(DEBUG_TRK_VFD "Enable VFD Debug Logs" ON)
+option(DEBUG_TRK_VFD "Enable VFD Debug Logs" OFF)
 # option(ACCESS_STAT "Enable VFD Access Statistics logging to JSON file" ON)
 
 #-----------------------------------------------------------------------------
