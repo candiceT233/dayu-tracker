@@ -52,7 +52,11 @@
 
 #ifdef MMAP_IO
 #define _MMAP_IO true
+#else
+#define _MMAP_IO false
 #endif
+
+#define HDF5_HEADER_SIZE 1024 // 4096
 
 /* For TRACKER end */
 
@@ -469,7 +473,12 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
   std::cout << "H5FD__tracker_vfd_open() fd=" << fd << "sb.st_size="<< sb.st_size << std::endl;
 #endif
 
-  file->mmap_size = sb.st_size; // sb.st_size; // TODO: change to Hint buffer size (16443392) (20971520)
+  if (sb.st_size == 0)
+    file->mmap_size = 0;
+  else
+    file->mmap_size = HDF5_HEADER_SIZE;
+
+  // file->mmap_size = sb.st_size; // sb.st_size; // TODO: change to Hint buffer size (16443392) (20971520)
   file->file_size = sb.st_size;
   file->flags = flags;
   file->mmap_offset = 0; // TODO: change to Hint offset
@@ -491,10 +500,12 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
     }
     
     file->mmap_offset = 0; // TODO: change to Hint offset
-    file->mmap_addr = mmap(NULL, file->mmap_size, file->mmap_prot, MAP_SHARED, fd, 0);
+    // file->mmap_addr = mmap(NULL, file->mmap_size, file->mmap_prot, MAP_SHARED, fd, 0); // TODO: change to idea size
+    file->mmap_addr = mmap(NULL, file->mmap_size, file->mmap_prot, MAP_SHARED, fd, 0); // HDF5 header size
+
     timer_mmap_open.Pause();
   } else {
-      std::cout << "MMAP_IO file not mmaped size 0: "<< name << std::endl;
+      // std::cout << "MMAP_IO file not mmaped size 0: "<< name << std::endl;
       file->mmap_addr = NULL;
   }
 
@@ -774,7 +785,7 @@ static haddr_t H5FD__tracker_vfd_get_eof(const H5FD_t *_file,
 static herr_t
 H5FD__tracker_vfd_get_handle(H5FD_t *_file, hid_t H5_ATTR_UNUSED fapl, void **file_handle)
 {
-  // Overhead not recorded here, common to internal VFD
+  timer_vfd.Resume();
   H5FD_tracker_vfd_t *file      = (H5FD_tracker_vfd_t *)_file;
   herr_t       ret_value = SUCCEED;
 
@@ -784,7 +795,7 @@ H5FD__tracker_vfd_get_handle(H5FD_t *_file, hid_t H5_ATTR_UNUSED fapl, void **fi
       H5FD_TRACKER_VFD_GOTO_ERROR(H5E_ARGS, H5E_BADVALUE, FAIL, "file handle not valid");
 
   *file_handle = &(file->fd);
-
+  timer_vfd.Pause();
 done:
     FUNC_LEAVE_NOAPI(ret_value)
 } /* end H5FD__tracker_vfd_get_handle() */
@@ -883,9 +894,10 @@ static herr_t H5FD__tracker_vfd_read(H5FD_t *_file, H5FD_mem_t type,
 #else
 #endif /* MIO */
 
-  if(_MMAP_IO == true && file->mmap_size != 0){
+  // if(_MMAP_IO == true && file->mmap_size != 0){
+  if(_MMAP_IO == true && file->mmap_size != 0 && offset <= file->mmap_size){ // HDF5 Header 
     // bytes_read = HDpread(file->fd, buf, bytes_in, offset);
-    std::cout << "MMAP READ" << std::endl;
+    std::cout << "MMAP READ - range ["<< offset << ", "<< read_size << "]" << std::endl;
     // Copy data from memory-mapped region to buffer
     timer_mmap_read.Resume();
     std::memcpy(buf, static_cast<char*>(file->mmap_addr) + offset, read_size);
@@ -911,12 +923,12 @@ static herr_t H5FD__tracker_vfd_read(H5FD_t *_file, H5FD_mem_t type,
           // t1 = get_time_usec();
           timer_read.Resume();
 #ifdef H5_HAVE_PREADWRITE
-            std::cout << "POSIX PREAD" << std::endl;
+            // std::cout << "POSIX PREAD" << std::endl;
             bytes_read = HDpread(file->fd, buf, bytes_in, offset);
             if (bytes_read > 0)
                 offset += bytes_read;
 #else
-            std::cout << "POSIX READ" << std::endl;
+            // std::cout << "POSIX READ" << std::endl;
             bytes_read  = HDread(file->fd, buf, bytes_in);
 #endif /* H5_HAVE_PREADWRITE */
           // t2 = get_time_usec();
@@ -1023,7 +1035,9 @@ static herr_t H5FD__tracker_vfd_write(H5FD_t *_file, H5FD_mem_t type,
 #endif /* H5_HAVE_PREADWRITE */
 
 
-  if(_MMAP_IO == true && file->mmap_size != 0){
+  // if(_MMAP_IO == true && file->mmap_size != 0){
+  if(_MMAP_IO == true && file->mmap_size != 0 && offset <= file->mmap_size){ // HDF5 Header 
+    std::cout << "MMAP WRITE" << std::endl;
     // Using mmap
     timer_mmap_write.Resume();
     std::memcpy(file->mmap_addr + offset, buf, write_size);
@@ -1052,12 +1066,12 @@ static herr_t H5FD__tracker_vfd_write(H5FD_t *_file, H5FD_mem_t type,
         do {
           timer_write.Resume();
 #ifdef H5_HAVE_PREADWRITE
-            
+            // std::cout << "POSIX PWRITE" << std::endl;
             bytes_wrote = HDpwrite(file->fd, buf, bytes_in, offset);
             if (bytes_wrote > 0)
                 offset += bytes_wrote;
 #else
-            std::cout << "POSIX WRITE" << std::endl;
+            // std::cout << "POSIX WRITE" << std::endl;
             bytes_wrote = HDwrite(file->fd, buf, bytes_in);
 #endif /* H5_HAVE_PREADWRITE */
           timer_write.Pause();

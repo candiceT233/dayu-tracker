@@ -34,7 +34,7 @@ SIMPLE_VOL_IO (){
     export HDF5_PLUGIN_PATH=$TRACKER_SRC_DIR/vol
 
     PREP_TASK_NAME "$task1"
-    python vlen_h5_write_read.py $IO_FILE
+    python vlen_h5_write.py $IO_FILE
 
     PREP_TASK_NAME "$task2"
     python vlen_h5_read2.py $IO_FILE
@@ -64,7 +64,7 @@ SIMPLE_VFD_IO (){
     export HDF5_PLUGIN_PATH=$TRACKER_SRC_DIR/vfd
     
     PREP_TASK_NAME "$task1"
-    python vlen_h5_write_read.py $IO_FILE
+    python vlen_h5_write.py $IO_FILE
 
     PREP_TASK_NAME "$task2"
     python vlen_h5_read2.py $IO_FILE
@@ -80,12 +80,6 @@ SIMPLE_VFD_VOL_IO () {
     rm -rf $schema_file_path/*vol_data_stat.json
 
     echo "TRACKER_VFD_DIR : `ls -l $TRACKER_SRC_DIR/*`"
-    
-    # HDF5_VOL_CONNECTOR="under_vol=0;under_info={};path=`pwd`" \
-
-    # Only VFD
-    # LD_LIBRARY_PATH=$TRACKER_SRC_DIR/vfd:$LD_LIBRARY_PATH \
-    # export CURR_TASK="example_test"
 
     export HDF5_VOL_CONNECTOR="$VOL_NAME under_vol=0;under_info={};path=$schema_file_path;level=2;format="
     export HDF5_PLUGIN_PATH=$TRACKER_SRC_DIR/vol:$TRACKER_SRC_DIR/vfd:$HDF5_PLUGIN_PATH
@@ -93,17 +87,32 @@ SIMPLE_VFD_VOL_IO () {
     export HDF5_DRIVER_CONFIG="${schema_file_path};${TRACKER_VFD_PAGE_SIZE}"
 
     PREP_TASK_NAME "$task1"
-    python vlen_h5_write_read.py $IO_FILE
+    python vlen_h5_write.py $IO_FILE
 
     PREP_TASK_NAME "$task2"
     python vlen_h5_read2.py $IO_FILE
-
 }
 
 # get execution time in ms
 start_time=$(date +%s%3N)
-# SIMPLE_VFD_IO 2>&1 | tee VFD_run.log
-# SIMPLE_VOL_IO 2>&1 | tee VOL_run.log
-SIMPLE_VFD_VOL_IO 2>&1 | tee DL_run.log
+test_type="DL"
+test_type="$1"
+LOGFILE=save_logs/${test_type}_run.log
+# get execution time in ms
+start_time=$(date +%s%3N)
+
+if [ $test_type == "VFD" ]; then
+    echo "Running VFD Tracker test"
+    
+    SIMPLE_VFD_IO 2>&1 | tee $LOGFILE
+elif [ $test_type == "VOL" ]; then
+    echo "Running VOL Tracker test"
+    SIMPLE_VOL_IO 2>&1 | tee $LOGFILE 
+else
+    echo "Running VFD and VOL Tracker test"
+    SIMPLE_VFD_VOL_IO 2>&1 | tee $LOGFILE
+fi
+
+
 end_time=$(date +%s%3N)
 echo "Execution time: $((end_time-start_time)) ms"

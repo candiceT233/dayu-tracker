@@ -251,14 +251,14 @@ typedef struct H5FD_tracker_vfd_t {
     mio::mmap_source ro_mmap;
 #endif
 
-#ifdef MMAP_IO
+// #ifdef MMAP_IO
     size_t mmap_size;
     int mmap_prot;
     int mmap_flags;
     int mmap_offset;
     void *mmap_addr;
     int file_size;
-#endif
+// #endif
 
   /* custom VFD code end */
 
