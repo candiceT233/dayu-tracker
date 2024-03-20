@@ -11,6 +11,13 @@ The VFD monitors POSIX I/O operation during program, implemented with the HDF5 d
 
 # How to use
 
+## Prerequisite
+- HDF5 (1.14.+)
+- h5py==3.8.0
+```
+HDF5_MPI="OFF" HDF5_DIR=/path/to/installed_hdf5 pip install --no-binary=h5py h5py==3.8.0
+```
+
 ## Setup program task name
 Before running your program from a bash command, setup program task name two ways:
 ---
