@@ -12,14 +12,15 @@ The VFD monitors POSIX I/O operation during program, implemented with the HDF5 d
 # How to use
 
 ## Prerequisite
-- HDF5 (1.14.+, require C, CXX and HDF5_HL_LIBRARIES)
+- HDF5 (1.14.+, require C, CXX and HDF5_HL_LIBRARIES) \
+Install with spack (suggest spack version 0.20.+)
 ```bash
-# Install with spack
-spack install hdf5@1.14.0+cxx+hl~mpi
+spack install hdf5@1.14+cxx+hl~mpi
 ```
 - h5py==3.8.0
 ```
-HDF5_MPI="OFF" HDF5_DIR=/path/to/installed_hdf5 pip install --no-binary=h5py h5py==3.8.0
+YOUR_HDF5_PATH="`which h5cc |sed 's/.\{9\}$//'`"
+pip uninstall h5py; HDF5_MPI="OFF" HDF5_DIR=$YOUR_HDF5_PATH pip install --no-binary=h5py h5py==3.8.0
 ```
 
 ## Installation
