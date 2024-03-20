@@ -49,12 +49,14 @@
 
 /* private method copies */
 #include "H5private.h"
-// #include "H5Pprivate.h"
-// #include "H5Iprivate.h"
 
-// extern "C" {
-// #include "H5FDtracker_vfd_log.h" /* Connecting to vol         */
-// }
+#ifdef MMAP_IO
+#define _MMAP_IO true
+#else
+#define _MMAP_IO false
+#endif
+
+#define HDF5_HEADER_SIZE 1024 // 4096
 
 /* For TRACKER end */
 
@@ -112,6 +114,7 @@ hid_t H5FDtracker_vfd_err_class_g = H5I_INVALID_HID;
 typedef struct H5FD_tracker_vfd_fapl_t {
   hbool_t logStat;    /* write to file name on flush */
   size_t  page_size;  /* page size */
+  char * stat_path;  /* file path for statistic files */
   
 } H5FD_tracker_vfd_fapl_t;
 
@@ -140,6 +143,7 @@ static herr_t H5FD__tracker_vfd_unlock(H5FD_t *_file);
 static herr_t H5FD__tracker_vfd_delete(const char *filename, hid_t H5_ATTR_UNUSED fapl_id);
 static herr_t H5FD__tracker_vfd_ctl(H5FD_t H5_ATTR_UNUSED *_file, uint64_t H5_ATTR_UNUSED op_code, uint64_t flags,
                const void H5_ATTR_UNUSED *input, void H5_ATTR_UNUSED **output);
+
 
 
 
@@ -206,10 +210,10 @@ static const H5FD_class_t H5FD_tracker_vfd_g = {
 hid_t
 H5FD_tracker_vfd_init(void) {
   // Overhead not recorded here, common to internal VFD
-#ifdef DEBUG_VFD
+#ifdef DEBUG_TRK_VFD
   std::cout << "H5FD_tracker_vfd_init()" << std::endl;
 #endif
-
+  timerInitVFD.Resume();
   hid_t ret_value = H5I_INVALID_HID; /* Return value */
 
   /* Initialize error reporting */
@@ -224,6 +228,8 @@ H5FD_tracker_vfd_init(void) {
 
   if (H5I_VFL != H5Iget_type(H5FD_TRACKER_VFD_g))
     H5FD_TRACKER_VFD_g = H5FDregister(&H5FD_tracker_vfd_g);
+
+  timerInitVFD.Pause();
 
   /* Set return value */
   ret_value = H5FD_TRACKER_VFD_g;
@@ -243,14 +249,15 @@ done:
  */
 static herr_t
 H5FD__tracker_vfd_term(void) {
+  timerTermVFD.Resume();
   // Overhead not recorded here, common to internal VFD
-#ifdef DEBUG_VFD
+#ifdef DEBUG_TRK_VFD
   std::cout << "H5FD__tracker_vfd_term()" << std::endl;
 #endif
   herr_t ret_value = SUCCEED;
 
-  // if(TKR_HELPER_VFD != nullptr)
-  //   vfd_tkr_helper_teardown(TKR_HELPER_VFD); // TODO: this segfault
+  if(TKR_HELPER_VFD != nullptr)
+    teardownVFDTkrHelper(TKR_HELPER_VFD); // TODO: this segfault
 
   /* Unregister from HDF5 error API */
   if (H5FDtracker_vfd_err_class_g >= 0) {
@@ -269,7 +276,6 @@ H5FD__tracker_vfd_term(void) {
       PRINT_ERROR_STACK;
     } /* end if */
 
-
     H5FDtracker_vfd_err_stack_g = H5I_INVALID_HID;
     H5FDtracker_vfd_err_class_g = H5I_INVALID_HID;
   }
@@ -277,6 +283,14 @@ H5FD__tracker_vfd_term(void) {
   /* Reset VFL ID */
   H5FD_TRACKER_VFD_g = H5I_INVALID_HID;
 
+  timerTermVFD.Pause();
+  
+  // std::cout << "POSIX-READ-Time(us): " << timer_read.GetUsec() << std::endl;
+  // std::cout << "POSIX-WRITE-Time(us): " << timer_write.GetUsec() << std::endl;
+  // std::cout << "POSIX-OPEN-Time(us): " << timer_open.GetUsec() << std::endl;
+  // std::cout << "POSIX-CLOSE-Time(us): " << timer_close.GetUsec() << std::endl;
+  // std::cout << "POSIX-DELETE-Time(us): " << timer_del.GetUsec() << std::endl;
+  
 done:
   H5FD_TRACKER_VFD_FUNC_LEAVE_API;
   // return ret_value;
@@ -296,7 +310,7 @@ done:
 herr_t
 H5Pset_fapl_tracker_vfd(hid_t fapl_id, hbool_t logStat, size_t page_size, std::string logFilePath) {
 
-  unsigned long t_start = get_time_usec();
+  timer_vfd.Resume();
   H5FD_tracker_vfd_fapl_t fa; /* Tracker VFD info */
   herr_t ret_value = SUCCEED; /* Return value */
 
@@ -318,11 +332,13 @@ H5Pset_fapl_tracker_vfd(hid_t fapl_id, hbool_t logStat, size_t page_size, std::s
                            "can't set Tracker VFD as driver");
   }
 
-#ifdef DEBUG_VFD
+#ifdef DEBUG_TRK_VFD
   print_H5Pset_fapl_info("H5Pset_fapl_tracker_vfd", logStat, page_size);
 #endif
 
-  TOTAL_TKR_VFD_TIME += (get_time_usec() - t_start);
+  VFD_ACCESS_IDX = 0;
+
+  timer_vfd.Pause();
 
 done:
   H5FD_TRACKER_VFD_FUNC_LEAVE_API;
@@ -363,14 +379,14 @@ static herr_t H5FD__tracker_vfd_fapl_free(void *_fa) {
 static H5FD_t *
 H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
                   haddr_t maxaddr) {
-
-#ifdef DEBUG_VFD
-  std::cout << "H5FD__open() name = " << name << std::endl;
+  double t_start = timer.GetUsFromEpoch();
+#ifdef DEBUG_TRK_VFD
+  std::cout << "H5FD__tracker_vfd_open() name = " << name << std::endl;
     /* If an existing file is opened, load the whole file into memory. */
 #endif
 
-  unsigned long t_start = get_time_usec();
-  H5FD_tracker_vfd_t  *file = NULL; /* tracker_vfd VFD info          */
+  timer_vfd.Resume();
+  H5FD_tracker_vfd_t  *file = new H5FD_tracker_vfd_t(); // NULL; /* tracker_vfd VFD info          */
   int fd = -1;
   int o_flags = 0;
   struct stat     sb = {0};
@@ -387,15 +403,14 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
   char config_str_buf[MAX_CONF_STR_LENGTH];
   char *saveptr = NULL;
   char* token = NULL;
-  char file_path[H5FD_MAX_FILENAME_LEN];
 
   /* Sanity check on file offsets */
   assert(sizeof(off_t) >= sizeof(size_t));
 
   H5FD_TRACKER_VFD_INIT;
 
-#ifdef DEBUG_VFD
-  std::cout << "H5FD__open() name = " << name << std::endl;
+#ifdef DEBUG_TRK_VFD
+  std::cout << "H5FD__tracker_vfd_open() name = " << name << std::endl;
 #endif
 
   /* custom VFD code end */
@@ -420,11 +435,12 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
       o_flags |= O_EXCL;
   }
 
-#ifdef DEBUG_VFD
-  std::cout << "H5FD__open() flags = " << flags << std::endl;
+#ifdef DEBUG_TRK_VFD
+  std::cout << "H5FD__tracker_vfd_open() flags = " << flags << std::endl;
 #endif
 
-  t1 = get_time_usec();
+
+  timer_open.Resume();
   /* Open the file */
   if ((fd = HDopen(name, o_flags, H5_POSIX_CREATE_MODE_RW)) < 0) {
       int myerrno = errno;
@@ -434,21 +450,64 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
           name, myerrno, strerror(myerrno), flags, (unsigned)o_flags);
   } /* end if */
 
-  t2 = get_time_usec();
-  TOTAL_POSIX_IO_TIME += (t2 - t1);
+  timer_open.Pause();
 
-#ifdef DEBUG_VFD
-  std::cout << "H5FD__open() fd = " << fd << std::endl;
-#endif
-
-  // if (HDfstat(fd, &sb) < 0)
+  timer_open.Resume();
   if (fstat(fd, &sb) < 0)
     H5FD_TRACKER_VFD_SYS_GOTO_ERROR(H5E_FILE, H5E_BADFILE, NULL, "unable to fstat file");
-      
+  timer_open.Pause();
 
-#ifdef DEBUG_VFD
-  std::cout << "H5FD__open() sb.st_size = " << sb.st_size << std::endl;
+  // /* Create the new file struct */
+  // if (NULL == (file = (H5FD_tracker_vfd_t *)calloc((size_t)1, sizeof(H5FD_tracker_vfd_t))))
+  //     H5FD_TRACKER_VFD_GOTO_ERROR(H5E_RESOURCE, H5E_NOSPACE, NULL, "unable to allocate file struct");
+
+  timerInitVFD.Resume();
+  file->fd = fd;
+  file->pos = HADDR_UNDEF;
+  file->op  = OP_UNKNOWN;
+  /* FIXME: Possible overflow! */
+  file->eof = (haddr_t)sb.st_size;
+  // H5_CHECKED_ASSIGN(file->eof, haddr_t, sb.st_size, h5_stat_size_t);  
+
+#ifdef DEBUG_TRK_VFD
+  std::cout << "H5FD__tracker_vfd_open() fd=" << fd << "sb.st_size="<< sb.st_size << std::endl;
 #endif
+
+  if (sb.st_size == 0)
+    file->mmap_size = 0;
+  else
+    file->mmap_size = HDF5_HEADER_SIZE;
+
+  // file->mmap_size = sb.st_size; // sb.st_size; // TODO: change to Hint buffer size (16443392) (20971520)
+  file->file_size = sb.st_size;
+  file->flags = flags;
+  file->mmap_offset = 0; // TODO: change to Hint offset
+  timerInitVFD.Pause();
+
+  if(_MMAP_IO == true && file->mmap_size != 0){
+    // Using mmap
+    timer_mmap_open.Resume();
+    if(flags == 0){
+        std::cout << "MMAP_IO read_only file created: "<< name 
+          << " mmap_size: " << file->mmap_size
+          << " fd: " << fd << std::endl;
+        file->mmap_prot = PROT_READ;
+    } else {
+        std::cout << "MMAP_IO read_write file created: "<< name 
+          << " mmap_size: " << file->mmap_size
+          << " fd: " << fd << std::endl;
+        file->mmap_prot = PROT_READ | PROT_WRITE;
+    }
+    
+    file->mmap_offset = 0; // TODO: change to Hint offset
+    // file->mmap_addr = mmap(NULL, file->mmap_size, file->mmap_prot, MAP_SHARED, fd, 0); // TODO: change to idea size
+    file->mmap_addr = mmap(NULL, file->mmap_size, file->mmap_prot, MAP_SHARED, fd, 0); // HDF5 header size
+
+    timer_mmap_open.Pause();
+  } else {
+      // std::cout << "MMAP_IO file not mmaped size 0: "<< name << std::endl;
+      file->mmap_addr = NULL;
+  }
 
   /* Get the driver specific information */
   H5E_BEGIN_TRY {
@@ -456,38 +515,27 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
   }
   H5E_END_TRY;
 
+  timerInitVFD.Resume();
+  /* custom VFD code start */
   if (!fa || (H5P_FILE_ACCESS_DEFAULT == fapl_id)) {
     if ((config_str_len =
          H5Pget_driver_config_str(fapl_id, config_str_buf, 128)) < 0) {
           printf("H5Pget_driver_config_str error\n");
     }
-    *saveptr;
-    token = strtok_r(config_str_buf, " ", &saveptr);
-    if (!strcmp(token, "true") || !strcmp(token, "TRUE") ||
-        !strcmp(token, "True")) {
+    token = strtok_r(config_str_buf, ";", &saveptr);
+    if (token != NULL) {
+      new_fa.stat_path = strdup(token);
       new_fa.logStat = true;
     }
-    token = strtok_r(0, " ", &saveptr);
+    token = strtok_r(0, ";", &saveptr);
     sscanf(token, "%zu", &(new_fa.page_size));
     fa = &new_fa;
   }
 
-#ifdef DEBUG_VFD
-  std::cout << "H5FD__open() fa->logStat = " << fa->logStat << std::endl;
-  std::cout << "H5FD__open() fa->page_size = " << fa->page_size << std::endl;
+#ifdef DEBUG_TRK_VFD
+  std::cout << "H5FD__tracker_vfd_open() fa->logStat = " << fa->logStat << std::endl;
+  std::cout << "H5FD__tracker_vfd_open() fa->page_size = " << fa->page_size << std::endl;
 #endif
-
-  /* Create the new file struct */
-  if (NULL == (file = (H5FD_tracker_vfd_t *)calloc((size_t)1, sizeof(H5FD_tracker_vfd_t))))
-      H5FD_TRACKER_VFD_GOTO_ERROR(H5E_RESOURCE, H5E_NOSPACE, NULL, "unable to allocate file struct");
-
-  file->fd = fd;
-  file->pos = HADDR_UNDEF;
-  file->op  = OP_UNKNOWN;
-  /* FIXME: Possible overflow! */
-  file->eof = (haddr_t)sb.st_size;
-  // H5_CHECKED_ASSIGN(file->eof, haddr_t, sb.st_size, h5_stat_size_t);
-
 
     /* Check the file locking flags in the fapl */
     if (ignore_disabled_file_locks_s != FAIL)
@@ -495,28 +543,27 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
         file->ignore_disabled_file_locks = ignore_disabled_file_locks_s;
 
 
-    /* Retain a copy of the name used to open the file, for possible error reporting */
-    strncpy(file->filename, name, sizeof(file->filename) - 1);
-    file->filename[sizeof(file->filename) - 1] = '\0';
-
-
-  /* custom VFD code start */
+  /* Retain a copy of the name used to open the file, for possible error reporting */
+  strncpy(file->filename, name, sizeof(file->filename) - 1);
+  file->filename[sizeof(file->filename) - 1] = '\0';
+  
   file->page_size = fa->page_size;
   file->my_fapl_id = fapl_id;
   file->logStat = fa->logStat;
 
-  if(TKR_HELPER_VFD == nullptr){  
-    parseEnvironmentVariable(file_path);
-    TKR_HELPER_VFD = vfd_tkr_helper_init(file_path, file->logStat, file->page_size);
+  timerInitVFD.Pause();
+
+  if(TKR_HELPER_VFD == nullptr){
+    TKR_HELPER_VFD = vfdTkrHelperInit(new_fa.stat_path, file->logStat, file->page_size);
   }
 
-  // file->vfd_file_info = add_vfd_file_node(name, file);
-  file->vfd_file_info = add_vfd_file_node(TKR_HELPER_VFD, name, file);
+  // file->vfd_file_info = addVFDFileNode(name, file);
+  file->vfd_file_info = addVFDFileNode(TKR_HELPER_VFD, name, file);
 #ifdef ACCESS_STAT
-  open_close_info_update("H5FD__tracker_vfd_open", file, file->eof, flags, t_start);
+  updateOpenCloseInfo("H5FD__tracker_vfd_open", file, file->eof, flags, t_start);
 #endif
   
-  TOTAL_TKR_VFD_TIME += (get_time_usec() - t_start);
+  timer_vfd.Pause();
   /* custom VFD code end */
 
   /* Set return value */
@@ -525,10 +572,14 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
 done:
   if (NULL == ret_value) {
     if (fd >= 0){
-      t3 = get_time_usec();
+      // t3 = get_time_usec();
+      timer_close.Resume();
+
       close(fd);
-      t4 = get_time_usec();
-      TOTAL_POSIX_IO_TIME += (t4 - t3);
+
+      timer_close.Pause();
+      // t4 = get_time_usec();
+      // TOTAL_POSIX_IO_TIME += (t4 - t3);
     }
     if (file) {
       free(file);
@@ -550,39 +601,44 @@ done:
  */
 static herr_t H5FD__tracker_vfd_close(H5FD_t *_file) {
 
-  unsigned long t_start = get_time_usec();
+  
+  timer_vfd.Resume();
   unsigned long t1, t2;
   H5FD_tracker_vfd_t *file = (H5FD_tracker_vfd_t *)_file;
   herr_t ret_value = SUCCEED; /* Return value */
   assert(file);
 
-  /* custom VFD code start */
-  // print_open_close_info("H5FD__tracker_vfd_close", file, file->filename, t_start, get_time_usec(), file->eof, file->flags);
-
 #ifdef ACCESS_STAT
-  open_close_info_update("H5FD__tracker_vfd_close", file, file->eof, file->flags, t_start);
+  updateOpenCloseInfo("H5FD__tracker_vfd_close", file, file->eof, file->flags, timer.GetUsFromEpoch());
 #endif
-  dump_vfd_file_stat_yaml(TKR_HELPER_VFD, file->vfd_file_info);
-  rm_vfd_file_node(TKR_HELPER_VFD, _file);
-  
 
+  /* custom VFD code start */
+
+  DumpJsonFileStat(TKR_HELPER_VFD, file->vfd_file_info);
+  rmVFDFileNode(TKR_HELPER_VFD, _file);
   /* custom VFD code end */
 
+  if(_MMAP_IO == true && file->mmap_addr != NULL){
+    // Using mmap
+    timer_mmap_close.Resume();
+    if(munmap(file->mmap_addr, file->mmap_size) < 0){
+      std::cout << "munmap failed" << std::endl;
+    }
+    timer_mmap_close.Pause();
+  }
 
-  t1 = get_time_usec();
+  timer_close.Resume();
   if (close(file->fd) < 0)
     H5FD_TRACKER_VFD_SYS_GOTO_ERROR(H5E_IO, H5E_CANTCLOSEFILE, FAIL,
                                 "unable to close file");
-  t2 = get_time_usec();
-  TOTAL_POSIX_IO_TIME += (t2 - t1);
-  
-  // TOTAL_TKR_VFD_TIME += (get_time_usec() - t_start - (t2 - t1));
-  TOTAL_TKR_VFD_TIME += (get_time_usec() - t_start);
+  timer_close.Pause();
+
 
   // if (file->filename)
   //   free(file->filename); // this segfaults
 
   free(file);
+  timer_vfd.Pause();
   
 done:
   H5FD_TRACKER_VFD_FUNC_LEAVE_API;
@@ -601,14 +657,14 @@ done:
  *-------------------------------------------------------------------------
  */
 static int H5FD__tracker_vfd_cmp(const H5FD_t *_f1, const H5FD_t *_f2) {
-  // Overhead not recorded here, common to internal VFD
-
+  timer_vfd.Resume();
   const H5FD_tracker_vfd_t *f1        = (const H5FD_tracker_vfd_t *)_f1;
   const H5FD_tracker_vfd_t *f2        = (const H5FD_tracker_vfd_t *)_f2;
   int                  ret_value = 0;
 
   ret_value = strcmp(f1->filename, f2->filename);
 
+  timer_vfd.Pause();
   return ret_value;
 } /* end H5FD__tracker_vfd_cmp() */
 
@@ -631,14 +687,13 @@ static herr_t H5FD__tracker_vfd_query(const H5FD_t *_file,
    * reflected in H5FDmirror.c
    * -- JOS 2020-01-13
    */
-
-   // Overhead not recorded here, common to internal VFD
+  timer_vfd.Resume();
   herr_t ret_value = SUCCEED;
 
   if (flags) {
     *flags = 0;
   }                                            /* end if */
-
+  timer_vfd.Pause();
   return ret_value;
 } /* end H5FD__tracker_vfd_query() */
 
@@ -655,7 +710,7 @@ static herr_t H5FD__tracker_vfd_query(const H5FD_t *_file,
  */
 static haddr_t H5FD__tracker_vfd_get_eoa(const H5FD_t *_file,
                                     H5FD_mem_t type) {
-  // Overhead not recorded here, common to internal VFD
+  timer_vfd.Resume();
   (void) type;
   haddr_t ret_value = HADDR_UNDEF;
 
@@ -663,6 +718,7 @@ static haddr_t H5FD__tracker_vfd_get_eoa(const H5FD_t *_file,
 
   ret_value = file->eoa;
 
+  timer_vfd.Pause();
   return ret_value;
 } /* end H5FD__tracker_vfd_get_eoa() */
 
@@ -680,7 +736,7 @@ static haddr_t H5FD__tracker_vfd_get_eoa(const H5FD_t *_file,
 static herr_t H5FD__tracker_vfd_set_eoa(H5FD_t *_file,
                                    H5FD_mem_t type,
                                    haddr_t addr) {
-  // Overhead not recorded here, common to internal VFD
+  timer_vfd.Resume();
   (void) type;
   herr_t ret_value = SUCCEED;
 
@@ -688,6 +744,7 @@ static herr_t H5FD__tracker_vfd_set_eoa(H5FD_t *_file,
 
   file->eoa = addr;
 
+  timer_vfd.Pause();
   return ret_value;
 } /* end H5FD__tracker_vfd_set_eoa() */
 
@@ -705,14 +762,14 @@ static herr_t H5FD__tracker_vfd_set_eoa(H5FD_t *_file,
  */
 static haddr_t H5FD__tracker_vfd_get_eof(const H5FD_t *_file,
                                     H5FD_mem_t type) {
-  // Overhead not recorded here, common to internal VFD
+  timer_vfd.Resume();
   (void) type;
   haddr_t ret_value = HADDR_UNDEF;
 
   const H5FD_tracker_vfd_t *file = (const H5FD_tracker_vfd_t *)_file;
 
   ret_value = file->eof;
-
+  timer_vfd.Pause();
   return ret_value;
 } /* end H5FD__tracker_vfd_get_eof() */
 
@@ -728,7 +785,7 @@ static haddr_t H5FD__tracker_vfd_get_eof(const H5FD_t *_file,
 static herr_t
 H5FD__tracker_vfd_get_handle(H5FD_t *_file, hid_t H5_ATTR_UNUSED fapl, void **file_handle)
 {
-  // Overhead not recorded here, common to internal VFD
+  timer_vfd.Resume();
   H5FD_tracker_vfd_t *file      = (H5FD_tracker_vfd_t *)_file;
   herr_t       ret_value = SUCCEED;
 
@@ -738,7 +795,7 @@ H5FD__tracker_vfd_get_handle(H5FD_t *_file, hid_t H5_ATTR_UNUSED fapl, void **fi
       H5FD_TRACKER_VFD_GOTO_ERROR(H5E_ARGS, H5E_BADVALUE, FAIL, "file handle not valid");
 
   *file_handle = &(file->fd);
-
+  timer_vfd.Pause();
 done:
     FUNC_LEAVE_NOAPI(ret_value)
 } /* end H5FD__tracker_vfd_get_handle() */
@@ -767,12 +824,13 @@ done:
 static herr_t H5FD__tracker_vfd_read(H5FD_t *_file, H5FD_mem_t type,
                                 hid_t dxpl_id, haddr_t addr,
                                 size_t size, void *buf) {
-#ifdef DEBUG_VFD
-  std::cout << "H5FD__read() size:" << size << std::endl;
+  double t_start = timer.GetUsFromEpoch();
+#ifdef DEBUG_TRK_VFD
+  std::cout << "H5FD__tracker_vfd_read() size:" << size << std::endl;
 #endif
 
 
-  unsigned long t_start = get_time_usec();
+  timer_vfd.Resume();
   unsigned long t1, t2, t3, t4;
   (void) dxpl_id; (void) type;
   H5FD_tracker_vfd_t *file = (H5FD_tracker_vfd_t *)_file;
@@ -781,6 +839,12 @@ static herr_t H5FD__tracker_vfd_read(H5FD_t *_file, H5FD_mem_t type,
   ssize_t count = -1;
   size_t read_size = size;
   char file_name_copy[H5FD_MAX_FILENAME_LEN];
+
+  /* MIO */
+  size_t size_remaining = size;
+  size_t bytes_processed = 0;
+  size_t bytes_to_read;
+  char* buffer_ptr = static_cast<char*>(buf);
 
   assert(file && file->pub.cls);
   assert(buf);
@@ -802,6 +866,44 @@ static herr_t H5FD__tracker_vfd_read(H5FD_t *_file, H5FD_mem_t type,
             H5FD_TRACKER_VFD_SYS_GOTO_ERROR(H5E_IO, H5E_SEEKERROR, FAIL, "unable to seek to proper position")
 #endif /* H5_HAVE_PREADWRITE */
 
+
+#ifdef MIO
+    std::cout << "MIO READ" << std::endl;
+    while (size_remaining > 0) {
+        
+        // Determine how many bytes to read in this iteration
+        bytes_to_read = std::min(size_remaining, size);  // buffer_size is the size of the buffer
+
+        std::cout << "MIO READ bytes_to_read: "<< bytes_to_read << std::endl;
+        if(file->flags == 0){
+          // read_only
+          std::cout << "ro_mmap READ bytes_processed: "<< bytes_processed << std::endl;
+          // Read data from the memory-mapped region into the buffer
+          
+          std::copy_n(file->ro_mmap.begin() + bytes_processed, bytes_to_read, buffer_ptr);
+        } else {
+          // read_write
+          std::cout << "rw_mmap READ bytes_processed: "<< bytes_processed << std::endl;
+          // Read data from the memory-mapped region into the buffer
+          std::copy_n(file->rw_mmap.begin() + bytes_processed, bytes_to_read, buffer_ptr);
+        }
+        size_remaining -= bytes_to_read;
+        bytes_processed += bytes_to_read;
+        buffer_ptr += bytes_to_read;
+    }
+#else
+#endif /* MIO */
+
+  // if(_MMAP_IO == true && file->mmap_size != 0){
+  if(_MMAP_IO == true && file->mmap_size != 0 && offset <= file->mmap_size){ // HDF5 Header 
+    // bytes_read = HDpread(file->fd, buf, bytes_in, offset);
+    std::cout << "MMAP READ - range ["<< offset << ", "<< read_size << "]" << std::endl;
+    // Copy data from memory-mapped region to buffer
+    timer_mmap_read.Resume();
+    std::memcpy(buf, static_cast<char*>(file->mmap_addr) + offset, read_size);
+    timer_mmap_read.Pause();
+  } else {
+
     /* Read data, being careful of interrupted system calls, partial results,
      * and the end of the file.
      */
@@ -818,26 +920,32 @@ static herr_t H5FD__tracker_vfd_read(H5FD_t *_file, H5FD_mem_t type,
             bytes_in = (h5_posix_io_t)size;
 
         do {
-          t1 = get_time_usec();
+          // t1 = get_time_usec();
+          timer_read.Resume();
 #ifdef H5_HAVE_PREADWRITE
+            // std::cout << "POSIX PREAD" << std::endl;
             bytes_read = HDpread(file->fd, buf, bytes_in, offset);
             if (bytes_read > 0)
                 offset += bytes_read;
 #else
+            // std::cout << "POSIX READ" << std::endl;
             bytes_read  = HDread(file->fd, buf, bytes_in);
 #endif /* H5_HAVE_PREADWRITE */
-          t2 = get_time_usec();
-          TOTAL_POSIX_IO_TIME += (t2 - t1);
+          // t2 = get_time_usec();
+          // TOTAL_POSIX_IO_TIME += (t2 - t1);
+          timer_read.Pause();
         } while (-1 == bytes_read && EINTR == errno);
 
         if (-1 == bytes_read) { /* error */
             int    myerrno = errno;
             time_t mytime  = HDtime(NULL);
 
-            t3 = get_time_usec();
+            // t3 = get_time_usec();
+            timer_read.Resume();
             offset = HDlseek(file->fd, (HDoff_t)0, SEEK_CUR);
-            t4 = get_time_usec();
-            TOTAL_POSIX_IO_TIME += (t3 - t4); // Q: Record seek time?
+            timer_read.Pause();
+            // t4 = get_time_usec();
+            // TOTAL_POSIX_IO_TIME += (t3 - t4); // Q: Record seek time?
 
             H5FD_TRACKER_VFD_GOTO_ERROR(H5E_IO, H5E_READERROR, FAIL,
                         "file read failed: time = %s, filename = '%s', file descriptor = %d, errno = %d, "
@@ -862,18 +970,23 @@ static herr_t H5FD__tracker_vfd_read(H5FD_t *_file, H5FD_mem_t type,
         buf = (char *)buf + bytes_read;
     } /* end while */
 
+
     /* Update current position */
     file->pos = addr;
     file->op  = OP_READ;
+  }
 
 #ifdef ACCESS_STAT
   /* custom VFD code start */
-  read_write_info_update("H5FD__tracker_vfd_read", file->filename, file->my_fapl_id ,_file,
-    type, dxpl_id, addr, read_size, file->page_size, t_start);
+  VFD_ACCESS_IDX++;
+  // check if VFD_ACCESS_IDX is every ACCESS_INX_SKIP'th access
+  // if(VFD_ACCESS_IDX % ACCESS_INX_SKIP == 0 || VFD_ACCESS_IDX == 1)
+
+  updateReadWriteInfo("H5FD__tracker_vfd_read", file->filename, file->my_fapl_id ,_file,
+  type, dxpl_id, addr, read_size, file->page_size, t_start);
 #endif
 
-  // TOTAL_TKR_VFD_TIME += (get_time_usec() - t_start -(t2 -t1) - (t4 - t3));
-  TOTAL_TKR_VFD_TIME += (get_time_usec() - t_start);
+  timer_vfd.Pause();
   /* custom VFD code end */
 
 done:
@@ -902,18 +1015,17 @@ done:
 static herr_t H5FD__tracker_vfd_write(H5FD_t *_file, H5FD_mem_t type,
                                  hid_t dxpl_id, haddr_t addr,
                                  size_t size, const void *buf) {
-#ifdef DEBUG_VFD
-  std::cout << "H5FD__write() size:" << size << std::endl;
+  double t_start = timer.GetUsFromEpoch();
+#ifdef DEBUG_TRK_VFD
+  std::cout << "H5FD__tracker_vfd_write() size:" << size << std::endl;
 #endif
 
-  unsigned long t_start = get_time_usec();
-  unsigned long t1, t2, t3, t4;
+  timer_vfd.Resume();
   size_t write_size = size;
   (void) dxpl_id; (void) type;
   H5FD_tracker_vfd_t *file = (H5FD_tracker_vfd_t *)_file;
   HDoff_t      offset    = (HDoff_t)addr;
   herr_t ret_value = SUCCEED;
-
 
 #ifndef H5_HAVE_PREADWRITE
     /* Seek to the correct location (if we don't have pwrite) */
@@ -921,7 +1033,21 @@ static herr_t H5FD__tracker_vfd_write(H5FD_t *_file, H5FD_mem_t type,
         if (HDlseek(file->fd, (HDoff_t)addr, SEEK_SET) < 0)
             H5FD_TRACKER_VFD_SYS_GOTO_ERROR(H5E_IO, H5E_SEEKERROR, FAIL, "unable to seek to proper position")
 #endif /* H5_HAVE_PREADWRITE */
-    
+
+
+  // if(_MMAP_IO == true && file->mmap_size != 0){
+  if(_MMAP_IO == true && file->mmap_size != 0 && offset <= file->mmap_size){ // HDF5 Header 
+    std::cout << "MMAP WRITE" << std::endl;
+    // Using mmap
+    timer_mmap_write.Resume();
+    std::memcpy(file->mmap_addr + offset, buf, write_size);
+    // msync(file->mmap_addr + offset, fsize, MS_SYNC);
+    // file->mmap_addr[offset] = *reinterpret_cast<const char*>(buf);
+    msync(file->mmap_addr + offset, file->file_size, MS_SYNC);
+    timer_mmap_write.Pause();
+  } else {
+    // std::cout << "MMAP WRITE not performed" << std::endl;
+
     /* Write the data, being careful of interrupted system calls and partial
      * results
      */
@@ -938,27 +1064,27 @@ static herr_t H5FD__tracker_vfd_write(H5FD_t *_file, H5FD_mem_t type,
             bytes_in = (h5_posix_io_t)size;
 
         do {
-          t1 = get_time_usec();
+          timer_write.Resume();
 #ifdef H5_HAVE_PREADWRITE
-            
+            // std::cout << "POSIX PWRITE" << std::endl;
             bytes_wrote = HDpwrite(file->fd, buf, bytes_in, offset);
             if (bytes_wrote > 0)
                 offset += bytes_wrote;
 #else
+            // std::cout << "POSIX WRITE" << std::endl;
             bytes_wrote = HDwrite(file->fd, buf, bytes_in);
 #endif /* H5_HAVE_PREADWRITE */
-          t2 = get_time_usec();
-          TOTAL_POSIX_IO_TIME += (t2 - t1);
+          timer_write.Pause();
         } while (-1 == bytes_wrote && EINTR == errno);
 
         if (-1 == bytes_wrote) { /* error */
             int    myerrno = errno;
             time_t mytime  = HDtime(NULL);
 
-            t3 = get_time_usec();
+            // t3 = get_time_usec();
+            timer_write.Resume();
             offset = HDlseek(file->fd, (HDoff_t)0, SEEK_CUR);
-            t4 = get_time_usec();
-            TOTAL_POSIX_IO_TIME += (t3 - t4); // Q: Record seek time?
+            timer_write.Pause(); // Q: Record seek time?
 
             H5FD_TRACKER_VFD_GOTO_ERROR(H5E_IO, H5E_WRITEERROR, FAIL,
                         "file write failed: time = %s, filename = '%s', file descriptor = %d, errno = %d, "
@@ -982,15 +1108,22 @@ static herr_t H5FD__tracker_vfd_write(H5FD_t *_file, H5FD_mem_t type,
     file->op  = OP_WRITE;
     if (file->pos > file->eof)
         file->eof = file->pos;
+  }
 
 #ifdef ACCESS_STAT
   /* custom VFD code start */
-  read_write_info_update("H5FD__tracker_vfd_write", file->filename, file->my_fapl_id ,_file,
-    type, dxpl_id, addr, write_size, file->page_size, t_start);
+  VFD_ACCESS_IDX++;
+  // check if VFD_ACCESS_IDX is every 10th access
+  // if(VFD_ACCESS_IDX % ACCESS_INX_SKIP == 0 || VFD_ACCESS_IDX == 1)
+  updateReadWriteInfo("H5FD__tracker_vfd_write", file->filename, file->my_fapl_id ,_file,
+  type, dxpl_id, addr, write_size, file->page_size, t_start);
 #endif
 
-  // TOTAL_TKR_VFD_TIME += (get_time_usec() - t_start -(t2 -t1) - (t4 - t3));
-  TOTAL_TKR_VFD_TIME += (get_time_usec() - t_start);
+#ifdef DEBUG_TRK_VFD
+  std::cout << "H5FD__tracker_vfd_write() updateReadWriteInfo() done: " << file->filename << std::endl;
+#endif
+
+  timer_vfd.Pause();
   /* custom VFD code end */
 
 done:
@@ -1142,11 +1275,13 @@ H5FD__tracker_vfd_delete(const char *filename, hid_t H5_ATTR_UNUSED fapl_id)
 
   assert(filename);
 
-  t1 = get_time_usec();
+  // t1 = get_time_usec();
+  timer_del.Resume();
   if (HDremove(filename) < 0)
       H5FD_TRACKER_VFD_SYS_GOTO_ERROR(H5E_VFL, H5E_CANTDELETEFILE, FAIL, "unable to delete file");
-  t2 = get_time_usec();
-  TOTAL_POSIX_IO_TIME += (t2 - t1);
+  timer_del.Pause();
+  // t2 = get_time_usec();
+  // TOTAL_POSIX_IO_TIME += (t2 - t1);
 
 done:
   FUNC_LEAVE_NOAPI(ret_value);
@@ -1201,3 +1336,5 @@ const void*
 H5PLget_plugin_info(void) {
   return &H5FD_tracker_vfd_g;
 }
+
+

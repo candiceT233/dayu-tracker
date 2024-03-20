@@ -1,0 +1,1508 @@
+[{
+    "file-2": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0000/stage0000_task0000.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "rmsd",
+                "start_time": 1708109810903624,
+                "end_time": 1708109810910485,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 2,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 151272,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [1]
+            }
+        ]
+    }
+},
+{
+    "file-2": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0000/stage0000_task0000.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "contact_map",
+                "start_time": 1708109810911200,
+                "end_time": 1708109810915158,
+                "dt_class": "H5T_VLEN",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 16,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 800,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [2]
+            }
+        ]
+    }
+},
+{
+    "file-2": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0000/stage0000_task0000.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "point_cloud",
+                "start_time": 1708109810915437,
+                "end_time": 1708109810918039,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 8400,
+                "dimension_cnt": 3,
+                "dimensions": [100, 3, 28],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 107592,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 8400,
+                "access_orders": [3]
+            }
+        ]
+    }
+},
+{
+    "file-2": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0000/stage0000_task0000.h5",
+        "open_time": 1708109810902826,
+        "close_time": 1708109810918957,
+        "file_size": 165592,
+        "header_size": 0,
+        "sieve_buf_size": 0,
+        "file_intent": ["H5F_ACC_RDONLY"],
+        "ds_created": 0,
+        "ds_accessed": 3,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_id": 379606,
+        "VOL-Overhead(ms)": 3,
+        "TOTAL_NATIVE_H5_TIME(ms)": 0,
+        "TKR_WRITE_TOTAL_TIME(ms)": 0,
+        "FILE_LL_TOTAL_TIME(ms)": 0,
+        "DS_LL_TOTAL_TIME(ms)": 0,
+        "GRP_LL_TOTAL_TIME(ms)": 0,
+        "DT_LL_TOTAL_TIME(ms)": 0,
+        "ATTR_LL_TOTAL_TIME(ms)": 0,
+        "FILE_DSET_HT_TOTAL_TIME(ms)": 0,
+        "TRK_ACCESS_STAT_TIME(ms)": 0
+    }
+},
+{
+    "file-4": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0001/stage0000_task0001.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "rmsd",
+                "start_time": 1708109810922139,
+                "end_time": 1708109810924804,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 2,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 151272,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [4]
+            }
+        ]
+    }
+},
+{
+    "file-4": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0001/stage0000_task0001.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "contact_map",
+                "start_time": 1708109810925117,
+                "end_time": 1708109810929049,
+                "dt_class": "H5T_VLEN",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 16,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 800,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [5]
+            }
+        ]
+    }
+},
+{
+    "file-4": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0001/stage0000_task0001.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "point_cloud",
+                "start_time": 1708109810929362,
+                "end_time": 1708109810932057,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 8400,
+                "dimension_cnt": 3,
+                "dimensions": [100, 3, 28],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 107592,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 8400,
+                "access_orders": [6]
+            }
+        ]
+    }
+},
+{
+    "file-4": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0001/stage0000_task0001.h5",
+        "open_time": 1708109810921858,
+        "close_time": 1708109810932615,
+        "file_size": 165592,
+        "header_size": 0,
+        "sieve_buf_size": 0,
+        "file_intent": ["H5F_ACC_RDONLY"],
+        "ds_created": 0,
+        "ds_accessed": 3,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_id": 379606,
+        "VOL-Overhead(ms)": 1,
+        "TOTAL_NATIVE_H5_TIME(ms)": 0,
+        "TKR_WRITE_TOTAL_TIME(ms)": 0,
+        "FILE_LL_TOTAL_TIME(ms)": 0,
+        "DS_LL_TOTAL_TIME(ms)": 0,
+        "GRP_LL_TOTAL_TIME(ms)": 0,
+        "DT_LL_TOTAL_TIME(ms)": 0,
+        "ATTR_LL_TOTAL_TIME(ms)": 0,
+        "FILE_DSET_HT_TOTAL_TIME(ms)": 0,
+        "TRK_ACCESS_STAT_TIME(ms)": 1
+    }
+},
+{
+    "file-6": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0002/stage0000_task0002.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "rmsd",
+                "start_time": 1708109810936159,
+                "end_time": 1708109810938000,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 2,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 151272,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [7]
+            }
+        ]
+    }
+},
+{
+    "file-6": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0002/stage0000_task0002.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "contact_map",
+                "start_time": 1708109810938219,
+                "end_time": 1708109810940911,
+                "dt_class": "H5T_VLEN",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 16,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 800,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [8]
+            }
+        ]
+    }
+},
+{
+    "file-6": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0002/stage0000_task0002.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "point_cloud",
+                "start_time": 1708109810941133,
+                "end_time": 1708109810943165,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 8400,
+                "dimension_cnt": 3,
+                "dimensions": [100, 3, 28],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 107592,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 8400,
+                "access_orders": [9]
+            }
+        ]
+    }
+},
+{
+    "file-6": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0002/stage0000_task0002.h5",
+        "open_time": 1708109810935962,
+        "close_time": 1708109810943846,
+        "file_size": 165592,
+        "header_size": 0,
+        "sieve_buf_size": 0,
+        "file_intent": ["H5F_ACC_RDONLY"],
+        "ds_created": 0,
+        "ds_accessed": 3,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_id": 379606,
+        "VOL-Overhead(ms)": 1,
+        "TOTAL_NATIVE_H5_TIME(ms)": 0,
+        "TKR_WRITE_TOTAL_TIME(ms)": 0,
+        "FILE_LL_TOTAL_TIME(ms)": 0,
+        "DS_LL_TOTAL_TIME(ms)": 0,
+        "GRP_LL_TOTAL_TIME(ms)": 0,
+        "DT_LL_TOTAL_TIME(ms)": 0,
+        "ATTR_LL_TOTAL_TIME(ms)": 0,
+        "FILE_DSET_HT_TOTAL_TIME(ms)": 0,
+        "TRK_ACCESS_STAT_TIME(ms)": 1
+    }
+},
+{
+    "file-8": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0003/stage0000_task0003.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "rmsd",
+                "start_time": 1708109810947123,
+                "end_time": 1708109810948954,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 2,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 151272,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [10]
+            }
+        ]
+    }
+},
+{
+    "file-8": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0003/stage0000_task0003.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "contact_map",
+                "start_time": 1708109810949171,
+                "end_time": 1708109810951845,
+                "dt_class": "H5T_VLEN",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 16,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 800,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [11]
+            }
+        ]
+    }
+},
+{
+    "file-8": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0003/stage0000_task0003.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "point_cloud",
+                "start_time": 1708109810952064,
+                "end_time": 1708109810954117,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 8400,
+                "dimension_cnt": 3,
+                "dimensions": [100, 3, 28],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 107592,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 8400,
+                "access_orders": [12]
+            }
+        ]
+    }
+},
+{
+    "file-8": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0003/stage0000_task0003.h5",
+        "open_time": 1708109810946927,
+        "close_time": 1708109810954825,
+        "file_size": 165592,
+        "header_size": 0,
+        "sieve_buf_size": 0,
+        "file_intent": ["H5F_ACC_RDONLY"],
+        "ds_created": 0,
+        "ds_accessed": 3,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_id": 379606,
+        "VOL-Overhead(ms)": 1,
+        "TOTAL_NATIVE_H5_TIME(ms)": 0,
+        "TKR_WRITE_TOTAL_TIME(ms)": 0,
+        "FILE_LL_TOTAL_TIME(ms)": 0,
+        "DS_LL_TOTAL_TIME(ms)": 0,
+        "GRP_LL_TOTAL_TIME(ms)": 0,
+        "DT_LL_TOTAL_TIME(ms)": 0,
+        "ATTR_LL_TOTAL_TIME(ms)": 0,
+        "FILE_DSET_HT_TOTAL_TIME(ms)": 0,
+        "TRK_ACCESS_STAT_TIME(ms)": 1
+    }
+},
+{
+    "file-10": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0004/stage0000_task0004.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "rmsd",
+                "start_time": 1708109810958427,
+                "end_time": 1708109810960248,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 2,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 151272,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [13]
+            }
+        ]
+    }
+},
+{
+    "file-10": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0004/stage0000_task0004.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "contact_map",
+                "start_time": 1708109810960499,
+                "end_time": 1708109810963188,
+                "dt_class": "H5T_VLEN",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 16,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 800,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [14]
+            }
+        ]
+    }
+},
+{
+    "file-10": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0004/stage0000_task0004.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "point_cloud",
+                "start_time": 1708109810963410,
+                "end_time": 1708109810965442,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 8400,
+                "dimension_cnt": 3,
+                "dimensions": [100, 3, 28],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 107592,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 8400,
+                "access_orders": [15]
+            }
+        ]
+    }
+},
+{
+    "file-10": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0004/stage0000_task0004.h5",
+        "open_time": 1708109810958235,
+        "close_time": 1708109810966108,
+        "file_size": 165592,
+        "header_size": 0,
+        "sieve_buf_size": 0,
+        "file_intent": ["H5F_ACC_RDONLY"],
+        "ds_created": 0,
+        "ds_accessed": 3,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_id": 379606,
+        "VOL-Overhead(ms)": 1,
+        "TOTAL_NATIVE_H5_TIME(ms)": 0,
+        "TKR_WRITE_TOTAL_TIME(ms)": 0,
+        "FILE_LL_TOTAL_TIME(ms)": 0,
+        "DS_LL_TOTAL_TIME(ms)": 0,
+        "GRP_LL_TOTAL_TIME(ms)": 0,
+        "DT_LL_TOTAL_TIME(ms)": 0,
+        "ATTR_LL_TOTAL_TIME(ms)": 0,
+        "FILE_DSET_HT_TOTAL_TIME(ms)": 0,
+        "TRK_ACCESS_STAT_TIME(ms)": 1
+    }
+},
+{
+    "file-12": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0005/stage0000_task0005.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "rmsd",
+                "start_time": 1708109810968694,
+                "end_time": 1708109810970521,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 2,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 151272,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [16]
+            }
+        ]
+    }
+},
+{
+    "file-12": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0005/stage0000_task0005.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "contact_map",
+                "start_time": 1708109810970736,
+                "end_time": 1708109810973443,
+                "dt_class": "H5T_VLEN",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 16,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 800,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [17]
+            }
+        ]
+    }
+},
+{
+    "file-12": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0005/stage0000_task0005.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "point_cloud",
+                "start_time": 1708109810973662,
+                "end_time": 1708109810975673,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 8400,
+                "dimension_cnt": 3,
+                "dimensions": [100, 3, 28],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 107592,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 8400,
+                "access_orders": [18]
+            }
+        ]
+    }
+},
+{
+    "file-12": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0005/stage0000_task0005.h5",
+        "open_time": 1708109810968499,
+        "close_time": 1708109810976317,
+        "file_size": 165592,
+        "header_size": 0,
+        "sieve_buf_size": 0,
+        "file_intent": ["H5F_ACC_RDONLY"],
+        "ds_created": 0,
+        "ds_accessed": 3,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_id": 379606,
+        "VOL-Overhead(ms)": 1,
+        "TOTAL_NATIVE_H5_TIME(ms)": 0,
+        "TKR_WRITE_TOTAL_TIME(ms)": 0,
+        "FILE_LL_TOTAL_TIME(ms)": 0,
+        "DS_LL_TOTAL_TIME(ms)": 0,
+        "GRP_LL_TOTAL_TIME(ms)": 0,
+        "DT_LL_TOTAL_TIME(ms)": 0,
+        "ATTR_LL_TOTAL_TIME(ms)": 0,
+        "FILE_DSET_HT_TOTAL_TIME(ms)": 0,
+        "TRK_ACCESS_STAT_TIME(ms)": 1
+    }
+},
+{
+    "file-14": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0006/stage0000_task0006.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "rmsd",
+                "start_time": 1708109810979248,
+                "end_time": 1708109810981113,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 2,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 151272,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [19]
+            }
+        ]
+    }
+},
+{
+    "file-14": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0006/stage0000_task0006.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "contact_map",
+                "start_time": 1708109810981332,
+                "end_time": 1708109810984027,
+                "dt_class": "H5T_VLEN",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 16,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 800,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [20]
+            }
+        ]
+    }
+},
+{
+    "file-14": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0006/stage0000_task0006.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "point_cloud",
+                "start_time": 1708109810984244,
+                "end_time": 1708109810986257,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 8400,
+                "dimension_cnt": 3,
+                "dimensions": [100, 3, 28],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 107592,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 8400,
+                "access_orders": [21]
+            }
+        ]
+    }
+},
+{
+    "file-14": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0006/stage0000_task0006.h5",
+        "open_time": 1708109810979056,
+        "close_time": 1708109810986917,
+        "file_size": 165592,
+        "header_size": 0,
+        "sieve_buf_size": 0,
+        "file_intent": ["H5F_ACC_RDONLY"],
+        "ds_created": 0,
+        "ds_accessed": 3,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_id": 379606,
+        "VOL-Overhead(ms)": 1,
+        "TOTAL_NATIVE_H5_TIME(ms)": 0,
+        "TKR_WRITE_TOTAL_TIME(ms)": 0,
+        "FILE_LL_TOTAL_TIME(ms)": 0,
+        "DS_LL_TOTAL_TIME(ms)": 0,
+        "GRP_LL_TOTAL_TIME(ms)": 0,
+        "DT_LL_TOTAL_TIME(ms)": 0,
+        "ATTR_LL_TOTAL_TIME(ms)": 0,
+        "FILE_DSET_HT_TOTAL_TIME(ms)": 0,
+        "TRK_ACCESS_STAT_TIME(ms)": 1
+    }
+},
+{
+    "file-16": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0007/stage0000_task0007.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "rmsd",
+                "start_time": 1708109810990274,
+                "end_time": 1708109810992098,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 2,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 151272,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [22]
+            }
+        ]
+    }
+},
+{
+    "file-16": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0007/stage0000_task0007.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "contact_map",
+                "start_time": 1708109810992316,
+                "end_time": 1708109810995022,
+                "dt_class": "H5T_VLEN",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 16,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 800,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [23]
+            }
+        ]
+    }
+},
+{
+    "file-16": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0007/stage0000_task0007.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "point_cloud",
+                "start_time": 1708109810995243,
+                "end_time": 1708109810997275,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 8400,
+                "dimension_cnt": 3,
+                "dimensions": [100, 3, 28],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 107592,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 8400,
+                "access_orders": [24]
+            }
+        ]
+    }
+},
+{
+    "file-16": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0007/stage0000_task0007.h5",
+        "open_time": 1708109810990080,
+        "close_time": 1708109810997939,
+        "file_size": 165592,
+        "header_size": 0,
+        "sieve_buf_size": 0,
+        "file_intent": ["H5F_ACC_RDONLY"],
+        "ds_created": 0,
+        "ds_accessed": 3,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_id": 379606,
+        "VOL-Overhead(ms)": 1,
+        "TOTAL_NATIVE_H5_TIME(ms)": 0,
+        "TKR_WRITE_TOTAL_TIME(ms)": 0,
+        "FILE_LL_TOTAL_TIME(ms)": 0,
+        "DS_LL_TOTAL_TIME(ms)": 0,
+        "GRP_LL_TOTAL_TIME(ms)": 0,
+        "DT_LL_TOTAL_TIME(ms)": 0,
+        "ATTR_LL_TOTAL_TIME(ms)": 0,
+        "FILE_DSET_HT_TOTAL_TIME(ms)": 0,
+        "TRK_ACCESS_STAT_TIME(ms)": 1
+    }
+},
+{
+    "file-18": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0008/stage0000_task0008.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "rmsd",
+                "start_time": 1708109811001418,
+                "end_time": 1708109811003262,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 2,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 151272,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [25]
+            }
+        ]
+    }
+},
+{
+    "file-18": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0008/stage0000_task0008.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "contact_map",
+                "start_time": 1708109811003479,
+                "end_time": 1708109811006201,
+                "dt_class": "H5T_VLEN",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 16,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 800,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [26]
+            }
+        ]
+    }
+},
+{
+    "file-18": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0008/stage0000_task0008.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "point_cloud",
+                "start_time": 1708109811006420,
+                "end_time": 1708109811008463,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 8400,
+                "dimension_cnt": 3,
+                "dimensions": [100, 3, 28],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 107592,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 8400,
+                "access_orders": [27]
+            }
+        ]
+    }
+},
+{
+    "file-18": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0008/stage0000_task0008.h5",
+        "open_time": 1708109811001224,
+        "close_time": 1708109811009137,
+        "file_size": 165592,
+        "header_size": 0,
+        "sieve_buf_size": 0,
+        "file_intent": ["H5F_ACC_RDONLY"],
+        "ds_created": 0,
+        "ds_accessed": 3,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_id": 379606,
+        "VOL-Overhead(ms)": 1,
+        "TOTAL_NATIVE_H5_TIME(ms)": 0,
+        "TKR_WRITE_TOTAL_TIME(ms)": 0,
+        "FILE_LL_TOTAL_TIME(ms)": 0,
+        "DS_LL_TOTAL_TIME(ms)": 0,
+        "GRP_LL_TOTAL_TIME(ms)": 0,
+        "DT_LL_TOTAL_TIME(ms)": 0,
+        "ATTR_LL_TOTAL_TIME(ms)": 0,
+        "FILE_DSET_HT_TOTAL_TIME(ms)": 0,
+        "TRK_ACCESS_STAT_TIME(ms)": 1
+    }
+},
+{
+    "file-20": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0009/stage0000_task0009.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "rmsd",
+                "start_time": 1708109811011826,
+                "end_time": 1708109811013670,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 2,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 151272,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [28]
+            }
+        ]
+    }
+},
+{
+    "file-20": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0009/stage0000_task0009.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "contact_map",
+                "start_time": 1708109811013888,
+                "end_time": 1708109811016606,
+                "dt_class": "H5T_VLEN",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 16,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 800,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [29]
+            }
+        ]
+    }
+},
+{
+    "file-20": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0009/stage0000_task0009.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "point_cloud",
+                "start_time": 1708109811016827,
+                "end_time": 1708109811018858,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 8400,
+                "dimension_cnt": 3,
+                "dimensions": [100, 3, 28],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 107592,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 8400,
+                "access_orders": [30]
+            }
+        ]
+    }
+},
+{
+    "file-20": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0009/stage0000_task0009.h5",
+        "open_time": 1708109811011632,
+        "close_time": 1708109811019326,
+        "file_size": 165592,
+        "header_size": 0,
+        "sieve_buf_size": 0,
+        "file_intent": ["H5F_ACC_RDONLY"],
+        "ds_created": 0,
+        "ds_accessed": 3,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_id": 379606,
+        "VOL-Overhead(ms)": 1,
+        "TOTAL_NATIVE_H5_TIME(ms)": 0,
+        "TKR_WRITE_TOTAL_TIME(ms)": 0,
+        "FILE_LL_TOTAL_TIME(ms)": 0,
+        "DS_LL_TOTAL_TIME(ms)": 0,
+        "GRP_LL_TOTAL_TIME(ms)": 0,
+        "DT_LL_TOTAL_TIME(ms)": 0,
+        "ATTR_LL_TOTAL_TIME(ms)": 0,
+        "FILE_DSET_HT_TOTAL_TIME(ms)": 0,
+        "TRK_ACCESS_STAT_TIME(ms)": 1
+    }
+},
+{
+    "file-22": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0010/stage0000_task0010.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "rmsd",
+                "start_time": 1708109811021800,
+                "end_time": 1708109811023645,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 2,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 151272,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [31]
+            }
+        ]
+    }
+},
+{
+    "file-22": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0010/stage0000_task0010.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "contact_map",
+                "start_time": 1708109811023863,
+                "end_time": 1708109811026583,
+                "dt_class": "H5T_VLEN",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 16,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 800,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [32]
+            }
+        ]
+    }
+},
+{
+    "file-22": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0010/stage0000_task0010.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "point_cloud",
+                "start_time": 1708109811026804,
+                "end_time": 1708109811028850,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 8400,
+                "dimension_cnt": 3,
+                "dimensions": [100, 3, 28],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 107592,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 8400,
+                "access_orders": [33]
+            }
+        ]
+    }
+},
+{
+    "file-22": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0010/stage0000_task0010.h5",
+        "open_time": 1708109811021601,
+        "close_time": 1708109811029516,
+        "file_size": 165592,
+        "header_size": 0,
+        "sieve_buf_size": 0,
+        "file_intent": ["H5F_ACC_RDONLY"],
+        "ds_created": 0,
+        "ds_accessed": 3,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_id": 379606,
+        "VOL-Overhead(ms)": 1,
+        "TOTAL_NATIVE_H5_TIME(ms)": 0,
+        "TKR_WRITE_TOTAL_TIME(ms)": 0,
+        "FILE_LL_TOTAL_TIME(ms)": 0,
+        "DS_LL_TOTAL_TIME(ms)": 0,
+        "GRP_LL_TOTAL_TIME(ms)": 0,
+        "DT_LL_TOTAL_TIME(ms)": 0,
+        "ATTR_LL_TOTAL_TIME(ms)": 0,
+        "FILE_DSET_HT_TOTAL_TIME(ms)": 0,
+        "TRK_ACCESS_STAT_TIME(ms)": 1
+    }
+},
+{
+    "file-24": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0011/stage0000_task0011.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "rmsd",
+                "start_time": 1708109811032563,
+                "end_time": 1708109811035156,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 2,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 134888,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [34]
+            }
+        ]
+    }
+},
+{
+    "file-24": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0011/stage0000_task0011.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "contact_map",
+                "start_time": 1708109811035465,
+                "end_time": 1708109811039411,
+                "dt_class": "H5T_VLEN",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 16,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 800,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [35]
+            }
+        ]
+    }
+},
+{
+    "file-24": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0011/stage0000_task0011.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "point_cloud",
+                "start_time": 1708109811039721,
+                "end_time": 1708109811042685,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 8400,
+                "dimension_cnt": 3,
+                "dimensions": [100, 3, 28],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 91208,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 8400,
+                "access_orders": [36]
+            }
+        ]
+    }
+},
+{
+    "file-24": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0011/stage0000_task0011.h5",
+        "open_time": 1708109811032351,
+        "close_time": 1708109811043169,
+        "file_size": 149208,
+        "header_size": 0,
+        "sieve_buf_size": 0,
+        "file_intent": ["H5F_ACC_RDONLY"],
+        "ds_created": 0,
+        "ds_accessed": 3,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_id": 379606,
+        "VOL-Overhead(ms)": 1,
+        "TOTAL_NATIVE_H5_TIME(ms)": 0,
+        "TKR_WRITE_TOTAL_TIME(ms)": 0,
+        "FILE_LL_TOTAL_TIME(ms)": 0,
+        "DS_LL_TOTAL_TIME(ms)": 0,
+        "GRP_LL_TOTAL_TIME(ms)": 0,
+        "DT_LL_TOTAL_TIME(ms)": 0,
+        "ATTR_LL_TOTAL_TIME(ms)": 0,
+        "FILE_DSET_HT_TOTAL_TIME(ms)": 0,
+        "TRK_ACCESS_STAT_TIME(ms)": 1
+    }
+},
+{
+    "file-0": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/aggregate_runs/stage0000/task0000/aggregated.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "rmsd",
+                "start_time": 1708109811050518,
+                "end_time": 1708109811067367,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 1200,
+                "dimension_cnt": 1,
+                "dimensions": [1200],
+                "dset_type_size": 2,
+                "dataset_read_cnt": 0,
+                "dataset_write_cnt": 1,
+                "access_type": "write_only",
+                "dset_offset": -1,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 1200,
+                "access_orders": [37]
+            }
+        ]
+    }
+},
+{
+    "file-0": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/aggregate_runs/stage0000/task0000/aggregated.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "contact_map",
+                "start_time": 1708109811067253,
+                "end_time": 1708109811104270,
+                "dt_class": "H5T_VLEN",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 1200,
+                "dimension_cnt": 1,
+                "dimensions": [1200],
+                "dset_type_size": 16,
+                "dataset_read_cnt": 0,
+                "dataset_write_cnt": 1,
+                "access_type": "write_only",
+                "dset_offset": -1,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 1200,
+                "access_orders": [38]
+            }
+        ]
+    }
+},
+{
+    "file-0": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/aggregate_runs/stage0000/task0000/aggregated.h5",
+        "task_name": "aggregate-379606",
+        "datasets": [
+            {
+                "dset_name": "point_cloud",
+                "start_time": 1708109811104141,
+                "end_time": 1708109811142125,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100800,
+                "dimension_cnt": 3,
+                "dimensions": [1200, 3, 28],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 0,
+                "dataset_write_cnt": 1,
+                "access_type": "write_only",
+                "dset_offset": -1,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100800,
+                "access_orders": [39]
+            }
+        ]
+    }
+},
+{
+    "file-26": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_test/aggregate_runs/stage0000/task0000/aggregated.h5",
+        "open_time": 1708109811049909,
+        "close_time": 1708109811142896,
+        "file_size": 1568876,
+        "header_size": 2048,
+        "sieve_buf_size": 65536,
+        "file_intent": ["H5F_ACC_RDWR"],
+        "ds_created": 0,
+        "ds_accessed": 3,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_id": 379606,
+        "VOL-Overhead(ms)": 1,
+        "TOTAL_NATIVE_H5_TIME(ms)": 0,
+        "TKR_WRITE_TOTAL_TIME(ms)": 0,
+        "FILE_LL_TOTAL_TIME(ms)": 0,
+        "DS_LL_TOTAL_TIME(ms)": 0,
+        "GRP_LL_TOTAL_TIME(ms)": 0,
+        "DT_LL_TOTAL_TIME(ms)": 0,
+        "ATTR_LL_TOTAL_TIME(ms)": 0,
+        "FILE_DSET_HT_TOTAL_TIME(ms)": 0,
+        "TRK_ACCESS_STAT_TIME(ms)": 1
+    }
+}]

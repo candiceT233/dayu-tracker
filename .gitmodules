@@ -1,3 +1,10 @@
 [submodule "utils/uthash"]
 	path = src/utils/uthash #utils/uthash
 	url = https://github.com/troydhanson/uthash
+[submodule "test/h5bench-seq"]
+	path = test/h5bench-seq
+	url = https://github.com/candiceT233/h5bench-seq
+[submodule "src/vfd/mio"]
+	path = src/vfd/mio
+	url = https://github.com/candiceT233/mio
+	branch = master

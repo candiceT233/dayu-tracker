@@ -9,14 +9,15 @@ EDGE_COLOR_RGBA = {
     'read_only' : {'r':150, 'g':190, 'b':220},
     'write_only' : {'r':150, 'g':190, 'b':220},
     'read_write' : {'r':150, 'g':190, 'b':220}, # TODO: currently showing same as write
+    'highlight' : {'r':255, 'g':128, 'b':0}, # Orange ('r':255, 'g':128, 'b':0)
     # 'read_write' : {'r':220, 'g':220, 'b':220},
-    # 'write' : {'r':140, 'g':210, 'b':220},
 }
 
 # color names : https://www.w3schools.com/colors/colors_names.asp
 COLOR_MAP = {"task": "Red", # read
             "dataset": "Gold", # yellow
-            "file": "Blue", # blue
+            "file": "MediumBlue", # blue
+            "addr": "RoyalBlue", # slightly darker blue than file
             "none": "grey",
             }
 
@@ -40,13 +41,19 @@ def get_xy_position(G):
     # x_normalized = {k: v*xf for k, v in x_dict.items() }
     x_max = max(x_dict.values())
     x_min = min(x_dict.values())
-    x_normalized = {k: 0.01 + 0.99 * (v - x_min) / (x_max - x_min) for k, v in x_dict.items()}
+    x_diff = x_max - x_min
+    if x_diff == 0:
+        x_diff = 1
+    x_normalized = {k: 0.01 + 0.99 * (v - x_min) / x_diff for k, v in x_dict.items()}
 
     # normalize y positions
     y_max = max(y_dict.values())
     y_min = min(y_dict.values())
     # Noamalize y positions between 0 and 0.9
-    y_normalized = {k: 0.01 + 0.99 * (v - y_min) / (y_max - y_min) for k, v in y_dict.items()}
+    y_diff = y_max - y_min
+    if y_diff == 0:
+        y_diff = 1
+    y_normalized = {k: 0.01 + 0.99 * (v - y_min) / y_diff for k, v in y_dict.items()}
     
     # yf=1.0/(max(y_dict.values()))
     # y_normalized = {k: v*yf for k, v in y_dict.items() }
@@ -72,17 +79,39 @@ def get_nodes_for_sankey(G, rm_tags=[],label_on=True):
             # node_label = node_name + f" {G.nodes[node_name]['pos']} ({x_pos[node_name]:.2f}, {y_pos[node_name]:.2f})"
             node_label = node_name
             node_dict_for_sankey['label'].append(node_label)
+        else:
+            phase = attr['phase']
+            phase_order = G.nodes[node_name]['pos'][1]
+            node_label = f"{phase+1}-{node_type}-{phase_order}"
+            node_dict_for_sankey['label'].append(node_label)
+            
         node_dict_for_sankey['color'].append(COLOR_MAP[node_type])
         node_dict_for_sankey['x'].append(x_pos[node_name])
         node_dict_for_sankey['y'].append(y_pos[node_name])
     return node_dict_for_sankey, node_dict_ref
 
 
-def edge_color_scale(attr_bw, attr_op, bw, op):
+def edge_color_scale(G, node, attr_bw, attr_op, bw, op):
+    node_attr = G.nodes[node]
+    edge_highlight = False
+    if node_attr['type'] == 'file':
+        if G.out_degree(node) > 1:
+            # print(f"Node {node} has more than 2 out edges")
+            edge_highlight = True
+
     range = 100
 
     base_color_dict = {}
-    if op in EDGE_COLOR_RGBA.keys():
+    if edge_highlight:
+        # print(f"Node {node} has more than 2 out edges (will be highlighted)")
+        base_color_dict = EDGE_COLOR_RGBA['highlight']
+        r = base_color_dict['r']
+        g = base_color_dict['g']
+        b = base_color_dict['b']
+        # range = 50
+        color_str = f"rgba({r}, {g}, {b}, {OPACITY})"
+        return color_str
+    elif op in EDGE_COLOR_RGBA.keys():
         base_color_dict = EDGE_COLOR_RGBA[op]
         r = base_color_dict['r']
         g = base_color_dict['g']
@@ -94,6 +123,8 @@ def edge_color_scale(attr_bw, attr_op, bw, op):
         b = base_color_dict['b']
         color_str = f"rgba({r}, {g}, {b}, {OPACITY})"
         return color_str
+    
+    
 
     edges = []
     for k,v in attr_op.items():
@@ -179,7 +210,7 @@ def get_links_for_sankey(G, node_dict_ref,
         
         link_dict_for_sankey['label'].append(_str)
 
-        link_dict_for_sankey['color'].append(edge_color_scale(attr_bw, attr_op, bw, op)) # get the last operation
+        link_dict_for_sankey['color'].append(edge_color_scale(G, u, attr_bw, attr_op, bw, op)) # get the last operation
         
         # link_dict_for_sankey['acc_cnt'].append(cnt)
     
@@ -221,10 +252,9 @@ def in_file_time_to_x(G,task):
         return
     
     # get open time ranks from edge stats
-    in_files_opentime = [G.edges[file,task]['stat']['open_time'] for file in in_files]
+    in_files_opentime = [G.edges[file,task]['file_stat']['open_time(us)'] for file in in_files]
     
     # # get open time ranks
-    # in_files_opentime = [G.nodes[file]['stat']['open_time'] for file in in_files]
     if len(in_files_opentime) > 1:
         in_files_opentime_rank = rankdata(in_files_opentime)
         # only normalize between 0 and 0.5, save space between task
@@ -258,10 +288,8 @@ def out_file_time_to_x(G,task):
         return
     
     # # get close time ranks
-    # out_files_closetime = [G.nodes[file]['stat']['close_time'] for file in out_fiels]
-
     # get close time ranks from edge stats
-    out_files_closetime = [G.edges[task,file]['stat']['close_time'] for file in out_files]
+    out_files_closetime = [G.edges[task,file]['file_stat']['close_time(us)'] for file in out_files]
 
     if len(out_files_closetime) > 1:
         out_files_closetime_rank = rankdata(out_files_closetime)

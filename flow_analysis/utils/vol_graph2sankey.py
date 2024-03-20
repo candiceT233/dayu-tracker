@@ -16,12 +16,14 @@ def prepare_sankey_stat(G):
         total_access_cnt = all_edge_access_cnt[edge]
         stats = all_edge_stats[edge]
         access_cnt = stats['dataset_read_cnt'] + stats['dataset_write_cnt']
-        acesss_size = stats['total_bytes_read'] + stats['total_bytes_written']
+        acesss_size = access_cnt * stats['dset_select_npoints'] * stats['dset_type_size'] #stats['total_bytes_read'] + stats['total_bytes_written']
         access_time_in_sec = (stats['end_time'] - stats['start_time'])/1000000
         
         # TODO: palceholder here, convert to object size read/write
         if acesss_size <= 0:
             acesss_size = 1
+        if total_access_cnt <= 0:
+            total_access_cnt = 1
         
         bandwidth = total_access_cnt * (acesss_size / access_time_in_sec)
 
@@ -176,7 +178,8 @@ EDGE_COLOR_RGBA = {
 # color names : https://www.w3schools.com/colors/colors_names.asp
 COLOR_MAP = {"task": "Red", # read
             "dataset": "Gold", # yellow
-            "file": "MediumBlue", # blue
+            "file": "Navy", # blue
+            "addr": "MediumBlue", # slightly darker blue than file
             "none": "grey",
             }
 OPACITY = 0.6

@@ -1,0 +1,186 @@
+{
+  "run_idfeature-231950": {
+    "order": 0,
+    "io_cnt": 3482,
+    "input": [
+      "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_00:00:00.nc",
+      "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_01:00:00.nc",
+      "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_02:00:00.nc",
+      "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_03:00:00.nc",
+      "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_04:00:00.nc",
+      "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_05:00:00.nc",
+      "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_06:00:00.nc",
+      "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_07:00:00.nc",
+      "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_08:00:00.nc"
+    ],
+    "output": [
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc"
+    ]
+  },
+  "run_tracksingle-231950": {
+    "order": 1,
+    "io_cnt": 1010,
+    "input": [
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc"
+    ],
+    "output": [
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_010000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_020000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_030000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_040000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_050000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_060000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_070000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_080000.nc"
+    ]
+  },
+  "run_gettracks-231950": {
+    "order": 2,
+    "io_cnt": 260,
+    "input": [
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_010000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_020000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_030000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_040000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_050000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_060000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_070000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_080000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc"
+    ],
+    "output": [
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_010000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/tracknumbers_20150506.0000_20150506.0800.nc"
+    ]
+  },
+  "run_trackstats-231950": {
+    "order": 3,
+    "io_cnt": 2555,
+    "input": [
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/tracknumbers_20150506.0000_20150506.0800.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc"
+    ],
+    "output": [
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/trackstats_20150506.0000_20150506.0800.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/trackstats_sparse_20150506.0000_20150506.0800.nc"
+    ]
+  },
+  "run_identifymcs-231950": {
+    "order": 4,
+    "io_cnt": 114,
+    "input": [
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/trackstats_sparse_20150506.0000_20150506.0800.nc"
+    ],
+    "output": [
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_20150506.0000_20150506.0800.nc"
+    ]
+  },
+  "run_matchpf-231950": {
+    "order": 5,
+    "io_cnt": 1994,
+    "input": [
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrf_landmask.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_20150506.0000_20150506.0800.nc"
+    ],
+    "output": [
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_pf_20150506.0000_20150506.0800.nc"
+    ]
+  },
+  "run_robustmcs-231950": {
+    "order": 6,
+    "io_cnt": 120,
+    "input": [
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_pf_20150506.0000_20150506.0800.nc"
+    ],
+    "output": [
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_robust_20150506.0000_20150506.0800.nc"
+    ]
+  },
+  "run_mapfeature-231950": {
+    "order": 7,
+    "io_cnt": 9236,
+    "input": [
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_robust_20150506.0000_20150506.0800.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc"
+    ],
+    "output": [
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_000000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_010000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_020000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_030000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_040000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_050000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_060000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_070000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_080000.nc"
+    ]
+  },
+  "run_speed-231950": {
+    "order": 8,
+    "io_cnt": 1338,
+    "input": [
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_robust_20150506.0000_20150506.0800.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_000000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_010000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_020000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_030000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_040000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_050000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_060000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_070000.nc",
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_080000.nc"
+    ],
+    "output": [
+      "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_final_20150506.0000_20150506.0800.nc"
+    ]
+  }
+}

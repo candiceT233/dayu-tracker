@@ -16,7 +16,7 @@
 #define H5FD_MAX_FILENAME_LEN 1024 // same as H5FD_MAX_FILENAME_LEN
 #define SHM_NAME "/tracker_shm"
 #define SHM_SIZE 256
-#define VOL_STAT_FILE_NAME "vol_data_stat.yaml"
+#define VOL_STAT_FILE_NAME "vol_data_stat.json"
 char* CURR_DSET;
 
 /************/
@@ -203,11 +203,7 @@ struct H5VL_tkr_dataset_info_t {
     hid_t dtype_id;
     unsigned long sorder_id;
     unsigned long pfile_sorder_id;      // parent file sequential order ID
-    size_t data_file_page_start;
-    size_t data_file_page_end;
-    size_t metadata_file_page;          // usually the token number
 
-    // size_t metadata_file_page_end; // TODO: how to obtain the end?
     char * dset_select_type;
     size_t dset_select_npoints;
 
