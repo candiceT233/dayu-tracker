@@ -11,12 +11,10 @@ option(BUILD_C_TESTS "Build tests with C code" OFF)
 option(BUILD_PY_TESTS "Build tests with python code" OFF)
 option(HERMES "Running without Hermes hrun daemon" OFF)
 # option(MIO "Running with mio library" OFF)
-option(MMAP_IO "Running with memory mapping IO" ON)
+option(MMAP_IO "Running with memory mapping IO" OFF)
 
 # Set default build type to release
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Release")
-endif()
+set(CMAKE_BUILD_TYPE Release)
 
 #-----------------------------------------------------------------------------
 # Compiler Optimization

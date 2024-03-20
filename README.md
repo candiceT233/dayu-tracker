@@ -12,10 +12,22 @@ The VFD monitors POSIX I/O operation during program, implemented with the HDF5 d
 # How to use
 
 ## Prerequisite
-- HDF5 (1.14.+)
+- HDF5 (1.14.+, require C, CXX and HDF5_HL_LIBRARIES)
+```bash
+# Install with spack
+spack install hdf5@1.14.0+cxx+hl~mpi
+```
 - h5py==3.8.0
 ```
 HDF5_MPI="OFF" HDF5_DIR=/path/to/installed_hdf5 pip install --no-binary=h5py h5py==3.8.0
+```
+
+## Installation
+In the current dayu-tracker path:
+```bash
+mkdir build
+cd build
+
 ```
 
 ## Setup program task name
