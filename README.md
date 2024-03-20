@@ -44,3 +44,25 @@ export HDF5_DRIVER_CONFIG="${schema_file_path};${TRACKER_VFD_PAGE_SIZE}" # VFD i
 # Run your program
 python h5py_write_read.py
 ```
+
+## Optiona: Dynamically load only VFD
+```bash
+TRACKER_SRC_DIR="../build/src" # dayu_tracker installation path
+schema_file_path="`pwd`" #your_path_to_store_log_files
+export HDF5_PLUGIN_PATH=$TRACKER_SRC_DIR/vfd
+export HDF5_DRIVER=hdf5_tracker_vfd # VFD driver name
+export HDF5_DRIVER_CONFIG="${schema_file_path};${TRACKER_VFD_PAGE_SIZE}" # VFD info string
+
+# Run your program
+python h5py_write_read.py
+```
+
+## Optiona: Dynamically load only VOL
+```bash
+TRACKER_SRC_DIR="../build/src" # dayu_tracker installation path
+schema_file_path="`pwd`" #your_path_to_store_log_files
+export HDF5_VOL_CONNECTOR="tracker under_vol=0;under_info={};path=$schema_file_path;level=2;format="
+export HDF5_PLUGIN_PATH=$TRACKER_SRC_DIR/vol
+
+python h5py_write_read.py
+```
