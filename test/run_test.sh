@@ -34,10 +34,10 @@ SIMPLE_VOL_IO (){
     export HDF5_PLUGIN_PATH=$TRACKER_SRC_DIR/vol
 
     PREP_TASK_NAME "$task1"
-    python vlen_h5_write.py $IO_FILE
+    python3 vlen_h5_write.py $IO_FILE
 
     PREP_TASK_NAME "$task2"
-    python vlen_h5_read2.py $IO_FILE
+    python3 vlen_h5_read2.py $IO_FILE
     
 }
 
@@ -64,10 +64,10 @@ SIMPLE_VFD_IO (){
     export HDF5_PLUGIN_PATH=$TRACKER_SRC_DIR/vfd
     
     PREP_TASK_NAME "$task1"
-    python vlen_h5_write.py $IO_FILE
+    python3 vlen_h5_write.py $IO_FILE
 
     PREP_TASK_NAME "$task2"
-    python vlen_h5_read2.py $IO_FILE
+    python3 vlen_h5_read2.py $IO_FILE
 }
 
 SIMPLE_VFD_VOL_IO () {
@@ -87,10 +87,10 @@ SIMPLE_VFD_VOL_IO () {
     export HDF5_DRIVER_CONFIG="${schema_file_path};${TRACKER_VFD_PAGE_SIZE}"
 
     PREP_TASK_NAME "$task1"
-    python vlen_h5_write.py $IO_FILE
+    python3 vlen_h5_write.py $IO_FILE
 
     PREP_TASK_NAME "$task2"
-    python vlen_h5_read2.py $IO_FILE
+    python3 vlen_h5_read2.py $IO_FILE
 }
 
 # get execution time in ms
