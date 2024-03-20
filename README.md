@@ -18,12 +18,18 @@ Install with spack (suggest spack version 0.20.+)
 spack install hdf5@1.14+cxx+hl~mpi
 ```
 - h5py==3.8.0
-```
+```bash
 YOUR_HDF5_PATH="`which h5cc |sed 's/.\{9\}$//'`"
-pip uninstall h5py; HDF5_MPI="OFF" HDF5_DIR=$YOUR_HDF5_PATH pip install --no-binary=h5py h5py==3.8.0
+echo $YOUR_HDF5_PATH # make sure your path is correct
+python3 -m pip uninstall h5py; HDF5_MPI="OFF" HDF5_DIR=$YOUR_HDF5_PATH python3 -m pip install --no-binary=h5py h5py==3.8.0
 ```
 
 ## Installation
+Pull from git directory:
+```
+
+```
+
 In the current dayu-tracker path:
 ```bash
 mkdir build
