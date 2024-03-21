@@ -489,14 +489,18 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
     // Using mmap
     timer_mmap_open.Resume();
     if(flags == 0){
+#ifdef DEBUG_MMAP_VFD
         std::cout << "MMAP_IO read_only file created: "<< name 
           << " mmap_size: " << file->mmap_size
           << " fd: " << fd << std::endl;
+#endif
         file->mmap_prot = PROT_READ;
     } else {
+#ifdef DEBUG_MMAP_VFD
         std::cout << "MMAP_IO read_write file created: "<< name 
           << " mmap_size: " << file->mmap_size
           << " fd: " << fd << std::endl;
+#endif
         file->mmap_prot = PROT_READ | PROT_WRITE;
     }
     
@@ -898,7 +902,9 @@ static herr_t H5FD__tracker_vfd_read(H5FD_t *_file, H5FD_mem_t type,
   // if(_MMAP_IO == true && file->mmap_size != 0){
   if(_MMAP_IO == true && file->mmap_size != 0 && offset <= file->mmap_size){ // HDF5 Header 
     // bytes_read = HDpread(file->fd, buf, bytes_in, offset);
+#ifdef DEBUG_MMAP_VFD
     std::cout << "MMAP READ - range ["<< offset << ", "<< read_size << "]" << std::endl;
+#endif
     // Copy data from memory-mapped region to buffer
     timer_mmap_read.Resume();
     std::memcpy(buf, static_cast<char*>(file->mmap_addr) + offset, read_size);
@@ -1038,7 +1044,9 @@ static herr_t H5FD__tracker_vfd_write(H5FD_t *_file, H5FD_mem_t type,
 
   // if(_MMAP_IO == true && file->mmap_size != 0){
   if(_MMAP_IO == true && file->mmap_size != 0 && offset <= file->mmap_size){ // HDF5 Header 
+#ifdef DEBUG_MMAP_VFD
     std::cout << "MMAP WRITE" << std::endl;
+#endif
     // Using mmap
     timer_mmap_write.Resume();
     std::memcpy(file->mmap_addr + offset, buf, write_size);
