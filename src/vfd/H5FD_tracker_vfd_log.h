@@ -358,17 +358,17 @@ bool getCurrentTaskFromFile(std::string& curr_task) {
                     close(fd);  // Release the lock
                     return true;
                 } else {
-                    printf("Failed to read file: %s\n", file_path.c_str());
+                    printf("H5FD_tracker_vfd_log.h: getCurrentTaskFromFile() Failed to read file: %s\n", file_path.c_str());
                 }
             } else {
-                printf("Failed to obtain lock on file: %s\n", file_path.c_str());
+                printf("H5FD_tracker_vfd_log.h: getCurrentTaskFromFile() Failed to obtain lock on file: %s\n", file_path.c_str());
             }
             close(fd);
         } else {
-            printf("Failed to open file: %s - %s\n", file_path.c_str(), strerror(errno));
+            printf("H5FD_tracker_vfd_log.h: getCurrentTaskFromFile() Failed to open file: %s - %s\n", file_path.c_str(), strerror(errno));
         }
     } else {
-        printf("Missing environment variables: PATH_FOR_TASK_FILES and/or WORKFLOW_NAME\n");
+        printf("H5FD_tracker_vfd_log.h: getCurrentTaskFromFile() Missing environment variables: PATH_FOR_TASK_FILES and/or WORKFLOW_NAME\n");
     }
 
     return false;
@@ -410,7 +410,7 @@ bool getCommandLineByPID(int pid, std::string& commandLine) {
 
         return true;
     } else {
-        printf("Failed to open cmdline file for PID %d\n", pid);
+        printf("H5FD_tracker_vfd_log.h: getCommandLineByPID() Failed to open cmdline file for PID %d\n", pid);
         return false;
     }
 }
@@ -784,13 +784,13 @@ std::string GetDsetName() {
     int shm_fd = shm_open(task_shm_name, O_RDONLY, 0666);
     if (shm_fd == -1) {
   #ifdef DEBUG_TRK_VFD
-        printf("GetDsetName() Failed to open shared memory: %s\n", strerror(errno));
+        printf("H5FD_tracker_vfd_log.h: GetDsetName() Failed to open shared memory: %s\n", strerror(errno));
   #endif
         delete[] task_shm_name;
         return "unknown";  // Return unknown if shared memory dataset is not available
     } else {
 #ifdef DEBUG_TRK_VFD
-  std::cout << "GetDsetName() Successful read to shm name : " << task_shm_name << std::endl;
+  std::cout << "H5FD_tracker_vfd_log.h: GetDsetName() Successful read to shm name : " << task_shm_name << std::endl;
 #endif
     }
 
@@ -1109,7 +1109,7 @@ vfd_tkr_helper_t * vfdTkrHelperInit( char* file_path, size_t page_size, hbool_t 
 
     // Get the user's login name
     if (getlogin_r(new_helper->user_name, sizeof(new_helper->user_name)) != 0) {
-        printf("Failed to get user name.\n");
+        printf("H5FD_tracker_vfd_log.h: vfdTkrHelperInit() Failed to get user name.\n");
     }
 
     // INIT_TRACE_MANAGER(); // TODO: switch to debug mode only:
@@ -1173,7 +1173,7 @@ vfd_file_tkr_info_t* newVFDFileInfo(const char* fname, unsigned long file_no)
         printf("Current task is: %s\n", task_name.c_str());
   #endif
     } else {
-        printf("Failed to get current task.\n");
+        printf("H5FD_tracker_vfd_log.h: newVFDFileInfo() Failed to get current task.\n");
     }
 
     return info;
