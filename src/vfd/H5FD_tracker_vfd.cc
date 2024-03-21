@@ -473,12 +473,13 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
   std::cout << "H5FD__tracker_vfd_open() fd=" << fd << "sb.st_size="<< sb.st_size << std::endl;
 #endif
 
-  if (sb.st_size == 0)
-    file->mmap_size = 0;
-  else
-    file->mmap_size = HDF5_HEADER_SIZE;
+  // if (sb.st_size == 0)
+  //   file->mmap_size = 0;
+  // else
+  //   file->mmap_size = HDF5_HEADER_SIZE;
 
-  // file->mmap_size = sb.st_size; // sb.st_size; // TODO: change to Hint buffer size (16443392) (20971520)
+
+  file->mmap_size = sb.st_size; // sb.st_size; // TODO: change to Hint buffer size (16443392) (20971520)
   file->file_size = sb.st_size;
   file->flags = flags;
   file->mmap_offset = 0; // TODO: change to Hint offset
