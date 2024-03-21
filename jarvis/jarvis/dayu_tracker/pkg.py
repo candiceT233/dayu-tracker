@@ -82,6 +82,12 @@ class DayuTracker(Interceptor):
                 'type': bool,
                 'default': False,
             },
+            {
+                'name': 'workflow_name',
+                'msg': 'Current workflow name',
+                'type': str,
+                'default': None,
+            }
 
         ]
     

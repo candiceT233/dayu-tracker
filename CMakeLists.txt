@@ -13,8 +13,17 @@ option(HERMES "Running without Hermes hrun daemon" OFF)
 # option(MIO "Running with mio library" OFF)
 option(MMAP_IO "Running with memory mapping IO" OFF)
 
-# Set default build type to release
-set(CMAKE_BUILD_TYPE Release)
+# Set a default build type if none was specified
+set(default_build_type "Release")
+
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  message(STATUS "Setting build type to '${default_build_type}' as none was specified.")
+  set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE
+      STRING "Choose the type of build." FORCE)
+  # Set the possible values of build type for cmake-gui
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+    "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+endif()
 
 #-----------------------------------------------------------------------------
 # Compiler Optimization

@@ -25,17 +25,17 @@ python3 -m pip uninstall h5py; HDF5_MPI="OFF" HDF5_DIR=$YOUR_HDF5_PATH python3 -
 ```
 
 ## Installation
-Pull from git directory:
-```
-
-```
-
-In the current dayu-tracker path:
 ```bash
-mkdir build
-cd build
 
+git clone https://github.com/candiceT233/dayu-tracker.git
+cd dayu-tracker 
+YOUR_INSTALLATION_PATH="`pwd`" # you can use your own path
+
+mkdir build 
+cd build
+ccmake -DCMAKE_INSTALL_PREFIX=$YOUR_INSTALLATION_PATH ..
 ```
+
 
 ## Setup program task name
 Before running your program from a bash command, setup program task name two ways:
@@ -91,4 +91,11 @@ export HDF5_VOL_CONNECTOR="tracker under_vol=0;under_info={};path=$schema_file_p
 export HDF5_PLUGIN_PATH=$TRACKER_SRC_DIR/vol
 
 python h5py_write_read.py
+```
+
+# Use with Jarvis-cd
+1. Jarvis-cd can be installed and initialized following steps from [here](https://github.com/candiceT233/jarvis-cd).
+2. Add dayu-tracker to jarvis-cd
+```bash
+jarvis repo add /home/mtang11/scripts/vol-tracker/jarvis
 ```
