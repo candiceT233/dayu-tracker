@@ -67,6 +67,7 @@ set(POSIX_FLAGS
 # Define VFD Specific Options
 #-----------------------------------------------------------------------------
 option(DEBUG_TRK_VFD "Enable VFD Debug Logs" OFF)
+option(DEBUG_MMAP_VFD "Enable VFD mmap IO Debug Logs" OFF)
 # option(ACCESS_STAT "Enable VFD Access Statistics logging to JSON file" ON)
 
 #-----------------------------------------------------------------------------
@@ -81,7 +82,13 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         add_compile_definitions(DEBUG_TRK_VFD)
     endif()
     
-    add_compile_definitions(DEBUG_VFD)
+    if(DEBUG_MMAP_VFD)
+        add_compile_definitions(DEBUG_MMAP_VFD)
+    endif()
+
+    if(DEBUG_VFD)
+        add_compile_definitions(DEBUG_VFD)
+    endif()
         
 else()
     message("h5vfd_tracker IN RELEASE MODE")
