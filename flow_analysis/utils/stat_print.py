@@ -44,6 +44,12 @@ def display_all_edges_attr(G):
     for edge in G.edges():
         print(f"Edge: {edge} - {G.edges[edge]}")
 
+
+def show_detail_overhead(type, file_dict, task_list):
+    pass
+    
+
+
 # vol_file_dict
 def show_all_overhead(type, file_dict):
     # check type must be either "VOL" or "VFD"
@@ -52,7 +58,7 @@ def show_all_overhead(type, file_dict):
         return
     
     if type == "VOL":
-        overhead_key = "VOL-Overhead(ms)"
+        overhead_key = "VOL-Overhead(us)"
     else:
         overhead_key = "VFD-Overhead(us)"
     
@@ -66,6 +72,14 @@ def show_all_overhead(type, file_dict):
     print(f"Total {type} overhead: {overhead} ms")
     
     # Also output posix IO time for VFD
+    vfd_time_param_dict = {
+        "POSIX-OPEN-Time(us)": 0,
+        "POSIX-CLOSE-Time(us)": 0,
+        "POSIX-READ-Time(us)": 0,
+        "POSIX-WRITE-Time(us)": 0,
+        "POSIX-DELETE-Time(us)": 0
+    }
+    
     if type == "VFD":
         io_time = 0
         open_time = 0
@@ -78,19 +92,28 @@ def show_all_overhead(type, file_dict):
             for item in pid_stat:
                 if "Task" in item.keys():
                     task_info = item["Task"]
-                    open_time += float(task_info["POSIX-OPEN-Time(us)"])
-                    close_time += float(task_info["POSIX-CLOSE-Time(us)"])
-                    read_time += float(task_info["POSIX-READ-Time(us)"])
-                    write_time += float(task_info["POSIX-WRITE-Time(us)"])
-                    delete_time += float(task_info["POSIX-DELETE-Time(us)"])
-        io_time = open_time + close_time + read_time + write_time + delete_time
+                    
+                    for time_type, value in vfd_time_param_dict.items():
+                        if time_type in task_info.keys():
+                            vfd_time_param_dict[time_type] += float(task_info[time_type])
+                            io_time += float(task_info[time_type])
+                    
+                    # open_time += float(task_info["POSIX-OPEN-Time(us)"])
+                    # close_time += float(task_info["POSIX-CLOSE-Time(us)"])
+                    # read_time += float(task_info["POSIX-READ-Time(us)"])
+                    # write_time += float(task_info["POSIX-WRITE-Time(us)"])
+                    # delete_time += float(task_info["POSIX-DELETE-Time(us)"])
+        # io_time = open_time + close_time + read_time + write_time + delete_time
+        
+        for time_type, value in vfd_time_param_dict.items():
+            print(f"Total {time_type}: {value} us")
 
-        print(f"Total POSIX IO time: {io_time} us")
-        print(f"Total POSIX OPEN time: {open_time} us")
-        print(f"Total POSIX CLOSE time: {close_time} us")
-        print(f"Total POSIX READ time: {read_time} us")
-        print(f"Total POSIX WRITE time: {write_time} us")
-        print(f"Total POSIX DELETE time: {delete_time} us")
+        # print(f"Total POSIX IO time: {io_time} us")
+        # print(f"Total POSIX OPEN time: {open_time} us")
+        # print(f"Total POSIX CLOSE time: {close_time} us")
+        # print(f"Total POSIX READ time: {read_time} us")
+        # print(f"Total POSIX WRITE time: {write_time} us")
+        # print(f"Total POSIX DELETE time: {delete_time} us")
 
 # vfd_links
 def show_vfd_stats(G):

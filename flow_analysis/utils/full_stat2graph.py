@@ -10,7 +10,7 @@ def inc_in_dict(dic, k):
     else:
         dic[k]+=1
 
-def add_task_dset_file_nodes(G, stat_dict, task_order_list):
+def add_task_dset_file_nodes(G, stat_dict, task_order_list, add_addr=True):
     node_order_list = {} # Usse to determine node y-axis ordering, base on task node order
     file_page_map = {} # keep track of dataset page map in each file
     edge_stats = {} # All edge stats
@@ -61,9 +61,12 @@ def add_task_dset_file_nodes(G, stat_dict, task_order_list):
                     if access_type == 'read_only': # Initial input files
                         # ORDER: file (-> file address) -> datasets -> task
                         file_x = layer
-                        addr_x = layer + 1
-                        dset_x = layer + 2
-                        task_x = layer + 3
+                        if add_addr: # addr_x = layer + 1
+                            dset_x = layer + 2
+                            task_x = layer + 3
+                        else:
+                            dset_x = layer + 1
+                            task_x = layer + 2
                         
                         if not G.has_node(file_name):
                             inc_in_dict(node_order_list[task_name_base], 'file')
@@ -107,8 +110,10 @@ def add_task_dset_file_nodes(G, stat_dict, task_order_list):
                         # ORDER: task -> datasets (-> file address) -> file
                         task_x = layer  # FIXME: write task should come after previous input file layer
                         dset_x = layer + 1
-                        addr_x = layer + 2
-                        file_x = layer + 3
+                        if add_addr: # addr_x = layer + 2
+                            file_x = layer + 3
+                        else:
+                            file_x = layer + 2
                         
                         if not G.has_node(task_name):  # add task node
                             inc_in_dict(node_order_list[task_name_base], 'task')
