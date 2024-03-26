@@ -119,7 +119,7 @@ if __name__ == "__main__":
 
     end_time = time.time()
     duration_ms = (end_time - start_time) * 1000
-    print(f"Read time (single process): {duration_ms} milliseconds")
+    print(f"Read time: {duration_ms} milliseconds")
 
     
     # multiple processes can read the same file

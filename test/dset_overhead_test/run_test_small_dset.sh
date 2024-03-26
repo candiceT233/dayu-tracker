@@ -6,8 +6,23 @@ export VOL_NAME="tracker"
 export HDF5_USE_FILE_LOCKING='FALSE' # TRUE FALSE BESTEFFORT
 export TRACKER_VFD_PAGE_SIZE=65536 #65536
 
-IO_FILE="$(pwd)/sample.h5"
-ARRAY_SIZE=1024
+
+
+
+
+ARRAY_SIZE=$1
+PROC_CNT=$2
+IO_PATH=$3
+LOG_FILE_PATH=$4
+
+# Write usege information
+if [ "$#" -ne 4 ]; then
+    echo "Usage: $0 <ARRAY_SIZE> <PROC_CNT> <IO_PATH> <LOG_FILE_PATH>"
+    exit 1
+fi
+
+IO_FILE="$IO_PATH/sample.h5"
+rm -rf $IO_FILE
 
 PREP_TASK_NAME () {
     TASK_NAME=$1
@@ -28,7 +43,7 @@ SIMPLE_VFD_VOL_IO () {
     local task1="write_read"
     local task2="read2"
 
-    schema_file_path="`pwd`"
+    schema_file_path=$LOG_FILE_PATH
     rm -rf $schema_file_path/*vfd_data_stat.json
     rm -rf $schema_file_path/*vol_data_stat.json
 
@@ -43,20 +58,20 @@ SIMPLE_VFD_VOL_IO () {
     python3 small_dset_write.py $IO_FILE $ARRAY_SIZE
 
     PREP_TASK_NAME "$task2"
-    python3 small_dset_read.py $IO_FILE
+    python3 small_dset_read.py $IO_FILE $ARRAY_SIZE $PROC_CNT
 }
 
 # get execution time in ms
 start_time=$(date +%s%3N)
 
 mkdir -p save_logs
-LOGFILE=save_logs/${test_type}_run.log
+
 # get execution time in ms
 start_time=$(date +%s%3N)
 
 echo "Running VFD and VOL Tracker test"
-SIMPLE_VFD_VOL_IO 2>&1 | tee $LOGFILE
 
+SIMPLE_VFD_VOL_IO
 
 end_time=$(date +%s%3N)
 echo "Execution time: $((end_time-start_time)) ms"
