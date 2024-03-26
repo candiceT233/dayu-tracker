@@ -1,0 +1,170 @@
+/home/jye20/miniconda3/bin/jarvis:4: DeprecationWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html
+  __import__('pkg_resources').require('jarvis-cd==0.0.1')
+WARNING: overwriting environment variables set in the machine
+overwriting variable ['HDF5_PLUGIN_PATH', 'HDF5_VOL_CONNECTOR', 'HDF5_DRIVER_CONFIG']
+2024-03-21 23:25:24,222 - pyflextrkr.idfeature_driver - INFO - Identifying features from raw data
+2024-03-21 23:25:25,823 - pyflextrkr.idfeature_driver - INFO - Total number of files to process: 9
+2024-03-21 23:25:25,823 - pyflextrkr.idfeature_driver - INFO - run_parallel: 1
+2024-03-21 23:25:25,823 - pyflextrkr.idfeature_driver - INFO - Processing file 1 of 9 : /mnt/hdd/jye20/pyflex_run/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_00:00:00.nc
+2024-03-21 23:25:25,827 - pyflextrkr.idfeature_driver - INFO - Processing file 2 of 9 : /mnt/hdd/jye20/pyflex_run/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_01:00:00.nc
+2024-03-21 23:25:25,830 - pyflextrkr.idfeature_driver - INFO - Processing file 3 of 9 : /mnt/hdd/jye20/pyflex_run/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_02:00:00.nc
+2024-03-21 23:25:25,834 - pyflextrkr.idfeature_driver - INFO - Processing file 4 of 9 : /mnt/hdd/jye20/pyflex_run/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_03:00:00.nc
+2024-03-21 23:25:25,837 - pyflextrkr.idfeature_driver - INFO - Processing file 5 of 9 : /mnt/hdd/jye20/pyflex_run/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_04:00:00.nc
+2024-03-21 23:25:25,840 - pyflextrkr.idfeature_driver - INFO - Processing file 6 of 9 : /mnt/hdd/jye20/pyflex_run/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_05:00:00.nc
+2024-03-21 23:25:25,843 - pyflextrkr.idfeature_driver - INFO - Processing file 7 of 9 : /mnt/hdd/jye20/pyflex_run/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_06:00:00.nc
+2024-03-21 23:25:25,846 - pyflextrkr.idfeature_driver - INFO - Processing file 8 of 9 : /mnt/hdd/jye20/pyflex_run/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_07:00:00.nc
+2024-03-21 23:25:25,849 - pyflextrkr.idfeature_driver - INFO - Processing file 9 of 9 : /mnt/hdd/jye20/pyflex_run/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_08:00:00.nc
+/home/jye20/miniconda3/envs/flextrkr/lib/python3.11/site-packages/h5netcdf/core.py:1199: UserWarning: You are writing invalid netcdf features to file `/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc`. The file will thus be not conforming to NetCDF-4 standard and might not be readable by other netcdf tools. Consider using a different extension.
+  self.flush()
+2024-03-21 23:26:20,923 - pyflextrkr.idclouds_tbpf - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//tracking/cloudid_20150506_080000.nc
+/home/jye20/miniconda3/envs/flextrkr/lib/python3.11/site-packages/h5netcdf/core.py:1199: UserWarning: You are writing invalid netcdf features to file `/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc`. The file will thus be not conforming to NetCDF-4 standard and might not be readable by other netcdf tools. Consider using a different extension.
+  self.flush()
+2024-03-21 23:26:24,291 - pyflextrkr.idclouds_tbpf - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//tracking/cloudid_20150506_060000.nc
+/home/jye20/miniconda3/envs/flextrkr/lib/python3.11/site-packages/h5netcdf/core.py:1199: UserWarning: You are writing invalid netcdf features to file `/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc`. The file will thus be not conforming to NetCDF-4 standard and might not be readable by other netcdf tools. Consider using a different extension.
+  self.flush()
+2024-03-21 23:26:24,679 - pyflextrkr.idclouds_tbpf - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//tracking/cloudid_20150506_070000.nc
+/home/jye20/miniconda3/envs/flextrkr/lib/python3.11/site-packages/h5netcdf/core.py:1199: UserWarning: You are writing invalid netcdf features to file `/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc`. The file will thus be not conforming to NetCDF-4 standard and might not be readable by other netcdf tools. Consider using a different extension.
+  self.flush()
+2024-03-21 23:26:28,587 - pyflextrkr.idclouds_tbpf - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//tracking/cloudid_20150506_050000.nc
+/home/jye20/miniconda3/envs/flextrkr/lib/python3.11/site-packages/h5netcdf/core.py:1199: UserWarning: You are writing invalid netcdf features to file `/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc`. The file will thus be not conforming to NetCDF-4 standard and might not be readable by other netcdf tools. Consider using a different extension.
+  self.flush()
+2024-03-21 23:26:29,193 - pyflextrkr.idclouds_tbpf - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//tracking/cloudid_20150506_030000.nc
+/home/jye20/miniconda3/envs/flextrkr/lib/python3.11/site-packages/h5netcdf/core.py:1199: UserWarning: You are writing invalid netcdf features to file `/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc`. The file will thus be not conforming to NetCDF-4 standard and might not be readable by other netcdf tools. Consider using a different extension.
+  self.flush()
+2024-03-21 23:26:30,109 - pyflextrkr.idclouds_tbpf - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//tracking/cloudid_20150506_040000.nc
+/home/jye20/miniconda3/envs/flextrkr/lib/python3.11/site-packages/h5netcdf/core.py:1199: UserWarning: You are writing invalid netcdf features to file `/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc`. The file will thus be not conforming to NetCDF-4 standard and might not be readable by other netcdf tools. Consider using a different extension.
+  self.flush()
+2024-03-21 23:26:31,536 - pyflextrkr.idclouds_tbpf - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//tracking/cloudid_20150506_020000.nc
+/home/jye20/miniconda3/envs/flextrkr/lib/python3.11/site-packages/h5netcdf/core.py:1199: UserWarning: You are writing invalid netcdf features to file `/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc`. The file will thus be not conforming to NetCDF-4 standard and might not be readable by other netcdf tools. Consider using a different extension.
+  self.flush()
+2024-03-21 23:26:34,054 - pyflextrkr.idclouds_tbpf - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//tracking/cloudid_20150506_010000.nc
+/home/jye20/miniconda3/envs/flextrkr/lib/python3.11/site-packages/h5netcdf/core.py:1199: UserWarning: You are writing invalid netcdf features to file `/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc`. The file will thus be not conforming to NetCDF-4 standard and might not be readable by other netcdf tools. Consider using a different extension.
+  self.flush()
+2024-03-21 23:27:29,833 - pyflextrkr.idclouds_tbpf - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//tracking/cloudid_20150506_000000.nc
+2024-03-21 23:27:29,889 - pyflextrkr.idfeature_driver - INFO - Done with features from raw data.
+2024-03-21 23:27:29,892 - pyflextrkr.tracksingle_driver - INFO - Tracking sequential pairs of idfeature files
+2024-03-21 23:27:29,898 - pyflextrkr.tracksingle_driver - INFO - Total number of files to process: 9
+2024-03-21 23:27:46,863 - pyflextrkr.tracksingle_drift - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//tracking/track_20150506_070000.nc
+2024-03-21 23:27:46,878 - pyflextrkr.tracksingle_drift - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//tracking/track_20150506_010000.nc
+2024-03-21 23:27:46,958 - pyflextrkr.tracksingle_drift - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//tracking/track_20150506_030000.nc
+2024-03-21 23:27:47,117 - pyflextrkr.tracksingle_drift - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//tracking/track_20150506_040000.nc
+2024-03-21 23:27:47,154 - pyflextrkr.tracksingle_drift - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//tracking/track_20150506_060000.nc
+2024-03-21 23:27:47,445 - pyflextrkr.tracksingle_drift - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//tracking/track_20150506_050000.nc
+2024-03-21 23:27:47,447 - pyflextrkr.tracksingle_drift - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//tracking/track_20150506_080000.nc
+2024-03-21 23:27:59,530 - pyflextrkr.tracksingle_drift - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//tracking/track_20150506_020000.nc
+2024-03-21 23:27:59,553 - pyflextrkr.tracksingle_driver - INFO - Done with tracking sequential pairs of idfeature files
+2024-03-21 23:27:59,556 - pyflextrkr.gettracks - INFO - Tracking features sequentially from single track files
+2024-03-21 23:27:59,560 - pyflextrkr.gettracks - INFO - Total number of files to process: 8
+2024-03-21 23:27:59,590 - pyflextrkr.gettracks - INFO - track_20150506_010000.nc
+2024-03-21 23:28:01,103 - pyflextrkr.gettracks - INFO - track_20150506_020000.nc
+2024-03-21 23:28:02,235 - pyflextrkr.gettracks - INFO - track_20150506_030000.nc
+2024-03-21 23:28:03,553 - pyflextrkr.gettracks - INFO - track_20150506_040000.nc
+2024-03-21 23:28:04,783 - pyflextrkr.gettracks - INFO - track_20150506_050000.nc
+2024-03-21 23:28:06,370 - pyflextrkr.gettracks - INFO - track_20150506_060000.nc
+2024-03-21 23:28:07,909 - pyflextrkr.gettracks - INFO - track_20150506_070000.nc
+2024-03-21 23:28:09,185 - pyflextrkr.gettracks - INFO - track_20150506_080000.nc
+/mnt/common/jye20/SCS_Lab/scspkg/packages/pyflextrkr/src/PyFLEXTRKR/pyflextrkr/gettracks.py:711: SerializationWarning: saving variable basetimes with floating point data as an integer dtype without any _FillValue to use for NaNs
+  ds_out.to_netcdf(
+/home/jye20/miniconda3/envs/flextrkr/lib/python3.11/site-packages/h5netcdf/core.py:1199: UserWarning: You are writing invalid netcdf features to file `/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/stats/tracknumbers_20150506.0000_20150506.0800.nc`. The file will thus be not conforming to NetCDF-4 standard and might not be readable by other netcdf tools. Consider using a different extension.
+  self.flush()
+2024-03-21 23:28:11,112 - pyflextrkr.gettracks - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//stats/tracknumbers_20150506.0000_20150506.0800.nc
+2024-03-21 23:28:11,112 - pyflextrkr.gettracks - INFO - Get track numbers done.
+2024-03-21 23:28:11,112 - pyflextrkr.trackstats_driver - INFO - Calculating track statistics
+2024-03-21 23:28:11,323 - pyflextrkr.trackstats_driver - INFO - Total number of files to process: 9
+2024-03-21 23:28:11,455 - pyflextrkr.trackstats_func - INFO - cloudid_20150506_060000.nc
+2024-03-21 23:28:11,458 - pyflextrkr.trackstats_func - INFO - cloudid_20150506_020000.nc
+2024-03-21 23:28:11,459 - pyflextrkr.trackstats_func - INFO - cloudid_20150506_030000.nc
+2024-03-21 23:28:11,464 - pyflextrkr.trackstats_func - INFO - cloudid_20150506_050000.nc
+2024-03-21 23:28:11,468 - pyflextrkr.trackstats_func - INFO - cloudid_20150506_080000.nc
+2024-03-21 23:28:11,468 - pyflextrkr.trackstats_func - INFO - cloudid_20150506_000000.nc
+2024-03-21 23:28:11,471 - pyflextrkr.trackstats_func - INFO - cloudid_20150506_010000.nc
+2024-03-21 23:28:11,485 - pyflextrkr.trackstats_func - INFO - cloudid_20150506_040000.nc
+2024-03-21 23:28:22,852 - pyflextrkr.trackstats_func - INFO - cloudid_20150506_070000.nc
+2024-03-21 23:28:37,433 - pyflextrkr.trackstats_driver - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//stats/trackstats_20150506.0000_20150506.0800.nc
+2024-03-21 23:28:38,181 - pyflextrkr.trackstats_driver - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//stats/trackstats_sparse_20150506.0000_20150506.0800.nc
+2024-03-21 23:28:38,186 - pyflextrkr.identifymcs - INFO - Identifying MCS based on Tb statistics
+2024-03-21 23:28:38,884 - pyflextrkr.identifymcs - INFO - Number of tracks to process: 932
+2024-03-21 23:28:39,325 - pyflextrkr.identifymcs - INFO - Number of Tb defined MCS: 3
+2024-03-21 23:28:39,689 - pyflextrkr.identifymcs - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//stats/mcs_tracks_20150506.0000_20150506.0800.nc
+2024-03-21 23:28:39,694 - pyflextrkr.matchtbpf_driver - INFO - Matching Tb tracked MCS with precipitation to calculate PF statistics
+2024-03-21 23:28:41,538 - pyflextrkr.matchtbradar_func - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//tracking/cloudid_20150506_050000.nc
+2024-03-21 23:28:41,541 - pyflextrkr.matchtbradar_func - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//tracking/cloudid_20150506_010000.nc
+2024-03-21 23:28:41,542 - pyflextrkr.matchtbradar_func - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//tracking/cloudid_20150506_020000.nc
+2024-03-21 23:28:41,543 - pyflextrkr.matchtbradar_func - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//tracking/cloudid_20150506_060000.nc
+2024-03-21 23:28:41,543 - pyflextrkr.matchtbradar_func - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//tracking/cloudid_20150506_070000.nc
+2024-03-21 23:28:41,545 - pyflextrkr.matchtbradar_func - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//tracking/cloudid_20150506_000000.nc
+2024-03-21 23:28:41,546 - pyflextrkr.matchtbradar_func - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//tracking/cloudid_20150506_030000.nc
+2024-03-21 23:28:41,548 - pyflextrkr.matchtbradar_func - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//tracking/cloudid_20150506_080000.nc
+2024-03-21 23:28:42,589 - pyflextrkr.matchtbradar_func - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//tracking/cloudid_20150506_040000.nc
+2024-03-21 23:28:53,054 - pyflextrkr.matchtbpf_driver - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//stats/mcs_tracks_pf_20150506.0000_20150506.0800.nc
+2024-03-21 23:28:53,065 - pyflextrkr.robustmcs_radar - INFO - Identifying robust MCS based on PF statistics
+2024-03-21 23:29:04,375 - pyflextrkr.robustmcs_radar - INFO - Number of robust MCS: 1
+/home/jye20/miniconda3/envs/flextrkr/lib/python3.11/site-packages/h5netcdf/core.py:1199: UserWarning: You are writing invalid netcdf features to file `/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_robust_20150506.0000_20150506.0800.nc`. The file will thus be not conforming to NetCDF-4 standard and might not be readable by other netcdf tools. Consider using a different extension.
+  self.flush()
+2024-03-21 23:29:22,534 - pyflextrkr.robustmcs_radar - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//stats/mcs_tracks_robust_20150506.0000_20150506.0800.nc
+2024-03-21 23:29:22,546 - pyflextrkr.mapfeature_driver - INFO - Mapping tracked features to pixel-level files
+2024-03-21 23:29:45,482 - pyflextrkr.mapfeature_driver - INFO - Total number of files to process: 9
+2024-03-21 23:29:50,054 - pyflextrkr.mapfeature_func - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_000000.nc
+2024-03-21 23:29:50,112 - pyflextrkr.mapfeature_func - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_010000.nc
+2024-03-21 23:29:50,138 - pyflextrkr.mapfeature_func - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_080000.nc
+2024-03-21 23:29:50,179 - pyflextrkr.mapfeature_func - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_030000.nc
+2024-03-21 23:29:50,222 - pyflextrkr.mapfeature_func - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_020000.nc
+2024-03-21 23:29:50,290 - pyflextrkr.mapfeature_func - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_040000.nc
+2024-03-21 23:29:50,307 - pyflextrkr.mapfeature_func - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_070000.nc
+2024-03-21 23:29:50,435 - pyflextrkr.mapfeature_func - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_050000.nc
+2024-03-21 23:29:54,861 - pyflextrkr.mapfeature_func - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_060000.nc
+2024-03-21 23:29:54,900 - pyflextrkr.mapfeature_driver - INFO - Done with mapping features to pixel-level files
+2024-03-21 23:29:54,904 - pyflextrkr.movement_speed - INFO - Calculating movement speed using pixel-level tracked feature
+2024-03-21 23:29:54,906 - pyflextrkr.movement_speed - INFO - Total number of files to process: 9
+2024-03-21 23:30:19,152 - pyflextrkr.movement_speed - INFO - /mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf//stats/mcs_tracks_final_20150506.0000_20150506.0800.nc
+
+[32mdayu_tracker: Start[0m
+DayuTracker _unset_vfd_vars: conda env config vars unset HDF5_PLUGIN_PATH PATH_FOR_TASK_FILES HDF5_VOL_CONNECTOR HDF5_DRIVER WORKFLOW_NAME HDF5_DRIVER_CONFIG -n flextrkr
+DayuTracker _set_env_vars: conda env config vars set HDF5_PLUGIN_PATH="/home/jye20/SCS_Lab/dayu-tracker/install/lib/vol/:/home/jye20/SCS_Lab/dayu-tracker/install/lib/vfd/" PATH_FOR_TASK_FILES=/tmp/pyflextrkr HDF5_VOL_CONNECTOR="tracker under_vol=0;under_info={};path=/home/jye20/dayu_result/hdd/radar3d_wrf_posix/s9f9p8_0;level=2;format=" HDF5_DRIVER=hdf5_tracker_vfd WORKFLOW_NAME=pyflextrkr HDF5_DRIVER_CONFIG="/home/jye20/dayu_result/hdd/radar3d_wrf_posix/s9f9p8_0;65536" -n flextrkr
+[32mdayu_tracker: Start finished in 1.8882310390472412 seconds[0m
+[32mpyflextrkr: Start[0m
+Pyflextrkr config from: /mnt/common/jye20/SCS_Lab/jarvis-cd/builtin/builtin/pyflextrkr/example_config/run_mcs_tbpfradar3d_wrf_template.yml
+Pyflextrkr run_cmd: conda run -n flextrkr python /mnt/common/jye20/SCS_Lab/scspkg/packages/pyflextrkr/src/PyFLEXTRKR/runscripts/run_mcs_tbpfradar3d_wrf.py /mnt/common/jye20/SCS_Lab/jarvis-cd/builtin/builtin/pyflextrkr/example_config/run_mcs_tbpfradar3d_wrf.yml
+vol new_helper tkr_file_path: /home/jye20/dayu_result/hdd/radar3d_wrf_posix/s9f9p8_0/71974-vol_data_stat.json
+vfdTkrHelperInit() tkr_file_path: /home/jye20/dayu_result/hdd/radar3d_wrf_posix/s9f9p8_0/71974-vfd_data_stat.json
+vol new_helper tkr_file_path: /home/jye20/dayu_result/hdd/radar3d_wrf_posix/s9f9p8_0/71970-vol_data_stat.json
+vfdTkrHelperInit() tkr_file_path: /home/jye20/dayu_result/hdd/radar3d_wrf_posix/s9f9p8_0/71970-vfd_data_stat.json
+vol new_helper tkr_file_path: /home/jye20/dayu_result/hdd/radar3d_wrf_posix/s9f9p8_0/71964-vol_data_stat.json
+vfdTkrHelperInit() tkr_file_path: /home/jye20/dayu_result/hdd/radar3d_wrf_posix/s9f9p8_0/71964-vfd_data_stat.json
+vol new_helper tkr_file_path: /home/jye20/dayu_result/hdd/radar3d_wrf_posix/s9f9p8_0/71959-vol_data_stat.json
+vfdTkrHelperInit() tkr_file_path: /home/jye20/dayu_result/hdd/radar3d_wrf_posix/s9f9p8_0/71959-vfd_data_stat.json
+vol new_helper tkr_file_path: /home/jye20/dayu_result/hdd/radar3d_wrf_posix/s9f9p8_0/71966-vol_data_stat.json
+vfdTkrHelperInit() tkr_file_path: /home/jye20/dayu_result/hdd/radar3d_wrf_posix/s9f9p8_0/71966-vfd_data_stat.json
+vol new_helper tkr_file_path: /home/jye20/dayu_result/hdd/radar3d_wrf_posix/s9f9p8_0/71977-vol_data_stat.json
+vfdTkrHelperInit() tkr_file_path: /home/jye20/dayu_result/hdd/radar3d_wrf_posix/s9f9p8_0/71977-vfd_data_stat.json
+vol new_helper tkr_file_path: /home/jye20/dayu_result/hdd/radar3d_wrf_posix/s9f9p8_0/71961-vol_data_stat.json
+vfdTkrHelperInit() tkr_file_path: /home/jye20/dayu_result/hdd/radar3d_wrf_posix/s9f9p8_0/71961-vfd_data_stat.json
+vol new_helper tkr_file_path: /home/jye20/dayu_result/hdd/radar3d_wrf_posix/s9f9p8_0/71969-vol_data_stat.json
+vfdTkrHelperInit() tkr_file_path: /home/jye20/dayu_result/hdd/radar3d_wrf_posix/s9f9p8_0/71969-vfd_data_stat.json
+vol new_helper tkr_file_path: /home/jye20/dayu_result/hdd/radar3d_wrf_posix/s9f9p8_0/71911-vol_data_stat.json
+vfdTkrHelperInit() tkr_file_path: /home/jye20/dayu_result/hdd/radar3d_wrf_posix/s9f9p8_0/71911-vfd_data_stat.json
+Overwrote: /tmp/pyflextrkr/pyflextrkr_vfd.curr_task with run_idfeature
+Overwrote: /tmp/pyflextrkr/pyflextrkr_vol.curr_task with run_idfeature
+Overwrote: /tmp/pyflextrkr/pyflextrkr_vfd.curr_task with run_tracksingle
+Overwrote: /tmp/pyflextrkr/pyflextrkr_vol.curr_task with run_tracksingle
+Overwrote: /tmp/pyflextrkr/pyflextrkr_vfd.curr_task with run_gettracks
+Overwrote: /tmp/pyflextrkr/pyflextrkr_vol.curr_task with run_gettracks
+Overwrote: /tmp/pyflextrkr/pyflextrkr_vfd.curr_task with run_trackstats
+Overwrote: /tmp/pyflextrkr/pyflextrkr_vol.curr_task with run_trackstats
+Overwrote: /tmp/pyflextrkr/pyflextrkr_vfd.curr_task with run_identifymcs
+Overwrote: /tmp/pyflextrkr/pyflextrkr_vol.curr_task with run_identifymcs
+Overwrote: /tmp/pyflextrkr/pyflextrkr_vfd.curr_task with run_matchpf
+Overwrote: /tmp/pyflextrkr/pyflextrkr_vol.curr_task with run_matchpf
+Overwrote: /tmp/pyflextrkr/pyflextrkr_vfd.curr_task with run_robustmcs
+Overwrote: /tmp/pyflextrkr/pyflextrkr_vol.curr_task with run_robustmcs
+Overwrote: /tmp/pyflextrkr/pyflextrkr_vfd.curr_task with run_mapfeature
+Overwrote: /tmp/pyflextrkr/pyflextrkr_vol.curr_task with run_mapfeature
+Overwrote: /tmp/pyflextrkr/pyflextrkr_vfd.curr_task with run_speed
+Overwrote: /tmp/pyflextrkr/pyflextrkr_vol.curr_task with run_speed
+
+Pyflextrkr TIME: 307.6062846183777 seconds
+[32mpyflextrkr: Start finished in 307.6667273044586 seconds[0m
+[32mpyflextrkr: Stop[0m
+[32mpyflextrkr: Stop finished in 1.33514404296875e-05 seconds[0m
+[32mdayu_tracker: Stop[0m
+[32mdayu_tracker: Stop finished in 6.198883056640625e-06 seconds[0m
