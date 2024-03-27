@@ -16,6 +16,7 @@ EDGE_COLOR_RGBA = {
 # color names : https://www.w3schools.com/colors/colors_names.asp
 COLOR_MAP = {"task": "Red", # read
             "dataset": "Gold", # yellow
+            "group/attr": "Yellow", # 
             "file": "MediumBlue", # blue
             "addr": "RoyalBlue", # slightly darker blue than file
             "none": "grey",
@@ -78,6 +79,9 @@ def get_nodes_for_sankey(G, rm_tags=[],label_on=True):
         if label_on :  
             # node_label = node_name + f" {G.nodes[node_name]['pos']} ({x_pos[node_name]:.2f}, {y_pos[node_name]:.2f})"
             node_label = node_name
+            if node_type == 'group/attr': node_label = "group/attr"
+            for rm_tag in rm_tags:
+                node_label = node_label.replace(rm_tag, '')
             node_dict_for_sankey['label'].append(node_label)
         else:
             phase = attr['phase']

@@ -1,6 +1,7 @@
 import os
 from scipy.stats import rankdata 
 import networkx as nx
+import copy
 
 VFD_PAGESIZE=65536 #64KiB
 
@@ -61,7 +62,7 @@ def add_task_dset_file_nodes(G, stat_dict, task_order_list, add_addr=True):
                     if access_type == 'read_only': # Initial input files
                         # ORDER: file (-> file address) -> datasets -> task
                         file_x = layer
-                        if add_addr: # addr_x = layer + 1
+                        if add_addr == True: # addr_x = layer + 1
                             dset_x = layer + 2
                             task_x = layer + 3
                         else:
@@ -91,7 +92,7 @@ def add_task_dset_file_nodes(G, stat_dict, task_order_list, add_addr=True):
                                 dset_y = node_order_list[task_name_base]['dset']
                                 G.add_node(dset_node, pos=(dset_x,dset_y))
                                 node_type = 'dataset'
-                                if dset == "file": node_type = 'file'
+                                if dset == "file": node_type = 'group/attr'
                                 dset_node_attrs = {dset_node: {'rpos':1, 'phase': phase, 'type':node_type, 'stat': dset_stat}}
                                 nx.set_node_attributes(G, dset_node_attrs)
                             ftd_attr = {'label':task_name, 'dset_stat':dset_stat, 'access_type':access_type, 'file_stat':file_stat, 'edge_type':'file-dset'}
@@ -99,7 +100,7 @@ def add_task_dset_file_nodes(G, stat_dict, task_order_list, add_addr=True):
                                 edge_stats[(file_name, dset_node)] = ftd_attr
                             else:
                                 edge_stats[(file_name, dset_node)].update(ftd_attr)
-                            dtt_attr = {'label':task_name, 'dset_stat':dset_stat, 'access_type':access_type, 'file_stat':file_stat, 'edge_type':'dset-task'}
+                            dtt_attr = {'label':task_name, 'dset_obj_stat':dset_stat, 'access_type':access_type, 'file_stat':file_stat, 'edge_type':'dset-task'}
                             if (dset_node, task_name) not in edge_stats:
                                 edge_stats[(dset_node, task_name)] = dtt_attr
                             else:
@@ -138,10 +139,10 @@ def add_task_dset_file_nodes(G, stat_dict, task_order_list, add_addr=True):
                                 dset_y = node_order_list[task_name_base]['dset']
                                 G.add_node(dset_node, pos=(dset_x,dset_y))
                                 node_type='dataset'
-                                if dset == "file": node_type = 'file'
+                                if dset == "file": node_type = 'group/attr'
                                 dset_node_attrs = {dset_node: {'rpos':1, 'phase': phase, 'type':node_type, 'stat': dset_stat}}
                                 nx.set_node_attributes(G, dset_node_attrs)
-                            ttd_attr = {'label':task_name, 'dset_stat':dset_stat, 'access_type':access_type, 'file_stat':file_stat, 'edge_type':'task-dset'}
+                            ttd_attr = {'label':task_name, 'dset_obj_stat':dset_stat, 'access_type':access_type, 'file_stat':file_stat, 'edge_type':'task-dset'}
                             if (task_name, dset_node) not in edge_stats:
                                 edge_stats[(task_name, dset_node)] = ttd_attr
                             else:
@@ -468,7 +469,32 @@ def get_file_dset_maps(stat_dict, task_order_list):
     return file_page_nodes_attr, dset_page_edges
 
 
-def prepare_sankey_stat_full(G):
+
+
+# Transform VOL dict to list of dict
+def get_vol_dset_info(vol_dict):
+    vol_dset_info = {}
+    for file,all_stat in vol_dict.items():
+        # print(f"all_stat: {all_stat}")
+        for stat in all_stat:
+            for k,v in stat.items():
+                if 'datasets' in v.keys():
+                    dset_info = copy.deepcopy(v)
+                    # print(f"file: {file}, k: {k}, v: {v}")
+                    task_name = dset_info['task_name']
+                    dstasets_list = dset_info['datasets']
+                    # print(f"task_name: {task_name}, dstasets_list: {dstasets_list}")
+                    del dset_info['task_name']
+                    if task_name in vol_dset_info:
+                        vol_dset_info[task_name]['datasets'].extend(dstasets_list)
+                    else:
+                        vol_dset_info[task_name] = dset_info
+    return vol_dset_info
+
+
+
+def prepare_sankey_stat_full(G, vol_dict):
+    vol_dset_info = get_vol_dset_info(vol_dict)
     sankey_edge_attr = {}
     for edge in G.edges():
         edge_type = G.edges[edge]['edge_type']
@@ -481,11 +507,37 @@ def prepare_sankey_stat_full(G):
         file_stat = G.edges[edge]['file_stat']
         # edge_types: {'dset-task', 'page-file', 'page-dset', 'file-page', 'dset-page', 'task-dset'}
         if edge_type == 'dset-task' or edge_type == 'task-dset':
-            # print(f"edge: {edge} -> {stat}")
-            # want dataset size access info only
-            dset_stat = G.edges[edge]['dset_stat']
-            position = G.nodes[edge[1]]['pos']
+            print(f"edge: {edge} -> {edge_type}")
+            if edge_type == 'dset-task': 
+                task_name = edge[1]
+                dset_name = edge[0]
+            else: 
+                task_name = edge[0]
+                dset_name = edge[1]
             
+            all_dset_list = vol_dset_info[task_name]['datasets']
+            # pick the dataset with the same name
+            match_dset_list = []
+            dset_base_name = dset_name.split('-')[0]
+            for dset in all_dset_list:
+                if dset['dset_name'] == dset_base_name:
+                    if edge_type == 'dset-task' and dset['access_type'] == 'read_only':
+                        match_dset_list.append(dset)
+                    elif edge_type == 'task-dset' and dset['access_type'] == 'write_only':
+                        match_dset_list.append(dset)
+            
+            # print(f"match_dset_list: {match_dset_list}")
+            for dset in match_dset_list:
+                access_time_in_sec += (dset['end_time'] - dset['start_time'])
+                if dset['access_type'] == 'read_only':
+                    access_cnt += dset['dataset_read_cnt']
+                elif dset['access_type'] == 'write_only':
+                    access_cnt += dset['dataset_write_cnt']
+                access_size += (dset['dset_type_size'] * dset['dset_type_size'])
+            
+            # want dataset size access info from file only
+            dset_stat = G.edges[edge]['dset_obj_stat']
+            position = G.nodes[edge[1]]['pos']
             for meta_type in dset_stat['metadata']:
                 meta_stat = dset_stat['metadata'][meta_type]
                 metadata_access_bytes += meta_stat['read_bytes'] + meta_stat['write_bytes']
@@ -495,9 +547,9 @@ def prepare_sankey_stat_full(G):
                 data_access_bytes += data_stat['read_bytes'] + data_stat['write_bytes']
                 data_access_cnt += data_stat['read_cnt'] + data_stat['write_cnt']
             
-            access_time_in_sec = 0.0001 # set to a large value as in memory access (0.1ms)
-            access_cnt = metadata_access_cnt + data_access_cnt
-            access_size = metadata_access_bytes + data_access_bytes
+            access_time_in_sec = access_time_in_sec/1000000
+            # access_cnt = metadata_access_cnt + data_access_cnt
+            # access_size = metadata_access_bytes + data_access_bytes
             bandwidth = access_size / access_time_in_sec
             
         elif edge_type == 'page-file' or edge_type == 'file-page':
