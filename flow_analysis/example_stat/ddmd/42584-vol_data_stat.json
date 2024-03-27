@@ -1,0 +1,1370 @@
+[{
+    "file-2": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/molecular_dynamics_runs/stage0000/task0002/stage0000_task0002.h5",
+        "task_name": "training-42584",
+        "datasets": [
+            {
+                "dset_name": "contact_map",
+                "start_time": 1711558447520418,
+                "end_time": 1711558447528948,
+                "dt_class": "H5T_VLEN",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 16,
+                "dataset_read_cnt": 12,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 800,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [1]
+            }
+        ]
+    }
+},
+{
+    "file-2": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/molecular_dynamics_runs/stage0000/task0002/stage0000_task0002.h5",
+        "task_name": "training-42584",
+        "datasets": [
+            {
+                "dset_name": "fnc",
+                "start_time": 1711558447522043,
+                "end_time": 1711558447533646,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 2,
+                "dataset_read_cnt": 12,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 158432,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [3]
+            }
+        ]
+    }
+},
+{
+    "file-2": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/molecular_dynamics_runs/stage0000/task0002/stage0000_task0002.h5",
+        "task_name": "training-42584",
+        "datasets": [
+            {
+                "dset_name": "point_cloud",
+                "start_time": 1711558447522864,
+                "end_time": 1711558447538086,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 8400,
+                "dimension_cnt": 3,
+                "dimensions": [100, 3, 28],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 12,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 107592,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 8400,
+                "access_orders": [5]
+            }
+        ]
+    }
+},
+{
+    "file-2": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/molecular_dynamics_runs/stage0000/task0002/stage0000_task0002.h5",
+        "task_name": "training-42584",
+        "datasets": [
+            {
+                "dset_name": "rmsd",
+                "start_time": 1711558447523537,
+                "end_time": 1711558447542503,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 2,
+                "dataset_read_cnt": 12,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 151272,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [7]
+            }
+        ]
+    }
+},
+{
+    "file-0": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/virtual_stage0000_task0000.h5",
+        "task_name": "training-42584",
+        "datasets": [
+            {
+                "dset_name": "contact_map",
+                "start_time": 1711558447529664,
+                "end_time": 1711558447529893,
+                "dt_class": "H5T_VLEN",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_VIRTUAL",
+                "storage_size": 0,
+                "dset_n_elements": 1000,
+                "dimension_cnt": 1,
+                "dimensions": [1000],
+                "dset_type_size": 16,
+                "dataset_read_cnt": 0,
+                "dataset_write_cnt": 0,
+                "access_type": "read_write",
+                "dset_offset": -1,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 1000,
+                "access_orders": [19]
+            }
+        ]
+    }
+},
+{
+    "file-0": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/virtual_stage0000_task0000.h5",
+        "task_name": "training-42584",
+        "datasets": [
+            {
+                "dset_name": "fnc",
+                "start_time": 1711558447534132,
+                "end_time": 1711558447534333,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_VIRTUAL",
+                "storage_size": 0,
+                "dset_n_elements": 1000,
+                "dimension_cnt": 1,
+                "dimensions": [1000],
+                "dset_type_size": 2,
+                "dataset_read_cnt": 0,
+                "dataset_write_cnt": 0,
+                "access_type": "read_write",
+                "dset_offset": -1,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 1000,
+                "access_orders": [30]
+            }
+        ]
+    }
+},
+{
+    "file-0": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/virtual_stage0000_task0000.h5",
+        "task_name": "training-42584",
+        "datasets": [
+            {
+                "dset_name": "point_cloud",
+                "start_time": 1711558447538619,
+                "end_time": 1711558447538822,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_VIRTUAL",
+                "storage_size": 0,
+                "dset_n_elements": 84000,
+                "dimension_cnt": 3,
+                "dimensions": [1000, 3, 28],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 0,
+                "dataset_write_cnt": 0,
+                "access_type": "read_write",
+                "dset_offset": -1,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 84000,
+                "access_orders": [41]
+            }
+        ]
+    }
+},
+{
+    "file-0": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/virtual_stage0000_task0000.h5",
+        "task_name": "training-42584",
+        "datasets": [
+            {
+                "dset_name": "rmsd",
+                "start_time": 1711558447542964,
+                "end_time": 1711558447543173,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_VIRTUAL",
+                "storage_size": 0,
+                "dset_n_elements": 1000,
+                "dimension_cnt": 1,
+                "dimensions": [1000],
+                "dset_type_size": 2,
+                "dataset_read_cnt": 0,
+                "dataset_write_cnt": 0,
+                "access_type": "read_write",
+                "dset_offset": -1,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 1000,
+                "access_orders": [52]
+            }
+        ]
+    }
+},
+{
+    "file-4": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/virtual_stage0000_task0000.h5",
+        "open_time(us)": 1711558447524889,
+        "close_time(us)": 1711558447544136,
+        "file_size": 9523,
+        "header_size": 2048,
+        "sieve_buf_size": 65536,
+        "file_intent": ["H5F_ACC_RDWR"],
+        "ds_created": 0,
+        "ds_accessed": 4,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_name": "training-42584",
+        "VOL-Overhead(us)": 6047,
+        "VOL-Init(us)": 1567,
+        "VOL-Term(us)": 0,
+        "VOL-Log(us)": 0,
+        "VOL-HT-Overhead(us)": 236,
+        "VOL-HT-Add(us)": 217,
+        "VOL-HT-Rm(us)": 0,
+        "VOL-HT-Search(us)": 17,
+        "VOL-FILE_LL-Overhead(us)": 65,
+        "VOL-FILE_LL-Add(us)": 30,
+        "VOL-FILE_LL-Rm(us)": 23,
+        "VOL-FILE_LL-Update(us)": 25,
+        "VOL-DS_LL-Overhead(us)": 259,
+        "VOL-DS_LL-Add(us)": 231,
+        "VOL-DS_LL-Rm(us)": 24,
+        "VOL-DS_LL-Update(us)": 354,
+        "VOL-GRP_LL-Overhead(us)": 8,
+        "VOL-GRP_LL-Add(us)": 3,
+        "VOL-GRP_LL-Rm(us)": 0,
+        "VOL-DT_LL-Overhead(us)": 0,
+        "VOL-DT_LL-Add(us)": 0,
+        "VOL-DT_LL-Rm(us)": 0,
+        "VOL-All_LL-Overhead(us)": 1919
+    }
+},
+{
+    "file-2": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/molecular_dynamics_runs/stage0000/task0002/stage0000_task0002.h5",
+        "open_time(us)": 1711558447519129,
+        "close_time(us)": 1711558447546710,
+        "file_size": 165592,
+        "header_size": 0,
+        "sieve_buf_size": 0,
+        "file_intent": ["H5F_ACC_RDONLY"],
+        "ds_created": 0,
+        "ds_accessed": 48,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_name": "training-42584",
+        "VOL-Overhead(us)": 1308,
+        "VOL-Init(us)": 1567,
+        "VOL-Term(us)": 0,
+        "VOL-Log(us)": 1263,
+        "VOL-HT-Overhead(us)": 0,
+        "VOL-HT-Add(us)": 217,
+        "VOL-HT-Rm(us)": 0,
+        "VOL-HT-Search(us)": 17,
+        "VOL-FILE_LL-Overhead(us)": 1,
+        "VOL-FILE_LL-Add(us)": 30,
+        "VOL-FILE_LL-Rm(us)": 23,
+        "VOL-FILE_LL-Update(us)": 27,
+        "VOL-DS_LL-Overhead(us)": 0,
+        "VOL-DS_LL-Add(us)": 231,
+        "VOL-DS_LL-Rm(us)": 24,
+        "VOL-DS_LL-Update(us)": 354,
+        "VOL-GRP_LL-Overhead(us)": 0,
+        "VOL-GRP_LL-Add(us)": 3,
+        "VOL-GRP_LL-Rm(us)": 0,
+        "VOL-DT_LL-Overhead(us)": 0,
+        "VOL-DT_LL-Add(us)": 0,
+        "VOL-DT_LL-Rm(us)": 0,
+        "VOL-All_LL-Overhead(us)": 1277
+    }
+},
+{
+    "file-6": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/../../../molecular_dynamics_runs/stage0000/task0000/aggregated.h5",
+        "task_name": "training-42584",
+        "datasets": [
+            {
+                "dset_name": "point_cloud",
+                "start_time": 1711558447635041,
+                "end_time": 1711558447691920,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100800,
+                "dimension_cnt": 3,
+                "dimensions": [1200, 3, 28],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 3,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 1184316,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100800,
+                "access_orders": [53]
+            }
+        ]
+    }
+},
+{
+    "file-6": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/../../../molecular_dynamics_runs/stage0000/task0000/aggregated.h5",
+        "open_time(us)": 1711558447634853,
+        "close_time(us)": 1711558447692582,
+        "file_size": 1605775,
+        "header_size": 0,
+        "sieve_buf_size": 0,
+        "file_intent": ["H5F_ACC_RDONLY"],
+        "ds_created": 0,
+        "ds_accessed": 1,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_name": "training-42584",
+        "VOL-Overhead(us)": 781,
+        "VOL-Init(us)": 1567,
+        "VOL-Term(us)": 0,
+        "VOL-Log(us)": 1774,
+        "VOL-HT-Overhead(us)": 21,
+        "VOL-HT-Add(us)": 237,
+        "VOL-HT-Rm(us)": 0,
+        "VOL-HT-Search(us)": 17,
+        "VOL-FILE_LL-Overhead(us)": 9,
+        "VOL-FILE_LL-Add(us)": 36,
+        "VOL-FILE_LL-Rm(us)": 24,
+        "VOL-FILE_LL-Update(us)": 29,
+        "VOL-DS_LL-Overhead(us)": 4,
+        "VOL-DS_LL-Add(us)": 234,
+        "VOL-DS_LL-Rm(us)": 25,
+        "VOL-DS_LL-Update(us)": 372,
+        "VOL-GRP_LL-Overhead(us)": 0,
+        "VOL-GRP_LL-Add(us)": 3,
+        "VOL-GRP_LL-Rm(us)": 0,
+        "VOL-DT_LL-Overhead(us)": 0,
+        "VOL-DT_LL-Add(us)": 0,
+        "VOL-DT_LL-Rm(us)": 0,
+        "VOL-All_LL-Overhead(us)": 636
+    }
+},
+{
+    "file-8": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/../../../molecular_dynamics_runs/stage0000/task0000/aggregated.h5",
+        "task_name": "training-42584",
+        "datasets": [
+            {
+                "dset_name": "point_cloud",
+                "start_time": 1711558447698004,
+                "end_time": 1711558447743886,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100800,
+                "dimension_cnt": 3,
+                "dimensions": [1200, 3, 28],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 3,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 1184316,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100800,
+                "access_orders": [54]
+            }
+        ]
+    }
+},
+{
+    "file-8": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/../../../molecular_dynamics_runs/stage0000/task0000/aggregated.h5",
+        "open_time(us)": 1711558447697804,
+        "close_time(us)": 1711558447744558,
+        "file_size": 1605775,
+        "header_size": 0,
+        "sieve_buf_size": 0,
+        "file_intent": ["H5F_ACC_RDONLY"],
+        "ds_created": 0,
+        "ds_accessed": 1,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_name": "training-42584",
+        "VOL-Overhead(us)": 1291,
+        "VOL-Init(us)": 1567,
+        "VOL-Term(us)": 0,
+        "VOL-Log(us)": 2787,
+        "VOL-HT-Overhead(us)": 21,
+        "VOL-HT-Add(us)": 257,
+        "VOL-HT-Rm(us)": 0,
+        "VOL-HT-Search(us)": 18,
+        "VOL-FILE_LL-Overhead(us)": 7,
+        "VOL-FILE_LL-Add(us)": 42,
+        "VOL-FILE_LL-Rm(us)": 24,
+        "VOL-FILE_LL-Update(us)": 31,
+        "VOL-DS_LL-Overhead(us)": 6,
+        "VOL-DS_LL-Add(us)": 238,
+        "VOL-DS_LL-Rm(us)": 27,
+        "VOL-DS_LL-Update(us)": 390,
+        "VOL-GRP_LL-Overhead(us)": 0,
+        "VOL-GRP_LL-Add(us)": 3,
+        "VOL-GRP_LL-Rm(us)": 0,
+        "VOL-DT_LL-Overhead(us)": 0,
+        "VOL-DT_LL-Add(us)": 0,
+        "VOL-DT_LL-Rm(us)": 0,
+        "VOL-All_LL-Overhead(us)": 1131
+    }
+},
+{
+    "file-14": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-1-20240327-115413.h5",
+        "open_time(us)": 1711558453446116,
+        "close_time(us)": 1711558453448430,
+        "file_size": 5112,
+        "header_size": 2048,
+        "sieve_buf_size": 65536,
+        "file_intent": ["H5F_ACC_RDWR"],
+        "ds_created": 0,
+        "ds_accessed": 3,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_name": "training-42584",
+        "VOL-Overhead(us)": 141027,
+        "VOL-Init(us)": 1567,
+        "VOL-Term(us)": 0,
+        "VOL-Log(us)": 3666,
+        "VOL-HT-Overhead(us)": 2,
+        "VOL-HT-Add(us)": 257,
+        "VOL-HT-Rm(us)": 0,
+        "VOL-HT-Search(us)": 20,
+        "VOL-FILE_LL-Overhead(us)": 413,
+        "VOL-FILE_LL-Add(us)": 62,
+        "VOL-FILE_LL-Rm(us)": 255,
+        "VOL-FILE_LL-Update(us)": 38,
+        "VOL-DS_LL-Overhead(us)": 33,
+        "VOL-DS_LL-Add(us)": 265,
+        "VOL-DS_LL-Rm(us)": 29,
+        "VOL-DS_LL-Update(us)": 480,
+        "VOL-GRP_LL-Overhead(us)": 0,
+        "VOL-GRP_LL-Add(us)": 3,
+        "VOL-GRP_LL-Rm(us)": 0,
+        "VOL-DT_LL-Overhead(us)": 0,
+        "VOL-DT_LL-Add(us)": 0,
+        "VOL-DT_LL-Rm(us)": 0,
+        "VOL-All_LL-Overhead(us)": 132361
+    }
+},
+{
+    "file-16": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-2-20240327-115419.h5",
+        "open_time(us)": 1711558459618114,
+        "close_time(us)": 1711558459620387,
+        "file_size": 5112,
+        "header_size": 2048,
+        "sieve_buf_size": 65536,
+        "file_intent": ["H5F_ACC_RDWR"],
+        "ds_created": 0,
+        "ds_accessed": 3,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_name": "training-42584",
+        "VOL-Overhead(us)": 166839,
+        "VOL-Init(us)": 1567,
+        "VOL-Term(us)": 0,
+        "VOL-Log(us)": 4879,
+        "VOL-HT-Overhead(us)": 0,
+        "VOL-HT-Add(us)": 257,
+        "VOL-HT-Rm(us)": 0,
+        "VOL-HT-Search(us)": 20,
+        "VOL-FILE_LL-Overhead(us)": 391,
+        "VOL-FILE_LL-Add(us)": 75,
+        "VOL-FILE_LL-Rm(us)": 461,
+        "VOL-FILE_LL-Update(us)": 45,
+        "VOL-DS_LL-Overhead(us)": 16,
+        "VOL-DS_LL-Add(us)": 280,
+        "VOL-DS_LL-Rm(us)": 30,
+        "VOL-DS_LL-Update(us)": 514,
+        "VOL-GRP_LL-Overhead(us)": 0,
+        "VOL-GRP_LL-Add(us)": 3,
+        "VOL-GRP_LL-Rm(us)": 0,
+        "VOL-DT_LL-Overhead(us)": 0,
+        "VOL-DT_LL-Add(us)": 0,
+        "VOL-DT_LL-Rm(us)": 0,
+        "VOL-All_LL-Overhead(us)": 159328
+    }
+},
+{
+    "file-18": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-3-20240327-115424.h5",
+        "open_time(us)": 1711558464815839,
+        "close_time(us)": 1711558464818209,
+        "file_size": 5112,
+        "header_size": 2048,
+        "sieve_buf_size": 65536,
+        "file_intent": ["H5F_ACC_RDWR"],
+        "ds_created": 0,
+        "ds_accessed": 3,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_name": "training-42584",
+        "VOL-Overhead(us)": 142239,
+        "VOL-Init(us)": 1567,
+        "VOL-Term(us)": 0,
+        "VOL-Log(us)": 8064,
+        "VOL-HT-Overhead(us)": 0,
+        "VOL-HT-Add(us)": 257,
+        "VOL-HT-Rm(us)": 0,
+        "VOL-HT-Search(us)": 20,
+        "VOL-FILE_LL-Overhead(us)": 393,
+        "VOL-FILE_LL-Add(us)": 90,
+        "VOL-FILE_LL-Rm(us)": 674,
+        "VOL-FILE_LL-Update(us)": 49,
+        "VOL-DS_LL-Overhead(us)": 14,
+        "VOL-DS_LL-Add(us)": 292,
+        "VOL-DS_LL-Rm(us)": 32,
+        "VOL-DS_LL-Update(us)": 549,
+        "VOL-GRP_LL-Overhead(us)": 0,
+        "VOL-GRP_LL-Add(us)": 3,
+        "VOL-GRP_LL-Rm(us)": 0,
+        "VOL-DT_LL-Overhead(us)": 0,
+        "VOL-DT_LL-Add(us)": 0,
+        "VOL-DT_LL-Rm(us)": 0,
+        "VOL-All_LL-Overhead(us)": 134173
+    }
+},
+{
+    "file-20": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-4-20240327-115430.h5",
+        "open_time(us)": 1711558470364459,
+        "close_time(us)": 1711558470366068,
+        "file_size": 5112,
+        "header_size": 2048,
+        "sieve_buf_size": 65536,
+        "file_intent": ["H5F_ACC_RDWR"],
+        "ds_created": 0,
+        "ds_accessed": 3,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_name": "training-42584",
+        "VOL-Overhead(us)": 141545,
+        "VOL-Init(us)": 1567,
+        "VOL-Term(us)": 0,
+        "VOL-Log(us)": 10525,
+        "VOL-HT-Overhead(us)": 0,
+        "VOL-HT-Add(us)": 257,
+        "VOL-HT-Rm(us)": 0,
+        "VOL-HT-Search(us)": 20,
+        "VOL-FILE_LL-Overhead(us)": 367,
+        "VOL-FILE_LL-Add(us)": 102,
+        "VOL-FILE_LL-Rm(us)": 855,
+        "VOL-FILE_LL-Update(us)": 53,
+        "VOL-DS_LL-Overhead(us)": 12,
+        "VOL-DS_LL-Add(us)": 302,
+        "VOL-DS_LL-Rm(us)": 34,
+        "VOL-DS_LL-Update(us)": 579,
+        "VOL-GRP_LL-Overhead(us)": 0,
+        "VOL-GRP_LL-Add(us)": 3,
+        "VOL-GRP_LL-Rm(us)": 0,
+        "VOL-DT_LL-Overhead(us)": 0,
+        "VOL-DT_LL-Add(us)": 0,
+        "VOL-DT_LL-Rm(us)": 0,
+        "VOL-All_LL-Overhead(us)": 133671
+    }
+},
+{
+    "file-22": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-5-20240327-115436.h5",
+        "open_time(us)": 1711558476894993,
+        "close_time(us)": 1711558476896786,
+        "file_size": 5112,
+        "header_size": 2048,
+        "sieve_buf_size": 65536,
+        "file_intent": ["H5F_ACC_RDWR"],
+        "ds_created": 0,
+        "ds_accessed": 3,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_name": "training-42584",
+        "VOL-Overhead(us)": 140192,
+        "VOL-Init(us)": 1567,
+        "VOL-Term(us)": 0,
+        "VOL-Log(us)": 11670,
+        "VOL-HT-Overhead(us)": 0,
+        "VOL-HT-Add(us)": 257,
+        "VOL-HT-Rm(us)": 0,
+        "VOL-HT-Search(us)": 20,
+        "VOL-FILE_LL-Overhead(us)": 349,
+        "VOL-FILE_LL-Add(us)": 115,
+        "VOL-FILE_LL-Rm(us)": 1041,
+        "VOL-FILE_LL-Update(us)": 57,
+        "VOL-DS_LL-Overhead(us)": 12,
+        "VOL-DS_LL-Add(us)": 312,
+        "VOL-DS_LL-Rm(us)": 36,
+        "VOL-DS_LL-Update(us)": 608,
+        "VOL-GRP_LL-Overhead(us)": 0,
+        "VOL-GRP_LL-Add(us)": 3,
+        "VOL-GRP_LL-Rm(us)": 0,
+        "VOL-DT_LL-Overhead(us)": 0,
+        "VOL-DT_LL-Add(us)": 0,
+        "VOL-DT_LL-Rm(us)": 0,
+        "VOL-All_LL-Overhead(us)": 132360
+    }
+},
+{
+    "file-24": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-5-20240327-115436.h5",
+        "task_name": "training-42584",
+        "datasets": [
+            {
+                "dset_name": "rmsd",
+                "start_time": 1711558476933019,
+                "end_time": 1711558476933491,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CONTIGUOUS",
+                "storage_size": 48,
+                "dset_n_elements": 12,
+                "dimension_cnt": 1,
+                "dimensions": [12],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 4744,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 12,
+                "access_orders": [76]
+            }
+        ]
+    }
+},
+{
+    "file-24": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-5-20240327-115436.h5",
+        "task_name": "training-42584",
+        "datasets": [
+            {
+                "dset_name": "fnc",
+                "start_time": 1711558476933721,
+                "end_time": 1711558476933960,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CONTIGUOUS",
+                "storage_size": 48,
+                "dset_n_elements": 12,
+                "dimension_cnt": 1,
+                "dimensions": [12],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 5064,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 12,
+                "access_orders": [77]
+            }
+        ]
+    }
+},
+{
+    "file-24": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-5-20240327-115436.h5",
+        "task_name": "training-42584",
+        "datasets": [
+            {
+                "dset_name": "embeddings",
+                "start_time": 1711558476934146,
+                "end_time": 1711558476934370,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CONTIGUOUS",
+                "storage_size": 3072,
+                "dset_n_elements": 768,
+                "dimension_cnt": 2,
+                "dimensions": [12, 64],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 1072,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 768,
+                "access_orders": [78]
+            }
+        ]
+    }
+},
+{
+    "file-24": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-5-20240327-115436.h5",
+        "open_time(us)": 1711558476932574,
+        "close_time(us)": 1711558476934817,
+        "file_size": 5112,
+        "header_size": 0,
+        "sieve_buf_size": 0,
+        "file_intent": ["H5F_ACC_RDONLY"],
+        "ds_created": 0,
+        "ds_accessed": 3,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_name": "training-42584",
+        "VOL-Overhead(us)": 1664,
+        "VOL-Init(us)": 1567,
+        "VOL-Term(us)": 0,
+        "VOL-Log(us)": 12864,
+        "VOL-HT-Overhead(us)": 25,
+        "VOL-HT-Add(us)": 282,
+        "VOL-HT-Rm(us)": 0,
+        "VOL-HT-Search(us)": 20,
+        "VOL-FILE_LL-Overhead(us)": 10,
+        "VOL-FILE_LL-Add(us)": 122,
+        "VOL-FILE_LL-Rm(us)": 1043,
+        "VOL-FILE_LL-Update(us)": 58,
+        "VOL-DS_LL-Overhead(us)": 12,
+        "VOL-DS_LL-Add(us)": 322,
+        "VOL-DS_LL-Rm(us)": 38,
+        "VOL-DS_LL-Update(us)": 640,
+        "VOL-GRP_LL-Overhead(us)": 0,
+        "VOL-GRP_LL-Add(us)": 3,
+        "VOL-GRP_LL-Rm(us)": 0,
+        "VOL-DT_LL-Overhead(us)": 0,
+        "VOL-DT_LL-Add(us)": 0,
+        "VOL-DT_LL-Rm(us)": 0,
+        "VOL-All_LL-Overhead(us)": 1396
+    }
+},
+{
+    "file-26": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-6-20240327-115454.h5",
+        "open_time(us)": 1711558494868232,
+        "close_time(us)": 1711558494870647,
+        "file_size": 5112,
+        "header_size": 2048,
+        "sieve_buf_size": 65536,
+        "file_intent": ["H5F_ACC_RDWR"],
+        "ds_created": 0,
+        "ds_accessed": 3,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_name": "training-42584",
+        "VOL-Overhead(us)": 144234,
+        "VOL-Init(us)": 1567,
+        "VOL-Term(us)": 0,
+        "VOL-Log(us)": 13704,
+        "VOL-HT-Overhead(us)": 0,
+        "VOL-HT-Add(us)": 282,
+        "VOL-HT-Rm(us)": 0,
+        "VOL-HT-Search(us)": 20,
+        "VOL-FILE_LL-Overhead(us)": 402,
+        "VOL-FILE_LL-Add(us)": 135,
+        "VOL-FILE_LL-Rm(us)": 1254,
+        "VOL-FILE_LL-Update(us)": 64,
+        "VOL-DS_LL-Overhead(us)": 18,
+        "VOL-DS_LL-Add(us)": 337,
+        "VOL-DS_LL-Rm(us)": 41,
+        "VOL-DS_LL-Update(us)": 678,
+        "VOL-GRP_LL-Overhead(us)": 0,
+        "VOL-GRP_LL-Add(us)": 3,
+        "VOL-GRP_LL-Rm(us)": 0,
+        "VOL-DT_LL-Overhead(us)": 0,
+        "VOL-DT_LL-Add(us)": 0,
+        "VOL-DT_LL-Rm(us)": 0,
+        "VOL-All_LL-Overhead(us)": 135974
+    }
+},
+{
+    "file-28": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-7-20240327-115500.h5",
+        "open_time(us)": 1711558500082198,
+        "close_time(us)": 1711558500084720,
+        "file_size": 5112,
+        "header_size": 2048,
+        "sieve_buf_size": 65536,
+        "file_intent": ["H5F_ACC_RDWR"],
+        "ds_created": 0,
+        "ds_accessed": 3,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_name": "training-42584",
+        "VOL-Overhead(us)": 150325,
+        "VOL-Init(us)": 1567,
+        "VOL-Term(us)": 0,
+        "VOL-Log(us)": 15014,
+        "VOL-HT-Overhead(us)": 0,
+        "VOL-HT-Add(us)": 282,
+        "VOL-HT-Rm(us)": 0,
+        "VOL-HT-Search(us)": 20,
+        "VOL-FILE_LL-Overhead(us)": 395,
+        "VOL-FILE_LL-Add(us)": 149,
+        "VOL-FILE_LL-Rm(us)": 1446,
+        "VOL-FILE_LL-Update(us)": 69,
+        "VOL-DS_LL-Overhead(us)": 17,
+        "VOL-DS_LL-Add(us)": 349,
+        "VOL-DS_LL-Rm(us)": 44,
+        "VOL-DS_LL-Update(us)": 714,
+        "VOL-GRP_LL-Overhead(us)": 0,
+        "VOL-GRP_LL-Add(us)": 3,
+        "VOL-GRP_LL-Rm(us)": 0,
+        "VOL-DT_LL-Overhead(us)": 0,
+        "VOL-DT_LL-Add(us)": 0,
+        "VOL-DT_LL-Rm(us)": 0,
+        "VOL-All_LL-Overhead(us)": 141866
+    }
+},
+{
+    "file-30": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-8-20240327-115505.h5",
+        "open_time(us)": 1711558505402683,
+        "close_time(us)": 1711558505404667,
+        "file_size": 5112,
+        "header_size": 2048,
+        "sieve_buf_size": 65536,
+        "file_intent": ["H5F_ACC_RDWR"],
+        "ds_created": 0,
+        "ds_accessed": 3,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_name": "training-42584",
+        "VOL-Overhead(us)": 153649,
+        "VOL-Init(us)": 1567,
+        "VOL-Term(us)": 0,
+        "VOL-Log(us)": 22594,
+        "VOL-HT-Overhead(us)": 0,
+        "VOL-HT-Add(us)": 282,
+        "VOL-HT-Rm(us)": 0,
+        "VOL-HT-Search(us)": 20,
+        "VOL-FILE_LL-Overhead(us)": 415,
+        "VOL-FILE_LL-Add(us)": 160,
+        "VOL-FILE_LL-Rm(us)": 1680,
+        "VOL-FILE_LL-Update(us)": 73,
+        "VOL-DS_LL-Overhead(us)": 14,
+        "VOL-DS_LL-Add(us)": 360,
+        "VOL-DS_LL-Rm(us)": 47,
+        "VOL-DS_LL-Update(us)": 741,
+        "VOL-GRP_LL-Overhead(us)": 0,
+        "VOL-GRP_LL-Add(us)": 3,
+        "VOL-GRP_LL-Rm(us)": 0,
+        "VOL-DT_LL-Overhead(us)": 0,
+        "VOL-DT_LL-Add(us)": 0,
+        "VOL-DT_LL-Rm(us)": 0,
+        "VOL-All_LL-Overhead(us)": 145904
+    }
+},
+{
+    "file-32": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-9-20240327-115510.h5",
+        "open_time(us)": 1711558510228382,
+        "close_time(us)": 1711558510230800,
+        "file_size": 5112,
+        "header_size": 2048,
+        "sieve_buf_size": 65536,
+        "file_intent": ["H5F_ACC_RDWR"],
+        "ds_created": 0,
+        "ds_accessed": 3,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_name": "training-42584",
+        "VOL-Overhead(us)": 154167,
+        "VOL-Init(us)": 1567,
+        "VOL-Term(us)": 0,
+        "VOL-Log(us)": 29745,
+        "VOL-HT-Overhead(us)": 0,
+        "VOL-HT-Add(us)": 282,
+        "VOL-HT-Rm(us)": 0,
+        "VOL-HT-Search(us)": 20,
+        "VOL-FILE_LL-Overhead(us)": 367,
+        "VOL-FILE_LL-Add(us)": 172,
+        "VOL-FILE_LL-Rm(us)": 1865,
+        "VOL-FILE_LL-Update(us)": 78,
+        "VOL-DS_LL-Overhead(us)": 13,
+        "VOL-DS_LL-Add(us)": 371,
+        "VOL-DS_LL-Rm(us)": 49,
+        "VOL-DS_LL-Update(us)": 770,
+        "VOL-GRP_LL-Overhead(us)": 0,
+        "VOL-GRP_LL-Add(us)": 3,
+        "VOL-GRP_LL-Rm(us)": 0,
+        "VOL-DT_LL-Overhead(us)": 0,
+        "VOL-DT_LL-Add(us)": 0,
+        "VOL-DT_LL-Rm(us)": 0,
+        "VOL-All_LL-Overhead(us)": 146660
+    }
+},
+{
+    "file-34": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-10-20240327-115515.h5",
+        "open_time(us)": 1711558515281046,
+        "close_time(us)": 1711558515284080,
+        "file_size": 5112,
+        "header_size": 2048,
+        "sieve_buf_size": 65536,
+        "file_intent": ["H5F_ACC_RDWR"],
+        "ds_created": 0,
+        "ds_accessed": 3,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_name": "training-42584",
+        "VOL-Overhead(us)": 166944,
+        "VOL-Init(us)": 1567,
+        "VOL-Term(us)": 0,
+        "VOL-Log(us)": 31876,
+        "VOL-HT-Overhead(us)": 0,
+        "VOL-HT-Add(us)": 282,
+        "VOL-HT-Rm(us)": 0,
+        "VOL-HT-Search(us)": 20,
+        "VOL-FILE_LL-Overhead(us)": 405,
+        "VOL-FILE_LL-Add(us)": 191,
+        "VOL-FILE_LL-Rm(us)": 2065,
+        "VOL-FILE_LL-Update(us)": 87,
+        "VOL-DS_LL-Overhead(us)": 22,
+        "VOL-DS_LL-Add(us)": 390,
+        "VOL-DS_LL-Rm(us)": 52,
+        "VOL-DS_LL-Update(us)": 832,
+        "VOL-GRP_LL-Overhead(us)": 0,
+        "VOL-GRP_LL-Add(us)": 3,
+        "VOL-GRP_LL-Rm(us)": 0,
+        "VOL-DT_LL-Overhead(us)": 0,
+        "VOL-DT_LL-Add(us)": 0,
+        "VOL-DT_LL-Rm(us)": 0,
+        "VOL-All_LL-Overhead(us)": 157823
+    }
+},
+{
+    "file-36": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-10-20240327-115515.h5",
+        "task_name": "training-42584",
+        "datasets": [
+            {
+                "dset_name": "rmsd",
+                "start_time": 1711558515345441,
+                "end_time": 1711558515346162,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CONTIGUOUS",
+                "storage_size": 48,
+                "dset_n_elements": 12,
+                "dimension_cnt": 1,
+                "dimensions": [12],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 4744,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 12,
+                "access_orders": [94]
+            }
+        ]
+    }
+},
+{
+    "file-36": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-10-20240327-115515.h5",
+        "task_name": "training-42584",
+        "datasets": [
+            {
+                "dset_name": "fnc",
+                "start_time": 1711558515346462,
+                "end_time": 1711558515346839,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CONTIGUOUS",
+                "storage_size": 48,
+                "dset_n_elements": 12,
+                "dimension_cnt": 1,
+                "dimensions": [12],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 5064,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 12,
+                "access_orders": [95]
+            }
+        ]
+    }
+},
+{
+    "file-36": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-10-20240327-115515.h5",
+        "task_name": "training-42584",
+        "datasets": [
+            {
+                "dset_name": "embeddings",
+                "start_time": 1711558515347091,
+                "end_time": 1711558515347458,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CONTIGUOUS",
+                "storage_size": 3072,
+                "dset_n_elements": 768,
+                "dimension_cnt": 2,
+                "dimensions": [12, 64],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 2,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 1072,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 768,
+                "access_orders": [96]
+            }
+        ]
+    }
+},
+{
+    "file-36": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/embeddings/embeddings-epoch-10-20240327-115515.h5",
+        "open_time(us)": 1711558515345021,
+        "close_time(us)": 1711558515348109,
+        "file_size": 5112,
+        "header_size": 0,
+        "sieve_buf_size": 0,
+        "file_intent": ["H5F_ACC_RDONLY"],
+        "ds_created": 0,
+        "ds_accessed": 3,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_name": "training-42584",
+        "VOL-Overhead(us)": 2766,
+        "VOL-Init(us)": 1567,
+        "VOL-Term(us)": 0,
+        "VOL-Log(us)": 34033,
+        "VOL-HT-Overhead(us)": 37,
+        "VOL-HT-Add(us)": 316,
+        "VOL-HT-Rm(us)": 0,
+        "VOL-HT-Search(us)": 22,
+        "VOL-FILE_LL-Overhead(us)": 10,
+        "VOL-FILE_LL-Add(us)": 200,
+        "VOL-FILE_LL-Rm(us)": 2066,
+        "VOL-FILE_LL-Update(us)": 88,
+        "VOL-DS_LL-Overhead(us)": 17,
+        "VOL-DS_LL-Add(us)": 404,
+        "VOL-DS_LL-Rm(us)": 54,
+        "VOL-DS_LL-Update(us)": 889,
+        "VOL-GRP_LL-Overhead(us)": 0,
+        "VOL-GRP_LL-Add(us)": 3,
+        "VOL-GRP_LL-Rm(us)": 0,
+        "VOL-DT_LL-Overhead(us)": 0,
+        "VOL-DT_LL-Add(us)": 0,
+        "VOL-DT_LL-Rm(us)": 0,
+        "VOL-All_LL-Overhead(us)": 2403
+    }
+},
+{
+    "file-12": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/../../../molecular_dynamics_runs/stage0000/task0000/aggregated.h5",
+        "task_name": "training-42584",
+        "datasets": [
+            {
+                "dset_name": "point_cloud",
+                "start_time": 1711558447753957,
+                "end_time": 1711558526615980,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100800,
+                "dimension_cnt": 3,
+                "dimensions": [1200, 3, 28],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 11842,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 1184316,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100800,
+                "access_orders": [58]
+            }
+        ]
+    }
+},
+{
+    "file-12": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/../../../molecular_dynamics_runs/stage0000/task0000/aggregated.h5",
+        "open_time(us)": 1711558453094238,
+        "close_time(us)": 1711558526617177,
+        "file_size": 1605775,
+        "header_size": 0,
+        "sieve_buf_size": 0,
+        "file_intent": ["H5F_ACC_RDONLY"],
+        "ds_created": 0,
+        "ds_accessed": 6,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_name": "training-42584",
+        "VOL-Overhead(us)": 1397,
+        "VOL-Init(us)": 1567,
+        "VOL-Term(us)": 0,
+        "VOL-Log(us)": 35363,
+        "VOL-HT-Overhead(us)": 23,
+        "VOL-HT-Add(us)": 339,
+        "VOL-HT-Rm(us)": 0,
+        "VOL-HT-Search(us)": 22,
+        "VOL-FILE_LL-Overhead(us)": 0,
+        "VOL-FILE_LL-Add(us)": 200,
+        "VOL-FILE_LL-Rm(us)": 2066,
+        "VOL-FILE_LL-Update(us)": 91,
+        "VOL-DS_LL-Overhead(us)": 0,
+        "VOL-DS_LL-Add(us)": 404,
+        "VOL-DS_LL-Rm(us)": 54,
+        "VOL-DS_LL-Update(us)": 889,
+        "VOL-GRP_LL-Overhead(us)": 0,
+        "VOL-GRP_LL-Add(us)": 3,
+        "VOL-GRP_LL-Rm(us)": 0,
+        "VOL-DT_LL-Overhead(us)": 0,
+        "VOL-DT_LL-Add(us)": 0,
+        "VOL-DT_LL-Rm(us)": 0,
+        "VOL-All_LL-Overhead(us)": 1366
+    }
+},
+{
+    "file-12": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/../../../molecular_dynamics_runs/stage0000/task0000/aggregated.h5",
+        "task_name": "training-42584",
+        "datasets": [
+            {
+                "dset_name": "rmsd",
+                "start_time": 1711558447754289,
+                "end_time": 1711558526621999,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 1200,
+                "dimension_cnt": 1,
+                "dimensions": [1200],
+                "dset_type_size": 2,
+                "dataset_read_cnt": 11842,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 195,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 1200,
+                "access_orders": [59]
+            }
+        ]
+    }
+},
+{
+    "file-12": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/../../../molecular_dynamics_runs/stage0000/task0000/aggregated.h5",
+        "task_name": "training-42584",
+        "datasets": [
+            {
+                "dset_name": "fnc",
+                "start_time": 1711558447754540,
+                "end_time": 1711558526622046,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 1200,
+                "dimension_cnt": 1,
+                "dimensions": [1200],
+                "dset_type_size": 2,
+                "dataset_read_cnt": 11842,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 11476,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 1200,
+                "access_orders": [60]
+            }
+        ]
+    }
+},
+{
+    "file-12": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/../../../molecular_dynamics_runs/stage0000/task0000/aggregated.h5",
+        "task_name": "training-42584",
+        "datasets": [
+            {
+                "dset_name": "point_cloud",
+                "start_time": 1711558447753957,
+                "end_time": 1711558526622399,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100800,
+                "dimension_cnt": 3,
+                "dimensions": [1200, 3, 28],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 11842,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 1184316,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100800,
+                "access_orders": [58]
+            }
+        ]
+    }
+},
+{
+    "file-12": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/machine_learning_runs/stage0001/task0000/../../../molecular_dynamics_runs/stage0000/task0000/aggregated.h5",
+        "open_time(us)": 1711558453094238,
+        "close_time(us)": 1711558526623153,
+        "file_size": 1605775,
+        "header_size": 0,
+        "sieve_buf_size": 0,
+        "file_intent": ["H5F_ACC_RDONLY"],
+        "ds_created": 0,
+        "ds_accessed": 6,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_name": "training-42584",
+        "VOL-Overhead(us)": 5871,
+        "VOL-Init(us)": 1567,
+        "VOL-Term(us)": 0,
+        "VOL-Log(us)": 41098,
+        "VOL-HT-Overhead(us)": 72,
+        "VOL-HT-Add(us)": 411,
+        "VOL-HT-Rm(us)": 0,
+        "VOL-HT-Search(us)": 22,
+        "VOL-FILE_LL-Overhead(us)": 1,
+        "VOL-FILE_LL-Add(us)": 200,
+        "VOL-FILE_LL-Rm(us)": 2067,
+        "VOL-FILE_LL-Update(us)": 92,
+        "VOL-DS_LL-Overhead(us)": 3,
+        "VOL-DS_LL-Add(us)": 404,
+        "VOL-DS_LL-Rm(us)": 57,
+        "VOL-DS_LL-Update(us)": 889,
+        "VOL-GRP_LL-Overhead(us)": 0,
+        "VOL-GRP_LL-Add(us)": 3,
+        "VOL-GRP_LL-Rm(us)": 0,
+        "VOL-DT_LL-Overhead(us)": 0,
+        "VOL-DT_LL-Add(us)": 0,
+        "VOL-DT_LL-Rm(us)": 0,
+        "VOL-All_LL-Overhead(us)": 5835
+    }
+}]

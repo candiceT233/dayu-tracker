@@ -1,12 +1,12 @@
 [{
     "file-0": {
-        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0011/stage0000_task0011.h5",
-        "task_name": "openmm-378126",
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/molecular_dynamics_runs/stage0000/task0005/stage0000_task0005.h5",
+        "task_name": "openmm-41382",
         "datasets": [
             {
                 "dset_name": "contact_map",
-                "start_time": 1708109800700531,
-                "end_time": 1708109800703552,
+                "start_time": 1711558438279271,
+                "end_time": 1711558438282246,
                 "dt_class": "H5T_VLEN",
                 "ds_class": "H5S_SCALAR",
                 "layout": "H5D_CHUNKED",
@@ -28,13 +28,13 @@
 },
 {
     "file-0": {
-        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0011/stage0000_task0011.h5",
-        "task_name": "openmm-378126",
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/molecular_dynamics_runs/stage0000/task0005/stage0000_task0005.h5",
+        "task_name": "openmm-41382",
         "datasets": [
             {
                 "dset_name": "point_cloud",
-                "start_time": 1708109800706431,
-                "end_time": 1708109800707125,
+                "start_time": 1711558438284982,
+                "end_time": 1711558438285653,
                 "dt_class": "H5T_FLOAT",
                 "ds_class": "H5S_SCALAR",
                 "layout": "H5D_CHUNKED",
@@ -56,13 +56,13 @@
 },
 {
     "file-0": {
-        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0011/stage0000_task0011.h5",
-        "task_name": "openmm-378126",
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/molecular_dynamics_runs/stage0000/task0005/stage0000_task0005.h5",
+        "task_name": "openmm-41382",
         "datasets": [
             {
                 "dset_name": "rmsd",
-                "start_time": 1708109800709733,
-                "end_time": 1708109800710165,
+                "start_time": 1711558438287936,
+                "end_time": 1711558438288422,
                 "dt_class": "H5T_FLOAT",
                 "ds_class": "H5S_SCALAR",
                 "layout": "H5D_CHUNKED",
@@ -84,13 +84,13 @@
 },
 {
     "file-0": {
-        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0011/stage0000_task0011.h5",
-        "task_name": "openmm-378126",
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/molecular_dynamics_runs/stage0000/task0005/stage0000_task0005.h5",
+        "task_name": "openmm-41382",
         "datasets": [
             {
                 "dset_name": "fnc",
-                "start_time": 1708109800712627,
-                "end_time": 1708109800713100,
+                "start_time": 1711558438290656,
+                "end_time": 1711558438291127,
                 "dt_class": "H5T_FLOAT",
                 "ds_class": "H5S_SCALAR",
                 "layout": "H5D_CHUNKED",
@@ -112,10 +112,10 @@
 },
 {
     "file-2": {
-        "file_name": "/mnt/nvme/mtang11/ddmd_test/molecular_dynamics_runs/stage0000/task0011/stage0000_task0011.h5",
-        "open_time": 1708109800698635,
-        "close_time": 1708109800716254,
-        "file_size": 149208,
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/molecular_dynamics_runs/stage0000/task0005/stage0000_task0005.h5",
+        "open_time(us)": 1711558438277603,
+        "close_time(us)": 1711558438293940,
+        "file_size": 165592,
         "header_size": 2048,
         "sieve_buf_size": 65536,
         "file_intent": ["H5F_ACC_RDWR"],
@@ -129,16 +129,29 @@
 },
 {
     "Task": {
-        "task_id": 378126,
-        "VOL-Overhead(ms)": 5,
-        "TOTAL_NATIVE_H5_TIME(ms)": 0,
-        "TKR_WRITE_TOTAL_TIME(ms)": 0,
-        "FILE_LL_TOTAL_TIME(ms)": 0,
-        "DS_LL_TOTAL_TIME(ms)": 0,
-        "GRP_LL_TOTAL_TIME(ms)": 0,
-        "DT_LL_TOTAL_TIME(ms)": 0,
-        "ATTR_LL_TOTAL_TIME(ms)": 0,
-        "FILE_DSET_HT_TOTAL_TIME(ms)": 0,
-        "TRK_ACCESS_STAT_TIME(ms)": 0
+        "task_name": "openmm-41382",
+        "VOL-Overhead(us)": 2414,
+        "VOL-Init(us)": 1573,
+        "VOL-Term(us)": 0,
+        "VOL-Log(us)": 0,
+        "VOL-HT-Overhead(us)": 62,
+        "VOL-HT-Add(us)": 62,
+        "VOL-HT-Rm(us)": 0,
+        "VOL-HT-Search(us)": 0,
+        "VOL-FILE_LL-Overhead(us)": 23,
+        "VOL-FILE_LL-Add(us)": 19,
+        "VOL-FILE_LL-Rm(us)": 3,
+        "VOL-FILE_LL-Update(us)": 17,
+        "VOL-DS_LL-Overhead(us)": 39,
+        "VOL-DS_LL-Add(us)": 33,
+        "VOL-DS_LL-Rm(us)": 6,
+        "VOL-DS_LL-Update(us)": 78,
+        "VOL-GRP_LL-Overhead(us)": 0,
+        "VOL-GRP_LL-Add(us)": 0,
+        "VOL-GRP_LL-Rm(us)": 0,
+        "VOL-DT_LL-Overhead(us)": 0,
+        "VOL-DT_LL-Add(us)": 0,
+        "VOL-DT_LL-Rm(us)": 0,
+        "VOL-All_LL-Overhead(us)": 446
     }
 }]

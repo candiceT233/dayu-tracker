@@ -1,0 +1,561 @@
+[{
+    "file-2": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/molecular_dynamics_runs/stage0000/task0000/stage0000_task0000.h5",
+        "task_name": "inference-42845",
+        "datasets": [
+            {
+                "dset_name": "contact_map",
+                "start_time": 1711558530917554,
+                "end_time": 1711558530925466,
+                "dt_class": "H5T_VLEN",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 16,
+                "dataset_read_cnt": 14,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 800,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [1]
+            }
+        ]
+    }
+},
+{
+    "file-2": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/molecular_dynamics_runs/stage0000/task0000/stage0000_task0000.h5",
+        "task_name": "inference-42845",
+        "datasets": [
+            {
+                "dset_name": "fnc",
+                "start_time": 1711558530918559,
+                "end_time": 1711558530930613,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 2,
+                "dataset_read_cnt": 14,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 158432,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [3]
+            }
+        ]
+    }
+},
+{
+    "file-2": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/molecular_dynamics_runs/stage0000/task0000/stage0000_task0000.h5",
+        "task_name": "inference-42845",
+        "datasets": [
+            {
+                "dset_name": "point_cloud",
+                "start_time": 1711558530919236,
+                "end_time": 1711558530935618,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 8400,
+                "dimension_cnt": 3,
+                "dimensions": [100, 3, 28],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 14,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 107592,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 8400,
+                "access_orders": [5]
+            }
+        ]
+    }
+},
+{
+    "file-2": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/molecular_dynamics_runs/stage0000/task0000/stage0000_task0000.h5",
+        "task_name": "inference-42845",
+        "datasets": [
+            {
+                "dset_name": "rmsd",
+                "start_time": 1711558530919860,
+                "end_time": 1711558530940567,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CHUNKED",
+                "storage_size": 0,
+                "dset_n_elements": 100,
+                "dimension_cnt": 1,
+                "dimensions": [100],
+                "dset_type_size": 2,
+                "dataset_read_cnt": 14,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 151272,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100,
+                "access_orders": [7]
+            }
+        ]
+    }
+},
+{
+    "file-0": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/inference_runs/stage0002/task0000/virtual_stage0002_task0000.h5",
+        "task_name": "inference-42845",
+        "datasets": [
+            {
+                "dset_name": "contact_map",
+                "start_time": 1711558530926116,
+                "end_time": 1711558530926342,
+                "dt_class": "H5T_VLEN",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_VIRTUAL",
+                "storage_size": 0,
+                "dset_n_elements": 1200,
+                "dimension_cnt": 1,
+                "dimensions": [1200],
+                "dset_type_size": 16,
+                "dataset_read_cnt": 0,
+                "dataset_write_cnt": 0,
+                "access_type": "read_write",
+                "dset_offset": -1,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 1200,
+                "access_orders": [21]
+            }
+        ]
+    }
+},
+{
+    "file-0": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/inference_runs/stage0002/task0000/virtual_stage0002_task0000.h5",
+        "task_name": "inference-42845",
+        "datasets": [
+            {
+                "dset_name": "fnc",
+                "start_time": 1711558530931084,
+                "end_time": 1711558530931301,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_VIRTUAL",
+                "storage_size": 0,
+                "dset_n_elements": 1200,
+                "dimension_cnt": 1,
+                "dimensions": [1200],
+                "dset_type_size": 2,
+                "dataset_read_cnt": 0,
+                "dataset_write_cnt": 0,
+                "access_type": "read_write",
+                "dset_offset": -1,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 1200,
+                "access_orders": [34]
+            }
+        ]
+    }
+},
+{
+    "file-0": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/inference_runs/stage0002/task0000/virtual_stage0002_task0000.h5",
+        "task_name": "inference-42845",
+        "datasets": [
+            {
+                "dset_name": "point_cloud",
+                "start_time": 1711558530936126,
+                "end_time": 1711558530936342,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_VIRTUAL",
+                "storage_size": 0,
+                "dset_n_elements": 100800,
+                "dimension_cnt": 3,
+                "dimensions": [1200, 3, 28],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 0,
+                "dataset_write_cnt": 0,
+                "access_type": "read_write",
+                "dset_offset": -1,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100800,
+                "access_orders": [47]
+            }
+        ]
+    }
+},
+{
+    "file-0": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/inference_runs/stage0002/task0000/virtual_stage0002_task0000.h5",
+        "task_name": "inference-42845",
+        "datasets": [
+            {
+                "dset_name": "rmsd",
+                "start_time": 1711558530941039,
+                "end_time": 1711558530941257,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_VIRTUAL",
+                "storage_size": 0,
+                "dset_n_elements": 1200,
+                "dimension_cnt": 1,
+                "dimensions": [1200],
+                "dset_type_size": 2,
+                "dataset_read_cnt": 0,
+                "dataset_write_cnt": 0,
+                "access_type": "read_write",
+                "dset_offset": -1,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 1200,
+                "access_orders": [60]
+            }
+        ]
+    }
+},
+{
+    "file-4": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/inference_runs/stage0002/task0000/virtual_stage0002_task0000.h5",
+        "open_time(us)": 1711558530921106,
+        "close_time(us)": 1711558530941996,
+        "file_size": 9523,
+        "header_size": 2048,
+        "sieve_buf_size": 65536,
+        "file_intent": ["H5F_ACC_RDWR"],
+        "ds_created": 0,
+        "ds_accessed": 4,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_name": "inference-42845",
+        "VOL-Overhead(us)": 7610,
+        "VOL-Init(us)": 3084,
+        "VOL-Term(us)": 0,
+        "VOL-Log(us)": 0,
+        "VOL-HT-Overhead(us)": 228,
+        "VOL-HT-Add(us)": 203,
+        "VOL-HT-Rm(us)": 0,
+        "VOL-HT-Search(us)": 23,
+        "VOL-FILE_LL-Overhead(us)": 57,
+        "VOL-FILE_LL-Add(us)": 24,
+        "VOL-FILE_LL-Rm(us)": 19,
+        "VOL-FILE_LL-Update(us)": 15,
+        "VOL-DS_LL-Overhead(us)": 223,
+        "VOL-DS_LL-Add(us)": 195,
+        "VOL-DS_LL-Rm(us)": 24,
+        "VOL-DS_LL-Update(us)": 361,
+        "VOL-GRP_LL-Overhead(us)": 6,
+        "VOL-GRP_LL-Add(us)": 2,
+        "VOL-GRP_LL-Rm(us)": 0,
+        "VOL-DT_LL-Overhead(us)": 0,
+        "VOL-DT_LL-Add(us)": 0,
+        "VOL-DT_LL-Rm(us)": 0,
+        "VOL-All_LL-Overhead(us)": 2023
+    }
+},
+{
+    "file-2": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/molecular_dynamics_runs/stage0000/task0000/stage0000_task0000.h5",
+        "open_time(us)": 1711558530916835,
+        "close_time(us)": 1711558530944607,
+        "file_size": 165592,
+        "header_size": 0,
+        "sieve_buf_size": 0,
+        "file_intent": ["H5F_ACC_RDONLY"],
+        "ds_created": 0,
+        "ds_accessed": 56,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_name": "inference-42845",
+        "VOL-Overhead(us)": 1221,
+        "VOL-Init(us)": 3084,
+        "VOL-Term(us)": 0,
+        "VOL-Log(us)": 1179,
+        "VOL-HT-Overhead(us)": 0,
+        "VOL-HT-Add(us)": 203,
+        "VOL-HT-Rm(us)": 0,
+        "VOL-HT-Search(us)": 23,
+        "VOL-FILE_LL-Overhead(us)": 0,
+        "VOL-FILE_LL-Add(us)": 24,
+        "VOL-FILE_LL-Rm(us)": 19,
+        "VOL-FILE_LL-Update(us)": 17,
+        "VOL-DS_LL-Overhead(us)": 0,
+        "VOL-DS_LL-Add(us)": 195,
+        "VOL-DS_LL-Rm(us)": 24,
+        "VOL-DS_LL-Update(us)": 361,
+        "VOL-GRP_LL-Overhead(us)": 0,
+        "VOL-GRP_LL-Add(us)": 2,
+        "VOL-GRP_LL-Rm(us)": 0,
+        "VOL-DT_LL-Overhead(us)": 0,
+        "VOL-DT_LL-Add(us)": 0,
+        "VOL-DT_LL-Rm(us)": 0,
+        "VOL-All_LL-Overhead(us)": 1189
+    }
+},
+{
+    "file-6": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/inference_runs/stage0002/task0000/virtual_stage0002_task0000.h5",
+        "task_name": "inference-42845",
+        "datasets": [
+            {
+                "dset_name": "point_cloud",
+                "start_time": 1711558531789602,
+                "end_time": 1711558531825606,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_VIRTUAL",
+                "storage_size": 0,
+                "dset_n_elements": 100800,
+                "dimension_cnt": 3,
+                "dimensions": [1200, 3, 28],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 3,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 4859,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100800,
+                "access_orders": [61]
+            }
+        ]
+    }
+},
+{
+    "file-6": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/inference_runs/stage0002/task0000/virtual_stage0002_task0000.h5",
+        "open_time(us)": 1711558531789095,
+        "close_time(us)": 1711558531834084,
+        "file_size": 9523,
+        "header_size": 0,
+        "sieve_buf_size": 0,
+        "file_intent": ["H5F_ACC_RDONLY"],
+        "ds_created": 0,
+        "ds_accessed": 1,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_name": "inference-42845",
+        "VOL-Overhead(us)": 1053,
+        "VOL-Init(us)": 3084,
+        "VOL-Term(us)": 0,
+        "VOL-Log(us)": 1724,
+        "VOL-HT-Overhead(us)": 19,
+        "VOL-HT-Add(us)": 221,
+        "VOL-HT-Rm(us)": 0,
+        "VOL-HT-Search(us)": 24,
+        "VOL-FILE_LL-Overhead(us)": 74,
+        "VOL-FILE_LL-Add(us)": 86,
+        "VOL-FILE_LL-Rm(us)": 26,
+        "VOL-FILE_LL-Update(us)": 18,
+        "VOL-DS_LL-Overhead(us)": 8,
+        "VOL-DS_LL-Add(us)": 202,
+        "VOL-DS_LL-Rm(us)": 25,
+        "VOL-DS_LL-Update(us)": 441,
+        "VOL-GRP_LL-Overhead(us)": 0,
+        "VOL-GRP_LL-Add(us)": 2,
+        "VOL-GRP_LL-Rm(us)": 0,
+        "VOL-DT_LL-Overhead(us)": 0,
+        "VOL-DT_LL-Add(us)": 0,
+        "VOL-DT_LL-Rm(us)": 0,
+        "VOL-All_LL-Overhead(us)": 690
+    }
+},
+{
+    "file-20": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/inference_runs/stage0002/task0000/virtual_stage0002_task0000.h5",
+        "task_name": "inference-42845",
+        "datasets": [
+            {
+                "dset_name": "point_cloud",
+                "start_time": 1711558531836679,
+                "end_time": 1711558534445864,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_VIRTUAL",
+                "storage_size": 0,
+                "dset_n_elements": 100800,
+                "dimension_cnt": 3,
+                "dimensions": [1200, 3, 28],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 1201,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 4859,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 100800,
+                "access_orders": [62]
+            }
+        ]
+    }
+},
+{
+    "file-20": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/inference_runs/stage0002/task0000/virtual_stage0002_task0000.h5",
+        "open_time(us)": 1711558531836334,
+        "close_time(us)": 1711558534448396,
+        "file_size": 9523,
+        "header_size": 0,
+        "sieve_buf_size": 0,
+        "file_intent": ["H5F_ACC_RDONLY"],
+        "ds_created": 0,
+        "ds_accessed": 3,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_name": "inference-42845",
+        "VOL-Overhead(us)": 103504,
+        "VOL-Init(us)": 3084,
+        "VOL-Term(us)": 0,
+        "VOL-Log(us)": 2160,
+        "VOL-HT-Overhead(us)": 22,
+        "VOL-HT-Add(us)": 242,
+        "VOL-HT-Rm(us)": 0,
+        "VOL-HT-Search(us)": 25,
+        "VOL-FILE_LL-Overhead(us)": 992,
+        "VOL-FILE_LL-Add(us)": 172,
+        "VOL-FILE_LL-Rm(us)": 773,
+        "VOL-FILE_LL-Update(us)": 20,
+        "VOL-DS_LL-Overhead(us)": 45,
+        "VOL-DS_LL-Add(us)": 245,
+        "VOL-DS_LL-Rm(us)": 27,
+        "VOL-DS_LL-Update(us)": 619,
+        "VOL-GRP_LL-Overhead(us)": 0,
+        "VOL-GRP_LL-Add(us)": 2,
+        "VOL-GRP_LL-Rm(us)": 0,
+        "VOL-DT_LL-Overhead(us)": 0,
+        "VOL-DT_LL-Add(us)": 0,
+        "VOL-DT_LL-Rm(us)": 0,
+        "VOL-All_LL-Overhead(us)": 93104
+    }
+},
+{
+    "file-20": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/inference_runs/stage0002/task0000/virtual_stage0002_task0000.h5",
+        "task_name": "inference-42845",
+        "datasets": [
+            {
+                "dset_name": "rmsd",
+                "start_time": 1711558531837317,
+                "end_time": 1711558534908545,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_VIRTUAL",
+                "storage_size": 0,
+                "dset_n_elements": 1200,
+                "dimension_cnt": 1,
+                "dimensions": [1200],
+                "dset_type_size": 2,
+                "dataset_read_cnt": 1203,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 9239,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 1200,
+                "access_orders": [63]
+            }
+        ]
+    }
+},
+{
+    "file-20": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/inference_runs/stage0002/task0000/virtual_stage0002_task0000.h5",
+        "task_name": "inference-42845",
+        "datasets": [
+            {
+                "dset_name": "fnc",
+                "start_time": 1711558531837836,
+                "end_time": 1711558534450127,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_VIRTUAL",
+                "storage_size": 0,
+                "dset_n_elements": 1200,
+                "dimension_cnt": 1,
+                "dimensions": [1200],
+                "dset_type_size": 2,
+                "dataset_read_cnt": 1201,
+                "dataset_write_cnt": 0,
+                "access_type": "read_only",
+                "dset_offset": 4575,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 1200,
+                "access_orders": [64]
+            }
+        ]
+    }
+},
+{
+    "file-58": {
+        "file_name": "/mnt/nvme/mtang11/ddmd_runs/test_100ps_i1_nfs1/inference_runs/stage0002/task0000/virtual_stage0002_task0000.h5",
+        "open_time(us)": 1711558534868592,
+        "close_time(us)": 1711558534919150,
+        "file_size": 9523,
+        "header_size": 0,
+        "sieve_buf_size": 0,
+        "file_intent": ["H5F_ACC_RDONLY"],
+        "ds_created": 0,
+        "ds_accessed": 1,
+        "grp_created": 0,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_name": "inference-42845",
+        "VOL-Overhead(us)": 1850,
+        "VOL-Init(us)": 3084,
+        "VOL-Term(us)": 0,
+        "VOL-Log(us)": 3405,
+        "VOL-HT-Overhead(us)": 50,
+        "VOL-HT-Add(us)": 291,
+        "VOL-HT-Rm(us)": 0,
+        "VOL-HT-Search(us)": 26,
+        "VOL-FILE_LL-Overhead(us)": 84,
+        "VOL-FILE_LL-Add(us)": 246,
+        "VOL-FILE_LL-Rm(us)": 782,
+        "VOL-FILE_LL-Update(us)": 21,
+        "VOL-DS_LL-Overhead(us)": 12,
+        "VOL-DS_LL-Add(us)": 254,
+        "VOL-DS_LL-Rm(us)": 30,
+        "VOL-DS_LL-Update(us)": 619,
+        "VOL-GRP_LL-Overhead(us)": 0,
+        "VOL-GRP_LL-Add(us)": 2,
+        "VOL-GRP_LL-Rm(us)": 0,
+        "VOL-DT_LL-Overhead(us)": 0,
+        "VOL-DT_LL-Add(us)": 0,
+        "VOL-DT_LL-Rm(us)": 0,
+        "VOL-All_LL-Overhead(us)": 1357
+    }
+}]

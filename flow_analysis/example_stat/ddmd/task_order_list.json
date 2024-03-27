@@ -1,6 +1,6 @@
 {
   "0": "openmm",
   "1": "aggregate",
-  "2": "train",
+  "2": "training",
   "3": "inference"
 }
