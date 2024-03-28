@@ -491,6 +491,106 @@ def get_vol_dset_info(vol_dict):
                         vol_dset_info[task_name] = dset_info
     return vol_dset_info
 
+def prepare_sankey_stat_no_addr(G,vol_dict):
+    vol_dset_info = get_vol_dset_info(vol_dict)
+    sankey_edge_attr = {}
+    for edge in G.edges():
+        edge_type = G.edges[edge]['edge_type']
+
+        data_access_bytes = 0
+        data_access_cnt = 0
+        metadata_access_bytes = 0
+        metadata_access_cnt = 0
+        bandwidth = 0
+        file_stat = G.edges[edge]['file_stat']
+        # edge_types: {'dset-task', 'page-file', 'page-dset', 'file-page', 'dset-page', 'task-dset'}
+        if edge_type == 'dset-task' or edge_type == 'task-dset':
+            print(f"edge: {edge} -> {edge_type}")
+            if edge_type == 'dset-task': 
+                task_name = edge[1]
+                dset_name = edge[0]
+            else: 
+                task_name = edge[0]
+                dset_name = edge[1]
+            
+            all_dset_list = vol_dset_info[task_name]['datasets']
+            # pick the dataset with the same name
+            match_dset_list = []
+            dset_base_name = dset_name.split('-')[0]
+            for dset in all_dset_list:
+                if dset['dset_name'] == dset_base_name:
+                    if edge_type == 'dset-task' and dset['access_type'] == 'read_only':
+                        match_dset_list.append(dset)
+                    elif edge_type == 'task-dset' and dset['access_type'] == 'write_only':
+                        match_dset_list.append(dset)
+            
+            # print(f"match_dset_list: {match_dset_list}")
+            for dset in match_dset_list:
+                access_time_in_sec += (dset['end_time'] - dset['start_time'])
+                if dset['access_type'] == 'read_only':
+                    access_cnt += dset['dataset_read_cnt']
+                elif dset['access_type'] == 'write_only':
+                    access_cnt += dset['dataset_write_cnt']
+                access_size += (dset['dset_type_size'] * dset['dset_type_size'])
+            
+            # want dataset size access info from file only
+            dset_stat = G.edges[edge]['dset_obj_stat']
+            position = G.nodes[edge[1]]['pos']
+            for meta_type in dset_stat['metadata']:
+                meta_stat = dset_stat['metadata'][meta_type]
+                metadata_access_bytes += meta_stat['read_bytes'] + meta_stat['write_bytes']
+                metadata_access_cnt += meta_stat['read_cnt'] + meta_stat['write_cnt']
+            for data_type in dset_stat['data']:
+                data_stat = dset_stat['data'][data_type]
+                data_access_bytes += data_stat['read_bytes'] + data_stat['write_bytes']
+                data_access_cnt += data_stat['read_cnt'] + data_stat['write_cnt']
+            
+            access_time_in_sec = access_time_in_sec/1000000
+            access_cnt = metadata_access_cnt + data_access_cnt
+            access_size = metadata_access_bytes + data_access_bytes
+            bandwidth = access_size / access_time_in_sec
+            
+        elif edge_type == 'file-dset' or edge_type == 'dset-file':
+            # want page size access info only
+            dset_stat = G.edges[edge]['dset_stat']
+            position = G.nodes[edge[1]]['pos']
+            
+            for meta_type in dset_stat['metadata']:
+                meta_stat = dset_stat['metadata'][meta_type]
+                metadata_access_bytes += meta_stat['read_bytes'] + meta_stat['write_bytes']
+                metadata_access_cnt += meta_stat['read_cnt'] + meta_stat['write_cnt']
+            for data_type in dset_stat['data']:
+                data_stat = dset_stat['data'][data_type]
+                data_access_bytes += data_stat['read_bytes'] + data_stat['write_bytes']
+                data_access_cnt += data_stat['read_cnt'] + data_stat['write_cnt']
+                
+            position = G.nodes[edge[1]]['pos']
+            access_cnt = metadata_access_cnt + data_access_cnt 
+            access_size = metadata_access_bytes + data_access_bytes 
+            
+            access_time_in_sec = (file_stat['close_time(us)'] - file_stat['open_time(us)'])/1000000 # change to dataset open and close time
+            bandwidth = access_cnt * access_size / access_time_in_sec
+
+        else:
+            # set all values to 0
+            position = (0,0)
+            access_cnt = 0
+            access_size = 0
+        
+        edge_attr = {
+                'position': position,
+                'access_cnt': access_cnt,
+                'access_size': access_size,
+                'data_access_size': data_access_bytes,
+                'data_access_cnt': data_access_cnt,
+                'metadata_access_size': metadata_access_bytes,
+                'metadata_access_cnt': metadata_access_cnt,
+                'bandwidth': bandwidth,
+                'operation': file_stat['access_type'],}
+        sankey_edge_attr[edge] = edge_attr
+    
+    nx.set_edge_attributes(G, sankey_edge_attr)
+
 
 
 def prepare_sankey_stat_full(G, vol_dict):
