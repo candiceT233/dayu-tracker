@@ -249,7 +249,7 @@ done:
  */
 static herr_t
 H5FD__tracker_vfd_term(void) {
-  timerTermVFD.Resume();
+  
   // Overhead not recorded here, common to internal VFD
 #ifdef DEBUG_TRK_VFD
   std::cout << "H5FD__tracker_vfd_term()" << std::endl;

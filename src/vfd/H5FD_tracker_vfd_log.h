@@ -46,21 +46,17 @@
 // #include "H5PLextern.h"
 #include "H5FD_tracker_vfd.h"     /* Tracker VFD file driver     */
 #include "H5FD_tracker_vfd_err.h" /* Error handling         */
-
-
-
+#include "../vol/tracker_vol_types.h" /* Connecting to vol */
+#include "../utils/debug/timer.h" /* for recording time */
 
 
 // #ifdef ENABLE_TRACKER
-#include "../vol/tracker_vol_types.h" /* Connecting to vol */
-// #include "../utils/debug/timer.h" /* for recording time */
 // #include "../utils/debug/Tracer_cpp.h" /* for debug and evaluation */
-#ifdef HERMES
-#include <hermes/hermes.h> // For Node ID matching with Hermes
-#else
-#include "../utils/debug/timer.h" /* for recording time */
-#endif
-
+// #ifdef HERMES
+// #include <hermes/hermes.h> // For Node ID matching with Hermes
+// #else
+// #include "../utils/debug/timer.h" /* for recording time */
+// #endif
 
 
 // For debug logs
@@ -1281,6 +1277,8 @@ int rmVFDFileNode(vfd_tkr_helper_t* helper, H5FD_t *_file)
 
 void teardownVFDTkrHelper(vfd_tkr_helper_t* helper){
 
+
+  timerRmStat.Resume();
   // Close json file list
   FILE * f = fopen(helper->tkr_file_path, "r+");
 
@@ -1290,7 +1288,7 @@ void teardownVFDTkrHelper(vfd_tkr_helper_t* helper){
 
   // Close the file
   fclose(f);
-  timerRmStat.Pause();
+  timerTermVFD.Pause();
 
   // // free down causes double free error in single process mode
   // if(helper){// not null
