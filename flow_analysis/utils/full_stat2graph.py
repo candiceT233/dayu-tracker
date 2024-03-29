@@ -497,6 +497,9 @@ def prepare_sankey_stat_no_addr(G,vol_dict):
     for edge in G.edges():
         edge_type = G.edges[edge]['edge_type']
 
+        access_time_in_sec = 0
+        access_cnt = 0
+        access_size = 0
         data_access_bytes = 0
         data_access_cnt = 0
         metadata_access_bytes = 0
@@ -544,7 +547,9 @@ def prepare_sankey_stat_no_addr(G,vol_dict):
                 data_stat = dset_stat['data'][data_type]
                 data_access_bytes += data_stat['read_bytes'] + data_stat['write_bytes']
                 data_access_cnt += data_stat['read_cnt'] + data_stat['write_cnt']
-            
+
+            if access_time_in_sec == 0:
+                access_time_in_sec = 0.25 # https://gist.github.com/jboner/2841832?permalink_comment_id=4123064#gistcomment-4123064
             access_time_in_sec = access_time_in_sec/1000000
             access_cnt = metadata_access_cnt + data_access_cnt
             access_size = metadata_access_bytes + data_access_bytes
@@ -567,7 +572,8 @@ def prepare_sankey_stat_no_addr(G,vol_dict):
             position = G.nodes[edge[1]]['pos']
             access_cnt = metadata_access_cnt + data_access_cnt 
             access_size = metadata_access_bytes + data_access_bytes 
-            
+            if access_time_in_sec == 0:
+                access_time_in_sec = 0.25 # https://gist.github.com/jboner/2841832?permalink_comment_id=4123064#gistcomment-4123064
             access_time_in_sec = (file_stat['close_time(us)'] - file_stat['open_time(us)'])/1000000 # change to dataset open and close time
             bandwidth = access_cnt * access_size / access_time_in_sec
 
@@ -598,7 +604,10 @@ def prepare_sankey_stat_full(G, vol_dict):
     sankey_edge_attr = {}
     for edge in G.edges():
         edge_type = G.edges[edge]['edge_type']
-
+        
+        access_time_in_sec = 0
+        access_cnt = 0
+        access_size = 0
         data_access_bytes = 0
         data_access_cnt = 0
         metadata_access_bytes = 0
@@ -647,6 +656,8 @@ def prepare_sankey_stat_full(G, vol_dict):
                 data_access_bytes += data_stat['read_bytes'] + data_stat['write_bytes']
                 data_access_cnt += data_stat['read_cnt'] + data_stat['write_cnt']
             
+            if access_time_in_sec == 0:
+                access_time_in_sec = 0.25 # https://gist.github.com/jboner/2841832?permalink_comment_id=4123064#gistcomment-4123064
             access_time_in_sec = access_time_in_sec/1000000
             # access_cnt = metadata_access_cnt + data_access_cnt
             # access_size = metadata_access_bytes + data_access_bytes
@@ -681,7 +692,9 @@ def prepare_sankey_stat_full(G, vol_dict):
             
             access_cnt = metadata_access_cnt + data_access_cnt #page_stat['access_cnt']
             access_size = page_stat['size']
-            
+
+            if access_time_in_sec == 0:
+                access_time_in_sec = 0.25 # https://gist.github.com/jboner/2841832?permalink_comment_id=4123064#gistcomment-4123064
             access_time_in_sec = (file_stat['close_time(us)'] - file_stat['open_time(us)'])/1000000 # change to dataset open and close time
             bandwidth = access_cnt * access_size / access_time_in_sec
 
