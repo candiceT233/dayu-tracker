@@ -80,8 +80,20 @@ def get_nodes_for_sankey(G, rm_tags=[],label_on=True):
             # node_label = node_name + f" {G.nodes[node_name]['pos']} ({x_pos[node_name]:.2f}, {y_pos[node_name]:.2f})"
             node_label = node_name
             if node_type == 'group/attr': node_label = "group/attr"
+            
             for rm_tag in rm_tags:
-                node_label = node_label.replace(rm_tag, '')
+                if rm_tag == "PID":
+                    task_pid = node_name.split('-')[-1]
+                    if "epoch" in node_name:
+                        date_str = node_name.split('-')[-2]
+                        node_label = node_label.replace(f"-{date_str}", "")
+                        node_label = node_label + ".h5"                            
+                    node_label = node_label.replace(f"-{task_pid}", "")
+                else:
+                    node_label = node_label.replace(rm_tag, '')
+                if rm_tag == "FILENAME":
+                    if node_type == 'file': node_label = ""
+            
             node_dict_for_sankey['label'].append(node_label)
         else:
             phase = attr['phase']
