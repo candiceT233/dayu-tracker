@@ -505,7 +505,7 @@ def prepare_sankey_stat_no_addr(G,vol_dict):
         file_stat = G.edges[edge]['file_stat']
         # edge_types: {'dset-task', 'page-file', 'page-dset', 'file-page', 'dset-page', 'task-dset'}
         if edge_type == 'dset-task' or edge_type == 'task-dset':
-            print(f"edge: {edge} -> {edge_type}")
+            # print(f"edge: {edge} -> {edge_type}")
             if edge_type == 'dset-task': 
                 task_name = edge[1]
                 dset_name = edge[0]
