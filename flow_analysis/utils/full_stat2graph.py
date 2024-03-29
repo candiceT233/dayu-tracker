@@ -337,11 +337,16 @@ def get_all_dset_stat(file_stat, task_order_list):
     for i in range(len(cur_datasets)): # TODO: assume json order is preserved
         dset = cur_datasets[i]
         # fix unknown dataset
-        if dset == "unknown" and len(data_access[dset]) == 0: dset = "file"
-        if dset not in dset_stat_dict:
-            dset_stat_dict[dset] = {}
-        dset_stat_dict[dset]['metadata'] = metadata_access[dset]
-        dset_stat_dict[dset]['data'] = data_access[dset]
+        
+        if dset == "unknown" and len(data_access[dset]) == 0: 
+            dset = "file"
+            if dset not in dset_stat_dict: dset_stat_dict[dset] = {}
+            dset_stat_dict[dset]['metadata'] = metadata_access["unknown"]
+            dset_stat_dict[dset]['data'] = data_access["unknown"]
+        else:
+            if dset not in dset_stat_dict: dset_stat_dict[dset] = {}
+            dset_stat_dict[dset]['metadata'] = metadata_access[dset]
+            dset_stat_dict[dset]['data'] = data_access[dset]
         dset_stat_dict[dset]['phase'] = phase
         # get all read_ranges and write_ranges keys to int
         all_io_idx = []
