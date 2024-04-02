@@ -55,30 +55,30 @@ def get_dset_offset(num_datasets, dset_size):
         dset_offset_dict[i] = i*dset_size
     return dset_offset_dict
 
-def run_read(file_name, num_datasets, dset_size):
+def read_file_once(file_name, num_datasets, dset_offset_dict):
     read_datasets = []
     all_dataset = None
     
-    with h5py.File(file_name, mode='r') as hdf_file:
-        all_dataset = hdf_file['all_dataset'][...]
+    hdf_file = h5py.File(file_name, 'r')
+    all_dataset = hdf_file['all_dataset'][...]        
     
-    dset_offset_dict = get_dset_offset(num_datasets, dset_size)
+    for index in range(num_datasets):
+        dset_offset = dset_offset_dict[index]
+        read_datasets.append(all_dataset[dset_offset])
     
-    for i in range(num_datasets):
-        read_datasets.append(all_dataset[dset_offset_dict[i]])
-    
-    return read_datasets
+    hdf_file.close()
     
 
-def run_single_read(file_name, dset_size, num_datasets):
+def run_single_read(file_name, num_datasets, dset_offset_dict):
     for i in range(DSET_READ_TIME):
-        run_read(file_name, dset_size, num_datasets)
+        read_file_once(file_name, num_datasets, dset_offset_dict)
 
 
-def run_multi_read(file_name, dset_size, num_datasets, process_cnt):
+def run_multi_read(file_name, num_datasets, process_cnt, dset_offset_dict):
     read_functions = []
+    
     for i in range(process_cnt):
-        read_functions.append(Process(target=run_single_read, args=(file_name, dset_size, num_datasets)))
+        read_functions.append(Process(target=run_single_read, args=(file_name, num_datasets, dset_offset_dict)))
     
     for begin_func in read_functions:
         begin_func.start()
@@ -115,10 +115,11 @@ if __name__ == "__main__":
     print(f"Running test for file {file_name}")
     
     start_time = time.time()
+    dset_offset_dict = get_dset_offset(DSET_NUM, dset_size)
     if SINGLE_PROCESS:
-        run_single_read(file_name, dset_size, DSET_NUM)
+        run_single_read(file_name, DSET_NUM, dset_offset_dict)
     else:
-        run_multi_read(file_name, dset_size, DSET_NUM, process_cnt)
+        run_multi_read(file_name, DSET_NUM, process_cnt, dset_offset_dict)
 
     end_time = time.time()
     duration_ms = (end_time - start_time) * 1000

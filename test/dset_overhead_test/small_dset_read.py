@@ -50,7 +50,7 @@ def set_curr_task_env(task):
     subprocess.run(command2, shell=True)
 
 
-def run_read(file_name, num_datasets=DSET_NUM):
+def read_file_once(file_name, num_datasets=DSET_NUM):
 
     read_datasets = []
     
@@ -67,7 +67,7 @@ def run_read(file_name, num_datasets=DSET_NUM):
 def run_single_read(file_name, num_datasets):
 
     for i in range(DSET_READ_TIME):
-        run_read(file_name, num_datasets)
+        read_file_once(file_name, num_datasets)
 
 
 def run_multi_read(file_name, num_datasets, process_cnt):
@@ -113,9 +113,9 @@ if __name__ == "__main__":
     start_time = time.time()
 
     if SINGLE_PROCESS:
-        run_single_read(file_name, DSET_NUM)
+        run_single_read(file_name, dset_size)
     else:
-        run_multi_read(file_name, DSET_NUM, process_cnt)
+        run_multi_read(file_name, dset_size, process_cnt)
 
     end_time = time.time()
     duration_ms = (end_time - start_time) * 1000

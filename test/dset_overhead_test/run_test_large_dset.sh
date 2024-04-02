@@ -46,10 +46,10 @@ SIMPLE_VFD_VOL_IO () {
 
     # echo "TRACKER_VFD_DIR : `ls -l $TRACKER_SRC_DIR/*`"
 
-    export HDF5_VOL_CONNECTOR="$VOL_NAME under_vol=0;under_info={};path=$schema_file_path;level=2;format="
-    export HDF5_PLUGIN_PATH=$TRACKER_SRC_DIR/vfd:$TRACKER_SRC_DIR/vol #:$HDF5_PLUGIN_PATH
-    export HDF5_DRIVER=hdf5_tracker_vfd
-    export HDF5_DRIVER_CONFIG="${schema_file_path};${TRACKER_VFD_PAGE_SIZE}"
+    # export HDF5_VOL_CONNECTOR="$VOL_NAME under_vol=0;under_info={};path=$schema_file_path;level=2;format="
+    # export HDF5_PLUGIN_PATH=$TRACKER_SRC_DIR/vfd:$TRACKER_SRC_DIR/vol #:$HDF5_PLUGIN_PATH
+    # export HDF5_DRIVER=hdf5_tracker_vfd
+    # export HDF5_DRIVER_CONFIG="${schema_file_path};${TRACKER_VFD_PAGE_SIZE}"
 
     PREP_TASK_NAME "$task1"
     python3 large_dset_write.py $IO_FILE $ARRAY_SIZE
