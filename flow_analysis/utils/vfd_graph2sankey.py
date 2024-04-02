@@ -79,9 +79,26 @@ def get_nodes_for_sankey(G, rm_tags=[],label_on=True):
         if label_on :  
             # node_label = node_name + f" {G.nodes[node_name]['pos']} ({x_pos[node_name]:.2f}, {y_pos[node_name]:.2f})"
             node_label = node_name
-            if node_type == 'group/attr': node_label = "group/attr"
+            
+            
+            if node_type == 'group/attr':
+                # get phase number
+                phase = attr['phase']
+                node_label = f"File-Metadata-{phase}"
+            
             for rm_tag in rm_tags:
-                node_label = node_label.replace(rm_tag, '')
+                if rm_tag == "PID":
+                    task_pid = node_name.split('-')[-1]
+                    if "epoch" in node_name:
+                        date_str = node_name.split('-')[-2]
+                        node_label = node_label.replace(f"-{date_str}", "")
+                        node_label = node_label + ".h5"                            
+                    node_label = node_label.replace(f"-{task_pid}", "")
+                else:
+                    node_label = node_label.replace(rm_tag, '')
+                if rm_tag == "FILENAME":
+                    if node_type == 'file': node_label = ""
+            
             node_dict_for_sankey['label'].append(node_label)
         else:
             phase = attr['phase']
@@ -95,13 +112,13 @@ def get_nodes_for_sankey(G, rm_tags=[],label_on=True):
     return node_dict_for_sankey, node_dict_ref
 
 
-def edge_color_scale(G, node, attr_bw, attr_op, bw, op):
+def edge_color_scale(G, node, attr_bw, attr_op, bw, op, highlight_on):
     node_attr = G.nodes[node]
     edge_highlight = False
-    if node_attr['type'] == 'file':
-        if G.out_degree(node) > 1:
-            # print(f"Node {node} has more than 2 out edges")
-            edge_highlight = True
+    
+    if highlight_on and node_attr['type'] == 'file':
+            if G.out_degree(node) > 1:
+                edge_highlight = True
 
     range = 100
 
@@ -153,7 +170,7 @@ def edge_color_scale(G, node, attr_bw, attr_op, bw, op):
 
 def get_links_for_sankey(G, node_dict_ref, 
                          edge_attr=['access_cnt','access_size','operation','bandwidth', 'data_access_size', 'data_access_cnt', 'metadata_access_size', 'metadata_access_cnt'], 
-                         rm_tags=[],val_sqrt=True):
+                         rm_tags=[],val_sqrt=True, highlight=True):
     
     link_dict_for_sankey = {'source':[], 'target':[], 'value':[], 'label': [], 'color': []}
     #'hoverinfo': "all"
@@ -214,7 +231,7 @@ def get_links_for_sankey(G, node_dict_ref,
         
         link_dict_for_sankey['label'].append(_str)
 
-        link_dict_for_sankey['color'].append(edge_color_scale(G, u, attr_bw, attr_op, bw, op)) # get the last operation
+        link_dict_for_sankey['color'].append(edge_color_scale(G, u, attr_bw, attr_op, bw, op, highlight)) # get the last operation
         
         # link_dict_for_sankey['acc_cnt'].append(cnt)
     
