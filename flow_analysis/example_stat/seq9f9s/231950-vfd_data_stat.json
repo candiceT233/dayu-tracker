@@ -1,6 +1,6 @@
 [
 {
-	"file-2": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc", "task_name": "run_idfeature-231950", "open_time": 1707852660675368, "close_time": 1707852662602683, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 378, "access_type": "write_only", "file_type": "output", "io_bytes": 1368076, "file_size": 12227240, 
+	"file-2": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc", "task_name": "run_idfeature-231950", "open_time(us)": 1707852660675368, "close_time(us)": 1707852662602683, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 378, "access_type": "write_only", "file_type": "output", "io_bytes": 1368076, "file_size": 12227240, 
 		"data":[{
 			"cloudnumber": {
 				"H5FD_MEM_DRAW": {
@@ -175,7 +175,7 @@
 },
 
 {
-	"file-1": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_00:00:00.nc", "task_name": "run_idfeature-231950", "open_time": 1707852600040048, "close_time": 1707852662652567, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 8, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 918538, "file_size": 17684963, 
+	"file-1": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_00:00:00.nc", "task_name": "run_idfeature-231950", "open_time(us)": 1707852600040048, "close_time(us)": 1707852662652567, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 8, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 918538, "file_size": 17684963, 
 		"data":[{
 			"file": {
 			},
@@ -217,7 +217,7 @@
 },
 
 {
-	"file-4": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc", "task_name": "run_idfeature-231950", "open_time": 1707852718432159, "close_time": 1707852720338723, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 378, "access_type": "write_only", "file_type": "output", "io_bytes": 1359118, "file_size": 12061027, 
+	"file-4": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc", "task_name": "run_idfeature-231950", "open_time(us)": 1707852718432159, "close_time(us)": 1707852720338723, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 378, "access_type": "write_only", "file_type": "output", "io_bytes": 1359118, "file_size": 12061027, 
 		"data":[{
 			"cloudnumber": {
 				"H5FD_MEM_DRAW": {
@@ -392,7 +392,7 @@
 },
 
 {
-	"file-3": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_01:00:00.nc", "task_name": "run_idfeature-231950", "open_time": 1707852662656716, "close_time": 1707852720391580, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 9, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 868802, "file_size": 17327618, 
+	"file-3": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_01:00:00.nc", "task_name": "run_idfeature-231950", "open_time(us)": 1707852662656716, "close_time(us)": 1707852720391580, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 9, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 868802, "file_size": 17327618, 
 		"data":[{
 			"file": {
 			},
@@ -439,7 +439,7 @@
 },
 
 {
-	"file-6": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc", "task_name": "run_idfeature-231950", "open_time": 1707852775300002, "close_time": 1707852777185052, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 378, "access_type": "write_only", "file_type": "output", "io_bytes": 1343822, "file_size": 11904827, 
+	"file-6": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc", "task_name": "run_idfeature-231950", "open_time(us)": 1707852775300002, "close_time(us)": 1707852777185052, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 378, "access_type": "write_only", "file_type": "output", "io_bytes": 1343822, "file_size": 11904827, 
 		"data":[{
 			"cloudnumber": {
 				"H5FD_MEM_DRAW": {
@@ -614,7 +614,7 @@
 },
 
 {
-	"file-5": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_02:00:00.nc", "task_name": "run_idfeature-231950", "open_time": 1707852720394809, "close_time": 1707852777221159, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 9, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 819650, "file_size": 16948902, 
+	"file-5": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_02:00:00.nc", "task_name": "run_idfeature-231950", "open_time(us)": 1707852720394809, "close_time(us)": 1707852777221159, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 9, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 819650, "file_size": 16948902, 
 		"data":[{
 			"file": {
 			},
@@ -661,7 +661,7 @@
 },
 
 {
-	"file-8": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc", "task_name": "run_idfeature-231950", "open_time": 1707852830796269, "close_time": 1707852832672087, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 378, "access_type": "write_only", "file_type": "output", "io_bytes": 1320310, "file_size": 11749071, 
+	"file-8": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc", "task_name": "run_idfeature-231950", "open_time(us)": 1707852830796269, "close_time(us)": 1707852832672087, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 378, "access_type": "write_only", "file_type": "output", "io_bytes": 1320310, "file_size": 11749071, 
 		"data":[{
 			"cloudnumber": {
 				"H5FD_MEM_DRAW": {
@@ -836,7 +836,7 @@
 },
 
 {
-	"file-7": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_03:00:00.nc", "task_name": "run_idfeature-231950", "open_time": 1707852777224263, "close_time": 1707852832724055, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 9, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 772504, "file_size": 16640959, 
+	"file-7": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_03:00:00.nc", "task_name": "run_idfeature-231950", "open_time(us)": 1707852777224263, "close_time(us)": 1707852832724055, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 9, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 772504, "file_size": 16640959, 
 		"data":[{
 			"file": {
 			},
@@ -883,7 +883,7 @@
 },
 
 {
-	"file-10": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc", "task_name": "run_idfeature-231950", "open_time": 1707852884545494, "close_time": 1707852886422892, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 378, "access_type": "write_only", "file_type": "output", "io_bytes": 1305231, "file_size": 11693809, 
+	"file-10": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc", "task_name": "run_idfeature-231950", "open_time(us)": 1707852884545494, "close_time(us)": 1707852886422892, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 378, "access_type": "write_only", "file_type": "output", "io_bytes": 1305231, "file_size": 11693809, 
 		"data":[{
 			"cloudnumber": {
 				"H5FD_MEM_DRAW": {
@@ -1058,7 +1058,7 @@
 },
 
 {
-	"file-9": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_04:00:00.nc", "task_name": "run_idfeature-231950", "open_time": 1707852832726593, "close_time": 1707852886471033, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 9, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 745531, "file_size": 16442019, 
+	"file-9": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_04:00:00.nc", "task_name": "run_idfeature-231950", "open_time(us)": 1707852832726593, "close_time(us)": 1707852886471033, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 9, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 745531, "file_size": 16442019, 
 		"data":[{
 			"file": {
 			},
@@ -1105,7 +1105,7 @@
 },
 
 {
-	"file-12": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc", "task_name": "run_idfeature-231950", "open_time": 1707852938088261, "close_time": 1707852939959387, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 378, "access_type": "write_only", "file_type": "output", "io_bytes": 1292801, "file_size": 11598450, 
+	"file-12": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc", "task_name": "run_idfeature-231950", "open_time(us)": 1707852938088261, "close_time(us)": 1707852939959387, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 378, "access_type": "write_only", "file_type": "output", "io_bytes": 1292801, "file_size": 11598450, 
 		"data":[{
 			"cloudnumber": {
 				"H5FD_MEM_DRAW": {
@@ -1280,7 +1280,7 @@
 },
 
 {
-	"file-11": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_05:00:00.nc", "task_name": "run_idfeature-231950", "open_time": 1707852886473380, "close_time": 1707852939994081, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 9, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 729036, "file_size": 16212682, 
+	"file-11": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_05:00:00.nc", "task_name": "run_idfeature-231950", "open_time(us)": 1707852886473380, "close_time(us)": 1707852939994081, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 9, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 729036, "file_size": 16212682, 
 		"data":[{
 			"file": {
 			},
@@ -1327,7 +1327,7 @@
 },
 
 {
-	"file-14": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc", "task_name": "run_idfeature-231950", "open_time": 1707852988729249, "close_time": 1707852990590588, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 378, "access_type": "write_only", "file_type": "output", "io_bytes": 1270134, "file_size": 11488826, 
+	"file-14": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc", "task_name": "run_idfeature-231950", "open_time(us)": 1707852988729249, "close_time(us)": 1707852990590588, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 378, "access_type": "write_only", "file_type": "output", "io_bytes": 1270134, "file_size": 11488826, 
 		"data":[{
 			"cloudnumber": {
 				"H5FD_MEM_DRAW": {
@@ -1502,7 +1502,7 @@
 },
 
 {
-	"file-13": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_06:00:00.nc", "task_name": "run_idfeature-231950", "open_time": 1707852939998064, "close_time": 1707852990640537, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 9, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 709108, "file_size": 15863545, 
+	"file-13": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_06:00:00.nc", "task_name": "run_idfeature-231950", "open_time(us)": 1707852939998064, "close_time(us)": 1707852990640537, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 9, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 709108, "file_size": 15863545, 
 		"data":[{
 			"file": {
 			},
@@ -1549,7 +1549,7 @@
 },
 
 {
-	"file-16": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc", "task_name": "run_idfeature-231950", "open_time": 1707853037923193, "close_time": 1707853039782898, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 378, "access_type": "write_only", "file_type": "output", "io_bytes": 1244354, "file_size": 11398317, 
+	"file-16": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc", "task_name": "run_idfeature-231950", "open_time(us)": 1707853037923193, "close_time(us)": 1707853039782898, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 378, "access_type": "write_only", "file_type": "output", "io_bytes": 1244354, "file_size": 11398317, 
 		"data":[{
 			"cloudnumber": {
 				"H5FD_MEM_DRAW": {
@@ -1724,7 +1724,7 @@
 },
 
 {
-	"file-15": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_07:00:00.nc", "task_name": "run_idfeature-231950", "open_time": 1707852990646631, "close_time": 1707853039889790, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 9, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 700859, "file_size": 15533773, 
+	"file-15": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_07:00:00.nc", "task_name": "run_idfeature-231950", "open_time(us)": 1707852990646631, "close_time(us)": 1707853039889790, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 9, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 700859, "file_size": 15533773, 
 		"data":[{
 			"file": {
 			},
@@ -1771,7 +1771,7 @@
 },
 
 {
-	"file-18": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc", "task_name": "run_idfeature-231950", "open_time": 1707853086719723, "close_time": 1707853088583871, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 378, "access_type": "write_only", "file_type": "output", "io_bytes": 1232975, "file_size": 11394500, 
+	"file-18": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc", "task_name": "run_idfeature-231950", "open_time(us)": 1707853086719723, "close_time(us)": 1707853088583871, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 378, "access_type": "write_only", "file_type": "output", "io_bytes": 1232975, "file_size": 11394500, 
 		"data":[{
 			"cloudnumber": {
 				"H5FD_MEM_DRAW": {
@@ -1946,7 +1946,7 @@
 },
 
 {
-	"file-17": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_08:00:00.nc", "task_name": "run_idfeature-231950", "open_time": 1707853039896284, "close_time": 1707853088633277, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 9, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 707319, "file_size": 15378868, 
+	"file-17": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_08:00:00.nc", "task_name": "run_idfeature-231950", "open_time(us)": 1707853039896284, "close_time(us)": 1707853088633277, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 9, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 707319, "file_size": 15378868, 
 		"data":[{
 			"file": {
 			},
@@ -1993,7 +1993,7 @@
 },
 
 {
-	"file-19": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853088643911, "close_time": 1707853089980155, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 42, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 19006, "file_size": 12227240, 
+	"file-19": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853088643911, "close_time(us)": 1707853089980155, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 42, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 19006, "file_size": 12227240, 
 		"data":[{
 			"feature_number": {
 				"H5FD_MEM_DRAW": {
@@ -2046,7 +2046,7 @@
 },
 
 {
-	"file-20": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853089982278, "close_time": 1707853090337528, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 41, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 15627, "file_size": 12061027, 
+	"file-20": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853089982278, "close_time(us)": 1707853090337528, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 41, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 15627, "file_size": 12061027, 
 		"data":[{
 			"feature_number": {
 				"H5FD_MEM_DRAW": {
@@ -2084,7 +2084,7 @@
 },
 
 {
-	"file-23": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_010000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853101741671, "close_time": 1707853101811501, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 27, "access_type": "write_only", "file_type": "output", "io_bytes": 12763, "file_size": 55661, 
+	"file-23": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_010000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853101741671, "close_time(us)": 1707853101811501, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 27, "access_type": "write_only", "file_type": "output", "io_bytes": 12763, "file_size": 55661, 
 		"data":[{
 			"basetime_new": {
 			},
@@ -2165,7 +2165,7 @@
 },
 
 {
-	"file-24": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853101815766, "close_time": 1707853101815906, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 0, "access_type": "not_accessed", "file_type": "na", "io_bytes": 0, "file_size": 12061027, 
+	"file-24": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853101815766, "close_time(us)": 1707853101815906, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 0, "access_type": "not_accessed", "file_type": "na", "io_bytes": 0, "file_size": 12061027, 
 		"data":[{
 		}],
 		"metadata":[{
@@ -2175,7 +2175,7 @@
 },
 
 {
-	"file-22": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853101711185, "close_time": 1707853102087034, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3900, "file_size": 12227240, 
+	"file-22": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853101711185, "close_time(us)": 1707853102087034, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3900, "file_size": 12227240, 
 		"data":[{
 			"file": {
 			}
@@ -2193,7 +2193,7 @@
 },
 
 {
-	"file-21": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853101670136, "close_time": 1707853102160841, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 41, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 12627, "file_size": 12061027, 
+	"file-21": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853101670136, "close_time(us)": 1707853102160841, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 41, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 12627, "file_size": 12061027, 
 		"data":[{
 			"feature_number": {
 				"H5FD_MEM_DRAW": {
@@ -2224,7 +2224,7 @@
 },
 
 {
-	"file-25": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853102163119, "close_time": 1707853102517476, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 42, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 11184, "file_size": 11904827, 
+	"file-25": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853102163119, "close_time(us)": 1707853102517476, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 42, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 11184, "file_size": 11904827, 
 		"data":[{
 			"feature_number": {
 				"H5FD_MEM_DRAW": {
@@ -2263,7 +2263,7 @@
 },
 
 {
-	"file-28": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_020000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853114295268, "close_time": 1707853114362354, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 27, "access_type": "write_only", "file_type": "output", "io_bytes": 20578, "file_size": 56436, 
+	"file-28": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_020000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853114295268, "close_time(us)": 1707853114362354, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 27, "access_type": "write_only", "file_type": "output", "io_bytes": 20578, "file_size": 56436, 
 		"data":[{
 			"basetime_new": {
 			},
@@ -2366,7 +2366,7 @@
 },
 
 {
-	"file-29": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853114367211, "close_time": 1707853114367430, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 0, "access_type": "not_accessed", "file_type": "na", "io_bytes": 0, "file_size": 11904827, 
+	"file-29": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853114367211, "close_time(us)": 1707853114367430, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 0, "access_type": "not_accessed", "file_type": "na", "io_bytes": 0, "file_size": 11904827, 
 		"data":[{
 		}],
 		"metadata":[{
@@ -2376,7 +2376,7 @@
 },
 
 {
-	"file-27": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853114261160, "close_time": 1707853114638154, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3673, "file_size": 12061027, 
+	"file-27": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853114261160, "close_time(us)": 1707853114638154, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3673, "file_size": 12061027, 
 		"data":[{
 			"file": {
 			}
@@ -2399,7 +2399,7 @@
 },
 
 {
-	"file-26": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853114218076, "close_time": 1707853114710870, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 41, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 21499, "file_size": 11904827, 
+	"file-26": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853114218076, "close_time(us)": 1707853114710870, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 41, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 21499, "file_size": 11904827, 
 		"data":[{
 			"feature_number": {
 				"H5FD_MEM_DRAW": {
@@ -2446,7 +2446,7 @@
 },
 
 {
-	"file-30": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853114713313, "close_time": 1707853115061836, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 41, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 9700, "file_size": 11749071, 
+	"file-30": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853114713313, "close_time(us)": 1707853115061836, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 41, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 9700, "file_size": 11749071, 
 		"data":[{
 			"feature_number": {
 				"H5FD_MEM_DRAW": {
@@ -2485,7 +2485,7 @@
 },
 
 {
-	"file-33": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_030000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853127055672, "close_time": 1707853127123274, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 26, "access_type": "write_only", "file_type": "output", "io_bytes": 16048, "file_size": 55441, 
+	"file-33": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_030000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853127055672, "close_time(us)": 1707853127123274, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 26, "access_type": "write_only", "file_type": "output", "io_bytes": 16048, "file_size": 55441, 
 		"data":[{
 			"basetime_new": {
 			},
@@ -2578,7 +2578,7 @@
 },
 
 {
-	"file-34": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853127127551, "close_time": 1707853127127755, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 0, "access_type": "not_accessed", "file_type": "na", "io_bytes": 0, "file_size": 11749071, 
+	"file-34": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853127127551, "close_time(us)": 1707853127127755, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 0, "access_type": "not_accessed", "file_type": "na", "io_bytes": 0, "file_size": 11749071, 
 		"data":[{
 		}],
 		"metadata":[{
@@ -2588,15 +2588,15 @@
 },
 
 {
-	"file-32": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853127025613, "close_time": 1707853127397533, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 12, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 5474, "file_size": 11904827, 
+	"file-32": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853127025613, "close_time(us)": 1707853127397533, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 12, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 5474, "file_size": 11904827, 
 		"data":[{
-			"base_time": {
+			"base_time(us)": {
 			},
 			"file": {
 			}
 		}],
 		"metadata":[{
-			"base_time": {
+			"base_time(us)": {
 				"H5FD_MEM_BTREE": {
 				"read_bytes": 2096, "read_cnt": 1, "read_ranges": {"38290":[0,0]},
 				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
@@ -2624,7 +2624,7 @@
 },
 
 {
-	"file-31": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853126988491, "close_time": 1707853127461111, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 42, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 19275, "file_size": 11749071, 
+	"file-31": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853126988491, "close_time(us)": 1707853127461111, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 42, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 19275, "file_size": 11749071, 
 		"data":[{
 			"feature_number": {
 				"H5FD_MEM_DRAW": {
@@ -2672,7 +2672,7 @@
 },
 
 {
-	"file-35": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853127463027, "close_time": 1707853127809656, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 41, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 15118, "file_size": 11693809, 
+	"file-35": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853127463027, "close_time(us)": 1707853127809656, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 41, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 15118, "file_size": 11693809, 
 		"data":[{
 			"feature_number": {
 				"H5FD_MEM_DRAW": {
@@ -2710,7 +2710,7 @@
 },
 
 {
-	"file-38": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_040000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853139566961, "close_time": 1707853139632201, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 27, "access_type": "write_only", "file_type": "output", "io_bytes": 12763, "file_size": 55036, 
+	"file-38": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_040000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853139566961, "close_time(us)": 1707853139632201, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 27, "access_type": "write_only", "file_type": "output", "io_bytes": 12763, "file_size": 55036, 
 		"data":[{
 			"basetime_new": {
 			},
@@ -2791,7 +2791,7 @@
 },
 
 {
-	"file-37": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853139537881, "close_time": 1707853139636327, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3900, "file_size": 11749071, 
+	"file-37": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853139537881, "close_time(us)": 1707853139636327, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3900, "file_size": 11749071, 
 		"data":[{
 			"file": {
 			}
@@ -2809,7 +2809,7 @@
 },
 
 {
-	"file-36": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853139500847, "close_time": 1707853139639177, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 2653, "file_size": 11693809, 
+	"file-36": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853139500847, "close_time(us)": 1707853139639177, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 2653, "file_size": 11693809, 
 		"data":[{
 			"file": {
 			}
@@ -2827,7 +2827,7 @@
 },
 
 {
-	"file-39": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853139641348, "close_time": 1707853139984518, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 41, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 13537, "file_size": 11693809, 
+	"file-39": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853139641348, "close_time(us)": 1707853139984518, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 41, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 13537, "file_size": 11693809, 
 		"data":[{
 			"feature_number": {
 				"H5FD_MEM_DRAW": {
@@ -2858,7 +2858,7 @@
 },
 
 {
-	"file-40": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853139986558, "close_time": 1707853140335456, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 42, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 11720, "file_size": 11598450, 
+	"file-40": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853139986558, "close_time(us)": 1707853140335456, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 42, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 11720, "file_size": 11598450, 
 		"data":[{
 			"feature_number": {
 				"H5FD_MEM_DRAW": {
@@ -2897,7 +2897,7 @@
 },
 
 {
-	"file-43": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_050000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853152391208, "close_time": 1707853152460494, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 27, "access_type": "write_only", "file_type": "output", "io_bytes": 20706, "file_size": 56039, 
+	"file-43": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_050000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853152391208, "close_time(us)": 1707853152460494, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 27, "access_type": "write_only", "file_type": "output", "io_bytes": 20706, "file_size": 56039, 
 		"data":[{
 			"basetime_new": {
 			},
@@ -3000,7 +3000,7 @@
 },
 
 {
-	"file-42": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853152361570, "close_time": 1707853152464296, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3673, "file_size": 11693809, 
+	"file-42": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853152361570, "close_time(us)": 1707853152464296, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3673, "file_size": 11693809, 
 		"data":[{
 			"file": {
 			}
@@ -3023,7 +3023,7 @@
 },
 
 {
-	"file-41": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853152324477, "close_time": 1707853152466756, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 7280, "file_size": 11598450, 
+	"file-41": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853152324477, "close_time(us)": 1707853152466756, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 7280, "file_size": 11598450, 
 		"data":[{
 			"file": {
 				"H5FD_MEM_DRAW": {
@@ -3050,7 +3050,7 @@
 },
 
 {
-	"file-44": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853152469222, "close_time": 1707853152809694, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 41, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 16917, "file_size": 11598450, 
+	"file-44": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853152469222, "close_time(us)": 1707853152809694, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 41, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 16917, "file_size": 11598450, 
 		"data":[{
 			"feature_number": {
 				"H5FD_MEM_DRAW": {
@@ -3093,7 +3093,7 @@
 },
 
 {
-	"file-45": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853152811828, "close_time": 1707853153152911, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 41, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 9330, "file_size": 11488826, 
+	"file-45": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853152811828, "close_time(us)": 1707853153152911, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 41, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 9330, "file_size": 11488826, 
 		"data":[{
 			"feature_number": {
 				"H5FD_MEM_DRAW": {
@@ -3132,7 +3132,7 @@
 },
 
 {
-	"file-48": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_060000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853165340038, "close_time": 1707853165408658, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 26, "access_type": "write_only", "file_type": "output", "io_bytes": 16133, "file_size": 56566, 
+	"file-48": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_060000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853165340038, "close_time(us)": 1707853165408658, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 26, "access_type": "write_only", "file_type": "output", "io_bytes": 16133, "file_size": 56566, 
 		"data":[{
 			"basetime_new": {
 			},
@@ -3225,15 +3225,15 @@
 },
 
 {
-	"file-47": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853165309536, "close_time": 1707853165412708, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 12, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 5474, "file_size": 11598450, 
+	"file-47": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853165309536, "close_time(us)": 1707853165412708, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 12, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 5474, "file_size": 11598450, 
 		"data":[{
-			"base_time": {
+			"base_time(us)": {
 			},
 			"file": {
 			}
 		}],
 		"metadata":[{
-			"base_time": {
+			"base_time(us)": {
 				"H5FD_MEM_BTREE": {
 				"read_bytes": 2096, "read_cnt": 1, "read_ranges": {"42130":[0,0]},
 				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
@@ -3261,7 +3261,7 @@
 },
 
 {
-	"file-46": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853165272416, "close_time": 1707853165415949, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 2770, "file_size": 11488826, 
+	"file-46": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853165272416, "close_time(us)": 1707853165415949, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 2770, "file_size": 11488826, 
 		"data":[{
 			"file": {
 			}
@@ -3284,7 +3284,7 @@
 },
 
 {
-	"file-49": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853165418086, "close_time": 1707853165758720, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 42, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 19619, "file_size": 11488826, 
+	"file-49": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853165418086, "close_time(us)": 1707853165758720, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 42, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 19619, "file_size": 11488826, 
 		"data":[{
 			"feature_number": {
 				"H5FD_MEM_DRAW": {
@@ -3337,7 +3337,7 @@
 },
 
 {
-	"file-50": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853165760908, "close_time": 1707853166100019, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 41, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 15420, "file_size": 11398317, 
+	"file-50": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853165760908, "close_time(us)": 1707853166100019, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 41, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 15420, "file_size": 11398317, 
 		"data":[{
 			"feature_number": {
 				"H5FD_MEM_DRAW": {
@@ -3375,7 +3375,7 @@
 },
 
 {
-	"file-53": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_070000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853177820757, "close_time": 1707853177887010, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 27, "access_type": "write_only", "file_type": "output", "io_bytes": 12763, "file_size": 55208, 
+	"file-53": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_070000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853177820757, "close_time(us)": 1707853177887010, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 27, "access_type": "write_only", "file_type": "output", "io_bytes": 12763, "file_size": 55208, 
 		"data":[{
 			"basetime_new": {
 			},
@@ -3456,7 +3456,7 @@
 },
 
 {
-	"file-54": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853177891194, "close_time": 1707853177891411, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 0, "access_type": "not_accessed", "file_type": "na", "io_bytes": 0, "file_size": 11398317, 
+	"file-54": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853177891194, "close_time(us)": 1707853177891411, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 0, "access_type": "not_accessed", "file_type": "na", "io_bytes": 0, "file_size": 11398317, 
 		"data":[{
 		}],
 		"metadata":[{
@@ -3466,7 +3466,7 @@
 },
 
 {
-	"file-52": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853177787009, "close_time": 1707853178164305, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3900, "file_size": 11488826, 
+	"file-52": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853177787009, "close_time(us)": 1707853178164305, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3900, "file_size": 11488826, 
 		"data":[{
 			"file": {
 			}
@@ -3484,7 +3484,7 @@
 },
 
 {
-	"file-51": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853177745324, "close_time": 1707853178235745, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 41, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 11263, "file_size": 11398317, 
+	"file-51": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853177745324, "close_time(us)": 1707853178235745, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 41, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 11263, "file_size": 11398317, 
 		"data":[{
 			"feature_number": {
 				"H5FD_MEM_DRAW": {
@@ -3515,7 +3515,7 @@
 },
 
 {
-	"file-55": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853178238094, "close_time": 1707853178585873, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 42, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 9702, "file_size": 11394500, 
+	"file-55": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853178238094, "close_time(us)": 1707853178585873, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 42, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 9702, "file_size": 11394500, 
 		"data":[{
 			"feature_number": {
 				"H5FD_MEM_DRAW": {
@@ -3554,7 +3554,7 @@
 },
 
 {
-	"file-58": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_080000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853189994177, "close_time": 1707853190061760, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 27, "access_type": "write_only", "file_type": "output", "io_bytes": 20378, "file_size": 55679, 
+	"file-58": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_080000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853189994177, "close_time(us)": 1707853190061760, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 27, "access_type": "write_only", "file_type": "output", "io_bytes": 20378, "file_size": 55679, 
 		"data":[{
 			"basetime_new": {
 			},
@@ -3657,7 +3657,7 @@
 },
 
 {
-	"file-59": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_010000.nc", "task_name": "run_gettracks-231950", "open_time": 1707853190071151, "close_time": 1707853190089034, "file_intent": ["'H5F_ACC_RDWR'"], "file_no": 0, "file_read_cnt": 5, "file_write_cnt": 2, "access_type": "read_write", "file_type": "input-output", "io_bytes": 2106, "file_size": 55661, 
+	"file-59": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_010000.nc", "task_name": "run_gettracks-231950", "open_time(us)": 1707853190071151, "close_time(us)": 1707853190089034, "file_intent": ["'H5F_ACC_RDWR'"], "file_no": 0, "file_read_cnt": 5, "file_write_cnt": 2, "access_type": "read_write", "file_type": "input-output", "io_bytes": 2106, "file_size": 55661, 
 		"data":[{
 			"basetime_ref": {
 			},
@@ -3683,7 +3683,7 @@
 },
 
 {
-	"file-60": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_010000.nc", "task_name": "run_gettracks-231950", "open_time": 1707853190091306, "close_time": 1707853190117345, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 7, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 7088, "file_size": 55661, 
+	"file-60": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_010000.nc", "task_name": "run_gettracks-231950", "open_time(us)": 1707853190091306, "close_time(us)": 1707853190117345, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 7, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 7088, "file_size": 55661, 
 		"data":[{
 			"file": {
 			},
@@ -3717,7 +3717,7 @@
 },
 
 {
-	"file-61": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc", "task_name": "run_gettracks-231950", "open_time": 1707853190121986, "close_time": 1707853190152924, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3139, "file_size": 12227240, 
+	"file-61": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc", "task_name": "run_gettracks-231950", "open_time(us)": 1707853190121986, "close_time(us)": 1707853190152924, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3139, "file_size": 12227240, 
 		"data":[{
 			"file": {
 			}
@@ -3740,7 +3740,7 @@
 },
 
 {
-	"file-62": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc", "task_name": "run_gettracks-231950", "open_time": 1707853190156947, "close_time": 1707853190187831, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 12, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 5762, "file_size": 12061027, 
+	"file-62": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc", "task_name": "run_gettracks-231950", "open_time(us)": 1707853190156947, "close_time(us)": 1707853190187831, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 12, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 5762, "file_size": 12061027, 
 		"data":[{
 			"file": {
 			},
@@ -3766,7 +3766,7 @@
 },
 
 {
-	"file-63": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_020000.nc", "task_name": "run_gettracks-231950", "open_time": 1707853191513656, "close_time": 1707853191534059, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 6, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3540, "file_size": 56436, 
+	"file-63": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_020000.nc", "task_name": "run_gettracks-231950", "open_time(us)": 1707853191513656, "close_time(us)": 1707853191534059, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 6, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3540, "file_size": 56436, 
 		"data":[{
 			"basetime_new": {
 			},
@@ -3797,7 +3797,7 @@
 },
 
 {
-	"file-64": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc", "task_name": "run_gettracks-231950", "open_time": 1707853191538493, "close_time": 1707853191581043, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 12, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 5762, "file_size": 12061027, 
+	"file-64": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc", "task_name": "run_gettracks-231950", "open_time(us)": 1707853191538493, "close_time(us)": 1707853191581043, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 12, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 5762, "file_size": 12061027, 
 		"data":[{
 			"file": {
 			},
@@ -3823,7 +3823,7 @@
 },
 
 {
-	"file-65": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc", "task_name": "run_gettracks-231950", "open_time": 1707853191585784, "close_time": 1707853191623418, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3689, "file_size": 11904827, 
+	"file-65": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc", "task_name": "run_gettracks-231950", "open_time(us)": 1707853191585784, "close_time(us)": 1707853191623418, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3689, "file_size": 11904827, 
 		"data":[{
 			"file": {
 			}
@@ -3841,7 +3841,7 @@
 },
 
 {
-	"file-66": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_030000.nc", "task_name": "run_gettracks-231950", "open_time": 1707853192581225, "close_time": 1707853192601307, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 7, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 9041, "file_size": 55441, 
+	"file-66": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_030000.nc", "task_name": "run_gettracks-231950", "open_time(us)": 1707853192581225, "close_time(us)": 1707853192601307, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 7, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 9041, "file_size": 55441, 
 		"data":[{
 			"file": {
 				"H5FD_MEM_DRAW": {
@@ -3881,7 +3881,7 @@
 },
 
 {
-	"file-67": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc", "task_name": "run_gettracks-231950", "open_time": 1707853192605328, "close_time": 1707853192635823, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3689, "file_size": 11904827, 
+	"file-67": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc", "task_name": "run_gettracks-231950", "open_time(us)": 1707853192605328, "close_time(us)": 1707853192635823, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3689, "file_size": 11904827, 
 		"data":[{
 			"file": {
 			}
@@ -3899,7 +3899,7 @@
 },
 
 {
-	"file-68": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc", "task_name": "run_gettracks-231950", "open_time": 1707853192640128, "close_time": 1707853192676831, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 12, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3402, "file_size": 11749071, 
+	"file-68": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc", "task_name": "run_gettracks-231950", "open_time(us)": 1707853192640128, "close_time(us)": 1707853192676831, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 12, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3402, "file_size": 11749071, 
 		"data":[{
 			"file": {
 			}
@@ -3927,7 +3927,7 @@
 },
 
 {
-	"file-69": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_040000.nc", "task_name": "run_gettracks-231950", "open_time": 1707853193829938, "close_time": 1707853193851395, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 6, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 1611, "file_size": 55036, 
+	"file-69": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_040000.nc", "task_name": "run_gettracks-231950", "open_time(us)": 1707853193829938, "close_time(us)": 1707853193851395, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 6, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 1611, "file_size": 55036, 
 		"data":[{
 			"basetime_ref": {
 				"H5FD_MEM_DRAW": {
@@ -3953,7 +3953,7 @@
 },
 
 {
-	"file-70": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc", "task_name": "run_gettracks-231950", "open_time": 1707853193855654, "close_time": 1707853193893643, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 12, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3402, "file_size": 11749071, 
+	"file-70": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc", "task_name": "run_gettracks-231950", "open_time(us)": 1707853193855654, "close_time(us)": 1707853193893643, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 12, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3402, "file_size": 11749071, 
 		"data":[{
 			"file": {
 			}
@@ -3981,7 +3981,7 @@
 },
 
 {
-	"file-71": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc", "task_name": "run_gettracks-231950", "open_time": 1707853193897617, "close_time": 1707853193928736, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3999, "file_size": 11693809, 
+	"file-71": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc", "task_name": "run_gettracks-231950", "open_time(us)": 1707853193897617, "close_time(us)": 1707853193928736, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3999, "file_size": 11693809, 
 		"data":[{
 			"file": {
 			}
@@ -4004,7 +4004,7 @@
 },
 
 {
-	"file-72": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_050000.nc", "task_name": "run_gettracks-231950", "open_time": 1707853194987120, "close_time": 1707853195007863, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 7, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 5488, "file_size": 56039, 
+	"file-72": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_050000.nc", "task_name": "run_gettracks-231950", "open_time(us)": 1707853194987120, "close_time(us)": 1707853195007863, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 7, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 5488, "file_size": 56039, 
 		"data":[{
 			"file": {
 			},
@@ -4045,7 +4045,7 @@
 },
 
 {
-	"file-73": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc", "task_name": "run_gettracks-231950", "open_time": 1707853195012401, "close_time": 1707853195042616, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3999, "file_size": 11693809, 
+	"file-73": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc", "task_name": "run_gettracks-231950", "open_time(us)": 1707853195012401, "close_time(us)": 1707853195042616, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3999, "file_size": 11693809, 
 		"data":[{
 			"file": {
 			}
@@ -4068,7 +4068,7 @@
 },
 
 {
-	"file-74": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc", "task_name": "run_gettracks-231950", "open_time": 1707853195046814, "close_time": 1707853195085453, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 12, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 2866, "file_size": 11598450, 
+	"file-74": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc", "task_name": "run_gettracks-231950", "open_time(us)": 1707853195046814, "close_time(us)": 1707853195085453, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 12, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 2866, "file_size": 11598450, 
 		"data":[{
 			"file": {
 			}
@@ -4091,7 +4091,7 @@
 },
 
 {
-	"file-75": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_060000.nc", "task_name": "run_gettracks-231950", "open_time": 1707853196482039, "close_time": 1707853196502309, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 6, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 2991, "file_size": 56566, 
+	"file-75": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_060000.nc", "task_name": "run_gettracks-231950", "open_time(us)": 1707853196482039, "close_time(us)": 1707853196502309, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 6, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 2991, "file_size": 56566, 
 		"data":[{
 			"basetime_ref": {
 			},
@@ -4122,7 +4122,7 @@
 },
 
 {
-	"file-76": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc", "task_name": "run_gettracks-231950", "open_time": 1707853196506423, "close_time": 1707853196537736, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 12, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 2866, "file_size": 11598450, 
+	"file-76": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc", "task_name": "run_gettracks-231950", "open_time(us)": 1707853196506423, "close_time(us)": 1707853196537736, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 12, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 2866, "file_size": 11598450, 
 		"data":[{
 			"file": {
 			}
@@ -4145,7 +4145,7 @@
 },
 
 {
-	"file-77": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc", "task_name": "run_gettracks-231950", "open_time": 1707853196541501, "close_time": 1707853196571638, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 6041, "file_size": 11488826, 
+	"file-77": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc", "task_name": "run_gettracks-231950", "open_time(us)": 1707853196541501, "close_time(us)": 1707853196571638, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 6041, "file_size": 11488826, 
 		"data":[{
 			"file": {
 				"H5FD_MEM_DRAW": {
@@ -4167,7 +4167,7 @@
 },
 
 {
-	"file-78": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_070000.nc", "task_name": "run_gettracks-231950", "open_time": 1707853197922513, "close_time": 1707853197941961, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 7, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 5029, "file_size": 55208, 
+	"file-78": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_070000.nc", "task_name": "run_gettracks-231950", "open_time(us)": 1707853197922513, "close_time(us)": 1707853197941961, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 7, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 5029, "file_size": 55208, 
 		"data":[{
 			"file": {
 			},
@@ -4203,7 +4203,7 @@
 },
 
 {
-	"file-56": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853189928088, "close_time": 1707853197978103, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 7280, "file_size": 11394500, 
+	"file-56": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853189928088, "close_time(us)": 1707853197978103, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 7280, "file_size": 11394500, 
 		"data":[{
 			"file": {
 				"H5FD_MEM_DRAW": {
@@ -4230,7 +4230,7 @@
 },
 
 {
-	"file-57": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc", "task_name": "run_tracksingle-231950", "open_time": 1707853189965112, "close_time": 1707853197981137, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3673, "file_size": 11398317, 
+	"file-57": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc", "task_name": "run_tracksingle-231950", "open_time(us)": 1707853189965112, "close_time(us)": 1707853197981137, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3673, "file_size": 11398317, 
 		"data":[{
 			"file": {
 			}
@@ -4253,7 +4253,7 @@
 },
 
 {
-	"file-79": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc", "task_name": "run_gettracks-231950", "open_time": 1707853197945990, "close_time": 1707853197986977, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 6041, "file_size": 11488826, 
+	"file-79": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc", "task_name": "run_gettracks-231950", "open_time(us)": 1707853197945990, "close_time(us)": 1707853197986977, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 11, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 6041, "file_size": 11488826, 
 		"data":[{
 			"file": {
 				"H5FD_MEM_DRAW": {
@@ -4275,7 +4275,7 @@
 },
 
 {
-	"file-80": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc", "task_name": "run_gettracks-231950", "open_time": 1707853197990649, "close_time": 1707853198020287, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 12, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3117, "file_size": 11398317, 
+	"file-80": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc", "task_name": "run_gettracks-231950", "open_time(us)": 1707853197990649, "close_time(us)": 1707853198020287, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 12, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3117, "file_size": 11398317, 
 		"data":[{
 			"file": {
 			}
@@ -4308,7 +4308,7 @@
 },
 
 {
-	"file-81": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_080000.nc", "task_name": "run_gettracks-231950", "open_time": 1707853199109462, "close_time": 1707853199128815, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 6, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3576, "file_size": 55679, 
+	"file-81": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/track_20150506_080000.nc", "task_name": "run_gettracks-231950", "open_time(us)": 1707853199109462, "close_time(us)": 1707853199128815, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 6, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3576, "file_size": 55679, 
 		"data":[{
 			"file": {
 			},
@@ -4334,7 +4334,7 @@
 },
 
 {
-	"file-82": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc", "task_name": "run_gettracks-231950", "open_time": 1707853199132753, "close_time": 1707853199164097, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 12, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3117, "file_size": 11398317, 
+	"file-82": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc", "task_name": "run_gettracks-231950", "open_time(us)": 1707853199132753, "close_time(us)": 1707853199164097, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 12, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3117, "file_size": 11398317, 
 		"data":[{
 			"file": {
 			}
@@ -4367,7 +4367,7 @@
 },
 
 {
-	"file-83": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc", "task_name": "run_gettracks-231950", "open_time": 1707853199168491, "close_time": 1707853199200058, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 12, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3304, "file_size": 11394500, 
+	"file-83": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc", "task_name": "run_gettracks-231950", "open_time(us)": 1707853199168491, "close_time(us)": 1707853199200058, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 12, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 3304, "file_size": 11394500, 
 		"data":[{
 			"file": {
 			},
@@ -4398,7 +4398,7 @@
 },
 
 {
-	"file-84": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/tracknumbers_20150506.0000_20150506.0800.nc", "task_name": "run_gettracks-231950", "open_time": 1707853200554472, "close_time": 1707853200798860, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 16, "access_type": "write_only", "file_type": "output", "io_bytes": 7130, "file_size": 77427, 
+	"file-84": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/tracknumbers_20150506.0000_20150506.0800.nc", "task_name": "run_gettracks-231950", "open_time(us)": 1707853200554472, "close_time(us)": 1707853200798860, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 16, "access_type": "write_only", "file_type": "output", "io_bytes": 7130, "file_size": 77427, 
 		"data":[{
 			"file": {
 			},
@@ -4466,7 +4466,7 @@
 },
 
 {
-	"file-85": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/tracknumbers_20150506.0000_20150506.0800.nc", "task_name": "run_trackstats-231950", "open_time": 1707853200805198, "close_time": 1707853200945286, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 7, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 18232, "file_size": 77427, 
+	"file-85": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/tracknumbers_20150506.0000_20150506.0800.nc", "task_name": "run_trackstats-231950", "open_time(us)": 1707853200805198, "close_time(us)": 1707853200945286, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 7, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 18232, "file_size": 77427, 
 		"data":[{
 			"file": {
 			},
@@ -4497,9 +4497,9 @@
 },
 
 {
-	"file-87": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc", "task_name": "run_trackstats-231950", "open_time": 1707853200976628, "close_time": 1707853209922378, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 115, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 997576, "file_size": 12227240, 
+	"file-87": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc", "task_name": "run_trackstats-231950", "open_time(us)": 1707853200976628, "close_time(us)": 1707853209922378, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 115, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 997576, "file_size": 12227240, 
 		"data":[{
-			"base_time": {
+			"base_time(us)": {
 				"H5FD_MEM_DRAW": {
 				"read_bytes": 16, "read_cnt": 1, "read_ranges": {"48800":[0,0]},
 				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
@@ -4539,7 +4539,7 @@
 			}
 		}],
 		"metadata":[{
-			"base_time": {
+			"base_time(us)": {
 			},
 			"cloudtype": {
 			},
@@ -4577,7 +4577,7 @@
 },
 
 {
-	"file-88": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc", "task_name": "run_trackstats-231950", "open_time": 1707853209935436, "close_time": 1707853218999256, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 115, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 985056, "file_size": 12061027, 
+	"file-88": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc", "task_name": "run_trackstats-231950", "open_time(us)": 1707853209935436, "close_time(us)": 1707853218999256, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 115, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 985056, "file_size": 12061027, 
 		"data":[{
 			"cloudtype": {
 				"H5FD_MEM_DRAW": {
@@ -4662,7 +4662,7 @@
 },
 
 {
-	"file-89": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc", "task_name": "run_trackstats-231950", "open_time": 1707853219013479, "close_time": 1707853228540123, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 114, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 983682, "file_size": 11904827, 
+	"file-89": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc", "task_name": "run_trackstats-231950", "open_time(us)": 1707853219013479, "close_time(us)": 1707853228540123, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 114, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 983682, "file_size": 11904827, 
 		"data":[{
 			"cloudtype": {
 				"H5FD_MEM_DRAW": {
@@ -4736,7 +4736,7 @@
 },
 
 {
-	"file-90": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc", "task_name": "run_trackstats-231950", "open_time": 1707853228553729, "close_time": 1707853238044381, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 115, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 981819, "file_size": 11749071, 
+	"file-90": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc", "task_name": "run_trackstats-231950", "open_time(us)": 1707853228553729, "close_time(us)": 1707853238044381, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 115, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 981819, "file_size": 11749071, 
 		"data":[{
 			"cloudtype": {
 				"H5FD_MEM_DRAW": {
@@ -4821,7 +4821,7 @@
 },
 
 {
-	"file-91": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc", "task_name": "run_trackstats-231950", "open_time": 1707853238060321, "close_time": 1707853247183192, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 114, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 966801, "file_size": 11693809, 
+	"file-91": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc", "task_name": "run_trackstats-231950", "open_time(us)": 1707853238060321, "close_time(us)": 1707853247183192, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 114, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 966801, "file_size": 11693809, 
 		"data":[{
 			"cloudtype": {
 				"H5FD_MEM_DRAW": {
@@ -4900,9 +4900,9 @@
 },
 
 {
-	"file-92": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc", "task_name": "run_trackstats-231950", "open_time": 1707853247198950, "close_time": 1707853257111742, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 115, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 989074, "file_size": 11598450, 
+	"file-92": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc", "task_name": "run_trackstats-231950", "open_time(us)": 1707853247198950, "close_time(us)": 1707853257111742, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 115, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 989074, "file_size": 11598450, 
 		"data":[{
-			"base_time": {
+			"base_time(us)": {
 			},
 			"cloudtype": {
 				"H5FD_MEM_DRAW": {
@@ -4938,7 +4938,7 @@
 			}
 		}],
 		"metadata":[{
-			"base_time": {
+			"base_time(us)": {
 				"H5FD_MEM_BTREE": {
 				"read_bytes": 2096, "read_cnt": 1, "read_ranges": {"62010":[0,0]},
 				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
@@ -4983,7 +4983,7 @@
 },
 
 {
-	"file-93": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc", "task_name": "run_trackstats-231950", "open_time": 1707853257129473, "close_time": 1707853266430662, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 114, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 964486, "file_size": 11488826, 
+	"file-93": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc", "task_name": "run_trackstats-231950", "open_time(us)": 1707853257129473, "close_time(us)": 1707853266430662, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 114, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 964486, "file_size": 11488826, 
 		"data":[{
 			"cloudtype": {
 				"H5FD_MEM_DRAW": {
@@ -5062,7 +5062,7 @@
 },
 
 {
-	"file-94": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc", "task_name": "run_trackstats-231950", "open_time": 1707853266443908, "close_time": 1707853275623350, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 115, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 982979, "file_size": 11398317, 
+	"file-94": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc", "task_name": "run_trackstats-231950", "open_time(us)": 1707853266443908, "close_time(us)": 1707853275623350, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 115, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 982979, "file_size": 11398317, 
 		"data":[{
 			"cloudtype": {
 				"H5FD_MEM_DRAW": {
@@ -5147,7 +5147,7 @@
 },
 
 {
-	"file-95": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc", "task_name": "run_trackstats-231950", "open_time": 1707853275642164, "close_time": 1707853284454660, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 114, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 970253, "file_size": 11394500, 
+	"file-95": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc", "task_name": "run_trackstats-231950", "open_time(us)": 1707853275642164, "close_time(us)": 1707853284454660, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 114, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 970253, "file_size": 11394500, 
 		"data":[{
 			"cloudtype": {
 				"H5FD_MEM_DRAW": {
@@ -5218,7 +5218,7 @@
 },
 
 {
-	"file-96": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/trackstats_20150506.0000_20150506.0800.nc", "task_name": "run_trackstats-231950", "open_time": 1707853285804920, "close_time": 1707853286797789, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 139, "access_type": "write_only", "file_type": "output", "io_bytes": 25114, "file_size": 240626, 
+	"file-96": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/trackstats_20150506.0000_20150506.0800.nc", "task_name": "run_trackstats-231950", "open_time(us)": 1707853285804920, "close_time(us)": 1707853286797789, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 139, "access_type": "write_only", "file_type": "output", "io_bytes": 25114, "file_size": 240626, 
 		"data":[{
 			"area": {
 				"H5FD_MEM_DRAW": {
@@ -5226,7 +5226,7 @@
 				"write_bytes": 745, "write_cnt": 7, "write_ranges": {"71780":[0,0],"71790":[1,1],"71800":[1,1],"71810":[1,1],"71820":[1,1],"71830":[1,1],"71840":[1,1]}
 				}
 			},
-			"base_time": {
+			"base_time(us)": {
 				"H5FD_MEM_DRAW": {
 				"read_bytes": 0, "read_cnt": 0, "read_ranges": {},
 				"write_bytes": 1331, "write_cnt": 14, "write_ranges": {"71500":[0,0],"71510":[0,0],"71520":[0,0],"71530":[0,0],"71540":[0,0],"71550":[0,0],"71560":[0,0],"71570":[0,0],"71580":[0,0],"71590":[0,0],"71600":[0,0],"71610":[0,0],"71620":[0,0],"71630":[0,0]}
@@ -5340,7 +5340,7 @@
 		"metadata":[{
 			"area": {
 			},
-			"base_time": {
+			"base_time(us)": {
 			},
 			"cloudnumber": {
 			},
@@ -5398,7 +5398,7 @@
 },
 
 {
-	"file-97": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/trackstats_sparse_20150506.0000_20150506.0800.nc", "task_name": "run_trackstats-231950", "open_time": 1707853286804737, "close_time": 1707853287283659, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 20, "access_type": "write_only", "file_type": "output", "io_bytes": 16107, "file_size": 161162, 
+	"file-97": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/trackstats_sparse_20150506.0000_20150506.0800.nc", "task_name": "run_trackstats-231950", "open_time(us)": 1707853286804737, "close_time(us)": 1707853287283659, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 20, "access_type": "write_only", "file_type": "output", "io_bytes": 16107, "file_size": 161162, 
 		"data":[{
 			"end_merge_timeindex": {
 				"H5FD_MEM_DRAW": {
@@ -5445,7 +5445,7 @@
 },
 
 {
-	"file-86": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/tracknumbers_20150506.0000_20150506.0800.nc", "task_name": "run_trackstats-231950", "open_time": 1707853200949530, "close_time": 1707853287288333, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 1358, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 639841, "file_size": 77427, 
+	"file-86": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/tracknumbers_20150506.0000_20150506.0800.nc", "task_name": "run_trackstats-231950", "open_time(us)": 1707853200949530, "close_time(us)": 1707853287288333, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 1358, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 639841, "file_size": 77427, 
 		"data":[{
 			"file": {
 			},
@@ -5513,7 +5513,7 @@
 },
 
 {
-	"file-98": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/trackstats_sparse_20150506.0000_20150506.0800.nc", "task_name": "run_identifymcs-231950", "open_time": 1707853287295107, "close_time": 1707853287730468, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 17, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 12888, "file_size": 161162, 
+	"file-98": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/trackstats_sparse_20150506.0000_20150506.0800.nc", "task_name": "run_identifymcs-231950", "open_time(us)": 1707853287295107, "close_time(us)": 1707853287730468, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 17, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 12888, "file_size": 161162, 
 		"data":[{
 			"area": {
 			},
@@ -5567,11 +5567,11 @@
 },
 
 {
-	"file-100": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_20150506.0000_20150506.0800.nc", "task_name": "run_identifymcs-231950", "open_time": 1707853288236719, "close_time": 1707853288444124, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 82, "access_type": "write_only", "file_type": "output", "io_bytes": 41195, "file_size": 117896, 
+	"file-100": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_20150506.0000_20150506.0800.nc", "task_name": "run_identifymcs-231950", "open_time(us)": 1707853288236719, "close_time(us)": 1707853288444124, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 82, "access_type": "write_only", "file_type": "output", "io_bytes": 41195, "file_size": 117896, 
 		"data":[{
 			"area": {
 			},
-			"base_time": {
+			"base_time(us)": {
 				"H5FD_MEM_DRAW": {
 				"read_bytes": 0, "read_cnt": 0, "read_ranges": {},
 				"write_bytes": 65, "write_cnt": 1, "write_ranges": {"73550":[0,0]}
@@ -5703,7 +5703,7 @@
 				"write_bytes": 512, "write_cnt": 1, "write_ranges": {"73640":[0,0]}
 				}
 			},
-			"base_time": {
+			"base_time(us)": {
 				"H5FD_MEM_OHDR": {
 				"read_bytes": 0, "read_cnt": 0, "read_ranges": {},
 				"write_bytes": 275, "write_cnt": 1, "write_ranges": {"73570":[0,0]}
@@ -5955,7 +5955,7 @@
 },
 
 {
-	"file-99": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/trackstats_sparse_20150506.0000_20150506.0800.nc", "task_name": "run_identifymcs-231950", "open_time": 1707853287732080, "close_time": 1707853288448861, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 15, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 5912, "file_size": 161162, 
+	"file-99": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/trackstats_sparse_20150506.0000_20150506.0800.nc", "task_name": "run_identifymcs-231950", "open_time(us)": 1707853287732080, "close_time(us)": 1707853288448861, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 15, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 5912, "file_size": 161162, 
 		"data":[{
 			"end_merge_cloudnumber": {
 			},
@@ -5999,7 +5999,7 @@
 },
 
 {
-	"file-103": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc", "task_name": "run_matchpf-231950", "open_time": 1707853289818447, "close_time": 1707853290156858, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 203, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 835449, "file_size": 12227240, 
+	"file-103": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc", "task_name": "run_matchpf-231950", "open_time(us)": 1707853289818447, "close_time(us)": 1707853290156858, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 203, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 835449, "file_size": 12227240, 
 		"data":[{
 			"LANDMASK": {
 			},
@@ -6150,7 +6150,7 @@
 },
 
 {
-	"file-102": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrf_landmask.nc", "task_name": "run_matchpf-231950", "open_time": 1707853289681967, "close_time": 1707853290393282, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 8, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 335173, "file_size": 5080110, 
+	"file-102": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrf_landmask.nc", "task_name": "run_matchpf-231950", "open_time(us)": 1707853289681967, "close_time(us)": 1707853290393282, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 8, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 335173, "file_size": 5080110, 
 		"data":[{
 			"LANDMASK": {
 			},
@@ -6199,7 +6199,7 @@
 },
 
 {
-	"file-105": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc", "task_name": "run_matchpf-231950", "open_time": 1707853290536461, "close_time": 1707853290837596, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 203, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 830782, "file_size": 12061027, 
+	"file-105": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc", "task_name": "run_matchpf-231950", "open_time(us)": 1707853290536461, "close_time(us)": 1707853290837596, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 203, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 830782, "file_size": 12061027, 
 		"data":[{
 			"LANDMASK": {
 			},
@@ -6338,7 +6338,7 @@
 },
 
 {
-	"file-104": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrf_landmask.nc", "task_name": "run_matchpf-231950", "open_time": 1707853290400911, "close_time": 1707853291996668, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 7, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 212282, "file_size": 5080110, 
+	"file-104": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrf_landmask.nc", "task_name": "run_matchpf-231950", "open_time(us)": 1707853290400911, "close_time(us)": 1707853291996668, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 7, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 212282, "file_size": 5080110, 
 		"data":[{
 			"XLAT": {
 			},
@@ -6382,7 +6382,7 @@
 },
 
 {
-	"file-107": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc", "task_name": "run_matchpf-231950", "open_time": 1707853292138921, "close_time": 1707853292449203, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 203, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 838328, "file_size": 11904827, 
+	"file-107": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc", "task_name": "run_matchpf-231950", "open_time(us)": 1707853292138921, "close_time(us)": 1707853292449203, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 203, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 838328, "file_size": 11904827, 
 		"data":[{
 			"LANDMASK": {
 			},
@@ -6526,7 +6526,7 @@
 },
 
 {
-	"file-106": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrf_landmask.nc", "task_name": "run_matchpf-231950", "open_time": 1707853292005032, "close_time": 1707853293558291, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 7, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 211643, "file_size": 5080110, 
+	"file-106": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrf_landmask.nc", "task_name": "run_matchpf-231950", "open_time(us)": 1707853292005032, "close_time(us)": 1707853293558291, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 7, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 211643, "file_size": 5080110, 
 		"data":[{
 			"XLONG": {
 				"H5FD_MEM_DRAW": {
@@ -6562,7 +6562,7 @@
 },
 
 {
-	"file-109": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc", "task_name": "run_matchpf-231950", "open_time": 1707853293708450, "close_time": 1707853294025012, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 203, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 818674, "file_size": 11749071, 
+	"file-109": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc", "task_name": "run_matchpf-231950", "open_time(us)": 1707853293708450, "close_time(us)": 1707853294025012, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 203, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 818674, "file_size": 11749071, 
 		"data":[{
 			"LANDMASK": {
 			},
@@ -6705,7 +6705,7 @@
 },
 
 {
-	"file-108": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrf_landmask.nc", "task_name": "run_matchpf-231950", "open_time": 1707853293566071, "close_time": 1707853295731026, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 7, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 196119, "file_size": 5080110, 
+	"file-108": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrf_landmask.nc", "task_name": "run_matchpf-231950", "open_time(us)": 1707853293566071, "close_time(us)": 1707853295731026, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 7, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 196119, "file_size": 5080110, 
 		"data":[{
 			"XLONG": {
 				"H5FD_MEM_DRAW": {
@@ -6741,7 +6741,7 @@
 },
 
 {
-	"file-111": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc", "task_name": "run_matchpf-231950", "open_time": 1707853295879742, "close_time": 1707853296182040, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 203, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 863678, "file_size": 11693809, 
+	"file-111": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc", "task_name": "run_matchpf-231950", "open_time(us)": 1707853295879742, "close_time(us)": 1707853296182040, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 203, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 863678, "file_size": 11693809, 
 		"data":[{
 			"LANDMASK": {
 			},
@@ -6897,7 +6897,7 @@
 },
 
 {
-	"file-110": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrf_landmask.nc", "task_name": "run_matchpf-231950", "open_time": 1707853295739932, "close_time": 1707853297663155, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 7, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 191515, "file_size": 5080110, 
+	"file-110": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrf_landmask.nc", "task_name": "run_matchpf-231950", "open_time(us)": 1707853295739932, "close_time(us)": 1707853297663155, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 7, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 191515, "file_size": 5080110, 
 		"data":[{
 			"XLONG": {
 				"H5FD_MEM_DRAW": {
@@ -6928,7 +6928,7 @@
 },
 
 {
-	"file-113": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc", "task_name": "run_matchpf-231950", "open_time": 1707853297809823, "close_time": 1707853298095688, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 202, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 836693, "file_size": 11598450, 
+	"file-113": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc", "task_name": "run_matchpf-231950", "open_time(us)": 1707853297809823, "close_time(us)": 1707853298095688, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 202, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 836693, "file_size": 11598450, 
 		"data":[{
 			"LANDMASK": {
 			},
@@ -7075,7 +7075,7 @@
 },
 
 {
-	"file-112": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrf_landmask.nc", "task_name": "run_matchpf-231950", "open_time": 1707853297669526, "close_time": 1707853299511928, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 8, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 37174, "file_size": 5080110, 
+	"file-112": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrf_landmask.nc", "task_name": "run_matchpf-231950", "open_time(us)": 1707853297669526, "close_time(us)": 1707853299511928, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 8, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 37174, "file_size": 5080110, 
 		"data":[{
 			"LANDMASK": {
 				"H5FD_MEM_DRAW": {
@@ -7118,11 +7118,11 @@
 },
 
 {
-	"file-115": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc", "task_name": "run_matchpf-231950", "open_time": 1707853299663142, "close_time": 1707853299968328, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 202, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 839746, "file_size": 11488826, 
+	"file-115": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc", "task_name": "run_matchpf-231950", "open_time(us)": 1707853299663142, "close_time(us)": 1707853299968328, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 202, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 839746, "file_size": 11488826, 
 		"data":[{
 			"LANDMASK": {
 			},
-			"base_time": {
+			"base_time(us)": {
 				"H5FD_MEM_DRAW": {
 				"read_bytes": 16, "read_cnt": 1, "read_ranges": {"87600":[0,0]},
 				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
@@ -7216,7 +7216,7 @@
 				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
 				}
 			},
-			"base_time": {
+			"base_time(us)": {
 			},
 			"echotop10": {
 			},
@@ -7272,7 +7272,7 @@
 },
 
 {
-	"file-114": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrf_landmask.nc", "task_name": "run_matchpf-231950", "open_time": 1707853299518910, "close_time": 1707853301627186, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 8, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 374507, "file_size": 5080110, 
+	"file-114": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrf_landmask.nc", "task_name": "run_matchpf-231950", "open_time(us)": 1707853299518910, "close_time(us)": 1707853301627186, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 8, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 374507, "file_size": 5080110, 
 		"data":[{
 			"LANDMASK": {
 				"H5FD_MEM_DRAW": {
@@ -7311,11 +7311,11 @@
 },
 
 {
-	"file-117": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc", "task_name": "run_matchpf-231950", "open_time": 1707853301766488, "close_time": 1707853302072242, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 202, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 807045, "file_size": 11398317, 
+	"file-117": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc", "task_name": "run_matchpf-231950", "open_time(us)": 1707853301766488, "close_time(us)": 1707853302072242, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 202, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 807045, "file_size": 11398317, 
 		"data":[{
 			"LANDMASK": {
 			},
-			"base_time": {
+			"base_time(us)": {
 			},
 			"echotop10": {
 				"H5FD_MEM_DRAW": {
@@ -7410,7 +7410,7 @@
 				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
 				}
 			},
-			"base_time": {
+			"base_time(us)": {
 				"H5FD_MEM_BTREE": {
 				"read_bytes": 2096, "read_cnt": 1, "read_ranges": {"89700":[0,0]},
 				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
@@ -7470,7 +7470,7 @@
 },
 
 {
-	"file-116": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrf_landmask.nc", "task_name": "run_matchpf-231950", "open_time": 1707853301634726, "close_time": 1707853303682491, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 8, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 368102, "file_size": 5080110, 
+	"file-116": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrf_landmask.nc", "task_name": "run_matchpf-231950", "open_time(us)": 1707853301634726, "close_time(us)": 1707853303682491, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 8, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 368102, "file_size": 5080110, 
 		"data":[{
 			"LANDMASK": {
 				"H5FD_MEM_DRAW": {
@@ -7514,7 +7514,7 @@
 },
 
 {
-	"file-119": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc", "task_name": "run_matchpf-231950", "open_time": 1707853303820447, "close_time": 1707853304126768, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 202, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 820491, "file_size": 11394500, 
+	"file-119": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc", "task_name": "run_matchpf-231950", "open_time(us)": 1707853303820447, "close_time(us)": 1707853304126768, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 202, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 820491, "file_size": 11394500, 
 		"data":[{
 			"LANDMASK": {
 				"H5FD_MEM_DRAW": {
@@ -7668,7 +7668,7 @@
 },
 
 {
-	"file-118": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrf_landmask.nc", "task_name": "run_matchpf-231950", "open_time": 1707853303690036, "close_time": 1707853305000059, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 8, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 350235, "file_size": 5080110, 
+	"file-118": {"file_name": "/home/mtang11/experiments/flextrkr_runs/input_data/run_mcs_tbpfradar3d_wrf/wrf_landmask.nc", "task_name": "run_matchpf-231950", "open_time(us)": 1707853303690036, "close_time(us)": 1707853305000059, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 8, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 350235, "file_size": 5080110, 
 		"data":[{
 			"LANDMASK": {
 				"H5FD_MEM_DRAW": {
@@ -7717,7 +7717,7 @@
 },
 
 {
-	"file-120": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_pf_20150506.0000_20150506.0800.nc", "task_name": "run_matchpf-231950", "open_time": 1707853305015856, "close_time": 1707853311178972, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 80, "access_type": "write_only", "file_type": "output", "io_bytes": 41910, "file_size": 420238, 
+	"file-120": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_pf_20150506.0000_20150506.0800.nc", "task_name": "run_matchpf-231950", "open_time(us)": 1707853305015856, "close_time(us)": 1707853311178972, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 80, "access_type": "write_only", "file_type": "output", "io_bytes": 41910, "file_size": 420238, 
 		"data":[{
 			"core_meantb": {
 				"H5FD_MEM_DRAW": {
@@ -7910,7 +7910,7 @@
 },
 
 {
-	"file-101": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_20150506.0000_20150506.0800.nc", "task_name": "run_matchpf-231950", "open_time": 1707853288455901, "close_time": 1707853311186342, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 23, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 16713, "file_size": 117896, 
+	"file-101": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_20150506.0000_20150506.0800.nc", "task_name": "run_matchpf-231950", "open_time(us)": 1707853288455901, "close_time(us)": 1707853311186342, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 23, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 16713, "file_size": 117896, 
 		"data":[{
 			"cloudnumber": {
 				"H5FD_MEM_DRAW": {
@@ -8021,9 +8021,9 @@
 },
 
 {
-	"file-122": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_robust_20150506.0000_20150506.0800.nc", "task_name": "run_robustmcs-231950", "open_time": 1707853319636669, "close_time": 1707853332609842, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 60, "access_type": "write_only", "file_type": "output", "io_bytes": 42090, "file_size": 421070, 
+	"file-122": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_robust_20150506.0000_20150506.0800.nc", "task_name": "run_robustmcs-231950", "open_time(us)": 1707853319636669, "close_time(us)": 1707853332609842, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 60, "access_type": "write_only", "file_type": "output", "io_bytes": 42090, "file_size": 421070, 
 		"data":[{
-			"base_time": {
+			"base_time(us)": {
 				"H5FD_MEM_DRAW": {
 				"read_bytes": 0, "read_cnt": 0, "read_ranges": {},
 				"write_bytes": 66, "write_cnt": 1, "write_ranges": {"94760":[0,0]}
@@ -8105,7 +8105,7 @@
 			}
 		}],
 		"metadata":[{
-			"base_time": {
+			"base_time(us)": {
 			},
 			"conv_rain": {
 			},
@@ -8158,7 +8158,7 @@
 },
 
 {
-	"file-121": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_pf_20150506.0000_20150506.0800.nc", "task_name": "run_robustmcs-231950", "open_time": 1707853311190853, "close_time": 1707853332618415, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 60, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 43673, "file_size": 420238, 
+	"file-121": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_pf_20150506.0000_20150506.0800.nc", "task_name": "run_robustmcs-231950", "open_time(us)": 1707853311190853, "close_time(us)": 1707853332618415, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 60, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 43673, "file_size": 420238, 
 		"data":[{
 			"conv_rain": {
 			},
@@ -8394,7 +8394,7 @@
 },
 
 {
-	"file-123": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_robust_20150506.0000_20150506.0800.nc", "task_name": "run_mapfeature-231950", "open_time": 1707853332622551, "close_time": 1707853349066323, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 60, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 43652, "file_size": 421070, 
+	"file-123": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_robust_20150506.0000_20150506.0800.nc", "task_name": "run_mapfeature-231950", "open_time(us)": 1707853332622551, "close_time(us)": 1707853349066323, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 60, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 43652, "file_size": 421070, 
 		"data":[{
 			"corecold_meantb": {
 				"H5FD_MEM_DRAW": {
@@ -8617,7 +8617,7 @@
 },
 
 {
-	"file-125": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_000000.nc", "task_name": "run_mapfeature-231950", "open_time": 1707853349337236, "close_time": 1707853352694240, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 642, "access_type": "write_only", "file_type": "output", "io_bytes": 1385566, "file_size": 12533999, 
+	"file-125": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_000000.nc", "task_name": "run_mapfeature-231950", "open_time(us)": 1707853349337236, "close_time(us)": 1707853352694240, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 642, "access_type": "write_only", "file_type": "output", "io_bytes": 1385566, "file_size": 12533999, 
 		"data":[{
 			"cloudmerge_tracknumber": {
 				"H5FD_MEM_DRAW": {
@@ -8869,7 +8869,7 @@
 },
 
 {
-	"file-124": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc", "task_name": "run_mapfeature-231950", "open_time": 1707853349076065, "close_time": 1707853352733936, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 378, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 1394844, "file_size": 12227240, 
+	"file-124": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc", "task_name": "run_mapfeature-231950", "open_time(us)": 1707853349076065, "close_time(us)": 1707853352733936, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 378, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 1394844, "file_size": 12227240, 
 		"data":[{
 			"cloudnumber": {
 				"H5FD_MEM_DRAW": {
@@ -9076,7 +9076,7 @@
 },
 
 {
-	"file-127": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_010000.nc", "task_name": "run_mapfeature-231950", "open_time": 1707853353030007, "close_time": 1707853356321198, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 641, "access_type": "write_only", "file_type": "output", "io_bytes": 1335535, "file_size": 12411817, 
+	"file-127": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_010000.nc", "task_name": "run_mapfeature-231950", "open_time(us)": 1707853353030007, "close_time(us)": 1707853356321198, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 641, "access_type": "write_only", "file_type": "output", "io_bytes": 1335535, "file_size": 12411817, 
 		"data":[{
 			"cloudmerge_tracknumber": {
 				"H5FD_MEM_DRAW": {
@@ -9336,7 +9336,7 @@
 },
 
 {
-	"file-126": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc", "task_name": "run_mapfeature-231950", "open_time": 1707853352741278, "close_time": 1707853356360515, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 378, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 1325998, "file_size": 12061027, 
+	"file-126": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc", "task_name": "run_mapfeature-231950", "open_time(us)": 1707853352741278, "close_time(us)": 1707853356360515, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 378, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 1325998, "file_size": 12061027, 
 		"data":[{
 			"cloudnumber": {
 				"H5FD_MEM_DRAW": {
@@ -9550,7 +9550,7 @@
 },
 
 {
-	"file-129": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_020000.nc", "task_name": "run_mapfeature-231950", "open_time": 1707853356663753, "close_time": 1707853359901138, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 642, "access_type": "write_only", "file_type": "output", "io_bytes": 1388748, "file_size": 12249170, 
+	"file-129": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_020000.nc", "task_name": "run_mapfeature-231950", "open_time(us)": 1707853356663753, "close_time(us)": 1707853359901138, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 642, "access_type": "write_only", "file_type": "output", "io_bytes": 1388748, "file_size": 12249170, 
 		"data":[{
 			"cloudmerge_tracknumber": {
 				"H5FD_MEM_DRAW": {
@@ -9797,7 +9797,7 @@
 },
 
 {
-	"file-128": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc", "task_name": "run_mapfeature-231950", "open_time": 1707853356368530, "close_time": 1707853359943661, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 378, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 1327779, "file_size": 11904827, 
+	"file-128": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc", "task_name": "run_mapfeature-231950", "open_time(us)": 1707853356368530, "close_time(us)": 1707853359943661, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 378, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 1327779, "file_size": 11904827, 
 		"data":[{
 			"cloudnumber": {
 				"H5FD_MEM_DRAW": {
@@ -10018,7 +10018,7 @@
 },
 
 {
-	"file-131": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_030000.nc", "task_name": "run_mapfeature-231950", "open_time": 1707853360302673, "close_time": 1707853363535790, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 642, "access_type": "write_only", "file_type": "output", "io_bytes": 1300600, "file_size": 12108264, 
+	"file-131": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_030000.nc", "task_name": "run_mapfeature-231950", "open_time(us)": 1707853360302673, "close_time(us)": 1707853363535790, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 642, "access_type": "write_only", "file_type": "output", "io_bytes": 1300600, "file_size": 12108264, 
 		"data":[{
 			"cloudmerge_tracknumber": {
 				"H5FD_MEM_DRAW": {
@@ -10278,9 +10278,9 @@
 },
 
 {
-	"file-130": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc", "task_name": "run_mapfeature-231950", "open_time": 1707853359951585, "close_time": 1707853363576393, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 378, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 1332273, "file_size": 11749071, 
+	"file-130": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc", "task_name": "run_mapfeature-231950", "open_time(us)": 1707853359951585, "close_time(us)": 1707853363576393, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 378, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 1332273, "file_size": 11749071, 
 		"data":[{
-			"base_time": {
+			"base_time(us)": {
 				"H5FD_MEM_DRAW": {
 				"read_bytes": 16, "read_cnt": 1, "read_ranges": {"127250":[0,0]},
 				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
@@ -10410,7 +10410,7 @@
 			}
 		}],
 		"metadata":[{
-			"base_time": {
+			"base_time(us)": {
 			},
 			"cloudnumber": {
 				"H5FD_MEM_BTREE": {
@@ -10493,7 +10493,7 @@
 },
 
 {
-	"file-133": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_040000.nc", "task_name": "run_mapfeature-231950", "open_time": 1707853364005349, "close_time": 1707853367236838, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 642, "access_type": "write_only", "file_type": "output", "io_bytes": 1385663, "file_size": 12063475, 
+	"file-133": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_040000.nc", "task_name": "run_mapfeature-231950", "open_time(us)": 1707853364005349, "close_time(us)": 1707853367236838, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 642, "access_type": "write_only", "file_type": "output", "io_bytes": 1385663, "file_size": 12063475, 
 		"data":[{
 			"cloudmerge_tracknumber": {
 				"H5FD_MEM_DRAW": {
@@ -10749,7 +10749,7 @@
 },
 
 {
-	"file-132": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc", "task_name": "run_mapfeature-231950", "open_time": 1707853363583974, "close_time": 1707853367270225, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 377, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 1263591, "file_size": 11693809, 
+	"file-132": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc", "task_name": "run_mapfeature-231950", "open_time(us)": 1707853363583974, "close_time(us)": 1707853367270225, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 377, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 1263591, "file_size": 11693809, 
 		"data":[{
 			"cloudnumber": {
 				"H5FD_MEM_DRAW": {
@@ -10964,7 +10964,7 @@
 },
 
 {
-	"file-135": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_050000.nc", "task_name": "run_mapfeature-231950", "open_time": 1707853367649768, "close_time": 1707853370870862, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 642, "access_type": "write_only", "file_type": "output", "io_bytes": 1334335, "file_size": 11962155, 
+	"file-135": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_050000.nc", "task_name": "run_mapfeature-231950", "open_time(us)": 1707853367649768, "close_time(us)": 1707853370870862, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 642, "access_type": "write_only", "file_type": "output", "io_bytes": 1334335, "file_size": 11962155, 
 		"data":[{
 			"cloudmerge_tracknumber": {
 				"H5FD_MEM_DRAW": {
@@ -11220,9 +11220,9 @@
 },
 
 {
-	"file-134": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc", "task_name": "run_mapfeature-231950", "open_time": 1707853367275965, "close_time": 1707853370911426, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 378, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 1285784, "file_size": 11598450, 
+	"file-134": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc", "task_name": "run_mapfeature-231950", "open_time(us)": 1707853367275965, "close_time(us)": 1707853370911426, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 378, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 1285784, "file_size": 11598450, 
 		"data":[{
-			"base_time": {
+			"base_time(us)": {
 			},
 			"cloudnumber": {
 				"H5FD_MEM_DRAW": {
@@ -11342,7 +11342,7 @@
 			}
 		}],
 		"metadata":[{
-			"base_time": {
+			"base_time(us)": {
 				"H5FD_MEM_BTREE": {
 				"read_bytes": 2096, "read_cnt": 1, "read_ranges": {"147640":[0,0]},
 				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
@@ -11431,7 +11431,7 @@
 },
 
 {
-	"file-137": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_060000.nc", "task_name": "run_mapfeature-231950", "open_time": 1707853371341973, "close_time": 1707853374568860, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 642, "access_type": "write_only", "file_type": "output", "io_bytes": 1365521, "file_size": 11849947, 
+	"file-137": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_060000.nc", "task_name": "run_mapfeature-231950", "open_time(us)": 1707853371341973, "close_time(us)": 1707853374568860, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 642, "access_type": "write_only", "file_type": "output", "io_bytes": 1365521, "file_size": 11849947, 
 		"data":[{
 			"cloudmerge_tracknumber": {
 				"H5FD_MEM_DRAW": {
@@ -11691,7 +11691,7 @@
 },
 
 {
-	"file-136": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc", "task_name": "run_mapfeature-231950", "open_time": 1707853370919027, "close_time": 1707853374603164, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 377, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 1271863, "file_size": 11488826, 
+	"file-136": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc", "task_name": "run_mapfeature-231950", "open_time(us)": 1707853370919027, "close_time(us)": 1707853374603164, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 377, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 1271863, "file_size": 11488826, 
 		"data":[{
 			"cloudnumber": {
 				"H5FD_MEM_DRAW": {
@@ -11909,7 +11909,7 @@
 },
 
 {
-	"file-139": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_070000.nc", "task_name": "run_mapfeature-231950", "open_time": 1707853375057186, "close_time": 1707853378311164, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 642, "access_type": "write_only", "file_type": "output", "io_bytes": 1287191, "file_size": 11756309, 
+	"file-139": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_070000.nc", "task_name": "run_mapfeature-231950", "open_time(us)": 1707853375057186, "close_time(us)": 1707853378311164, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 642, "access_type": "write_only", "file_type": "output", "io_bytes": 1287191, "file_size": 11756309, 
 		"data":[{
 			"cloudmerge_tracknumber": {
 				"H5FD_MEM_DRAW": {
@@ -12161,7 +12161,7 @@
 },
 
 {
-	"file-138": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc", "task_name": "run_mapfeature-231950", "open_time": 1707853374612832, "close_time": 1707853378350311, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 378, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 1279418, "file_size": 11398317, 
+	"file-138": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc", "task_name": "run_mapfeature-231950", "open_time(us)": 1707853374612832, "close_time(us)": 1707853378350311, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 378, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 1279418, "file_size": 11398317, 
 		"data":[{
 			"cloudnumber": {
 				"H5FD_MEM_DRAW": {
@@ -12369,9 +12369,9 @@
 },
 
 {
-	"file-141": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_080000.nc", "task_name": "run_mapfeature-231950", "open_time": 1707853378725489, "close_time": 1707853381939895, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 642, "access_type": "write_only", "file_type": "output", "io_bytes": 1278080, "file_size": 11740075, 
+	"file-141": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_080000.nc", "task_name": "run_mapfeature-231950", "open_time(us)": 1707853378725489, "close_time(us)": 1707853381939895, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 642, "access_type": "write_only", "file_type": "output", "io_bytes": 1278080, "file_size": 11740075, 
 		"data":[{
-			"base_time": {
+			"base_time(us)": {
 				"H5FD_MEM_DRAW": {
 				"read_bytes": 0, "read_cnt": 0, "read_ranges": {},
 				"write_bytes": 16, "write_cnt": 1, "write_ranges": {"181300":[0,0]}
@@ -12555,7 +12555,7 @@
 			}
 		}],
 		"metadata":[{
-			"base_time": {
+			"base_time(us)": {
 			},
 			"cloudmerge_tracknumber": {
 			},
@@ -12637,7 +12637,7 @@
 },
 
 {
-	"file-140": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc", "task_name": "run_mapfeature-231950", "open_time": 1707853378358157, "close_time": 1707853381979180, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 377, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 1264033, "file_size": 11394500, 
+	"file-140": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc", "task_name": "run_mapfeature-231950", "open_time(us)": 1707853378358157, "close_time(us)": 1707853381979180, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 377, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 1264033, "file_size": 11394500, 
 		"data":[{
 			"cloudnumber": {
 				"H5FD_MEM_DRAW": {
@@ -12852,9 +12852,9 @@
 },
 
 {
-	"file-142": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_robust_20150506.0000_20150506.0800.nc", "task_name": "run_speed-231950", "open_time": 1707853381988728, "close_time": 1707853390688688, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 34, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 9847, "file_size": 421070, 
+	"file-142": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_robust_20150506.0000_20150506.0800.nc", "task_name": "run_speed-231950", "open_time(us)": 1707853381988728, "close_time(us)": 1707853390688688, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 34, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 9847, "file_size": 421070, 
 		"data":[{
-			"base_time": {
+			"base_time(us)": {
 				"H5FD_MEM_DRAW": {
 				"read_bytes": 66, "read_cnt": 1, "read_ranges": {"188050":[0,0]},
 				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
@@ -12864,7 +12864,7 @@
 			}
 		}],
 		"metadata":[{
-			"base_time": {
+			"base_time(us)": {
 			},
 			"file": {
 				"H5FD_MEM_OHDR": {
@@ -12888,7 +12888,7 @@
 },
 
 {
-	"file-143": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_000000.nc", "task_name": "run_speed-231950", "open_time": 1707853390694081, "close_time": 1707853390980511, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 57, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 108779, "file_size": 12533999, 
+	"file-143": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_000000.nc", "task_name": "run_speed-231950", "open_time(us)": 1707853390694081, "close_time(us)": 1707853390980511, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 57, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 108779, "file_size": 12533999, 
 		"data":[{
 			"dbztracknumber": {
 				"H5FD_MEM_DRAW": {
@@ -12931,7 +12931,7 @@
 },
 
 {
-	"file-144": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_010000.nc", "task_name": "run_speed-231950", "open_time": 1707853390744360, "close_time": 1707853390986328, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 57, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 125776, "file_size": 12411817, 
+	"file-144": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_010000.nc", "task_name": "run_speed-231950", "open_time(us)": 1707853390744360, "close_time(us)": 1707853390986328, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 57, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 125776, "file_size": 12411817, 
 		"data":[{
 			"dbztracknumber": {
 				"H5FD_MEM_DRAW": {
@@ -12978,7 +12978,7 @@
 },
 
 {
-	"file-145": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_010000.nc", "task_name": "run_speed-231950", "open_time": 1707853390991455, "close_time": 1707853391257781, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 57, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 81944, "file_size": 12411817, 
+	"file-145": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_010000.nc", "task_name": "run_speed-231950", "open_time(us)": 1707853390991455, "close_time(us)": 1707853391257781, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 57, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 81944, "file_size": 12411817, 
 		"data":[{
 			"dbztracknumber": {
 				"H5FD_MEM_DRAW": {
@@ -13017,7 +13017,7 @@
 },
 
 {
-	"file-146": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_020000.nc", "task_name": "run_speed-231950", "open_time": 1707853391031075, "close_time": 1707853391264736, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 57, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 66900, "file_size": 12249170, 
+	"file-146": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_020000.nc", "task_name": "run_speed-231950", "open_time(us)": 1707853391031075, "close_time(us)": 1707853391264736, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 57, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 66900, "file_size": 12249170, 
 		"data":[{
 			"dbztracknumber": {
 				"H5FD_MEM_DRAW": {
@@ -13060,7 +13060,7 @@
 },
 
 {
-	"file-147": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_020000.nc", "task_name": "run_speed-231950", "open_time": 1707853391269599, "close_time": 1707853391536949, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 57, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 70650, "file_size": 12249170, 
+	"file-147": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_020000.nc", "task_name": "run_speed-231950", "open_time(us)": 1707853391269599, "close_time(us)": 1707853391536949, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 57, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 70650, "file_size": 12249170, 
 		"data":[{
 			"dbztracknumber": {
 				"H5FD_MEM_DRAW": {
@@ -13107,7 +13107,7 @@
 },
 
 {
-	"file-148": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_030000.nc", "task_name": "run_speed-231950", "open_time": 1707853391309422, "close_time": 1707853391543561, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 57, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 108671, "file_size": 12108264, 
+	"file-148": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_030000.nc", "task_name": "run_speed-231950", "open_time(us)": 1707853391309422, "close_time(us)": 1707853391543561, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 57, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 108671, "file_size": 12108264, 
 		"data":[{
 			"dbztracknumber": {
 				"H5FD_MEM_DRAW": {
@@ -13145,7 +13145,7 @@
 },
 
 {
-	"file-149": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_030000.nc", "task_name": "run_speed-231950", "open_time": 1707853391548930, "close_time": 1707853391813618, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 57, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 128785, "file_size": 12108264, 
+	"file-149": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_030000.nc", "task_name": "run_speed-231950", "open_time(us)": 1707853391548930, "close_time(us)": 1707853391813618, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 57, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 128785, "file_size": 12108264, 
 		"data":[{
 			"dbztracknumber": {
 				"H5FD_MEM_DRAW": {
@@ -13188,7 +13188,7 @@
 },
 
 {
-	"file-150": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_040000.nc", "task_name": "run_speed-231950", "open_time": 1707853391588795, "close_time": 1707853391820562, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 57, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 52192, "file_size": 12063475, 
+	"file-150": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_040000.nc", "task_name": "run_speed-231950", "open_time(us)": 1707853391588795, "close_time(us)": 1707853391820562, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 57, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 52192, "file_size": 12063475, 
 		"data":[{
 			"dbztracknumber": {
 				"H5FD_MEM_DRAW": {
@@ -13240,7 +13240,7 @@
 },
 
 {
-	"file-151": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_040000.nc", "task_name": "run_speed-231950", "open_time": 1707853391825375, "close_time": 1707853392095249, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 59, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 82787, "file_size": 12063475, 
+	"file-151": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_040000.nc", "task_name": "run_speed-231950", "open_time(us)": 1707853391825375, "close_time(us)": 1707853392095249, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 59, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 82787, "file_size": 12063475, 
 		"data":[{
 			"dbztracknumber": {
 				"H5FD_MEM_DRAW": {
@@ -13304,7 +13304,7 @@
 },
 
 {
-	"file-152": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_050000.nc", "task_name": "run_speed-231950", "open_time": 1707853391865694, "close_time": 1707853392101714, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 56, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 90654, "file_size": 11962155, 
+	"file-152": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_050000.nc", "task_name": "run_speed-231950", "open_time(us)": 1707853391865694, "close_time(us)": 1707853392101714, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 56, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 90654, "file_size": 11962155, 
 		"data":[{
 			"dbztracknumber": {
 				"H5FD_MEM_DRAW": {
@@ -13347,7 +13347,7 @@
 },
 
 {
-	"file-153": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_050000.nc", "task_name": "run_speed-231950", "open_time": 1707853392106921, "close_time": 1707853392373697, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 57, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 110879, "file_size": 11962155, 
+	"file-153": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_050000.nc", "task_name": "run_speed-231950", "open_time(us)": 1707853392106921, "close_time(us)": 1707853392373697, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 57, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 110879, "file_size": 11962155, 
 		"data":[{
 			"dbztracknumber": {
 				"H5FD_MEM_DRAW": {
@@ -13386,7 +13386,7 @@
 },
 
 {
-	"file-154": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_060000.nc", "task_name": "run_speed-231950", "open_time": 1707853392146616, "close_time": 1707853392380365, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 57, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 85276, "file_size": 11849947, 
+	"file-154": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_060000.nc", "task_name": "run_speed-231950", "open_time(us)": 1707853392146616, "close_time(us)": 1707853392380365, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 57, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 85276, "file_size": 11849947, 
 		"data":[{
 			"dbztracknumber": {
 				"H5FD_MEM_DRAW": {
@@ -13433,7 +13433,7 @@
 },
 
 {
-	"file-155": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_060000.nc", "task_name": "run_speed-231950", "open_time": 1707853392385197, "close_time": 1707853392649254, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 57, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 36586, "file_size": 11849947, 
+	"file-155": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_060000.nc", "task_name": "run_speed-231950", "open_time(us)": 1707853392385197, "close_time(us)": 1707853392649254, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 57, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 36586, "file_size": 11849947, 
 		"data":[{
 			"dbztracknumber": {
 				"H5FD_MEM_DRAW": {
@@ -13476,7 +13476,7 @@
 },
 
 {
-	"file-156": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_070000.nc", "task_name": "run_speed-231950", "open_time": 1707853392425287, "close_time": 1707853392655363, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 57, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 88983, "file_size": 11756309, 
+	"file-156": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_070000.nc", "task_name": "run_speed-231950", "open_time(us)": 1707853392425287, "close_time(us)": 1707853392655363, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 57, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 88983, "file_size": 11756309, 
 		"data":[{
 			"dbztracknumber": {
 				"H5FD_MEM_DRAW": {
@@ -13519,7 +13519,7 @@
 },
 
 {
-	"file-157": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_070000.nc", "task_name": "run_speed-231950", "open_time": 1707853392659604, "close_time": 1707853392926066, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 56, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 90132, "file_size": 11756309, 
+	"file-157": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_070000.nc", "task_name": "run_speed-231950", "open_time(us)": 1707853392659604, "close_time(us)": 1707853392926066, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 56, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 90132, "file_size": 11756309, 
 		"data":[{
 			"dbztracknumber": {
 				"H5FD_MEM_DRAW": {
@@ -13557,7 +13557,7 @@
 },
 
 {
-	"file-158": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_080000.nc", "task_name": "run_speed-231950", "open_time": 1707853392698713, "close_time": 1707853392932541, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 58, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 72466, "file_size": 11740075, 
+	"file-158": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_080000.nc", "task_name": "run_speed-231950", "open_time(us)": 1707853392698713, "close_time(us)": 1707853392932541, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 58, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 72466, "file_size": 11740075, 
 		"data":[{
 			"dbztracknumber": {
 				"H5FD_MEM_DRAW": {
@@ -13600,11 +13600,11 @@
 },
 
 {
-	"file-159": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_final_20150506.0000_20150506.0800.nc", "task_name": "run_speed-231950", "open_time": 1707853392952001, "close_time": 1707853402217730, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 331, "access_type": "write_only", "file_type": "output", "io_bytes": 200925, "file_size": 431712, 
+	"file-159": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_final_20150506.0000_20150506.0800.nc", "task_name": "run_speed-231950", "open_time(us)": 1707853392952001, "close_time(us)": 1707853402217730, "file_intent": ["'H5F_ACC_RDWR','H5F_ACC_TRUNC','H5F_ACC_CREAT'"], "file_no": 0, "file_read_cnt": 0, "file_write_cnt": 331, "access_type": "write_only", "file_type": "output", "io_bytes": 200925, "file_size": 431712, 
 		"data":[{
 			"area": {
 			},
-			"base_time": {
+			"base_time(us)": {
 				"H5FD_MEM_DRAW": {
 				"read_bytes": 0, "read_cnt": 0, "read_ranges": {},
 				"write_bytes": 65, "write_cnt": 1, "write_ranges": {"197960":[0,0]}
@@ -13903,7 +13903,7 @@
 				"write_bytes": 512, "write_cnt": 1, "write_ranges": {"198040":[0,0]}
 				}
 			},
-			"base_time": {
+			"base_time(us)": {
 				"H5FD_MEM_OHDR": {
 				"read_bytes": 0, "read_cnt": 0, "read_ranges": {},
 				"write_bytes": 228, "write_cnt": 2, "write_ranges": {"197970":[0,0],"197980":[0,0]}
@@ -14888,7 +14888,7 @@
 },
 
 {
-	"file-160": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_robust_20150506.0000_20150506.0800.nc", "task_name": "run_speed-231950", "open_time": 1707853392956563, "close_time": 1707853402227985, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 60, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 35412, "file_size": 421070, 
+	"file-160": {"file_name": "/home/mtang11/experiments/flextrkr_runs/dl_run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_robust_20150506.0000_20150506.0800.nc", "task_name": "run_speed-231950", "open_time(us)": 1707853392956563, "close_time(us)": 1707853402227985, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 60, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 35412, "file_size": 421070, 
 		"data":[{
 			"corecold_meantb": {
 				"H5FD_MEM_DRAW": {
