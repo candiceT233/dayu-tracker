@@ -89,6 +89,6 @@ if __name__ == "__main__":
     run_write(file_name, all_datasets)
     end_time = time.time()
     duration_ms = (end_time - start_time) * 1000
-    print(f"Write time: {duration_ms} seconds")
+    print(f"Write time: {duration_ms} milliseconds")
 
 

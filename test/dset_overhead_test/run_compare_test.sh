@@ -8,7 +8,8 @@ mkdir -p $TEST_PATH
 
 for ARRAY_SIZE in 1024 2048 4096 8192; do #2048 4096 8192
     for PROC_CNT in 4 8 16 32; do #16 32
-        for test_type in small_dset large_dset; do
+        for test_type in small_dset large_dset # small_dset large_dset
+        do
             for i in $(seq 1 3); do
                 test_name="${test_type}_${ARRAY_SIZE}_${PROC_CNT}_${i}"
                 LOG_FOLDER=save_logs/${test_name}_run

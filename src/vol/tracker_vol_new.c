@@ -1612,8 +1612,10 @@ static herr_t H5VL_tracker_dataset_read(size_t count, void *dset[],
 
 #ifdef ACCESS_STAT
     unsigned long trk_start = get_time_usec();
+    // Assume only 1 dataset being open at a time from the same process
     dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)o->generic_tkr_info;
-    dset_shm_write(dset_info->obj_info.name); // TODO: improve to update only when dataset is changed
+    if(dset_info->obj_info.name)
+        dset_shm_write(dset_info->obj_info.name); // TODO: improve to update only when dataset is changed
     TRK_ACCESS_STAT_TIME += (get_time_usec() - trk_start);
 #endif
 

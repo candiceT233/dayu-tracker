@@ -776,6 +776,13 @@ std::string GetDsetName() {
     char *task_shm_name = new char[len];
     snprintf(task_shm_name, len, "%s_%d", SHM_NAME, pid);
 
+    // // Check if shared memory exists before open:
+    // struct stat shm_stat;
+    // if (stat(task_shm_name, &shm_stat) == -1) { // this always return -1
+    //     delete[] task_shm_name;
+    //     return "unknown";  // Return unknown if shared memory dataset is not available
+    // }
+
     // Open the shared memory
     int shm_fd = shm_open(task_shm_name, O_RDONLY, 0666);
     if (shm_fd == -1) {
