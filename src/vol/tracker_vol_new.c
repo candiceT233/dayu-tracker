@@ -709,7 +709,6 @@ H5VL_tracker_str_to_info(const char *str, void **_info)
         *(under_vol_info_str + (under_vol_info_end - under_vol_info_start)) = '\0';
 
         H5VLconnector_str_to_info(under_vol_info_str, under_vol_id, &under_vol_info);//generate under_vol_info obj.
-
     } /* end else */
 
     /* Allocate new tracker VOL connector info and set its fields */
@@ -730,7 +729,6 @@ H5VL_tracker_str_to_info(const char *str, void **_info)
 
     /* init global helper */
     TKR_HELPER = tkr_helper_init(info->tkr_file_path, info->tkr_level, info->tkr_line_format);
-
 
 
     /* Set return value */
@@ -1602,7 +1600,7 @@ static herr_t H5VL_tracker_dataset_read(size_t count, void *dset[],
     unsigned long start = get_time_usec();
     unsigned long m1, m2;
     void *o_arr[count];   /* Array of under objects */
-    H5VL_tracker_t *o = (H5VL_tracker_t *)dset[0]; // only get the first dataset
+
     hid_t under_vol_id;                     /* VOL ID for all objects */
     herr_t ret_value;
 
@@ -1613,6 +1611,7 @@ static herr_t H5VL_tracker_dataset_read(size_t count, void *dset[],
 #ifdef ACCESS_STAT
     unsigned long trk_start = get_time_usec();
     // Assume only 1 dataset being open at a time from the same process
+    H5VL_tracker_t *o = (H5VL_tracker_t *)dset[0]; // only get the first dataset
     dataset_tkr_info_t * dset_info = (dataset_tkr_info_t*)o->generic_tkr_info;
     if(dset_info->obj_info.name)
         dset_shm_write(dset_info->obj_info.name); // TODO: improve to update only when dataset is changed
@@ -1708,8 +1707,8 @@ static herr_t H5VL_tracker_dataset_write(size_t count, void *dset[],
 
     unsigned long start = get_time_usec();
     unsigned long m1, m2;
-//H5VL_tracker_t: A envelop
-    // H5VL_tracker_t *o = (H5VL_tracker_t *)dset[0];
+// //H5VL_tracker_t: A envelop
+//     H5VL_tracker_t *o = (H5VL_tracker_t *)dset[0];
     void *o_arr[count];   /* Array of under objects */
     hid_t under_vol_id;                     /* VOL ID for all objects */
 
