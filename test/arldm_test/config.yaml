@@ -6,7 +6,7 @@ batch_size: 1  # batch size each item denotes one story
 num_workers: 1  # number of workers
 num_cpu_cores: -1  # -1 number of cpu cores
 seed: 0  # random seed
-ckpt_dir: /home/mtang11/experiments/arldm_run/input_data/flintstones_save_ckpt # checkpoint directory
+ckpt_dir: /qfs/projects/oddite/tang584/ARLDM/input_data/flintstones_save_ckpt # checkpoint directory
 run_name: flintstones_read # name for this run
 
 # task
@@ -29,7 +29,7 @@ scheduler: ddim  # ddim pndm
 guidance_scale: 6  # guidance scale
 num_inference_steps: 250  # number of inference steps
 # sample_output_dir: ./output_data/train_visit # output directory
-sample_output_dir: /home/mtang11/experiments/arldm_run/input_data/sample_out_flintstones_train # output directory
+sample_output_dir: /qfs/projects/oddite/tang584/ARLDM/input_data/sample_out_flintstones_train # output directory
 
 pororo:
   hdf5_file: PORORO_HDF5
@@ -39,7 +39,7 @@ pororo:
   blip_embedding_tokens: 30530
 
 flintstones:
-  hdf5_file: /mnt/hdd/mtang11/ARLDM/input_data/flintstones_out.h5
+  hdf5_file: /qfs/projects/oddite/tang584/ARLDM/output_data/20k_fls/flintstones_out_chunked_c20.h5
   max_length: 91
   new_tokens: [ "fred", "barney", "wilma", "betty", "pebbles", "dino", "slate" ]
   clip_embedding_tokens: 49412

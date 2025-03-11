@@ -21,12 +21,12 @@
 #include "H5VLpublic.h"        /* Virtual Object Layer                 */
 
 /* Identifier for the pass-through VOL connector */
-#define H5VL_PROVNC	(H5VL_tracker_register())
+#define H5VL_TRACKER (H5VL_tracker_register())
 
 /* Characteristics of the pass-through VOL connector */
-#define H5VL_TRACKER_NAME        "tracker"
-#define H5VL_TRACKER_VALUE       909           /* VOL connector ID */
-#define H5VL_TRACKER_VERSION     1
+#define H5VL_TRACKER_NAME "tracker"
+#define H5VL_TRACKER_VALUE 909           /* VOL connector ID */
+#define H5VL_TRACKER_VERSION 2
 
 #define SUCCEED 0
 #define FAIL    (-1)
