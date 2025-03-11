@@ -1,0 +1,111 @@
+[
+{
+	"file-1": {"file_name": "/mnt/ssd/mtang11/storage/test.h5", "task_name": "sync-write-1d-contig-contig-read-full-read-26528", "node_id": "ares-comp-32", "open_time(us)": 1711055958134638.000000, "close_time(us)": 1711055962678493.000000, "file_intent": ["'NOT_SPECIFIED'"], "file_no": 0, "file_read_cnt": 107, "file_write_cnt": 0, "access_type": "read_only", "file_type": "input", "io_bytes": 1342209240, "file_size": 1342194448, 
+		"data":[{
+			"file": {
+			},
+			"id_1": {
+				"H5FD_MEM_DRAW": {
+				"read_bytes": 167772160, "read_cnt": 5, "read_ranges": {"23":[3584,4096],"43":[7680,8192],"63":[11776,12288],"83":[15872,16384],"103":[19968,20480]},
+				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
+				}
+			},
+			"id_2": {
+				"H5FD_MEM_DRAW": {
+				"read_bytes": 167772160, "read_cnt": 5, "read_ranges": {"24":[4096,4608],"44":[8192,8704],"64":[12288,12800],"84":[16384,16896],"104":[20480,20992]},
+				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
+				}
+			},
+			"px": {
+				"H5FD_MEM_DRAW": {
+				"read_bytes": 167772160, "read_cnt": 5, "read_ranges": {"25":[2048,2560],"45":[6144,6656],"65":[10240,10752],"85":[14336,14848],"105":[18432,18944]},
+				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
+				}
+			},
+			"py": {
+				"H5FD_MEM_DRAW": {
+				"read_bytes": 167772160, "read_cnt": 5, "read_ranges": {"26":[2560,3072],"46":[6656,7168],"66":[10752,11264],"86":[14848,15360],"106":[18944,19456]},
+				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
+				}
+			},
+			"pz": {
+				"H5FD_MEM_DRAW": {
+				"read_bytes": 167772160, "read_cnt": 5, "read_ranges": {"27":[3072,3584],"47":[7168,7680],"67":[11264,11776],"87":[15360,15872],"107":[19456,19968]},
+				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
+				}
+			},
+			"x": {
+				"H5FD_MEM_DRAW": {
+				"read_bytes": 167772160, "read_cnt": 5, "read_ranges": {"20":[512,1024],"40":[4608,5120],"60":[8704,9216],"80":[12800,13312],"100":[16896,17408]},
+				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
+				}
+			},
+			"y": {
+				"H5FD_MEM_DRAW": {
+				"read_bytes": 167772160, "read_cnt": 5, "read_ranges": {"21":[1024,1536],"41":[5120,5632],"61":[9216,9728],"81":[13312,13824],"101":[17408,17920]},
+				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
+				}
+			},
+			"z": {
+				"H5FD_MEM_DRAW": {
+				"read_bytes": 167772160, "read_cnt": 5, "read_ranges": {"22":[1536,2048],"42":[5632,6144],"62":[9728,10240],"82":[13824,14336],"102":[17920,18432]},
+				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
+				}
+			}
+		}],
+		"metadata":[{
+			"file": {
+				"H5FD_MEM_OHDR": {
+				"read_bytes": 5120, "read_cnt": 10, "read_ranges": {"4":[0,0],"8":[0,0],"12":[0,0],"13":[0,0],"14":[0,0],"15":[0,0],"16":[0,0],"17":[0,0],"18":[0,0],"19":[0,0]},
+				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
+				}
+				,
+				"H5FD_MEM_SUPER": {
+				"read_bytes": 104, "read_cnt": 3, "read_ranges": {"1":[0,0],"2":[0,0],"3":[0,0]},
+				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
+				}
+				,
+				"H5FD_MEM_BTREE": {
+				"read_bytes": 1744, "read_cnt": 4, "read_ranges": {"6":[0,0],"7":[0,0],"10":[0,0],"11":[0,0]},
+				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
+				}
+				,
+				"H5FD_MEM_LHEAP": {
+				"read_bytes": 1024, "read_cnt": 2, "read_ranges": {"5":[0,0],"9":[0,0]},
+				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
+				}
+			},
+			"id_1": {
+			},
+			"id_2": {
+			},
+			"px": {
+			},
+			"py": {
+			},
+			"pz": {
+				"H5FD_MEM_OHDR": {
+				"read_bytes": 18432, "read_cnt": 36, "read_ranges": {"28":[4096,4096],"32":[4096,4096],"33":[4096,4096],"34":[4096,4096],"35":[4096,4096],"36":[4096,4096],"37":[4096,4096],"38":[4096,4096],"39":[4096,4096],"48":[8192,8192],"52":[8192,8192],"53":[8192,8192],"54":[8192,8192],"55":[8192,8192],"56":[8192,8192],"57":[8192,8192],"58":[8192,8192],"59":[8192,8192],"68":[12288,12288],"72":[12288,12288],"73":[12288,12288],"74":[12288,12288],"75":[12288,12288],"76":[12288,12288],"77":[12288,12288],"78":[12288,12288],"79":[12288,12288],"88":[16384,16384],"92":[16384,16384],"93":[16384,16384],"94":[16384,16384],"95":[16384,16384],"96":[16384,16384],"97":[16384,16384],"98":[16384,16384],"99":[16384,16384]},
+				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
+				}
+				,
+				"H5FD_MEM_BTREE": {
+				"read_bytes": 3488, "read_cnt": 8, "read_ranges": {"30":[4096,4096],"31":[4096,4096],"50":[8192,8192],"51":[8192,8192],"70":[12288,12288],"71":[12288,12288],"90":[16384,16384],"91":[16384,16384]},
+				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
+				}
+				,
+				"H5FD_MEM_LHEAP": {
+				"read_bytes": 2048, "read_cnt": 4, "read_ranges": {"29":[4096,4096],"49":[8192,8192],"69":[12288,12288],"89":[16384,16384]},
+				"write_bytes": 0, "write_cnt": 0, "write_ranges": {}
+				}
+			},
+			"x": {
+			},
+			"y": {
+			},
+			"z": {
+			}
+		}]
+	},
+	"Task": {"task_name": "sync-write-1d-contig-contig-read-full-read-26528", "task_id": 26528, "tracker_vfd_page_size": 65536, "POSIX-READ-Time(us)": 522637.578000, "POSIX-WRITE-Time(us)": 0.000000, "POSIX-OPEN-Time(us)": 22.452000, "POSIX-CLOSE-Time(us)": 0.000000, "POSIX-DELETE-Time(us)": 0.000000, "MMAP-READ-Time(us)": 0.000000, "MMAP-WRITE-Time(us)": 0.000000, "MMAP-OPEN-Time(us)": 0.000000, "MMAP-CLOSE-Time(us)": 0.000000, "VFD-Overhead(us)": 528264.597000, "VFD-Init(us)": 33.804000, "VFD-Term(us)": 0.000000, "VFD-Tracker-Init(us)": 1687.662000, "VFD-Stat-Add(us)": 35.483000, "VFD-Stat-Update(us)": 3591.596000, "VFD-Stat-Rm(us)": 0.000000, "VFD-Stat-Log(us)": 0.000000 }
+}]

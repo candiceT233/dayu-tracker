@@ -44,6 +44,12 @@ def display_all_edges_attr(G):
     for edge in G.edges():
         print(f"Edge: {edge} - {G.edges[edge]}")
 
+
+def show_detail_overhead(type, file_dict, task_list):
+    pass
+    
+
+
 # vol_file_dict
 def show_all_overhead(type, file_dict):
     # check type must be either "VOL" or "VFD"
@@ -52,7 +58,7 @@ def show_all_overhead(type, file_dict):
         return
     
     if type == "VOL":
-        overhead_key = "VOL-Overhead(ms)"
+        overhead_key = "VOL-Overhead(us)"
     else:
         overhead_key = "VFD-Overhead(us)"
     
@@ -66,6 +72,14 @@ def show_all_overhead(type, file_dict):
     print(f"Total {type} overhead: {overhead} ms")
     
     # Also output posix IO time for VFD
+    vfd_time_param_dict = {
+        "POSIX-OPEN-Time(us)": 0,
+        "POSIX-CLOSE-Time(us)": 0,
+        "POSIX-READ-Time(us)": 0,
+        "POSIX-WRITE-Time(us)": 0,
+        "POSIX-DELETE-Time(us)": 0
+    }
+    
     if type == "VFD":
         io_time = 0
         open_time = 0
@@ -78,22 +92,31 @@ def show_all_overhead(type, file_dict):
             for item in pid_stat:
                 if "Task" in item.keys():
                     task_info = item["Task"]
-                    open_time += float(task_info["POSIX-OPEN-Time(us)"])
-                    close_time += float(task_info["POSIX-CLOSE-Time(us)"])
-                    read_time += float(task_info["POSIX-READ-Time(us)"])
-                    write_time += float(task_info["POSIX-WRITE-Time(us)"])
-                    delete_time += float(task_info["POSIX-DELETE-Time(us)"])
-        io_time = open_time + close_time + read_time + write_time + delete_time
+                    
+                    for time_type, value in vfd_time_param_dict.items():
+                        if time_type in task_info.keys():
+                            vfd_time_param_dict[time_type] += float(task_info[time_type])
+                            io_time += float(task_info[time_type])
+                    
+                    # open_time += float(task_info["POSIX-OPEN-Time(us)"])
+                    # close_time += float(task_info["POSIX-CLOSE-Time(us)"])
+                    # read_time += float(task_info["POSIX-READ-Time(us)"])
+                    # write_time += float(task_info["POSIX-WRITE-Time(us)"])
+                    # delete_time += float(task_info["POSIX-DELETE-Time(us)"])
+        # io_time = open_time + close_time + read_time + write_time + delete_time
+        
+        for time_type, value in vfd_time_param_dict.items():
+            print(f"Total {time_type}: {value} us")
 
-        print(f"Total POSIX IO time: {io_time} us")
-        print(f"Total POSIX OPEN time: {open_time} us")
-        print(f"Total POSIX CLOSE time: {close_time} us")
-        print(f"Total POSIX READ time: {read_time} us")
-        print(f"Total POSIX WRITE time: {write_time} us")
-        print(f"Total POSIX DELETE time: {delete_time} us")
+        # print(f"Total POSIX IO time: {io_time} us")
+        # print(f"Total POSIX OPEN time: {open_time} us")
+        # print(f"Total POSIX CLOSE time: {close_time} us")
+        # print(f"Total POSIX READ time: {read_time} us")
+        # print(f"Total POSIX WRITE time: {write_time} us")
+        # print(f"Total POSIX DELETE time: {delete_time} us")
 
 # vfd_links
-def show_vfd_stats(G):
+def show_vfd_stats_old(G):
     
     # overall stats
     access_size = nx.get_edge_attributes(G, 'access_size')
@@ -111,7 +134,13 @@ def show_vfd_stats(G):
         in_edges += list(G.in_edges(n))
     
     # get initia; input size from in_edges
-    initial_input_size = sum([G.edges[e]['access_size'] for e in in_edges])
+    # initial_input_size = sum([G.edges[e]['access_size'] for e in in_edges])
+    for e in in_edges:
+        print(f"Edge properties: {G.edges[e]}")
+        break
+    
+    initial_input_size = sum([G.edges[e]['file_stat']['io_bytes'] for e in in_edges])
+    
 
     stat_str = 'Total number of links: {}\n'.format(len(access_size))
     stat_str += f"Total I/O size: {humansize(total_access_size)}\n"
@@ -126,6 +155,58 @@ def show_vfd_stats(G):
     
     return stat_str
 
+def show_vfd_stats(G):
+    
+    # overall stats
+    file_stat_dict = nx.get_edge_attributes(G, 'file_stat')
+    # print(f"file_stat.values = {file_stat_dict.values()}")
+    
+    # Transfer values from file file_stat_dict to below dict
+    access_size = {}
+    access_cnt = {}
+    bandwidth = {}
+    for edge, file_stat in file_stat_dict.items():
+        io_size = file_stat['io_bytes']
+        access_size[edge] = io_size
+        access_cnt[edge] = file_stat['file_write_cnt'] + file_stat['file_read_cnt']
+        
+        start_time = file_stat['open_time(us)']
+        end_time = file_stat['close_time(us)']
+        
+        bandwidth[edge] = file_stat['io_bytes']/(end_time-start_time)
+    
+    # access_size = nx.get_edge_attributes(G, 'access_size')
+    # access_cnt = nx.get_edge_attributes(G, 'access_cnt')
+    # bandwidth = nx.get_edge_attributes(G, 'bandwidth')
+    total_access_size = sum(access_size.values())
+
+    # get all nodes that are tasks
+    task_nodes = [n for n in G.nodes() if G.nodes[n]['type'] == 'task']
+    # get all task nodes that are order = 0
+    task_nodes_0 = [n for n in task_nodes if G.nodes[n]['phase'] == 0]
+    # get all in_edges of task_nodes_0
+    in_edges = []
+    for n in task_nodes_0:
+        in_edges += list(G.in_edges(n))
+    
+    # get initia; input size from in_edges
+    # initial_input_size = sum([G.edges[e]['access_size'] for e in in_edges])
+    
+    initial_input_size = sum([G.edges[e]['file_stat']['io_bytes'] for e in in_edges])
+    
+
+    stat_str = 'Total number of links: {}\n'.format(len(access_size))
+    stat_str += f"Total I/O size: {humansize(total_access_size)}\n"
+    stat_str += f"Total I/O count: {sum(access_cnt.values())}\n"
+    stat_str += f"Total bandwidth: {humanbw(sum(bandwidth.values()))}\n"
+    stat_str += f"Average I/O size: {humansize(total_access_size/sum(access_cnt.values()))}\n"
+    
+    # get medium I/O size
+    stat_str += f"Medium I/O size: {humansize(np.median(list(access_size.values())))}\n"
+    
+    stat_str += f"Inital input size: {humansize(initial_input_size)}\n"
+    
+    return stat_str
 
 def draw_graph(G, test_name, stat_path, graph_type="datalife", prefix="", save=False):
     plt.figure(figsize=(80, 20))

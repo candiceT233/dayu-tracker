@@ -46,21 +46,17 @@
 // #include "H5PLextern.h"
 #include "H5FD_tracker_vfd.h"     /* Tracker VFD file driver     */
 #include "H5FD_tracker_vfd_err.h" /* Error handling         */
-
-
-
+#include "../vol/tracker_vol_types.h" /* Connecting to vol */
+#include "../utils/debug/timer.h" /* for recording time */
 
 
 // #ifdef ENABLE_TRACKER
-#include "../vol/tracker_vol_types.h" /* Connecting to vol */
-// #include "../utils/debug/timer.h" /* for recording time */
 // #include "../utils/debug/Tracer_cpp.h" /* for debug and evaluation */
-#ifdef HERMES
-#include <hermes/hermes.h> // For Node ID matching with Hermes
-#else
-#include "../utils/debug/timer.h" /* for recording time */
-#endif
-
+// #ifdef HERMES
+// #include <hermes/hermes.h> // For Node ID matching with Hermes
+// #else
+// #include "../utils/debug/timer.h" /* for recording time */
+// #endif
 
 
 // For debug logs
@@ -780,6 +776,13 @@ std::string GetDsetName() {
     char *task_shm_name = new char[len];
     snprintf(task_shm_name, len, "%s_%d", SHM_NAME, pid);
 
+    // // Check if shared memory exists before open:
+    // struct stat shm_stat;
+    // if (stat(task_shm_name, &shm_stat) == -1) { // this always return -1
+    //     delete[] task_shm_name;
+    //     return "unknown";  // Return unknown if shared memory dataset is not available
+    // }
+
     // Open the shared memory
     int shm_fd = shm_open(task_shm_name, O_RDONLY, 0666);
     if (shm_fd == -1) {
@@ -1281,6 +1284,8 @@ int rmVFDFileNode(vfd_tkr_helper_t* helper, H5FD_t *_file)
 
 void teardownVFDTkrHelper(vfd_tkr_helper_t* helper){
 
+
+  timerRmStat.Resume();
   // Close json file list
   FILE * f = fopen(helper->tkr_file_path, "r+");
 
@@ -1290,7 +1295,7 @@ void teardownVFDTkrHelper(vfd_tkr_helper_t* helper){
 
   // Close the file
   fclose(f);
-  timerRmStat.Pause();
+  timerTermVFD.Pause();
 
   // // free down causes double free error in single process mode
   // if(helper){// not null
@@ -1411,18 +1416,21 @@ void DumpJsonFileStat(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t* info)
   double posix_time = timer_read.GetUsec() + timer_write.GetUsec() + timer_open.GetUsec() + timer_close.GetUsec() + timer_del.GetUsec();
 
   // reset the total overhead and posix io time once recorded
-
   fprintf(f, "\"POSIX-READ-Time(us)\": %f, ", timer_read.GetUsec());
   fprintf(f, "\"POSIX-WRITE-Time(us)\": %f, ", timer_write.GetUsec());
   fprintf(f, "\"POSIX-OPEN-Time(us)\": %f, ", timer_open.GetUsec());
   fprintf(f, "\"POSIX-CLOSE-Time(us)\": %f, ", timer_close.GetUsec());
   fprintf(f, "\"POSIX-DELETE-Time(us)\": %f, ", timer_del.GetUsec());
 
+
+
   // Log all MMAP IO related overhead
   fprintf(f, "\"MMAP-READ-Time(us)\": %f, ", timer_mmap_read.GetUsec());
   fprintf(f, "\"MMAP-WRITE-Time(us)\": %f, ", timer_mmap_write.GetUsec());
   fprintf(f, "\"MMAP-OPEN-Time(us)\": %f, ", timer_mmap_open.GetUsec());
   fprintf(f, "\"MMAP-CLOSE-Time(us)\": %f, ", timer_mmap_close.GetUsec());
+
+
 
   // Log all VFD related overhead
   fprintf(f, "\"VFD-Overhead(us)\": %f, ", timer_vfd.GetUsec());
@@ -1433,6 +1441,8 @@ void DumpJsonFileStat(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t* info)
   fprintf(f, "\"VFD-Stat-Update(us)\": %f, ", timerUpdateStat.GetUsec());
   fprintf(f, "\"VFD-Stat-Rm(us)\": %f, ", timerRmStat.GetUsec());
   fprintf(f, "\"VFD-Stat-Log(us)\": %f ", timerLogStat.GetUsec());
+
+
 
 
   fprintf(f, "}\n");

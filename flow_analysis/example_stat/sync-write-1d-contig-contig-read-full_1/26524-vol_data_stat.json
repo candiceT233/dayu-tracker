@@ -1,0 +1,269 @@
+[{
+    "file-0": {
+        "file_name": "/mnt/ssd/mtang11/storage/test.h5",
+        "task_name": "sync-write-1d-contig-contig-read-full-write-26524",
+        "datasets": [
+            {
+                "dset_name": "x",
+                "start_time": 1711055953207876,
+                "end_time": 1711055958056689,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CONTIGUOUS",
+                "storage_size": 33554432,
+                "dset_n_elements": 8388608,
+                "dimension_cnt": 1,
+                "dimensions": [8388608],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 0,
+                "dataset_write_cnt": 5,
+                "access_type": "write_only",
+                "dset_offset": -1,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 8388608,
+                "access_orders": [1]
+            }
+        ]
+    }
+},
+{
+    "file-0": {
+        "file_name": "/mnt/ssd/mtang11/storage/test.h5",
+        "task_name": "sync-write-1d-contig-contig-read-full-write-26524",
+        "datasets": [
+            {
+                "dset_name": "y",
+                "start_time": 1711055953208005,
+                "end_time": 1711055958056697,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CONTIGUOUS",
+                "storage_size": 33554432,
+                "dset_n_elements": 8388608,
+                "dimension_cnt": 1,
+                "dimensions": [8388608],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 0,
+                "dataset_write_cnt": 5,
+                "access_type": "write_only",
+                "dset_offset": -1,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 8388608,
+                "access_orders": [2]
+            }
+        ]
+    }
+},
+{
+    "file-0": {
+        "file_name": "/mnt/ssd/mtang11/storage/test.h5",
+        "task_name": "sync-write-1d-contig-contig-read-full-write-26524",
+        "datasets": [
+            {
+                "dset_name": "z",
+                "start_time": 1711055953208058,
+                "end_time": 1711055958056705,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CONTIGUOUS",
+                "storage_size": 33554432,
+                "dset_n_elements": 8388608,
+                "dimension_cnt": 1,
+                "dimensions": [8388608],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 0,
+                "dataset_write_cnt": 5,
+                "access_type": "write_only",
+                "dset_offset": -1,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 8388608,
+                "access_orders": [3]
+            }
+        ]
+    }
+},
+{
+    "file-0": {
+        "file_name": "/mnt/ssd/mtang11/storage/test.h5",
+        "task_name": "sync-write-1d-contig-contig-read-full-write-26524",
+        "datasets": [
+            {
+                "dset_name": "px",
+                "start_time": 1711055953208114,
+                "end_time": 1711055958056713,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CONTIGUOUS",
+                "storage_size": 33554432,
+                "dset_n_elements": 8388608,
+                "dimension_cnt": 1,
+                "dimensions": [8388608],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 0,
+                "dataset_write_cnt": 5,
+                "access_type": "write_only",
+                "dset_offset": -1,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 8388608,
+                "access_orders": [4]
+            }
+        ]
+    }
+},
+{
+    "file-0": {
+        "file_name": "/mnt/ssd/mtang11/storage/test.h5",
+        "task_name": "sync-write-1d-contig-contig-read-full-write-26524",
+        "datasets": [
+            {
+                "dset_name": "py",
+                "start_time": 1711055953208170,
+                "end_time": 1711055958056721,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CONTIGUOUS",
+                "storage_size": 33554432,
+                "dset_n_elements": 8388608,
+                "dimension_cnt": 1,
+                "dimensions": [8388608],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 0,
+                "dataset_write_cnt": 5,
+                "access_type": "write_only",
+                "dset_offset": -1,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 8388608,
+                "access_orders": [5]
+            }
+        ]
+    }
+},
+{
+    "file-0": {
+        "file_name": "/mnt/ssd/mtang11/storage/test.h5",
+        "task_name": "sync-write-1d-contig-contig-read-full-write-26524",
+        "datasets": [
+            {
+                "dset_name": "pz",
+                "start_time": 1711055953208225,
+                "end_time": 1711055958056728,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CONTIGUOUS",
+                "storage_size": 33554432,
+                "dset_n_elements": 8388608,
+                "dimension_cnt": 1,
+                "dimensions": [8388608],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 0,
+                "dataset_write_cnt": 5,
+                "access_type": "write_only",
+                "dset_offset": -1,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 8388608,
+                "access_orders": [6]
+            }
+        ]
+    }
+},
+{
+    "file-0": {
+        "file_name": "/mnt/ssd/mtang11/storage/test.h5",
+        "task_name": "sync-write-1d-contig-contig-read-full-write-26524",
+        "datasets": [
+            {
+                "dset_name": "id_1",
+                "start_time": 1711055953208279,
+                "end_time": 1711055958056736,
+                "dt_class": "H5T_INTEGER",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CONTIGUOUS",
+                "storage_size": 33554432,
+                "dset_n_elements": 8388608,
+                "dimension_cnt": 1,
+                "dimensions": [8388608],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 0,
+                "dataset_write_cnt": 5,
+                "access_type": "write_only",
+                "dset_offset": -1,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 8388608,
+                "access_orders": [7]
+            }
+        ]
+    }
+},
+{
+    "file-0": {
+        "file_name": "/mnt/ssd/mtang11/storage/test.h5",
+        "task_name": "sync-write-1d-contig-contig-read-full-write-26524",
+        "datasets": [
+            {
+                "dset_name": "id_2",
+                "start_time": 1711055953208330,
+                "end_time": 1711055958056744,
+                "dt_class": "H5T_FLOAT",
+                "ds_class": "H5S_SCALAR",
+                "layout": "H5D_CONTIGUOUS",
+                "storage_size": 33554432,
+                "dset_n_elements": 8388608,
+                "dimension_cnt": 1,
+                "dimensions": [8388608],
+                "dset_type_size": 4,
+                "dataset_read_cnt": 0,
+                "dataset_write_cnt": 5,
+                "access_type": "write_only",
+                "dset_offset": -1,
+                "dset_select_type": "H5S_SEL_ALL",
+                "dset_select_npoints": 8388608,
+                "access_orders": [8]
+            }
+        ]
+    }
+},
+{
+    "file-2": {
+        "file_name": "/mnt/ssd/mtang11/storage/test.h5",
+        "open_time(us)": 1711055953207249,
+        "close_time(us)": 1711055958080399,
+        "file_size": 1342194448,
+        "header_size": 2048,
+        "sieve_buf_size": 65536,
+        "file_intent": ["H5F_ACC_RDWR"],
+        "ds_created": 0,
+        "ds_accessed": 40,
+        "grp_created": 5,
+        "grp_accessed": 0,
+        "dtypes_created": 0,
+        "dtypes_accessed": 0
+    }
+},
+{
+    "Task": {
+        "task_name": "sync-write-1d-contig-contig-read-full-write-26524",
+        "VOL-Overhead(us)": 7142,
+        "VOL-Init(us)": 1591,
+        "VOL-Term(us)": 0,
+        "VOL-Log(us)": 0,
+        "VOL-HT-Overhead(us)": 97,
+        "VOL-HT-Add(us)": 95,
+        "VOL-HT-Rm(us)": 0,
+        "VOL-HT-Search(us)": 0,
+        "VOL-FILE_LL-Overhead(us)": 55,
+        "VOL-FILE_LL-Add(us)": 15,
+        "VOL-FILE_LL-Rm(us)": 18,
+        "VOL-FILE_LL-Update(us)": 29,
+        "VOL-DS_LL-Overhead(us)": 726,
+        "VOL-DS_LL-Add(us)": 632,
+        "VOL-DS_LL-Rm(us)": 89,
+        "VOL-DS_LL-Update(us)": 1900,
+        "VOL-GRP_LL-Overhead(us)": 18,
+        "VOL-GRP_LL-Add(us)": 14,
+        "VOL-GRP_LL-Rm(us)": 0,
+        "VOL-DT_LL-Overhead(us)": 0,
+        "VOL-DT_LL-Add(us)": 0,
+        "VOL-DT_LL-Rm(us)": 0,
+        "VOL-All_LL-Overhead(us)": 3756
+    }
+}]

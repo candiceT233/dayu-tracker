@@ -35,7 +35,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_definitions(DEBUG)
 else()
     message("h5vol_tracker IN RELEASE MODE")
-    add_compile_options(-g -O3)
+    add_compile_options(-g -O3 -shlib)
     # Set all Logging to OFF
     set(DEBUG_TKR_VOL OFF)
     set(DEBUG_MORE_TKR_VOL OFF)

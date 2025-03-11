@@ -249,7 +249,7 @@ done:
  */
 static herr_t
 H5FD__tracker_vfd_term(void) {
-  timerTermVFD.Resume();
+  
   // Overhead not recorded here, common to internal VFD
 #ifdef DEBUG_TRK_VFD
   std::cout << "H5FD__tracker_vfd_term()" << std::endl;
@@ -282,14 +282,6 @@ H5FD__tracker_vfd_term(void) {
 
   /* Reset VFL ID */
   H5FD_TRACKER_VFD_g = H5I_INVALID_HID;
-
-  timerTermVFD.Pause();
-  
-  // std::cout << "POSIX-READ-Time(us): " << timer_read.GetUsec() << std::endl;
-  // std::cout << "POSIX-WRITE-Time(us): " << timer_write.GetUsec() << std::endl;
-  // std::cout << "POSIX-OPEN-Time(us): " << timer_open.GetUsec() << std::endl;
-  // std::cout << "POSIX-CLOSE-Time(us): " << timer_close.GetUsec() << std::endl;
-  // std::cout << "POSIX-DELETE-Time(us): " << timer_del.GetUsec() << std::endl;
   
 done:
   H5FD_TRACKER_VFD_FUNC_LEAVE_API;

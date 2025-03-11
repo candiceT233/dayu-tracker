@@ -1,0 +1,23 @@
+2024-03-21 16:19:11,650 h5bench - INFO - Starting h5bench Suite
+2024-03-21 16:19:11,651 h5bench - WARNING - Base directory already exists: /mnt/ssd/mtang11/storage
+2024-03-21 16:19:11,661 h5bench - INFO - Lustre support not detected
+2024-03-21 16:19:11,662 h5bench - DEBUG - HDF5_PLUGIN_PATH: /mnt/common/mtang11/scripts/dayu-tracker/build/src/vol:/mnt/common/mtang11/scripts/dayu-tracker/build/src/vfd:
+2024-03-21 16:19:11,663 h5bench - DEBUG - HDF5_VOL_CONNECTOR: tracker under_vol=0;under_info={};path=/home/mtang11/scripts/dayu-tracker/test/h5bench-seq/test_cases/save_log/1d;level=2;format=
+2024-03-21 16:19:11,664 h5bench - DEBUG - LD_LIBRARY_PATH: /home/mtang11/install/hdf5/lib:/mnt/repo/software/modules-install/mpich/4.1.1/lib
+2024-03-21 16:19:11,665 h5bench - DEBUG - DYLD_LIBRARY_PATH: 
+2024-03-21 16:19:11,666 h5bench - DEBUG - LD_PRELOAD: 
+2024-03-21 16:19:11,667 h5bench - INFO - h5bench [write] - Starting
+2024-03-21 16:19:11,668 h5bench - INFO - h5bench [write] - DIR: /mnt/ssd/mtang11/storage/5c546d8f/
+2024-03-21 16:19:11,669 h5bench - INFO - Parallel setup: mpirun 
+2024-03-21 16:19:11,670 h5bench - INFO - mpirun  /home/mtang11/install/h5bench/bin//h5bench_write /mnt/ssd/mtang11/storage/5c546d8f/h5bench.cfg /mnt/ssd/mtang11/storage/test.h5
+2024-03-21 16:19:18,093 h5bench - INFO - SUCCESS (all output files are located at /mnt/ssd/mtang11/storage/5c546d8f)
+2024-03-21 16:19:18,094 h5bench - INFO - Runtime: 6.4245157 seconds (elapsed time, includes allocation wait time)
+2024-03-21 16:19:18,095 h5bench - INFO - h5bench [write] - Complete
+2024-03-21 16:19:18,096 h5bench - INFO - h5bench [read] - Starting
+2024-03-21 16:19:18,097 h5bench - INFO - h5bench [read] - DIR: /mnt/ssd/mtang11/storage/fcf29e88/
+2024-03-21 16:19:18,098 h5bench - INFO - Parallel setup: mpirun 
+2024-03-21 16:19:18,099 h5bench - INFO - mpirun  /home/mtang11/install/h5bench/bin//h5bench_read /mnt/ssd/mtang11/storage/fcf29e88/h5bench.cfg /mnt/ssd/mtang11/storage/test.h5
+2024-03-21 16:19:22,705 h5bench - INFO - SUCCESS (all output files are located at /mnt/ssd/mtang11/storage/fcf29e88)
+2024-03-21 16:19:22,705 h5bench - INFO - Runtime: 4.6067150 seconds (elapsed time, includes allocation wait time)
+2024-03-21 16:19:22,706 h5bench - INFO - h5bench [read] - Complete
+2024-03-21 16:19:22,707 h5bench - INFO - Finishing h5bench Suite

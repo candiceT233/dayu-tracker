@@ -1,0 +1,586 @@
+{
+  "run_idfeature-71970": {
+    "order": 0,
+    "io_cnt": 3483,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_03:00:00.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc"
+    ]
+  },
+  "run_tracksingle-71970": {
+    "order": 1,
+    "io_cnt": 1383,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/track_20150506_070000.nc"
+    ]
+  },
+  "run_trackstats-71970": {
+    "order": 3,
+    "io_cnt": 2377,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/stats/tracknumbers_20150506.0000_20150506.0800.nc"
+    ],
+    "output": []
+  },
+  "run_matchpf-71970": {
+    "order": 5,
+    "io_cnt": 1891,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/run_mcs_tbpfradar3d_wrf/wrf_landmask.nc"
+    ],
+    "output": []
+  },
+  "run_mapfeature-71970": {
+    "order": 7,
+    "io_cnt": 9176,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_000000.nc"
+    ]
+  },
+  "run_speed-71970": {
+    "order": 8,
+    "io_cnt": 1028,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_060000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_070000.nc"
+    ],
+    "output": []
+  },
+  "run_idfeature-71966": {
+    "order": 0,
+    "io_cnt": 3483,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_05:00:00.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc"
+    ]
+  },
+  "run_tracksingle-71966": {
+    "order": 1,
+    "io_cnt": 1119,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/track_20150506_060000.nc"
+    ]
+  },
+  "run_trackstats-71966": {
+    "order": 3,
+    "io_cnt": 2413,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/stats/tracknumbers_20150506.0000_20150506.0800.nc"
+    ],
+    "output": []
+  },
+  "run_matchpf-71966": {
+    "order": 5,
+    "io_cnt": 1891,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/run_mcs_tbpfradar3d_wrf/wrf_landmask.nc"
+    ],
+    "output": []
+  },
+  "run_mapfeature-71966": {
+    "order": 7,
+    "io_cnt": 9176,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_040000.nc"
+    ]
+  },
+  "run_speed-71966": {
+    "order": 8,
+    "io_cnt": 1028,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_040000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_050000.nc"
+    ],
+    "output": []
+  },
+  "run_idfeature-71959": {
+    "order": 0,
+    "io_cnt": 3483,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_02:00:00.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc"
+    ]
+  },
+  "run_tracksingle-71959": {
+    "order": 1,
+    "io_cnt": 2307,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/track_20150506_040000.nc"
+    ]
+  },
+  "run_trackstats-71959": {
+    "order": 3,
+    "io_cnt": 2477,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/stats/tracknumbers_20150506.0000_20150506.0800.nc"
+    ],
+    "output": []
+  },
+  "run_matchpf-71959": {
+    "order": 5,
+    "io_cnt": 1891,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/run_mcs_tbpfradar3d_wrf/wrf_landmask.nc"
+    ],
+    "output": []
+  },
+  "run_mapfeature-71959": {
+    "order": 7,
+    "io_cnt": 9176,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_070000.nc"
+    ]
+  },
+  "run_speed-71959": {
+    "order": 8,
+    "io_cnt": 1028,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_010000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_020000.nc"
+    ],
+    "output": []
+  },
+  "run_idfeature-71974": {
+    "order": 0,
+    "io_cnt": 6966,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_08:00:00.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_00:00:00.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc"
+    ]
+  },
+  "run_tracksingle-71974": {
+    "order": 1,
+    "io_cnt": 1682,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/track_20150506_020000.nc"
+    ]
+  },
+  "run_trackstats-71974": {
+    "order": 3,
+    "io_cnt": 2477,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/stats/tracknumbers_20150506.0000_20150506.0800.nc"
+    ],
+    "output": []
+  },
+  "run_matchpf-71974": {
+    "order": 5,
+    "io_cnt": 1891,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/run_mcs_tbpfradar3d_wrf/wrf_landmask.nc"
+    ],
+    "output": []
+  },
+  "run_mapfeature-71974": {
+    "order": 7,
+    "io_cnt": 18352,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_080000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_060000.nc"
+    ]
+  },
+  "run_speed-71974": {
+    "order": 8,
+    "io_cnt": 1028,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_000000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_010000.nc"
+    ],
+    "output": []
+  },
+  "run_idfeature-71969": {
+    "order": 0,
+    "io_cnt": 3483,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_01:00:00.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc"
+    ]
+  },
+  "run_tracksingle-71969": {
+    "order": 1,
+    "io_cnt": 1121,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/track_20150506_080000.nc"
+    ]
+  },
+  "run_trackstats-71969": {
+    "order": 3,
+    "io_cnt": 4768,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/stats/tracknumbers_20150506.0000_20150506.0800.nc"
+    ],
+    "output": []
+  },
+  "run_matchpf-71969": {
+    "order": 5,
+    "io_cnt": 1891,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/run_mcs_tbpfradar3d_wrf/wrf_landmask.nc"
+    ],
+    "output": []
+  },
+  "run_mapfeature-71969": {
+    "order": 7,
+    "io_cnt": 9176,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_010000.nc"
+    ]
+  },
+  "run_speed-71969": {
+    "order": 8,
+    "io_cnt": 1028,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_050000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_060000.nc"
+    ],
+    "output": []
+  },
+  "run_idfeature-71964": {
+    "order": 0,
+    "io_cnt": 3483,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_07:00:00.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc"
+    ]
+  },
+  "run_tracksingle-71964": {
+    "order": 1,
+    "io_cnt": 1379,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/track_20150506_050000.nc"
+    ]
+  },
+  "run_trackstats-71964": {
+    "order": 3,
+    "io_cnt": 2421,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/stats/tracknumbers_20150506.0000_20150506.0800.nc"
+    ],
+    "output": []
+  },
+  "run_matchpf-71964": {
+    "order": 5,
+    "io_cnt": 1891,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/run_mcs_tbpfradar3d_wrf/wrf_landmask.nc"
+    ],
+    "output": []
+  },
+  "run_mapfeature-71964": {
+    "order": 7,
+    "io_cnt": 9176,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_020000.nc"
+    ]
+  },
+  "run_speed-71964": {
+    "order": 8,
+    "io_cnt": 1028,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_030000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_040000.nc"
+    ],
+    "output": []
+  },
+  "run_idfeature-71977": {
+    "order": 0,
+    "io_cnt": 3483,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_06:00:00.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc"
+    ]
+  },
+  "run_tracksingle-71977": {
+    "order": 1,
+    "io_cnt": 1581,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/track_20150506_030000.nc"
+    ]
+  },
+  "run_trackstats-71977": {
+    "order": 3,
+    "io_cnt": 2541,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/stats/tracknumbers_20150506.0000_20150506.0800.nc"
+    ],
+    "output": []
+  },
+  "run_matchpf-71977": {
+    "order": 5,
+    "io_cnt": 3782,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/run_mcs_tbpfradar3d_wrf/wrf_landmask.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc"
+    ],
+    "output": []
+  },
+  "run_mapfeature-71977": {
+    "order": 7,
+    "io_cnt": 9176,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_050000.nc"
+    ]
+  },
+  "run_speed-71977": {
+    "order": 8,
+    "io_cnt": 1028,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_070000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_080000.nc"
+    ],
+    "output": []
+  },
+  "run_idfeature-71961": {
+    "order": 0,
+    "io_cnt": 3483,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/run_mcs_tbpfradar3d_wrf/wrfout_rainrate_tb_zh_mh_2015-05-06_04:00:00.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc"
+    ]
+  },
+  "run_tracksingle-71961": {
+    "order": 1,
+    "io_cnt": 1581,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/track_20150506_010000.nc"
+    ]
+  },
+  "run_trackstats-71961": {
+    "order": 3,
+    "io_cnt": 2449,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/stats/tracknumbers_20150506.0000_20150506.0800.nc"
+    ],
+    "output": []
+  },
+  "run_matchpf-71961": {
+    "order": 5,
+    "io_cnt": 1891,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/run_mcs_tbpfradar3d_wrf/wrf_landmask.nc"
+    ],
+    "output": []
+  },
+  "run_mapfeature-71961": {
+    "order": 7,
+    "io_cnt": 9176,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_030000.nc"
+    ]
+  },
+  "run_speed-71961": {
+    "order": 8,
+    "io_cnt": 1028,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_020000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/mcstracking/20150506.0000_20150506.0800/mcstrack_20150506_030000.nc"
+    ],
+    "output": []
+  },
+  "run_gettracks-71911": {
+    "order": 2,
+    "io_cnt": 2343,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/track_20150506_010000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_000000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_010000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/track_20150506_020000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_020000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/track_20150506_030000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_030000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/track_20150506_040000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_040000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/track_20150506_050000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_050000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/track_20150506_060000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_060000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/track_20150506_070000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_070000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/track_20150506_080000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/cloudid_20150506_080000.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/tracking/track_20150506_010000.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/stats/tracknumbers_20150506.0000_20150506.0800.nc"
+    ]
+  },
+  "run_trackstats-71911": {
+    "order": 3,
+    "io_cnt": 1542,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/stats/tracknumbers_20150506.0000_20150506.0800.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/stats/trackstats_20150506.0000_20150506.0800.nc",
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/stats/trackstats_sparse_20150506.0000_20150506.0800.nc"
+    ]
+  },
+  "run_identifymcs-71911": {
+    "order": 4,
+    "io_cnt": 1027,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/stats/trackstats_sparse_20150506.0000_20150506.0800.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_20150506.0000_20150506.0800.nc"
+    ]
+  },
+  "run_matchpf-71911": {
+    "order": 5,
+    "io_cnt": 921,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_20150506.0000_20150506.0800.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_pf_20150506.0000_20150506.0800.nc"
+    ]
+  },
+  "run_robustmcs-71911": {
+    "order": 6,
+    "io_cnt": 1080,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_pf_20150506.0000_20150506.0800.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_robust_20150506.0000_20150506.0800.nc"
+    ]
+  },
+  "run_mapfeature-71911": {
+    "order": 7,
+    "io_cnt": 547,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_robust_20150506.0000_20150506.0800.nc"
+    ],
+    "output": []
+  },
+  "run_speed-71911": {
+    "order": 8,
+    "io_cnt": 3811,
+    "input": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_robust_20150506.0000_20150506.0800.nc"
+    ],
+    "output": [
+      "/mnt/hdd/jye20/pyflex_run/input_data/output_data/run_mcs_tbpfradar3d_wrf/stats/mcs_tracks_final_20150506.0000_20150506.0800.nc"
+    ]
+  }
+}

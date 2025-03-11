@@ -839,7 +839,7 @@ tkr_helper_t * tkr_helper_init( char* file_path, Track_level tkr_level, char* tk
     new_helper->tkr_line_format = strdup(tkr_line_format);
     new_helper->tkr_level = tkr_level;
     new_helper->pid = getpid();
-    new_helper->tid = pthread_self();
+    // new_helper->tid = pthread_self();
     new_helper->opened_files = NULL;
     new_helper->opened_files_cnt = 0;
     // new_helper->tkr_file_path = strdup(file_path);
@@ -1779,7 +1779,6 @@ herr_t tracker_file_setup(const char* str_in, char* file_path_out, Track_level* 
     printf("TRACKER VOL INT : tracker_file_setup\n");
 #endif
 
-
     //acceptable format: path=$path_str;level=$level_int;format=$format_str
     char tmp_str[100] = {'\0'};
     char* toklist[4] = {NULL};
@@ -1787,6 +1786,8 @@ herr_t tracker_file_setup(const char* str_in, char* file_path_out, Track_level* 
     char *p;
 
     memcpy(tmp_str, str_in, strlen(str_in)+1);
+
+    // printf("tmp_str: %s\n", tmp_str);
 
     i = 0;
     p = strtok(tmp_str, ";");
@@ -1800,10 +1801,19 @@ herr_t tracker_file_setup(const char* str_in, char* file_path_out, Track_level* 
     sscanf(toklist[2], "level=%d", (int *)level_out);
     sscanf(toklist[3], "format=%s", format_out);
 
+#ifdef DEBUG_PT_TKR_VOL
+    printf("file_path_out: %s\n", file_path_out);
+    printf("level_out: %d\n", *level_out);
+    printf("format_out: %s\n", format_out);
+#endif
+
     for(i = 0; i<=3; i++)
         if(toklist[i])
             free(toklist[i]);
 
+#ifdef DEBUG_PT_TKR_VOL
+    printf("TRACKER VOL INT : tracker_file_setup END\n");
+#endif
     return 0;
 }
 
@@ -2451,14 +2461,34 @@ void log_file_stat_json(tkr_helper_t* helper_in, const file_tkr_info_t* file_inf
     fprintf(f, "},\n");
 
     TOTAL_TKR_OVERHEAD = 0; // reset the total overhead once recorded
-    TOTAL_NATIVE_H5_TIME = 0; // reset the total native H5 time once recorded
-    TKR_WRITE_TOTAL_TIME = 0; // reset the total write time once recorded
-    FILE_LL_TOTAL_TIME = 0; // reset the total file time once recorded
-    DSET_LL_TOTAL_TIME = 0; // reset the total dataset time once recorded
-    GRP_LL_TOTAL_TIME = 0; // reset the total group time once recorded
-    DT_LL_TOTAL_TIME = 0; // reset the total datatype time once recorded
-    ATTR_LL_TOTAL_TIME = 0; // reset the total attribute time once recorded
+    TKR_INIT_TIME = 0; // reset the total init time once recorded
+    TKR_TERM_TIME = 0; // reset the total term time once recorded
+    TKR_LOG_TIME = 0; // reset the total log time once recorded
+
     FILE_DSET_HT_TOTAL_TIME = 0; // reset the total file-dataset hash table time once recorded
+    FILE_DSET_HT_ADD_TIME = 0; // reset the total file-dataset hash table add time once recorded
+    FILE_DSET_HT_RM_TIME = 0; // reset the total file-dataset hash table remove time once recorded
+    FILE_DSET_HT_SEARCH_TIME = 0; // reset the total file-dataset hash table search time once recorded
+
+    FILE_LL_TOTAL_TIME = 0; // reset the total file time once recorded
+    FILE_INFO_ADD_TIME = 0; // reset the total file add time once recorded
+    FILE_INFO_RM_TIME = 0; // reset the total file remove time once recorded
+    FILE_INFO_UPDATE_TIME = 0; // reset the total file update time once recorded
+
+    DSET_LL_TOTAL_TIME = 0; // reset the total dataset time once recorded
+    DSET_INFO_ADD_TIME = 0; // reset the total dataset add time once recorded
+    DSET_INFO_RM_TIME = 0; // reset the total dataset remove time once recorded
+    DSET_INFO_UPDATE_TIME = 0; // reset the total dataset update time once recorded
+
+    GRP_LL_TOTAL_TIME = 0; // reset the total group time once recorded
+    GRP_INFO_ADD_TIME = 0; // reset the total group add time once recorded
+    GRP_INFO_RM_TIME = 0; // reset the total group remove time once recorded
+
+    DT_LL_TOTAL_TIME = 0; // reset the total datatype time once recorded
+    DT_INFO_ADD_TIME = 0; // reset the total datatype add time once recorded
+    DT_INFO_RM_TIME = 0; // reset the total datatype remove time once recorded
+
+    ATTR_LL_TOTAL_TIME = 0; // reset the total attribute time once recorded
     TRK_ACCESS_STAT_TIME = 0; // reset the total dataset info update time once recorded
 
     fflush(f);
