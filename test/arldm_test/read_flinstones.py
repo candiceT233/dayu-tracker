@@ -13,7 +13,7 @@ from omegaconf import DictConfig
 
 from torch.utils.data import DataLoader
 
-from models.blip_override.blip import init_tokenizer
+# from models.blip_override.blip import init_tokenizer
 
 # Copied fromn flintstones.py
 
@@ -38,11 +38,11 @@ class StoryDataset(Dataset):
         self.dataset = args.dataset
         self.max_length = args.get(args.dataset).max_length
         self.clip_tokenizer = CLIPTokenizer.from_pretrained('runwayml/stable-diffusion-v1-5', subfolder="tokenizer")
-        self.blip_tokenizer = init_tokenizer()
+        # self.blip_tokenizer = init_tokenizer()
         msg = self.clip_tokenizer.add_tokens(list(args.get(args.dataset).new_tokens))
         print("clip {} new tokens added".format(msg))
-        msg = self.blip_tokenizer.add_tokens(list(args.get(args.dataset).new_tokens))
-        print("blip {} new tokens added".format(msg))
+        # msg = self.blip_tokenizer.add_tokens(list(args.get(args.dataset).new_tokens))
+        # print("blip {} new tokens added".format(msg))
 
         self.blip_image_processor = transforms.Compose([
             transforms.ToPILImage(),
@@ -82,13 +82,13 @@ class StoryDataset(Dataset):
         )
         captions, attention_mask = tokenized['input_ids'], tokenized['attention_mask']
 
-        tokenized = self.blip_tokenizer(
-            texts,
-            padding="max_length",
-            max_length=self.max_length,
-            truncation=False,
-            return_tensors="pt",
-        )
+        # tokenized = self.blip_tokenizer(
+        #     texts,
+        #     padding="max_length",
+        #     max_length=self.max_length,
+        #     truncation=False,
+        #     return_tensors="pt",
+        # )
         source_caption, source_attention_mask = tokenized['input_ids'], tokenized['attention_mask']
         return images, captions, attention_mask, source_images, source_caption, source_attention_mask
 
@@ -129,7 +129,7 @@ def read_items_in_data(data_name, args):
     data = StoryDataset(data_name, args)
     print(f"Length of {data_name}: {len(data)}")
     data.__get_dset_size__()
-    for i in range(0, len(data), 20):
+    for i in range(0, len(data), 2):
         data.__get_dset_item__(i)
 
 def load_data(args: DictConfig) -> None:
