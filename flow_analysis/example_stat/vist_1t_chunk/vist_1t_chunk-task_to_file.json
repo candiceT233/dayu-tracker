@@ -1,0 +1,34 @@
+{
+  "arldm_train-169988": {
+    "order": 1,
+    "io_cnt": 22,
+    "input": [
+      "/home/mtang11/experiments/arldm_run/input_data/flintstones_out.h5"
+    ],
+    "output": []
+  },
+  "arldm_train-170073": {
+    "order": 1,
+    "io_cnt": 13,
+    "input": [
+      "/home/mtang11/experiments/arldm_run/input_data/flintstones_out.h5"
+    ],
+    "output": []
+  },
+  "arldm_train-170118": {
+    "order": 1,
+    "io_cnt": 13,
+    "input": [
+      "/home/mtang11/experiments/arldm_run/input_data/flintstones_out.h5"
+    ],
+    "output": []
+  },
+  "arldm_saveh5-169954": {
+    "order": 0,
+    "io_cnt": 984,
+    "input": [],
+    "output": [
+      "/home/mtang11/experiments/arldm_run/input_data/flintstones_out.h5"
+    ]
+  }
+}
