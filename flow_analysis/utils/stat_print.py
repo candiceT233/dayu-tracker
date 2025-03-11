@@ -116,7 +116,7 @@ def show_all_overhead(type, file_dict):
         # print(f"Total POSIX DELETE time: {delete_time} us")
 
 # vfd_links
-def show_vfd_stats(G):
+def show_vfd_stats_old(G):
     
     # overall stats
     access_size = nx.get_edge_attributes(G, 'access_size')
@@ -134,7 +134,13 @@ def show_vfd_stats(G):
         in_edges += list(G.in_edges(n))
     
     # get initia; input size from in_edges
-    initial_input_size = sum([G.edges[e]['access_size'] for e in in_edges])
+    # initial_input_size = sum([G.edges[e]['access_size'] for e in in_edges])
+    for e in in_edges:
+        print(f"Edge properties: {G.edges[e]}")
+        break
+    
+    initial_input_size = sum([G.edges[e]['file_stat']['io_bytes'] for e in in_edges])
+    
 
     stat_str = 'Total number of links: {}\n'.format(len(access_size))
     stat_str += f"Total I/O size: {humansize(total_access_size)}\n"
@@ -149,6 +155,58 @@ def show_vfd_stats(G):
     
     return stat_str
 
+def show_vfd_stats(G):
+    
+    # overall stats
+    file_stat_dict = nx.get_edge_attributes(G, 'file_stat')
+    # print(f"file_stat.values = {file_stat_dict.values()}")
+    
+    # Transfer values from file file_stat_dict to below dict
+    access_size = {}
+    access_cnt = {}
+    bandwidth = {}
+    for edge, file_stat in file_stat_dict.items():
+        io_size = file_stat['io_bytes']
+        access_size[edge] = io_size
+        access_cnt[edge] = file_stat['file_write_cnt'] + file_stat['file_read_cnt']
+        
+        start_time = file_stat['open_time(us)']
+        end_time = file_stat['close_time(us)']
+        
+        bandwidth[edge] = file_stat['io_bytes']/(end_time-start_time)
+    
+    # access_size = nx.get_edge_attributes(G, 'access_size')
+    # access_cnt = nx.get_edge_attributes(G, 'access_cnt')
+    # bandwidth = nx.get_edge_attributes(G, 'bandwidth')
+    total_access_size = sum(access_size.values())
+
+    # get all nodes that are tasks
+    task_nodes = [n for n in G.nodes() if G.nodes[n]['type'] == 'task']
+    # get all task nodes that are order = 0
+    task_nodes_0 = [n for n in task_nodes if G.nodes[n]['phase'] == 0]
+    # get all in_edges of task_nodes_0
+    in_edges = []
+    for n in task_nodes_0:
+        in_edges += list(G.in_edges(n))
+    
+    # get initia; input size from in_edges
+    # initial_input_size = sum([G.edges[e]['access_size'] for e in in_edges])
+    
+    initial_input_size = sum([G.edges[e]['file_stat']['io_bytes'] for e in in_edges])
+    
+
+    stat_str = 'Total number of links: {}\n'.format(len(access_size))
+    stat_str += f"Total I/O size: {humansize(total_access_size)}\n"
+    stat_str += f"Total I/O count: {sum(access_cnt.values())}\n"
+    stat_str += f"Total bandwidth: {humanbw(sum(bandwidth.values()))}\n"
+    stat_str += f"Average I/O size: {humansize(total_access_size/sum(access_cnt.values()))}\n"
+    
+    # get medium I/O size
+    stat_str += f"Medium I/O size: {humansize(np.median(list(access_size.values())))}\n"
+    
+    stat_str += f"Inital input size: {humansize(initial_input_size)}\n"
+    
+    return stat_str
 
 def draw_graph(G, test_name, stat_path, graph_type="datalife", prefix="", save=False):
     plt.figure(figsize=(80, 20))

@@ -520,6 +520,6 @@ if __name__ == '__main__':
     parser.add_argument('-path', type=str, required=True, help='Directory path for the stats')
     parser.add_argument('-wf', type=str, required=True, help='The subfolder name in the stats directory')
     parser.add_argument('-schema', type=bool, required=False, default=False, help='Whether to extract prefetch schema or not')
-    parser.add_argument('-showstat', type=bool, required=False, default=True, help='Whether to show I/O stats')
+    parser.add_argument('-showstat', type=bool, required=False, default=False, help='Whether to show I/O stats')
     args = parser.parse_args()
     main(args)

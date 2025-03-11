@@ -87,7 +87,11 @@ def get_nodes_for_sankey(G, rm_tags=[],label_on=True):
                 node_label = f"File-Metadata-{phase}"
             
             for rm_tag in rm_tags:
-                if rm_tag == "PID":
+                if rm_tag == "DATASETNAME":
+                    if node_type == 'dataset' or node_type == 'group/attr': node_label = ""
+                if rm_tag == "FILENAME":
+                    if node_type == 'file': node_label = ""
+                if rm_tag == "PID" and node_type == "task":
                     task_pid = node_name.split('-')[-1]
                     if "epoch" in node_name:
                         date_str = node_name.split('-')[-2]
@@ -96,14 +100,19 @@ def get_nodes_for_sankey(G, rm_tags=[],label_on=True):
                     node_label = node_label.replace(f"-{task_pid}", "")
                 else:
                     node_label = node_label.replace(rm_tag, '')
-                if rm_tag == "FILENAME":
-                    if node_type == 'file': node_label = ""
+
             
             node_dict_for_sankey['label'].append(node_label)
-        else:
+        elif label_on == "Partial":
+            print("Partial label on")
             phase = attr['phase']
             phase_order = G.nodes[node_name]['pos'][1]
-            node_label = f"{phase+1}-{node_type}-{phase_order}"
+            if node_type == "task": 
+                shorten_node = node_name.split('_')[1]
+            else:
+                shorten_node = node_name.split('_')[0]
+            # node_label = f"{phase+1}-{node_type}-{phase_order}"
+            node_label = shorten_node
             node_dict_for_sankey['label'].append(node_label)
             
         node_dict_for_sankey['color'].append(COLOR_MAP[node_type])

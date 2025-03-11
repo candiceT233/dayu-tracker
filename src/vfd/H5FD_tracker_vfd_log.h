@@ -1416,18 +1416,21 @@ void DumpJsonFileStat(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t* info)
   double posix_time = timer_read.GetUsec() + timer_write.GetUsec() + timer_open.GetUsec() + timer_close.GetUsec() + timer_del.GetUsec();
 
   // reset the total overhead and posix io time once recorded
-
   fprintf(f, "\"POSIX-READ-Time(us)\": %f, ", timer_read.GetUsec());
   fprintf(f, "\"POSIX-WRITE-Time(us)\": %f, ", timer_write.GetUsec());
   fprintf(f, "\"POSIX-OPEN-Time(us)\": %f, ", timer_open.GetUsec());
   fprintf(f, "\"POSIX-CLOSE-Time(us)\": %f, ", timer_close.GetUsec());
   fprintf(f, "\"POSIX-DELETE-Time(us)\": %f, ", timer_del.GetUsec());
 
+
+
   // Log all MMAP IO related overhead
   fprintf(f, "\"MMAP-READ-Time(us)\": %f, ", timer_mmap_read.GetUsec());
   fprintf(f, "\"MMAP-WRITE-Time(us)\": %f, ", timer_mmap_write.GetUsec());
   fprintf(f, "\"MMAP-OPEN-Time(us)\": %f, ", timer_mmap_open.GetUsec());
   fprintf(f, "\"MMAP-CLOSE-Time(us)\": %f, ", timer_mmap_close.GetUsec());
+
+
 
   // Log all VFD related overhead
   fprintf(f, "\"VFD-Overhead(us)\": %f, ", timer_vfd.GetUsec());
@@ -1438,6 +1441,8 @@ void DumpJsonFileStat(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t* info)
   fprintf(f, "\"VFD-Stat-Update(us)\": %f, ", timerUpdateStat.GetUsec());
   fprintf(f, "\"VFD-Stat-Rm(us)\": %f, ", timerRmStat.GetUsec());
   fprintf(f, "\"VFD-Stat-Log(us)\": %f ", timerLogStat.GetUsec());
+
+
 
 
   fprintf(f, "}\n");
