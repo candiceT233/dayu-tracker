@@ -28,7 +28,7 @@
 /* (Public HDF5 and standard C / POSIX only) */
 
 #include <assert.h>
-#include <pthread.h> // TODO: remove?
+#include <pthread.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -50,7 +50,6 @@
 /* HDF5 header for dynamic plugin loading */
 #include "H5PLextern.h"
 
-// #include "hdf5dev.h"
 #include "tracker_vol.h"
 #include "tracker_vol_int.h"
 
@@ -441,7 +440,7 @@ static void *
 H5VL_tracker_info_copy(const void *_info)
 {
     
-    unsigned long start = get_time_usec(); // TODO: is it accurate?
+    unsigned long start = get_time_usec();
     const H5VL_tracker_info_t *info = (const H5VL_tracker_info_t *)_info;
     H5VL_tracker_info_t *new_info;
 
@@ -699,8 +698,6 @@ H5VL_tracker_str_to_info(const char *str, void **_info)
     under_vol_id = H5VLregister_connector_by_value((H5VL_class_value_t)under_vol_value, H5P_DEFAULT);
     under_vol_info_start = strchr(str, '{');
     under_vol_info_end = strrchr(str, '}');
-    // printf("under_vol_info_start: %c\n", under_vol_info_start);
-    // printf("under_vol_info_end: %c\n", under_vol_info_end);
     assert(under_vol_info_end > under_vol_info_start);
 
     if(under_vol_info_end != (under_vol_info_start + 1)) {
@@ -720,8 +717,6 @@ H5VL_tracker_str_to_info(const char *str, void **_info)
     info->tkr_line_format = (char *)calloc(64, sizeof(char));
 
     if(tracker_file_setup(under_vol_info_end, info->tkr_file_path, &(info->tkr_level), info->tkr_line_format) != 0){
-        // free(info->tkr_file_path);
-        // free(info->tkr_line_format);
         info->tkr_line_format = NULL;
         info->tkr_file_path = NULL;
         info->tkr_level = File_only;
