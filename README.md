@@ -350,16 +350,25 @@ If you use DaYu-Tracker in your research, please cite:
 
 ```
 @inproceedings{tang2024dayu,
-  title={DaYu: Optimizing Distributed Scientific Workflows by Decoding Dataflow Semantics and Dynamics},
-  author={Tang, M. and Cernuda, J. and Ye, J. and Guo, L. and Tallent, N. and Kougkas, A. and Sun, X.-H.},
-  booktitle={2024 IEEE International Conference on Cluster Computing (CLUSTER'24)},
+  title={DaYu: Optimizing distributed scientific workflows by decoding dataflow semantics and dynamics},
+  author={Tang, Meng and Cernuda, Jaime and Ye, Jie and Guo, Luanzheng and Tallent, Nathan R and Kougkas, Anthony and Sun, Xian-He},
+  booktitle={2024 IEEE International Conference on Cluster Computing (CLUSTER)},
+  pages={357--369},
   year={2024},
-  month={September},
-  abstract={The combination of ever-growing scientific datasets and distributed workflow complexity creates I/O performance bottlenecks due to data volume, velocity, and variety. Although the increasing use of descriptive data formats (e.g., HDF5, netCDF) helps organize these datasets, it also introduces obscure bottlenecks due to the need to translate high-level operations into file addresses and then into low-level I/O operations. To address this challenge, we introduce DaYu, a method and toolset for analyzing (a) semantic relationships between logical datasets and file addresses, (b) how dataset operations translate into I/O, and (c) the combination across entire workflows. DaYu's analysis and visualization enable the identification of critical bottlenecks and the reasoning about remediation. We describe our methodology and propose optimization guidelines. Evaluation on scientific workflows demonstrates up to a 3.7x performance improvement in I/O time for obscure bottlenecks. The time and storage overhead for DaYu's time-ordered data are typically under 0.2% of runtime and 0.25% of data volume, respectively.}
+  organization={IEEE},
+  abstract={The combination of ever-growing scientific datasets and distributed workflow complexity creates I/O performance bottlenecks due to data volume, velocity, and variety. Although the increasing use of descriptive data formats (e.g., HDF5, netCDF) helps organize these datasets, it also introduces obscure bottlenecks due to the need to translate high-level operations into file addresses and then into low-level I/O operations. To address this challenge, we introduce DaYu, a method and toolset for analyzing (a) semantic relationships between logical datasets and file addresses, (b) how dataset operations translate into I/O, and (c) the combination across entire workflows. DaYu’s analysis and visualization enable the identification of critical bottlenecks and the reasoning about remediation. We describe our methodology and propose optimization guidelines. Evaluation on scientific workflows demonstrates up to a 3.7x performance improvement in I/O time for obscure bottlenecks. The time and storage overhead for DaYu’s time-ordered data are typically under 0.2% of runtime and 0.25% of data volume, respectively.}
 }
 ```
 
-**Paper Abstract**: The combination of ever-growing scientific datasets and distributed workflow complexity creates I/O performance bottlenecks due to data volume, velocity, and variety. Although the increasing use of descriptive data formats (e.g., HDF5, netCDF) helps organize these datasets, it also introduces obscure bottlenecks due to the need to translate high-level operations into file addresses and then into low-level I/O operations. To address this challenge, we introduce DaYu, a method and toolset for analyzing (a) semantic relationships between logical datasets and file addresses, (b) how dataset operations translate into I/O, and (c) the combination across entire workflows. DaYu's analysis and visualization enable the identification of critical bottlenecks and the reasoning about remediation. We describe our methodology and propose optimization guidelines. Evaluation on scientific workflows demonstrates up to a 3.7x performance improvement in I/O time for obscure bottlenecks. The time and storage overhead for DaYu's time-ordered data are typically under 0.2% of runtime and 0.25% of data volume, respectively.
+- PDF: [DaYu: Optimizing Distributed Scientific Workflows by Decoding Dataflow Semantics and Dynamics](http://cs.iit.edu/~scs/assets/files/tang2024dayu.pdf)
+
+## Acknowledgements
+
+This research is supported by the U.S. Department of Energy (DOE) through the Office of Advanced Scientific Computing Research’s “Orchestration for Distributed & Data-Intensive Scientific Exploration”; the “Cloud, HPC, and Edge for Science and Security” LDRD at Pacific Northwest National Laboratory; and partly by the National Science Foundation under Grants no. CSSI-2104013 and OAC-2313154.
+
+## Keywords
+
+HDF5, netCDF, VOL, VFD, I/O profiling, I/O analysis, workflow optimization, dataflow analysis, semantic dataflow, Sankey visualization, HPC I/O, scientific workflows, performance analysis, provenance, data dependencies, POSIX I/O, Virtual Object Layer, Virtual File Driver, CLUSTER 2024, DaYu, storage optimization, metadata overhead, dataset mapping
 
 ## Support
 
