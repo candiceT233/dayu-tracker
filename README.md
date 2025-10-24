@@ -1,10 +1,10 @@
-# DaYu-Tracker: Unveiling the I/O Secrets of Scientific Workflows
+# DaYu: Unveiling the I/O Secrets of Scientific Workflows
 
 [![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
-**DaYu-Tracker is a comprehensive HDF5 I/O monitoring and analysis toolkit that provides detailed insights into I/O patterns of HDF5 applications at multiple levels. Decode the dataflow semantics and dynamics of your scientific workflows, identify I/O bottlenecks, and optimize performance with interactive visualizations.**
+**DaYu is a comprehensive HDF5 I/O monitoring and analysis toolkit that provides detailed insights into I/O patterns of HDF5 applications at multiple levels. Decode the dataflow semantics and dynamics of your scientific workflows, identify I/O bottlenecks, and optimize performance with interactive visualizations.**
 
-DaYu-Tracker was published at **CLUSTER 2024** and has demonstrated up to a **3.7x performance improvement** in I/O time for obscure bottlenecks.
+DaYu was published at **CLUSTER 2024** and has demonstrated up to a **3.7x performance improvement** in I/O time for obscure bottlenecks.
 
 ## Key Features
 
@@ -16,7 +16,7 @@ DaYu-Tracker was published at **CLUSTER 2024** and has demonstrated up to a **3.
 
 ## Gallery
 
-Here are some examples of the visualizations you can create with DaYu-Tracker:
+Here are some examples of the visualizations you can create with DaYu:
 
 **DeepDriveMD (ddmd) Workflow Analysis**
 ![DeepDriveMD Workflow](flow_analysis/example_stat/ddmd/vfd-4s-ddmd-labeled-sankey-s4.png)
@@ -29,7 +29,7 @@ Here are some examples of the visualizations you can create with DaYu-Tracker:
 
 ## Architecture
 
-DaYu-Tracker consists of two main components:
+DaYu consists of two main components:
 
 1.  **VOL (Virtual Object Layer) Tracker**: Monitors HDF5 object-level operations (datasets, groups, attributes).
 2.  **VFD (Virtual File Driver) Tracker**: Monitors low-level POSIX I/O operations.
@@ -44,7 +44,7 @@ These components work together to provide a holistic view of your application's 
 - **Python**: 3.7+
 - **Build Tools**: CMake 3.10+, C++17 compatible compiler
 
-### Building DaYu-Tracker
+### Building DaYu
 
 1.  **Clone the repository**:
     ```bash
@@ -71,7 +71,7 @@ Before running your HDF5 application, set the `CURR_TASK` environment variable t
 export CURR_TASK="my_program"
 ```
 
-### 2. Run with DaYu-Tracker
+### 2. Run with DaYu
 
 Configure the environment variables to enable the VOL and VFD trackers:
 
@@ -107,7 +107,7 @@ For more detailed instructions and advanced usage, please refer to the documenta
 
 ## Citation
 
-If you use DaYu-Tracker in your research, please cite our paper:
+If you use DaYu in your research, please cite our paper:
 
 ```
 @inproceedings{tang2024dayu,
