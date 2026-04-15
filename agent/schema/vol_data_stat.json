@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DaYu VOL Data Stat",
+  "description": "Per-process HDF5 VOL tracker statistics. Filename pattern: <pid>-vol_data_stat.json",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "description": "Each item is keyed by 'file-N' containing stats for one HDF5 file",
+    "additionalProperties": {
+      "type": "object",
+      "required": ["file_name", "task_name", "datasets"],
+      "properties": {
+        "file_name": {"type": "string"},
+        "task_name": {"type": "string", "description": "Format: <task_base>-<pid>"},
+        "datasets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["dset_name", "access_type"],
+            "properties": {
+              "dset_name": {"type": "string"},
+              "start_time": {"type": "integer", "description": "Microsecond timestamp"},
+              "end_time": {"type": "integer"},
+              "dset_n_elements": {"type": "integer"},
+              "dset_type_size": {"type": "integer"},
+              "dataset_read_cnt": {"type": "integer"},
+              "dataset_write_cnt": {"type": "integer"},
+              "access_type": {"type": "string", "enum": ["read_only", "write_only", "read_write"]},
+              "dset_select_npoints": {"type": "integer"},
+              "access_orders": {"type": "array", "items": {"type": "integer"}}
+            }
+          }
+        }
+      }
+    }
+  }
+}
