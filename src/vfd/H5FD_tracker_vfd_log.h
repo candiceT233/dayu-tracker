@@ -48,6 +48,7 @@
 #include "H5FD_tracker_vfd_err.h" /* Error handling         */
 #include "../vol/tracker_vol_types.h" /* Connecting to vol */
 #include "../utils/debug/timer.h" /* for recording time */
+#include "tracker_vfd_async.h"   /* SRC-004: async background writer */
 
 
 // #ifdef ENABLE_TRACKER
@@ -1110,6 +1111,15 @@ vfd_tkr_helper_t * vfdTkrHelperInit( char* file_path, size_t page_size, hbool_t 
     fprintf(f, "[");
     fclose(f);
 
+    // SRC-004 (2026-04-21): start the async writer thread if opted in.
+    // The writer opens the stat JSON file once and drains batched record
+    // strings produced by DumpJsonFileStat. See tracker_vfd_async.h.
+    if (tracker_async::vfd_enabled()) {
+        tracker_async::start(tracker_async::vfd_writer(),
+                             new_helper->tkr_file_path,
+                             tracker_async::env_limit("TRACKER_VFD_INMEM_LIMIT", 500));
+    }
+
     // Get the user's login name
     if (getlogin_r(new_helper->user_name, sizeof(new_helper->user_name)) != 0) {
         printf("H5FD_tracker_vfd_log.h: vfdTkrHelperInit() Failed to get user name.\n");
@@ -1286,6 +1296,13 @@ void teardownVFDTkrHelper(vfd_tkr_helper_t* helper){
 
 
   timerRmStat.Resume();
+
+  // SRC-004 (2026-04-21): drain the async writer first (if enabled) so all
+  // queued records are flushed to disk before we fix up the JSON array close.
+  if (tracker_async::vfd_enabled()) {
+    tracker_async::stop(tracker_async::vfd_writer(), "vfd");
+  }
+
   // Close json file list
   FILE * f = fopen(helper->tkr_file_path, "r+");
 
@@ -1327,11 +1344,31 @@ void DumpJsonFileStat(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t* info)
       file_name++;
   else
       file_name = (const char*)info->file_name;
-  
-  FILE * f = fopen(helper->tkr_file_path, "a");
+
+  // SRC-004 (2026-04-21): if TRACKER_VFD_ASYNC=1 is set, serialize this record
+  // to an in-memory string via open_memstream and hand it to the background
+  // writer. Close-path does no NFS I/O on the shared stat file.
+  // Otherwise fall back to the original synchronous fopen/fflush/fclose path.
+  char*  async_buf = nullptr;
+  size_t async_sz  = 0;
+  bool   async_on  = tracker_async::vfd_enabled();
+
+  FILE * f = nullptr;
+  if (async_on) {
+    f = open_memstream(&async_buf, &async_sz);
+    if (!f) {
+      fprintf(stderr, "[tracker-async] open_memstream failed; falling back to sync write\n");
+      async_on = false;
+      f = fopen(helper->tkr_file_path, "a");
+    }
+  } else {
+    f = fopen(helper->tkr_file_path, "a");
+  }
 
   if (!info) {
       fprintf(f, "DumpJsonFileStat(): vfd_file_tkr_info_t is nullptr.\n");
+      if (async_on && async_buf) { free(async_buf); }
+      fclose(f);
       return;
   }
 
@@ -1453,6 +1490,17 @@ void DumpJsonFileStat(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t* info)
 
   fflush(f);
   fclose(f);
+
+  // SRC-004: if async path, the memstream buffer now holds the full record.
+  // Enqueue it for the background writer and release the buffer.
+  if (async_on) {
+    if (async_buf && async_sz > 0) {
+      tracker_async::enqueue(tracker_async::vfd_writer(),
+                             std::string(async_buf, async_sz));
+    }
+    if (async_buf) free(async_buf);
+  }
+
   timerLogStat.Pause();
 
 }

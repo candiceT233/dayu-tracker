@@ -74,8 +74,76 @@ HDF5_DRIVER_CONFIG="true ${TRACKER_VFD_PAGE_SIZE}" \
 
 
 
+## 4. Async writer (SRC-004, 2026-04-21)
+
+By default, every HDF5 file close synchronously opens, appends, flushes, and
+closes the per-rank stat JSON file. On NFS-shared trace directories at
+multi-node MPI scale, that per-close NFS round-trip creates write-queue
+contention and stretches rank completion times, which can expose latent
+close-to-open races in downstream workflow stages (observed in PyFLEXTRKR
+`gettracks` at 4-node).
+
+Opt-in async mode moves the JSON write off the HDF5 close hot path:
+
+- **`TRACKER_VFD_ASYNC=1`** — enables the async writer. On first file open, a
+  single background thread per process is started. Every `DumpJsonFileStat`
+  serializes the record into an in-memory string (via `open_memstream`), pushes
+  it onto a bounded FIFO, and returns. The background thread drains the queue
+  in batches and writes to the JSON file with amortized `fopen`/`fflush` cost.
+- **`TRACKER_VFD_INMEM_LIMIT=N`** — bound the in-memory queue at `N` records.
+  Defaults to `500`, which is roughly 4 MB per rank at ~8 KB/record. If a
+  producer reaches the limit, it blocks until the writer drains below it
+  (back-pressure; no record loss).
+- At process exit (`H5FD__tracker_vfd_term` → `teardownVFDTkrHelper`), the
+  writer thread is signalled to drain and join before the JSON array is
+  closed. A one-line telemetry summary prints to stderr:
+  ```
+  [tracker-async] pushed=N flushed=N back_pressure_stalls=N inmem_limit=500
+  ```
+
+Example:
+```sh
+export HDF5_DRIVER=hdf5_tracker_vfd
+export HDF5_DRIVER_CONFIG="$RUNDIR/dayu_traces;65536"
+export HDF5_PLUGIN_PATH=$DAYU_VFD_DIR
+export TRACKER_VFD_ASYNC=1
+export TRACKER_VFD_INMEM_LIMIT=500     # optional; default 500
+mpirun -n $SLURM_NTASKS \
+    -genv HDF5_DRIVER "$HDF5_DRIVER" \
+    -genv HDF5_DRIVER_CONFIG "$HDF5_DRIVER_CONFIG" \
+    -genv HDF5_PLUGIN_PATH "$HDF5_PLUGIN_PATH" \
+    -genv TRACKER_VFD_ASYNC "$TRACKER_VFD_ASYNC" \
+    -genv TRACKER_VFD_INMEM_LIMIT "$TRACKER_VFD_INMEM_LIMIT" \
+    python my_hdf5_workflow.py
+```
+
+When `TRACKER_VFD_ASYNC` is unset (default), behaviour is unchanged from the
+pre-SRC-004 sync path — fully backward compatible.
+
+### When should I turn this on?
+
+- **Always for multi-node runs on NFS-shared trace dirs.** Even if your
+  workflow has no race, async removes the per-close NFS round-trip from the
+  hot path and reduces workflow-visible overhead.
+- **Whenever you are debugging a "race" at scale.** The sync path widens the
+  close-timing variance across ranks; async keeps close latency consistent.
+- **Skip only if** your workflow opens/closes so many millions of files that
+  500 records in memory at peak is a concern — then raise `TRACKER_VFD_INMEM_LIMIT`
+  or stick with the sync path.
+
+### Caveats
+
+- If the process is killed with `SIGKILL`/OOM before the writer drains, the
+  queued (not-yet-flushed) records are lost. Clean workflow termination
+  (dask shutdown, MPI finalize, graceful Slurm TERM) drains them correctly.
+- The writer thread is created lazily in `vfdTkrHelperInit`. One thread per
+  process (not per file). Compatible with `--enable-threadsafe` HDF5 builds
+  because the VFD close path is already serialized by HDF5's global lock in
+  that mode.
+
 ## TODO
 - For better memory utilization, may change I/O logging to be dependent on the selected page_size resolution, instead of per access.
+- Consider a per-file `read_ranges` cap to bound worst-case record size on workflows with millions of reads per file.
 
 
 <!-- ### Method 2: Linked into application
