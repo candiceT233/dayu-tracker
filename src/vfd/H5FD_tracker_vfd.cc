@@ -514,18 +514,45 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
 
   timerInitVFD.Resume();
   /* custom VFD code start */
+  // 2026-04-20 CHANGE SRC-002: tolerate H5P_DEFAULT / unset fapl by falling
+  // back to HDF5_DRIVER_CONFIG env var. Previously, when H5Pget_driver_config_str
+  // failed, the code called strtok_r on the uninitialized stack buffer, causing
+  // SIGSEGV when h5netcdf opens files with H5P_DEFAULT (PyFLEXTRKR fix5).
   if (!fa || (H5P_FILE_ACCESS_DEFAULT == fapl_id)) {
-    if ((config_str_len =
-         H5Pget_driver_config_str(fapl_id, config_str_buf, 128)) < 0) {
-          printf("H5Pget_driver_config_str error\n");
+    bool have_cfg = false;
+    memset(config_str_buf, 0, sizeof(config_str_buf));
+    config_str_len = H5Pget_driver_config_str(fapl_id, config_str_buf, MAX_CONF_STR_LENGTH);
+    if (config_str_len >= 0 && config_str_buf[0] != '\0') {
+      have_cfg = true;
+    } else {
+      H5Eclear2(H5E_DEFAULT);
+      const char* env_cfg = getenv("HDF5_DRIVER_CONFIG");
+      if (env_cfg && *env_cfg) {
+        size_t n = strlen(env_cfg);
+        if (n >= sizeof(config_str_buf)) n = sizeof(config_str_buf) - 1;
+        memcpy(config_str_buf, env_cfg, n);
+        config_str_buf[n] = '\0';
+        have_cfg = true;
+      }
     }
-    token = strtok_r(config_str_buf, ";", &saveptr);
-    if (token != NULL) {
-      new_fa.stat_path = strdup(token);
-      new_fa.logStat = true;
+    if (have_cfg) {
+      token = strtok_r(config_str_buf, ";", &saveptr);
+      if (token != NULL) {
+        new_fa.stat_path = strdup(token);
+        new_fa.logStat = true;
+      }
+      token = strtok_r(NULL, ";", &saveptr);
+      if (token != NULL) {
+        sscanf(token, "%zu", &(new_fa.page_size));
+      } else {
+        new_fa.page_size = 65536;
+      }
+    } else {
+      // No config available anywhere — safe defaults, no tracking writes.
+      new_fa.stat_path = strdup(".");
+      new_fa.page_size = 65536;
+      new_fa.logStat = false;
     }
-    token = strtok_r(0, ";", &saveptr);
-    sscanf(token, "%zu", &(new_fa.page_size));
     fa = &new_fa;
   }
 

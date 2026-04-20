@@ -1780,12 +1780,22 @@ herr_t tracker_file_setup(const char* str_in, char* file_path_out, Track_level* 
 #endif
 
     //acceptable format: path=$path_str;level=$level_int;format=$format_str
-    char tmp_str[100] = {'\0'};
+    // 2026-04-20 CHANGE SRC-001: bumped tmp_str 100 -> 4096 to hold long RUNDIR
+    // paths (PyFLEXTRKR run dir >100 chars caused glibc fortify buffer overflow
+    // in memcpy below). Also guard against over-long inputs.
+    char tmp_str[4096] = {'\0'};
     char* toklist[4] = {NULL};
     int i;
     char *p;
 
-    memcpy(tmp_str, str_in, strlen(str_in)+1);
+    size_t _in_len = strlen(str_in);
+    if (_in_len >= sizeof(tmp_str)) {
+        fprintf(stderr, "tracker_file_setup: str_in too long (%zu >= %zu), truncating\n",
+                _in_len, sizeof(tmp_str));
+        _in_len = sizeof(tmp_str) - 1;
+    }
+    memcpy(tmp_str, str_in, _in_len);
+    tmp_str[_in_len] = '\0';
 
     // printf("tmp_str: %s\n", tmp_str);
 
