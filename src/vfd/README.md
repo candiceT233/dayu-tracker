@@ -141,38 +141,59 @@ pre-SRC-004 sync path — fully backward compatible.
   because the VFD close path is already serialized by HDF5's global lock in
   that mode.
 
-### Scope: VFD only (VOL tracking blocked on h5netcdf workloads)
+### Scope: VFD today; VOL requires an ABI-matched h5py
 
-SRC-004's async writer currently applies **only to the VFD plugin**.
+SRC-004's async writer applies to the VFD plugin. SRC-005 (same pattern
+on the VOL side, `log_file_stat_json` + C-shim in `tracker_async_c_api.*`)
+is **also committed** and works — but only after the Python HDF5 ABI is
+matched to the tracker build.
 
-A parallel "SRC-005" was drafted to do the same for VOL but was reverted
-once we pinpointed the real issue: the VOL plugin itself is blocked at
-the HDF5 library level when the client uses `H5P_DEFAULT` (h5netcdf,
-netCDF4, most xarray engines). `H5Pget_vol_info` returns no info, my
-SRC-003 falls back to `H5P_FILE_ACCESS_DEFAULT`, and the resulting
-under-FAPL `H5VLfile_open` call recurses indefinitely because HDF5 1.14's
-env-registered VOL (`HDF5_VOL_CONNECTOR=tracker`) overrides the explicit
-`H5Pset_vol(native)` we apply.
+**The real VOL blocker for h5py/h5netcdf/netCDF4 workloads is HDF5 ABI
+mismatch, not VOL dispatch.** The pip-wheel `h5py` ships HDF5 2.0.0
+(soname 320) and pip-wheel `netCDF4` ships HDF5 1.14.6 (soname 310.5.1);
+the tracker plugins are built against your system HDF5 (typically
+1.14.0, soname 310). Three HDF5 symbol tables in the same Python
+process → VOL plugin dispatch crosses the ABI boundary and crashes or
+recurses. **Verified by running the canonical `hpc-io/vol-external-passthrough`
+sample — it crashes identically until the ABI is fixed.**
 
-Concrete symptom (verified via stderr tracing in jobs 8303/8304 on Ares):
-workers print `[VOL-TRACE] file_open calling H5VLfile_open ...` and never
-return. After ~90 s the dask scheduler declares them lost. Experimental
-`unsetenv("HDF5_VOL_CONNECTOR")` around the call converted the hang to a
-SIGSEGV deep in libhdf5 — not a clean workaround.
+**Fix: rebuild h5py + netCDF4 from source against your system HDF5:**
 
-**Until this is fixed upstream in HDF5 (or tracker VOL is rewritten to
-bypass env dispatch via private HDF5 internals), VOL mode is effectively
-unusable with h5netcdf-driven workflows.** See
-`notes/multinode_profiling_failures_2026-04-21.md` for the full diagnosis.
+```bash
+export HDF5_DIR=/path/to/system/hdf5           # match what you built tracker against
+export NETCDF4_DIR=/path/to/system/netcdf-c
+rm -rf $VENV/lib/python3.10/site-packages/{h5py.libs,netcdf4.libs}
 
-**Use VFD-only mode** (`HDF5_DRIVER=hdf5_tracker_vfd`, no `HDF5_VOL_CONNECTOR`)
-for DaYu tracking on PyFLEXTRKR, V-pipe, and similar. VFD bypasses VOL
-dispatch entirely — no recursion, and SRC-004 async gives you low-overhead
-close-path instrumentation.
+pip install --no-binary=h5py    --no-build-isolation --no-cache-dir h5py==3.11.0
+pip install --no-binary=netCDF4 --no-build-isolation --no-cache-dir netCDF4==1.6.5
+```
 
-VOL mode still works correctly for clients that set `H5Pset_vol()`
-explicitly on their FAPL (not via env var). If you build such a client,
-SRC-003's fallback supports the graceful passthrough path too.
+(Tested versions: `h5py==3.11.0` against HDF5 1.14.0; `netCDF4==1.6.5`
+against HDF5 1.14.0 + netcdf-c 4.9.2.)
+
+After the ABI fix:
+- Reference passthrough VOL runs the full PyFLEXTRKR pipeline (validated
+  on Ares 2-node, 398 s).
+- Tracker VOL (this project) with `TRACKER_VOL_ASYNC=1` traces real
+  HDF5 file I/O end-to-end — 196 distinct files captured in ≈24 MB of
+  `*-vol_data_stat.json` per 2-node PyFLEXTRKR run.
+
+**Still use VFD-only mode** (`HDF5_DRIVER=hdf5_tracker_vfd`, no
+`HDF5_VOL_CONNECTOR`) when you want the lowest-overhead DaYu tracking
+and don't need object-level (dataset/group/attr) traces. VFD mode works
+with wheel-installed h5py / netCDF4 as-is — it operates at the POSIX
+layer and does not cross HDF5 VOL dispatch.
+
+VOL mode also works correctly for C clients that set `H5Pset_vol()`
+explicitly (they carry proper tracker info on their FAPL; no ABI
+concerns since they link the same libhdf5 as the plugin).
+
+### Opt-in env for VOL async (SRC-005)
+
+- `TRACKER_VOL_ASYNC=1` — enable.
+- `TRACKER_VOL_INMEM_LIMIT=N` — bound queue (default 500 records).
+- Telemetry on stderr at process exit:
+  `[tracker-vol-async] pushed=N flushed=N back_pressure_stalls=N inmem_limit=M`.
 
 ## TODO
 - For better memory utilization, may change I/O logging to be dependent on the selected page_size resolution, instead of per access.
