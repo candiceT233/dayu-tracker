@@ -141,6 +141,39 @@ pre-SRC-004 sync path — fully backward compatible.
   because the VFD close path is already serialized by HDF5's global lock in
   that mode.
 
+### Scope: VFD only (VOL tracking blocked on h5netcdf workloads)
+
+SRC-004's async writer currently applies **only to the VFD plugin**.
+
+A parallel "SRC-005" was drafted to do the same for VOL but was reverted
+once we pinpointed the real issue: the VOL plugin itself is blocked at
+the HDF5 library level when the client uses `H5P_DEFAULT` (h5netcdf,
+netCDF4, most xarray engines). `H5Pget_vol_info` returns no info, my
+SRC-003 falls back to `H5P_FILE_ACCESS_DEFAULT`, and the resulting
+under-FAPL `H5VLfile_open` call recurses indefinitely because HDF5 1.14's
+env-registered VOL (`HDF5_VOL_CONNECTOR=tracker`) overrides the explicit
+`H5Pset_vol(native)` we apply.
+
+Concrete symptom (verified via stderr tracing in jobs 8303/8304 on Ares):
+workers print `[VOL-TRACE] file_open calling H5VLfile_open ...` and never
+return. After ~90 s the dask scheduler declares them lost. Experimental
+`unsetenv("HDF5_VOL_CONNECTOR")` around the call converted the hang to a
+SIGSEGV deep in libhdf5 — not a clean workaround.
+
+**Until this is fixed upstream in HDF5 (or tracker VOL is rewritten to
+bypass env dispatch via private HDF5 internals), VOL mode is effectively
+unusable with h5netcdf-driven workflows.** See
+`notes/multinode_profiling_failures_2026-04-21.md` for the full diagnosis.
+
+**Use VFD-only mode** (`HDF5_DRIVER=hdf5_tracker_vfd`, no `HDF5_VOL_CONNECTOR`)
+for DaYu tracking on PyFLEXTRKR, V-pipe, and similar. VFD bypasses VOL
+dispatch entirely — no recursion, and SRC-004 async gives you low-overhead
+close-path instrumentation.
+
+VOL mode still works correctly for clients that set `H5Pset_vol()`
+explicitly on their FAPL (not via env var). If you build such a client,
+SRC-003's fallback supports the graceful passthrough path too.
+
 ## TODO
 - For better memory utilization, may change I/O logging to be dependent on the selected page_size resolution, instead of per access.
 - Consider a per-file `read_ranges` cap to bound worst-case record size on workflows with millions of reads per file.
