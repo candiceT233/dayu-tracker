@@ -10,6 +10,7 @@
 #include "hdf5.h"
 #include "tracker_vol.h"
 #include "tracker_vol_types.h"
+#include "../vfd/tracker_async_c_api.h"   /* SRC-005: VOL async writer C shim */
 
 /**********/
 /* Macros */
@@ -869,6 +870,14 @@ tkr_helper_t * tkr_helper_init( char* file_path, Track_level tkr_level, char* tk
     FILE * f = fopen(new_helper->tkr_file_path, "a");
     fprintf(f, "[");
     fclose(f);
+
+    /* SRC-005 (2026-04-21): start the VOL async writer if TRACKER_VOL_ASYNC=1.
+     * Moves log_file_stat_json's synchronous NFS fopen/fprintf/fclose off the
+     * close hot path; writes are batched by a background thread. */
+    if (tracker_async_c_vol_enabled()) {
+        tracker_async_c_vol_start(new_helper->tkr_file_path,
+                                   tracker_async_c_vol_env_limit());
+    }
 
     TKR_INIT_TIME += (get_time_usec() - start);
     return new_helper;
@@ -2221,6 +2230,11 @@ void tkr_helper_teardown(tkr_helper_t* helper){
 
     if(helper){// not null
 
+    /* SRC-005: drain VOL async writer before the array-close fix-up */
+    if (tracker_async_c_vol_enabled()) {
+        tracker_async_c_vol_stop();
+    }
+
     // Close json file list
     FILE * f = fopen(helper->tkr_file_path, "r+");
 
@@ -2392,10 +2406,31 @@ int tkr_write(tkr_helper_t* helper_in, const char* msg, unsigned long duration){
 void log_file_stat_json(tkr_helper_t* helper_in, const file_tkr_info_t* file_info)
 {
     unsigned long start = get_time_usec();
-    FILE * f = fopen(helper_in->tkr_file_path, "a");
-    
+
+    /* SRC-005: when TRACKER_VOL_ASYNC=1, serialize this record to an
+     * in-memory string via open_memstream and enqueue it for the background
+     * writer. Close-path does no NFS I/O. Otherwise fall back to the
+     * original synchronous fopen/fflush/fclose. */
+    char*  async_buf = NULL;
+    size_t async_sz  = 0;
+    int    async_on  = tracker_async_c_vol_enabled();
+
+    FILE * f = NULL;
+    if (async_on) {
+        f = open_memstream(&async_buf, &async_sz);
+        if (!f) {
+            fprintf(stderr, "[tracker-vol-async] open_memstream failed; fallback to sync\n");
+            async_on = 0;
+            f = fopen(helper_in->tkr_file_path, "a");
+        }
+    } else {
+        f = fopen(helper_in->tkr_file_path, "a");
+    }
+
     if (!file_info) {
         fprintf(f, "log_file_stat_json(): file_info is NULL.\n");
+        if (async_on && async_buf) free(async_buf);
+        fclose(f);
         return;
     }
 
@@ -2503,6 +2538,14 @@ void log_file_stat_json(tkr_helper_t* helper_in, const file_tkr_info_t* file_inf
 
     fflush(f);
     fclose(f);
+
+    /* SRC-005: if async path, enqueue the memstream buffer and free it. */
+    if (async_on) {
+        if (async_buf && async_sz > 0) {
+            tracker_async_c_vol_enqueue(async_buf, async_sz);
+        }
+        if (async_buf) free(async_buf);
+    }
 
     TKR_LOG_TIME += (get_time_usec() - start);
 }

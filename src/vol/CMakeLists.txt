@@ -6,7 +6,15 @@
 #------------------------------------------------------------------------------
 # Build VOL_Tracker Library
 #------------------------------------------------------------------------------
-add_library(h5vol_tracker SHARED tracker_vol_new.c)
+# SRC-005 (2026-04-21): compile the C++ async writer shim alongside the C
+# file so VOL can share the VFD's async writer infrastructure without
+# changing the main source file's compile language.
+add_library(h5vol_tracker SHARED
+    tracker_vol_new.c
+    ../vfd/tracker_async_c_api.cc
+)
+set_source_files_properties(../vfd/tracker_async_c_api.cc
+    PROPERTIES LANGUAGE CXX)
 
 #-----------------------------------------------------------------------------
 # Define Compiler Variables
@@ -84,6 +92,7 @@ target_link_libraries(h5vol_tracker PRIVATE
     -L${HDF5_DIR}/lib     # Library Directory for HDF5
     -lhdf5       # Link HDF5 Library
     -lz          # Link zlib Library
+    -lpthread    # SRC-005: needed by the C++ async writer thread
 )
 
 
