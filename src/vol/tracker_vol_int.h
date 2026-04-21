@@ -866,17 +866,22 @@ tkr_helper_t * tkr_helper_init( char* file_path, Track_level tkr_level, char* tk
     /* VFD vars end */
     printf("vol new_helper tkr_file_path: %s\n", new_helper->tkr_file_path);
 
-    // New json file list
-    FILE * f = fopen(new_helper->tkr_file_path, "a");
-    fprintf(f, "[");
-    fclose(f);
-
     /* SRC-005 (2026-04-21): start the VOL async writer if TRACKER_VOL_ASYNC=1.
      * Moves log_file_stat_json's synchronous NFS fopen/fprintf/fclose off the
-     * close hot path; writes are batched by a background thread. */
+     * close hot path; writes are batched by a background thread.
+     *
+     * SRC-007 (2026-04-21): async path uses JSONL (one record per line, no
+     * outer array), so do NOT write a leading "[" when async is enabled.
+     * Sync path keeps the legacy array-plus-fixup format. */
     if (tracker_async_c_vol_enabled()) {
+        // JSONL mode: no bracket.
         tracker_async_c_vol_start(new_helper->tkr_file_path,
                                    tracker_async_c_vol_env_limit());
+    } else {
+        // Legacy sync JSON array format
+        FILE * f = fopen(new_helper->tkr_file_path, "a");
+        fprintf(f, "[");
+        fclose(f);
     }
 
     TKR_INIT_TIME += (get_time_usec() - start);
@@ -2230,20 +2235,18 @@ void tkr_helper_teardown(tkr_helper_t* helper){
 
     if(helper){// not null
 
-    /* SRC-005: drain VOL async writer before the array-close fix-up */
+    /* SRC-005/007: drain VOL async writer. In JSONL mode (async enabled)
+     * the file is already valid — no array-close fix-up needed. Only the
+     * legacy sync path needs the "}]" overwrite. */
     if (tracker_async_c_vol_enabled()) {
         tracker_async_c_vol_stop();
+        // JSONL is complete as written; no fixup.
+    } else {
+        FILE * f = fopen(helper->tkr_file_path, "r+");
+        fseek(f, -3, SEEK_END);
+        fwrite("}]", 2, 1, f);
+        fclose(f);
     }
-
-    // Close json file list
-    FILE * f = fopen(helper->tkr_file_path, "r+");
-
-    fseek(f, -3, SEEK_END);
-    // Add the closing JSON array bracket
-    fwrite("}]", 2, 1, f);
-
-    // Close the file
-    fclose(f);
 
 #ifdef VOLTRK_PROV_DEBUG
 

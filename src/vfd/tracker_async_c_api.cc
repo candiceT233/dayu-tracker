@@ -22,7 +22,11 @@ void tracker_async_c_vol_start(const char* tkr_file_path, size_t inmem_limit) {
 
 void tracker_async_c_vol_enqueue(const char* buf, size_t len) {
     if (!buf || len == 0) return;
-    tracker_async::enqueue(tracker_async::vol_writer(), std::string(buf, len));
+    // SRC-007: compact the multi-line record to a single JSONL line so any
+    // prefix of the output file is valid (truncation-safe).
+    std::string rec(buf, len);
+    tracker_async::compact_to_jsonl(rec);
+    tracker_async::enqueue(tracker_async::vol_writer(), std::move(rec));
 }
 
 void tracker_async_c_vol_stop(void) {

@@ -59,6 +59,62 @@ struct AsyncWriter {
 inline AsyncWriter& vfd_writer() { static AsyncWriter w; return w; }
 inline AsyncWriter& vol_writer() { static AsyncWriter w; return w; }
 
+// SRC-007 (2026-04-21): compact a captured multi-line JSON buffer into
+// one or more JSONL lines. The existing stream writers produce records
+// with internal tabs/newlines and a trailing ",\n". Some call sites
+// (VOL log_file_stat_json) emit TWO top-level objects per call, separated
+// by "},\n{" at the outermost level. After space-collapsing that becomes
+// "}, {" and we split into two JSONL lines.
+//
+// Strategy:
+//   1. Strip trailing whitespace + comma.
+//   2. Replace internal '\n' / '\t' with single space.
+//   3. Strip leading whitespace.
+//   4. Replace top-level separators "}, {" with "}\n{" so each top-level
+//      object occupies its own line.
+//   5. Ensure trailing '\n'.
+// Safe for the current profiler output format — nested objects do not
+// have the ", {" on their own (nested values end with "}," followed by a
+// key string like `"Task"`, never by a bare "{").
+inline void compact_to_jsonl(std::string& s) {
+    // 1. Strip trailing whitespace + comma
+    while (!s.empty() && (s.back() == ' ' || s.back() == '\n' ||
+                          s.back() == '\t' || s.back() == ',')) {
+        s.pop_back();
+    }
+    // 2. Replace internal newlines/tabs with space
+    for (auto& c : s) {
+        if (c == '\n' || c == '\t') c = ' ';
+    }
+    // 3. Strip leading whitespace
+    size_t lead = 0;
+    while (lead < s.size() && (s[lead] == ' ' || s[lead] == '\n')) ++lead;
+    if (lead) s.erase(0, lead);
+    // 4. Split top-level records at "}, {" boundaries. This pattern only
+    //    appears between top-level objects in our output format.
+    size_t pos = 0;
+    while ((pos = s.find("}, {", pos)) != std::string::npos) {
+        s.replace(pos, 4, "}\n{");
+        pos += 3;  // past the new "}\n{"
+    }
+    // Also match "},  {" with arbitrary spaces (common after compacting
+    // multi-line "},\n\t{" sequences to spaces).
+    pos = 0;
+    while ((pos = s.find("},", pos)) != std::string::npos) {
+        size_t scan = pos + 2;
+        while (scan < s.size() && s[scan] == ' ') ++scan;
+        if (scan < s.size() && s[scan] == '{') {
+            // Collapse all whitespace between "}," and "{" to a single '\n'
+            s.replace(pos, scan - pos + 1, "}\n{");
+            pos += 3;
+        } else {
+            pos += 2;
+        }
+    }
+    // 5. JSONL terminator
+    s += '\n';
+}
+
 inline bool vfd_enabled() {
     const char* e = std::getenv("TRACKER_VFD_ASYNC");
     return e != nullptr && std::atoi(e) != 0;

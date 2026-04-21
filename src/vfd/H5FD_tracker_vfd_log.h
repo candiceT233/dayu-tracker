@@ -1106,18 +1106,23 @@ vfd_tkr_helper_t * vfdTkrHelperInit( char* file_path, size_t page_size, hbool_t 
     new_helper->tracker_vfd_page_size = page_size;
     /* VFD vars end */
 
-    // New json file list
-    FILE * f = fopen(new_helper->tkr_file_path, "a");
-    fprintf(f, "[");
-    fclose(f);
-
     // SRC-004 (2026-04-21): start the async writer thread if opted in.
     // The writer opens the stat JSON file once and drains batched record
     // strings produced by DumpJsonFileStat. See tracker_vfd_async.h.
+    //
+    // SRC-007 (2026-04-21): output is JSONL (one JSON record per line,
+    // no outer array), so we do NOT write a leading "[" here. Any prefix
+    // of the file is parseable; no teardown fix-up needed.
     if (tracker_async::vfd_enabled()) {
+        // JSONL mode: no bracket, file accumulates line-delimited records
         tracker_async::start(tracker_async::vfd_writer(),
                              new_helper->tkr_file_path,
                              tracker_async::env_limit("TRACKER_VFD_INMEM_LIMIT", 500));
+    } else {
+        // Legacy sync mode keeps the JSON-array format for back-compat
+        FILE * f = fopen(new_helper->tkr_file_path, "a");
+        fprintf(f, "[");
+        fclose(f);
     }
 
     // Get the user's login name
@@ -1297,21 +1302,19 @@ void teardownVFDTkrHelper(vfd_tkr_helper_t* helper){
 
   timerRmStat.Resume();
 
-  // SRC-004 (2026-04-21): drain the async writer first (if enabled) so all
-  // queued records are flushed to disk before we fix up the JSON array close.
+  // SRC-004 (2026-04-21): drain the async writer first (if enabled).
+  // SRC-007 (2026-04-21): in JSONL mode no array-close fix-up is needed —
+  // the file is already a sequence of complete records terminated by '\n'.
   if (tracker_async::vfd_enabled()) {
     tracker_async::stop(tracker_async::vfd_writer(), "vfd");
+    // JSONL mode: nothing to fix up. File is already valid JSONL.
+  } else {
+    // Legacy sync array mode: overwrite trailing "},\n" with "}]".
+    FILE * f = fopen(helper->tkr_file_path, "r+");
+    fseek(f, -3, SEEK_END);
+    fwrite("}]", 2, 1, f);
+    fclose(f);
   }
-
-  // Close json file list
-  FILE * f = fopen(helper->tkr_file_path, "r+");
-
-  fseek(f, -3, SEEK_END);
-  // Add the closing JSON array bracket
-  fwrite("}]", 2, 1, f);
-
-  // Close the file
-  fclose(f);
   timerTermVFD.Pause();
 
   // // free down causes double free error in single process mode
@@ -1492,11 +1495,15 @@ void DumpJsonFileStat(vfd_tkr_helper_t* helper, const vfd_file_tkr_info_t* info)
   fclose(f);
 
   // SRC-004: if async path, the memstream buffer now holds the full record.
-  // Enqueue it for the background writer and release the buffer.
+  // SRC-007 (2026-04-21): compact the multi-line record to a single JSONL
+  // line (trailing comma stripped, internal newlines collapsed, '\n'
+  // terminator). This way the output file is valid JSONL — any prefix is
+  // parseable even if the process is SIGKILL'd mid-flush.
   if (async_on) {
     if (async_buf && async_sz > 0) {
-      tracker_async::enqueue(tracker_async::vfd_writer(),
-                             std::string(async_buf, async_sz));
+      std::string rec(async_buf, async_sz);
+      tracker_async::compact_to_jsonl(rec);
+      tracker_async::enqueue(tracker_async::vfd_writer(), std::move(rec));
     }
     if (async_buf) free(async_buf);
   }
