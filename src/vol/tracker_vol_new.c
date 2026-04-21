@@ -2438,6 +2438,12 @@ H5VL_tracker_file_create(const char *name, unsigned flags, hid_t fcpl_id,
     // H5Pset_vol(..., info->under_vol_id, ...). When fallback fires, also use
     // H5P_FILE_ACCESS_DEFAULT as the source for H5Pcopy so the underlying FAPL
     // carries the env-configured tracker VFD.
+    //
+    // NOTE: H5VLfile_open called through the fallback path recurses when env
+    // HDF5_VOL_CONNECTOR is set (even though under_fapl has native VOL).
+    // SRC-006 (env-unset workaround) converted the hang to SIGSEGV — no clean
+    // fix. VOL mode is unusable with h5netcdf on HDF5 1.14 in this build.
+    // See notes/multinode_profiling_failures_2026-04-21.md for details.
     hid_t info_src_fapl = fapl_id;
     if (H5Pget_vol_info(fapl_id, (void **)&info) < 0 || info == NULL) {
         H5Eclear2(H5E_DEFAULT);
