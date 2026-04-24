@@ -1,0 +1,14 @@
+0:
+  - bucket: /tmp/test_hermes/hi-1.txt
+    prefetch:
+    - op_count_range: [0, 0]
+      promote_blobs: [0, 16]
+      demote_blobs: [17, 18]
+    - op_count_range: [9, 9]
+      promote_blobs: [0, 16]
+      demote_blobs: [17, 18]
+  - bucket: /tmp/test_hermes/hi-2.txt
+    prefetch:
+    - op_count_range: [75, 75]
+      promote_blobs: [0, 7]
+      demote_blobs: [8, 9]

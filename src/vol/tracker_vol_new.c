@@ -2426,10 +2426,36 @@ H5VL_tracker_file_create(const char *name, unsigned flags, hid_t fcpl_id,
 #endif
 
     /* Get copy of our VOL info from FAPL */
-    H5Pget_vol_info(fapl_id, (void **)&info);
+    // 2026-04-21 CHANGE SRC-003: tolerate fapls that carry no tracker VOL info
+    // (e.g. h5netcdf passes H5P_DEFAULT). Retry on H5P_FILE_ACCESS_DEFAULT,
+    // which carries the env-registered tracker VOL when HDF5_VOL_CONNECTOR is
+    // set. If still NULL, skip tracking for this file rather than segfault in
+    // H5Pset_vol(..., info->under_vol_id, ...). When fallback fires, also use
+    // H5P_FILE_ACCESS_DEFAULT as the source for H5Pcopy so the underlying FAPL
+    // carries the env-configured tracker VFD.
+    //
+    // NOTE: H5VLfile_open called through the fallback path recurses when env
+    // HDF5_VOL_CONNECTOR is set (even though under_fapl has native VOL).
+    // SRC-006 (env-unset workaround) converted the hang to SIGSEGV — no clean
+    // fix. VOL mode is unusable with h5netcdf on HDF5 1.14 in this build.
+    // See notes/multinode_profiling_failures_2026-04-21.md for details.
+    hid_t info_src_fapl = fapl_id;
+    if (H5Pget_vol_info(fapl_id, (void **)&info) < 0 || info == NULL) {
+        H5Eclear2(H5E_DEFAULT);
+        if (H5Pget_vol_info(H5P_FILE_ACCESS_DEFAULT, (void **)&info) < 0) {
+            H5Eclear2(H5E_DEFAULT);
+            info = NULL;
+        } else {
+            info_src_fapl = H5P_FILE_ACCESS_DEFAULT;
+        }
+    }
+    if (info == NULL) {
+        fprintf(stderr, "tracker VOL file_create: no tracker info for '%s' — skipping tracking\n", name);
+        return NULL;
+    }
 
-    /* Copy the FAPL */
-    under_fapl_id = H5Pcopy(fapl_id);
+    /* Copy the FAPL (use fallback source when client fapl was invalid) */
+    under_fapl_id = H5Pcopy(info_src_fapl);
 
     /* Set the VOL ID and info for the underlying FAPL */
     H5Pset_vol(under_fapl_id, info->under_vol_id, info->under_vol_info);
@@ -2550,10 +2576,28 @@ H5VL_tracker_file_open(const char *name, unsigned flags, hid_t fapl_id,
 #endif
 
     /* Get copy of our VOL info from FAPL */
-    H5Pget_vol_info(fapl_id, (void **)&info);
+    // 2026-04-21 CHANGE SRC-003: same fix as file_create — tolerate fapls
+    // without tracker info (h5netcdf H5P_DEFAULT case); fall back to
+    // H5P_FILE_ACCESS_DEFAULT which carries env-registered tracker VOL.
+    // When fallback fires, use H5P_FILE_ACCESS_DEFAULT for H5Pcopy too so
+    // the under_fapl carries the env-configured tracker VFD driver.
+    hid_t info_src_fapl = fapl_id;
+    if (H5Pget_vol_info(fapl_id, (void **)&info) < 0 || info == NULL) {
+        H5Eclear2(H5E_DEFAULT);
+        if (H5Pget_vol_info(H5P_FILE_ACCESS_DEFAULT, (void **)&info) < 0) {
+            H5Eclear2(H5E_DEFAULT);
+            info = NULL;
+        } else {
+            info_src_fapl = H5P_FILE_ACCESS_DEFAULT;
+        }
+    }
+    if (info == NULL) {
+        fprintf(stderr, "tracker VOL file_open: no tracker info for '%s' — skipping tracking\n", name);
+        return NULL;
+    }
 
-    /* Copy the FAPL */
-    under_fapl_id = H5Pcopy(fapl_id);
+    /* Copy the FAPL (use fallback source when client fapl was invalid) */
+    under_fapl_id = H5Pcopy(info_src_fapl);
 
     /* Set the VOL ID and info for the underlying FAPL */
     H5Pset_vol(under_fapl_id, info->under_vol_id, info->under_vol_info);
@@ -2743,7 +2787,15 @@ H5VL_tracker_file_specific(void *file, H5VL_file_specific_args_t *args,
         /* Set up the new FAPL for the updated arguments */
 
         /* Get copy of our VOL info from FAPL */
-        H5Pget_vol_info(args->args.is_accessible.fapl_id, (void **)&info);
+        // 2026-04-21 CHANGE SRC-003: retry on H5P_FILE_ACCESS_DEFAULT before
+        // giving up (consistent with file_create/file_open paths above).
+        if (H5Pget_vol_info(args->args.is_accessible.fapl_id, (void **)&info) < 0 || info == NULL) {
+            H5Eclear2(H5E_DEFAULT);
+            if (H5Pget_vol_info(H5P_FILE_ACCESS_DEFAULT, (void **)&info) < 0) {
+                H5Eclear2(H5E_DEFAULT);
+                info = NULL;
+            }
+        }
 
         /* Make sure we have info about the underlying VOL to be used */
         if (!info)
@@ -2772,7 +2824,15 @@ H5VL_tracker_file_specific(void *file, H5VL_file_specific_args_t *args,
         /* Set up the new FAPL for the updated arguments */
 
         /* Get copy of our VOL info from FAPL */
-        H5Pget_vol_info(args->args.del.fapl_id, (void **)&info);
+        // 2026-04-21 CHANGE SRC-003: retry on H5P_FILE_ACCESS_DEFAULT before
+        // giving up (consistent with file_create/file_open paths above).
+        if (H5Pget_vol_info(args->args.del.fapl_id, (void **)&info) < 0 || info == NULL) {
+            H5Eclear2(H5E_DEFAULT);
+            if (H5Pget_vol_info(H5P_FILE_ACCESS_DEFAULT, (void **)&info) < 0) {
+                H5Eclear2(H5E_DEFAULT);
+                info = NULL;
+            }
+        }
 
         /* Make sure we have info about the underlying VOL to be used */
         if (!info)

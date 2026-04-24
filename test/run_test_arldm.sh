@@ -1,5 +1,15 @@
 #!/bin/bash
 
+#SBATCH --job-name=base_flintstones_train
+#SBATCH --partition=short
+#SBATCH --time=01:30:00
+#SBATCH -N 1
+#SBATCH --ntasks=1
+#SBATCH --output=./base_%x_R.out
+#SBATCH --error=./base_%x_R.err
+
+
+
 # HDF5_PATH="`which h5cc |sed 's/.\{9\}$//'`"
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HDF5_PATH/lib
 # TEST_DIR=h5bench-seq/test_cases

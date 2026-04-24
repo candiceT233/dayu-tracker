@@ -10,6 +10,7 @@
 #include "hdf5.h"
 #include "tracker_vol.h"
 #include "tracker_vol_types.h"
+#include "../vfd/tracker_async_c_api.h"   /* SRC-005: VOL async writer C shim */
 
 /**********/
 /* Macros */
@@ -865,10 +866,23 @@ tkr_helper_t * tkr_helper_init( char* file_path, Track_level tkr_level, char* tk
     /* VFD vars end */
     printf("vol new_helper tkr_file_path: %s\n", new_helper->tkr_file_path);
 
-    // New json file list
-    FILE * f = fopen(new_helper->tkr_file_path, "a");
-    fprintf(f, "[");
-    fclose(f);
+    /* SRC-005 (2026-04-21): start the VOL async writer if TRACKER_VOL_ASYNC=1.
+     * Moves log_file_stat_json's synchronous NFS fopen/fprintf/fclose off the
+     * close hot path; writes are batched by a background thread.
+     *
+     * SRC-007 (2026-04-21): async path uses JSONL (one record per line, no
+     * outer array), so do NOT write a leading "[" when async is enabled.
+     * Sync path keeps the legacy array-plus-fixup format. */
+    if (tracker_async_c_vol_enabled()) {
+        // JSONL mode: no bracket.
+        tracker_async_c_vol_start(new_helper->tkr_file_path,
+                                   tracker_async_c_vol_env_limit());
+    } else {
+        // Legacy sync JSON array format
+        FILE * f = fopen(new_helper->tkr_file_path, "a");
+        fprintf(f, "[");
+        fclose(f);
+    }
 
     TKR_INIT_TIME += (get_time_usec() - start);
     return new_helper;
@@ -1780,12 +1794,22 @@ herr_t tracker_file_setup(const char* str_in, char* file_path_out, Track_level* 
 #endif
 
     //acceptable format: path=$path_str;level=$level_int;format=$format_str
-    char tmp_str[100] = {'\0'};
+    // 2026-04-20 CHANGE SRC-001: bumped tmp_str 100 -> 4096 to hold long RUNDIR
+    // paths (PyFLEXTRKR run dir >100 chars caused glibc fortify buffer overflow
+    // in memcpy below). Also guard against over-long inputs.
+    char tmp_str[4096] = {'\0'};
     char* toklist[4] = {NULL};
     int i;
     char *p;
 
-    memcpy(tmp_str, str_in, strlen(str_in)+1);
+    size_t _in_len = strlen(str_in);
+    if (_in_len >= sizeof(tmp_str)) {
+        fprintf(stderr, "tracker_file_setup: str_in too long (%zu >= %zu), truncating\n",
+                _in_len, sizeof(tmp_str));
+        _in_len = sizeof(tmp_str) - 1;
+    }
+    memcpy(tmp_str, str_in, _in_len);
+    tmp_str[_in_len] = '\0';
 
     // printf("tmp_str: %s\n", tmp_str);
 
@@ -2211,15 +2235,18 @@ void tkr_helper_teardown(tkr_helper_t* helper){
 
     if(helper){// not null
 
-    // Close json file list
-    FILE * f = fopen(helper->tkr_file_path, "r+");
-
-    fseek(f, -3, SEEK_END);
-    // Add the closing JSON array bracket
-    fwrite("}]", 2, 1, f);
-
-    // Close the file
-    fclose(f);
+    /* SRC-005/007: drain VOL async writer. In JSONL mode (async enabled)
+     * the file is already valid — no array-close fix-up needed. Only the
+     * legacy sync path needs the "}]" overwrite. */
+    if (tracker_async_c_vol_enabled()) {
+        tracker_async_c_vol_stop();
+        // JSONL is complete as written; no fixup.
+    } else {
+        FILE * f = fopen(helper->tkr_file_path, "r+");
+        fseek(f, -3, SEEK_END);
+        fwrite("}]", 2, 1, f);
+        fclose(f);
+    }
 
 #ifdef VOLTRK_PROV_DEBUG
 
@@ -2382,10 +2409,31 @@ int tkr_write(tkr_helper_t* helper_in, const char* msg, unsigned long duration){
 void log_file_stat_json(tkr_helper_t* helper_in, const file_tkr_info_t* file_info)
 {
     unsigned long start = get_time_usec();
-    FILE * f = fopen(helper_in->tkr_file_path, "a");
-    
+
+    /* SRC-005: when TRACKER_VOL_ASYNC=1, serialize this record to an
+     * in-memory string via open_memstream and enqueue it for the background
+     * writer. Close-path does no NFS I/O. Otherwise fall back to the
+     * original synchronous fopen/fflush/fclose. */
+    char*  async_buf = NULL;
+    size_t async_sz  = 0;
+    int    async_on  = tracker_async_c_vol_enabled();
+
+    FILE * f = NULL;
+    if (async_on) {
+        f = open_memstream(&async_buf, &async_sz);
+        if (!f) {
+            fprintf(stderr, "[tracker-vol-async] open_memstream failed; fallback to sync\n");
+            async_on = 0;
+            f = fopen(helper_in->tkr_file_path, "a");
+        }
+    } else {
+        f = fopen(helper_in->tkr_file_path, "a");
+    }
+
     if (!file_info) {
         fprintf(f, "log_file_stat_json(): file_info is NULL.\n");
+        if (async_on && async_buf) free(async_buf);
+        fclose(f);
         return;
     }
 
@@ -2493,6 +2541,14 @@ void log_file_stat_json(tkr_helper_t* helper_in, const file_tkr_info_t* file_inf
 
     fflush(f);
     fclose(f);
+
+    /* SRC-005: if async path, enqueue the memstream buffer and free it. */
+    if (async_on) {
+        if (async_buf && async_sz > 0) {
+            tracker_async_c_vol_enqueue(async_buf, async_sz);
+        }
+        if (async_buf) free(async_buf);
+    }
 
     TKR_LOG_TIME += (get_time_usec() - start);
 }
