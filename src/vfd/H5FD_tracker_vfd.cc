@@ -22,20 +22,11 @@
   #define _GNU_SOURCE
 #endif
 
-// #include <stdio.h>
-// #include <stdlib.h>
-// #include <string.h>
-// #include <assert.h>
-// #include <math.h>
-// #include <errno.h>
-
-
 #include <unistd.h>
 #include <sys/file.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/time.h>
-// #include <mutex> // Include the mutex header
 
 
 /* HDF5 header for dynamic plugin loading */
@@ -471,10 +462,10 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
   //   file->mmap_size = HDF5_HEADER_SIZE;
 
 
-  file->mmap_size = sb.st_size; // sb.st_size; // TODO: change to Hint buffer size (16443392) (20971520)
+      file->mmap_size = sb.st_size;
   file->file_size = sb.st_size;
   file->flags = flags;
-  file->mmap_offset = 0; // TODO: change to Hint offset
+      file->mmap_offset = 0;
   timerInitVFD.Pause();
 
   if(_MMAP_IO == true && file->mmap_size != 0){
@@ -496,8 +487,7 @@ H5FD__tracker_vfd_open(const char *name, unsigned flags, hid_t fapl_id,
         file->mmap_prot = PROT_READ | PROT_WRITE;
     }
     
-    file->mmap_offset = 0; // TODO: change to Hint offset
-    // file->mmap_addr = mmap(NULL, file->mmap_size, file->mmap_prot, MAP_SHARED, fd, 0); // TODO: change to idea size
+    file->mmap_offset = 0;
     file->mmap_addr = mmap(NULL, file->mmap_size, file->mmap_prot, MAP_SHARED, fd, 0); // HDF5 header size
 
     timer_mmap_open.Pause();

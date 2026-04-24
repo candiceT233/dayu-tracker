@@ -1,101 +1,131 @@
-# DaYu-Tracker
+# DaYu: Unveiling the I/O Secrets of Scientific Workflows
 
-This code monitors hdf5 program I/O from the Virtual Object Layer (VOL) level as well as the Vitual File Driver (VFD) level.
+[![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
+**DaYu is a comprehensive HDF5 I/O monitoring and analysis toolkit that provides detailed insights into I/O patterns of HDF5 applications at multiple levels. Decode the dataflow semantics and dynamics of your scientific workflows, identify I/O bottlenecks, and optimize performance with interactive visualizations.**
 
-The VOL monitors objects accesses during program, implemented with the HDF5 Passthrough VOL.
+DaYu was published at **CLUSTER 2024** and has demonstrated up to a **3.7x performance improvement** in I/O time for obscure bottlenecks.
 
+## Key Features
 
-The VFD monitors POSIX I/O operation during program, implemented with the HDF5 default sec2 I/O operations.
+- **Dual-Layer Monitoring**: Concurrently tracks both high-level HDF5 object operations (VOL) and low-level POSIX I/O activities (VFD).
+- **Interactive Visualizations**: Generates insightful Sankey diagrams and network graphs to visualize data flow between tasks, files, and data structures.
+- **Performance Analysis**: Identifies I/O bottlenecks, analyzes overhead, and provides actionable recommendations for optimization.
+- **Workflow Optimization**: Analyzes data dependencies and I/O patterns across entire scientific workflows.
+- **Low Overhead**: Designed for performance, with typically under 0.2% runtime and 0.25% storage overhead.
 
+## Gallery
 
-# How to use
+Here are some examples of the visualizations you can create with DaYu:
 
-## Prerequisite
-- HDF5 (1.14.+, require C, CXX and HDF5_HL_LIBRARIES) \
-Install with spack (suggest spack version 0.20.+)
-```bash
-spack install hdf5@1.14+cxx+hl~mpi
-```
-- h5py==3.8.0
-```bash
-YOUR_HDF5_PATH="`which h5cc |sed 's/.\{9\}$//'`"
-echo $YOUR_HDF5_PATH # make sure your path is correct
-python3 -m pip uninstall h5py; HDF5_MPI="OFF" HDF5_DIR=$YOUR_HDF5_PATH python3 -m pip install --no-binary=h5py h5py==3.8.0
-```
+**DeepDriveMD (ddmd) Workflow Analysis**
+![DeepDriveMD Workflow](flow_analysis/example_stat/ddmd/vfd-4s-ddmd-labeled-sankey-s4.png)
+
+**PyFlexTRKR Workflow Analysis**
+![PyFlexTRKR Workflow](flow_analysis/example_stat/s9f9p8/vfd-9s-s9f9p8-labeled-sankey-s9.png)
+
+**ARLDM Workflow Analysis**
+![ARLDM Workflow](flow_analysis/example_stat/vist_1t_chunk/vfd-2s-vist_1t_chunk-sankey-labeled-s4-save.png)
+
+## Architecture
+
+DaYu consists of two main components:
+
+1.  **VOL (Virtual Object Layer) Tracker**: Monitors HDF5 object-level operations (datasets, groups, attributes).
+2.  **VFD (Virtual File Driver) Tracker**: Monitors low-level POSIX I/O operations.
+
+These components work together to provide a holistic view of your application's I/O behavior. The collected data can be analyzed using the provided Python scripts and Jupyter notebooks in the `flow_analysis` directory.
 
 ## Installation
+
+### Prerequisites
+
+- **HDF5**: Version 1.14.0 or higher
+- **Python**: 3.7+
+- **Build Tools**: CMake 3.10+, C++17 compatible compiler
+
+### Building DaYu
+
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/candiceT233/dayu-tracker.git
+    cd dayu-tracker
+    git submodule update --init --recursive
+    ```
+
+2.  **Build the project**:
+    ```bash
+    mkdir build
+    cd build
+    cmake -DCMAKE_INSTALL_PREFIX=$(pwd) ..
+    make -j$(nproc)
+    ```
+
+## Quick Start
+
+### 1. Set Up Task Names
+
+Before running your HDF5 application, set the `CURR_TASK` environment variable to identify the current task:
+
 ```bash
-
-git clone https://github.com/candiceT233/dayu-tracker.git
-cd dayu-tracker 
-YOUR_INSTALLATION_PATH="`pwd`" # you can use your own path
-
-mkdir build 
-cd build
-ccmake -DCMAKE_INSTALL_PREFIX=$YOUR_INSTALLATION_PATH ..
-```
-
-
-## Setup program task name
-Before running your program from a bash command, setup program task name two ways:
----
-1. Setup with bash environment variable:
-```shell
 export CURR_TASK="my_program"
 ```
----
-2. Setup with file in `/tmp` directory:
+
+### 2. Run with DaYu
+
+Configure the environment variables to enable the VOL and VFD trackers:
+
 ```bash
+# Set paths
+TRACKER_SRC_DIR="../build/src"
+LOG_DIR="$(pwd)/dayu_logs"
+mkdir -p $LOG_DIR
 
-export WORKFLOW_NAME="my_program"
-export PATH_FOR_TASK_FILES="/tmp/$USER/$WORKFLOW_NAME"
-mkdir -p $PATH_FOR_TASK_FILES
-> $PATH_FOR_TASK_FILES/${WORKFLOW_NAME}_vfd.curr_task # clear the file
-> $PATH_FOR_TASK_FILES/${WORKFLOW_NAME}_vol.curr_task # clear the file
+# Configure VOL connector
+export HDF5_VOL_CONNECTOR="tracker under_vol=0;under_info={};path=$LOG_DIR;level=2;format="
 
-echo -n "$TASK_NAME" > $PATH_FOR_TASK_FILES/${WORKFLOW_NAME}_vfd.curr_task
-echo -n "$TASK_NAME" > $PATH_FOR_TASK_FILES/${WORKFLOW_NAME}_vol.curr_task
-```
-
-## Dynamically load VFD and VOL libraries
-```bash
-TRACKER_SRC_DIR="../build/src" # dayu_tracker installation path
-schema_file_path="`pwd`" #your_path_to_store_log_files
-export HDF5_VOL_CONNECTOR="tracker under_vol=0;under_info={};path=$schema_file_path;level=2;format=" # VOL connector info string
+# Configure VFD
 export HDF5_PLUGIN_PATH=$TRACKER_SRC_DIR/vfd:$TRACKER_SRC_DIR/vol
-export HDF5_DRIVER=hdf5_tracker_vfd # VFD driver name
-export HDF5_DRIVER_CONFIG="${schema_file_path};${TRACKER_VFD_PAGE_SIZE}" # VFD info string
+export HDF5_DRIVER=hdf5_tracker_vfd
+export HDF5_DRIVER_CONFIG="$LOG_DIR;8192"
 
-# Run your program
-python h5py_write_read.py
+# Run your HDF5 application
+python your_hdf5_program.py
 ```
 
-## Optiona: Dynamically load only VFD
+### 3. Analyze the Results
+
+Use the Jupyter notebooks in the `flow_analysis` directory to analyze the generated logs and create visualizations.
+
 ```bash
-TRACKER_SRC_DIR="../build/src" # dayu_tracker installation path
-schema_file_path="`pwd`" #your_path_to_store_log_files
-export HDF5_PLUGIN_PATH=$TRACKER_SRC_DIR/vfd
-export HDF5_DRIVER=hdf5_tracker_vfd # VFD driver name
-export HDF5_DRIVER_CONFIG="${schema_file_path};${TRACKER_VFD_PAGE_SIZE}" # VFD info string
-
-# Run your program
-python h5py_write_read.py
+cd flow_analysis
+pip install -r requirements.yaml
+jupyter notebook
 ```
 
-## Optiona: Dynamically load only VOL
-```bash
-TRACKER_SRC_DIR="../build/src" # dayu_tracker installation path
-schema_file_path="`pwd`" #your_path_to_store_log_files
-export HDF5_VOL_CONNECTOR="tracker under_vol=0;under_info={};path=$schema_file_path;level=2;format="
-export HDF5_PLUGIN_PATH=$TRACKER_SRC_DIR/vol
+For more detailed instructions and advanced usage, please refer to the documentation in the respective subdirectories.
 
-python h5py_write_read.py
+## Citation
+
+If you use DaYu in your research, please cite our paper:
+
+```
+@inproceedings{tang2024dayu,
+  title={DaYu: Optimizing distributed scientific workflows by decoding dataflow semantics and dynamics},
+  author={Tang, Meng and Cernuda, Jaime and Ye, Jie and Guo, Luanzheng and Tallent, Nathan R and Kougkas, Anthony and Sun, Xian-He},
+  booktitle={2024 IEEE International Conference on Cluster Computing (CLUSTER)},
+  pages={357--369},
+  year={2024},
+  organization={IEEE}
+}
 ```
 
-# Use with Jarvis-cd
-1. Jarvis-cd can be installed and initialized following steps from [here](https://github.com/candiceT233/jarvis-cd).
-2. Add dayu-tracker to jarvis-cd
-```bash
-jarvis repo add /home/mtang11/scripts/vol-tracker/jarvis
-```
+**Paper PDF:** [http://cs.iit.edu/~scs/assets/files/tang2024dayu.pdf](http://cs.iit.edu/~scs/assets/files/tang2024dayu.pdf)
+
+## Project Website
+
+For more information, please visit the [DaYu project website](https://grc.iit.edu/research/projects/dayu).
+
+## License
+
+This project is licensed under the terms of the BSD 3-Clause license. See the [LICENSE](LICENSE) file for more details.

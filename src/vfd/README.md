@@ -1,10 +1,6 @@
-# HDF5 Tracker VFD
+# VFD (Virtual File Driver) Tracker
 
-## 1. Description
-The HDF5 Tracker VFD is a [Virtual File
-Driver](https://portal.hdfgroup.org/display/HDF5/Virtual+File+Drivers) (VFD) for
-HDF5 that can be used to interface with the Tracker API. The driver is built as a
-plugin library that is external to HDF5.
+The VFD (Virtual File Driver) tracker is a core component of DaYu-Tracker, implemented as an HDF5 Virtual File Driver. It is designed to intercept and monitor low-level POSIX I/O operations at the file system level, providing detailed insights into the I/O patterns of HDF5 applications.
 
 ## 2. Dependencies
 The Tracker VFD requires [HDF5](https://github.com/HDFGroup/hdf5) >= `1.14.0`,
